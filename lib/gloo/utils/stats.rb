@@ -8,6 +8,8 @@ module Gloo
   module Utils
     class Stats
 
+      DIR_NOT_FOUND_ERR = 'The folder was not found!'.freeze
+
       # ---------------------------------------------------------------------
       #    Setup
       # ---------------------------------------------------------------------
@@ -30,16 +32,20 @@ module Gloo
       # Does it have a valid root directory.
       #
       def valid?
-        return false unless @dir
-        return false unless File.directory? @dir
+        return true if @dir && File.directory?( @dir )
 
-        return true
+        $engine.err DIR_NOT_FOUND_ERR
+        $engine.heap.it.set_to false
+
+        return false
       end
 
       #
       # Show all stat data for the project.
       #
       def show_all
+        return unless valid?
+
         generate
         puts "Showing All stats for #{@dir}".white
         puts "\n ** #{@dir_cnt} Total Folders ** "
@@ -55,6 +61,8 @@ module Gloo
       # Count is how many results we want.
       #
       def busy_folders( count = 17 )
+        return unless valid?
+
         generate
         puts "\nBusy Folders:".yellow
 
@@ -69,6 +77,8 @@ module Gloo
       # Show file types and how many of each there are.
       #
       def file_types
+        return unless valid?
+
         generate
         puts "\nFiles by Type:".yellow
 
@@ -83,6 +93,8 @@ module Gloo
       # Show Lines of Code
       #
       def loc
+        return unless valid?
+
         generate
         total = 0
 
