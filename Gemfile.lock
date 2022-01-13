@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gloo (0.7.6)
+    gloo (0.7.7)
       activesupport (~> 5.2, >= 5.2.4.3)
       chronic (~> 0.10, >= 0.10.2)
       colorize (~> 0.8, >= 0.8.1)
