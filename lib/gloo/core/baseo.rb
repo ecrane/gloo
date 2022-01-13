@@ -11,6 +11,8 @@ module Gloo
 
       attr_accessor :name
 
+      NOT_IMPLEMENTED_ERR = 'Not implemented yet!'.freeze
+
       # Set up the object.
       def initialize
         @name = ''

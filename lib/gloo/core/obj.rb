@@ -12,8 +12,6 @@ module Gloo
       attr_accessor :value
       attr_reader :children, :parent
 
-      NOT_IMPLEMENTED_ERR = 'Not implemented yet!'.freeze
-
       #
       # Set up the object.
       #

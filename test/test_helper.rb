@@ -2,7 +2,7 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __dir__)
 
 require 'minitest/autorun'
 
-# Require all ruby source files
+# Look up a level from test, then in the lib folder
+# for the dependency loading helper.
 path = File.dirname( File.dirname( File.absolute_path( __FILE__ ) ) )
-root = File.join( path, 'lib', 'gloo', '**/*.rb' )
-Dir.glob( root ) { |ruby_file| require ruby_file }
+require File.join( path, 'lib', 'dependencies.rb' )

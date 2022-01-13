@@ -4,12 +4,10 @@
 #
 # From the /lib/ directory:  ruby run.rb
 #
-require 'gloo/core/baseo'
-require 'gloo/core/obj'
 
+# Look for all required dependencies.
 path = File.dirname( File.absolute_path( __FILE__ ) )
-root = File.join( path, 'gloo', '**/*.rb' )
-Dir.glob( root ) { |ruby_file| require ruby_file }
+require File.join( path, 'dependencies.rb' )
 
 params = []
 ( params << '--cli' ) if ARGV.count.zero?

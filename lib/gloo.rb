@@ -3,14 +3,10 @@
 #
 # Start the Engine.
 #
-require 'gloo/core/baseo'
-require 'gloo/core/obj'
 
+# Look for all required dependencies.
 path = File.dirname( File.absolute_path( __FILE__ ) )
-root = File.join( path, 'gloo', '**/*.rb' )
-Dir.glob( root ).each do |ruby_file|
-  require ruby_file
-end
+require File.join( path, 'dependencies.rb' )
 
 module Gloo
   def self.run
