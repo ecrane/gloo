@@ -4,6 +4,8 @@
 # Application information such as Version and public name.
 #
 
+require 'gloo-lang'
+
 module Gloo
   module App
     class Info
@@ -25,7 +27,8 @@ module Gloo
       # Get the application display title.
       #
       def self.display_title
-        return "#{APP_NAME}, version #{VERSION}"
+        engine = GlooLang::App::Info.display_title
+        return "#{APP_NAME}, version #{VERSION}\n#{engine}"
       end
 
     end

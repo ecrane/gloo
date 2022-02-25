@@ -1,10 +1,11 @@
 PATH
   remote: .
   specs:
-    gloo (0.7.7)
+    gloo (0.8.0)
       activesupport (~> 6.1, >= 6.1.4.6)
       chronic (~> 0.10, >= 0.10.2)
       colorize (~> 0.8, >= 0.8.1)
+      gloo-lang (~> 0.9, >= 0.9.2)
       json (~> 2.1, >= 2.1.0)
       mysql2 (~> 0.5, >= 0.5.3)
       net-ssh (~> 6.1, >= 6.1.0)
@@ -27,6 +28,11 @@ GEM
     concurrent-ruby (1.1.9)
     diff-lcs (1.5.0)
     equatable (0.7.0)
+    gloo-lang (0.9.2)
+      chronic (~> 0.10, >= 0.10.2)
+      json (~> 2.1, >= 2.1.0)
+      net-ssh (~> 6.1, >= 6.1.0)
+      openssl (~> 2.1, >= 2.1.0)
     i18n (1.10.0)
       concurrent-ruby (~> 1.0)
     ipaddr (1.2.4)
