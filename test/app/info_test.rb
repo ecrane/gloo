@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'gloo-lang'
 
 class InfoTest < Minitest::Test
 
@@ -15,6 +16,13 @@ class InfoTest < Minitest::Test
     assert t
     assert t.start_with? 'Gloo'
     assert t.end_with? Gloo::App::Info::VERSION
+  end
+
+  def test_the_full_version
+    t = Gloo::App::Info.full_version
+    assert t
+    assert t.start_with? 'Gloo'
+    assert t.end_with? GlooLang::App::Info.display_title
   end
 
 end

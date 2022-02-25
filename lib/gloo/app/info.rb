@@ -27,6 +27,14 @@ module Gloo
       # Get the application display title.
       #
       def self.display_title
+        return "#{APP_NAME}, version #{VERSION}"
+      end
+
+      #
+      # Get the full application version information,
+      # including engine version.
+      #
+      def self.full_version
         engine = GlooLang::App::Info.display_title
         return "#{APP_NAME}, version #{VERSION}\n#{engine}"
       end

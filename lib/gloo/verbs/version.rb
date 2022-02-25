@@ -15,7 +15,7 @@ module Gloo
       # Run the verb.
       #
       def run
-        $log.show Gloo::App::Info.display_title
+        $log.show Gloo::App::Info.full_version
       end
 
       #
