@@ -9,35 +9,7 @@ require 'colorized_string'
 
 module Gloo
   module App
-    class Log
-
-      attr_reader :logger, :quiet
-
-      #
-      # Set up a logger.
-      # If quiet is true, then message are written to the log
-      # but not to the console.
-      #
-      def initialize( quiet )
-        f = File.join( $settings.log_path, 'gloo.log' )
-        @logger = Logger.new( f )
-        @logger.level = Logger::DEBUG
-        @quiet = quiet
-      end
-
-      #
-      # Show a message unless we're in quite mode.
-      #
-      def show( msg )
-        puts msg unless @quiet
-      end
-
-      #
-      # Write a debug message to the log.
-      #
-      def debug( msg )
-        @logger.debug msg
-      end
+    class Log < GlooLang::App::Log
 
       #
       # Write an information message to the log.

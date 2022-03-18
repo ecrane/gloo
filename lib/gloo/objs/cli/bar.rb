@@ -7,7 +7,7 @@ require 'tty-progressbar'
 
 module Gloo
   module Objs
-    class Bar < Gloo::Core::Obj
+    class Bar < GlooLang::Core::Obj
 
       KEYWORD = 'bar'.freeze
       KEYWORD_SHORT = 'bar'.freeze
@@ -100,7 +100,7 @@ module Gloo
       def msg_advance
         x = 1
         if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @params.tokens )
+          expr = GlooLang::Expr::Expression.new( @params.tokens )
           x = expr.evaluate.to_i
         end
 
@@ -116,7 +116,7 @@ module Gloo
 
         x = 1
         if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @params.tokens )
+          expr = GlooLang::Expr::Expression.new( @params.tokens )
           x = expr.evaluate.to_i
         end
 

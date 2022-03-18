@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Prompt < Gloo::Core::Obj
+    class Prompt < GlooLang::Core::Obj
 
       KEYWORD = 'prompt'.freeze
       KEYWORD_SHORT = 'ask'.freeze
@@ -90,7 +90,7 @@ module Gloo
         prompt = prompt_value
         return unless prompt
 
-        result = $prompt.multiline( prompt )
+        result = $engine.platform.prompt.multiline( prompt )
         set_result result.join
       end
 
@@ -101,7 +101,7 @@ module Gloo
         prompt = prompt_value
         return unless prompt
 
-        result = $prompt.ask( prompt )
+        result = $engine.platform.prompt.ask( prompt )
         set_result result
       end
 

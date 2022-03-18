@@ -7,7 +7,7 @@ require 'pastel'
 
 module Gloo
   module Objs
-    class Pastel < Gloo::Core::Obj
+    class Pastel < GlooLang::Core::Obj
 
       KEYWORD = 'pastel'.freeze
       KEYWORD_SHORT = 'pastel'.freeze

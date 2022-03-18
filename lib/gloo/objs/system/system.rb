@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class System < Gloo::Core::Obj
+    class System < GlooLang::Core::Obj
 
       KEYWORD = 'system'.freeze
       KEYWORD_SHORT = 'sys'.freeze

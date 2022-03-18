@@ -7,7 +7,7 @@ require 'erb'
 
 module Gloo
   module Objs
-    class Say < Gloo::Core::Obj
+    class Say < GlooLang::Core::Obj
 
       KEYWORD = 'say'.freeze
       KEYWORD_SHORT = 'say'.freeze

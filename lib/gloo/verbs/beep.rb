@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Beep < Gloo::Core::Verb
+    class Beep < GlooLang::Core::Verb
 
       KEYWORD = 'beep'.freeze
       KEYWORD_SHORT = 'b'.freeze

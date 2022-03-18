@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Stats < Gloo::Core::Obj
+    class Stats < GlooLang::Core::Obj
 
       KEYWORD = 'stats'.freeze
       KEYWORD_SHORT = 'stat'.freeze

@@ -7,7 +7,7 @@ require 'net/ssh'
 
 module Gloo
   module Objs
-    class SshExec < Gloo::Core::Obj
+    class SshExec < GlooLang::Core::Obj
 
       KEYWORD = 'ssh_exec'.freeze
       KEYWORD_SHORT = 'ssh'.freeze

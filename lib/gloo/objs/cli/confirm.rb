@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Confirm < Gloo::Core::Obj
+    class Confirm < GlooLang::Core::Obj
 
       KEYWORD = 'confirm'.freeze
       KEYWORD_SHORT = 'confirm'.freeze
@@ -87,7 +87,7 @@ module Gloo
         prompt = prompt_value
         return unless prompt
 
-        result = $prompt.yes?( prompt )
+        result = $engine.platform.prompt.yes?( prompt )
         set_result result
       end
 

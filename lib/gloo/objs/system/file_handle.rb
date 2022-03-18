@@ -7,7 +7,7 @@ require 'tty-pager'
 
 module Gloo
   module Objs
-    class FileHandle < Gloo::Core::Obj
+    class FileHandle < GlooLang::Core::Obj
 
       KEYWORD = 'file'.freeze
       KEYWORD_SHORT = 'dir'.freeze

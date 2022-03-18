@@ -12,6 +12,6 @@ module Gloo
   def self.run
     params = []
     ( params << '--cli' ) if ARGV.count.zero?
-    Gloo::App::Engine.new( params ).start
+    GlooLang::App::Engine.new( params, Gloo::App::Platform, Gloo::App::Log ).start
   end
 end

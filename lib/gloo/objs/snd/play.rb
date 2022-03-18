@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Play < Gloo::Core::Obj
+    class Play < GlooLang::Core::Obj
 
       KEYWORD = 'play'.freeze
       KEYWORD_SHORT = 'play'.freeze

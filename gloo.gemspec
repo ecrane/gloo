@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   # spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency "rake", '~> 13.0', '>= 13.0.1'
 
-  spec.add_dependency "gloo-lang", '~> 0.9', ">= 0.9.2"
+  spec.add_dependency "gloo-lang", '~> 0.9', ">= 0.9.7"
 
   spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.4.6"
   # spec.add_dependency "activesupport", '~> 5.2', ">= 5.2.4.3"
@@ -44,5 +44,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'openssl', '~> 2.1', '>= 2.1.0'
   spec.add_dependency 'net-ssh', '~> 6.1', '>= 6.1.0'
   # spec.add_dependency 'mysql2', '~> 0.5', '>= 0.5.3'
-  spec.add_dependency 'sqlite3', '~> 1.4', '>= 1.4.2'
+  # spec.add_dependency 'sqlite3', '~> 1.4', '>= 1.4.2'
 end

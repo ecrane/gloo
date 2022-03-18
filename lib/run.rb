@@ -11,4 +11,4 @@ require File.join( path, 'dependencies.rb' )
 
 params = []
 ( params << '--cli' ) if ARGV.count.zero?
-GlooLang::App::Engine.new( params ).start
+GlooLang::App::Engine.new( params, Gloo::App::Platform, Gloo::App::Log ).start

@@ -8,7 +8,7 @@
 
 module Gloo
   module Objs
-    class Menu < Gloo::Core::Obj
+    class Menu < GlooLang::Core::Obj
 
       KEYWORD = 'menu'.freeze
       KEYWORD_SHORT = 'menu'.freeze
@@ -102,9 +102,9 @@ module Gloo
             dt = DateTime.now
             d = dt.strftime( '%Y.%m.%d' )
             t = dt.strftime( '%I:%M:%S' )
-            cmd = $prompt.ask( "#{d.yellow} #{t.white} >" )
+            cmd = $engine.platform.prompt.ask( "#{d.yellow} #{t.white} >" )
           else
-            cmd = $prompt.ask( prompt_value )
+            cmd = $engine.platform.prompt.ask( prompt_value )
           end
           cmd ? run_command( cmd ) : run_default
           break unless loop?

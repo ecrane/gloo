@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Select < Gloo::Core::Obj
+    class Select < GlooLang::Core::Obj
 
       KEYWORD = 'select'.freeze
       KEYWORD_SHORT = 'sel'.freeze
@@ -117,7 +117,7 @@ module Gloo
         return unless prompt
 
         per = Gloo::App::Settings.page_size
-        result = $prompt.select( prompt, options, :per_page => per )
+        result = $engine.platform.prompt.select( prompt, options, :per_page => per )
         set_result self.key_for_option( result )
       end
 
