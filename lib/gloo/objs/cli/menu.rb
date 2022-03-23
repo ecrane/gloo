@@ -74,7 +74,7 @@ module Gloo
       # for default configurations.
       #
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string PROMPT, '> ', self
         fac.create_can ITEMS, self
         fac.create_bool LOOP, true, self
@@ -102,9 +102,9 @@ module Gloo
             dt = DateTime.now
             d = dt.strftime( '%Y.%m.%d' )
             t = dt.strftime( '%I:%M:%S' )
-            cmd = $engine.platform.prompt.ask( "#{d.yellow} #{t.white} >" )
+            cmd = @engine.platform.prompt.ask( "#{d.yellow} #{t.white} >" )
           else
-            cmd = $engine.platform.prompt.ask( prompt_value )
+            cmd = @engine.platform.prompt.ask( prompt_value )
           end
           cmd ? run_command( cmd ) : run_default
           break unless loop?

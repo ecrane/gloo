@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class BarTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class BarTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'bar', Gloo::Objs::Bar.typename

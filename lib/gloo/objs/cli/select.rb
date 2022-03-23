@@ -92,7 +92,7 @@ module Gloo
       # for default configurations.
       #
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string PROMPT, '>', self
         fac.create_can OPTIONS, self
         fac.create_string RESULT, nil, self
@@ -117,7 +117,7 @@ module Gloo
         return unless prompt
 
         per = Gloo::App::Settings.page_size
-        result = $engine.platform.prompt.select( prompt, options, :per_page => per )
+        result = @engine.platform.prompt.select( prompt, options, :per_page => per )
         set_result self.key_for_option( result )
       end
 

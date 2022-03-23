@@ -50,7 +50,7 @@ module Gloo
       # for default configurations.
       #
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string HOST, DEFAULT_HOST, self
         fac.create_string CMD, nil, self
         fac.create_string RESULT, nil, self
@@ -73,7 +73,7 @@ module Gloo
       def msg_run
         h = host_value
         unless h
-          $engine.err HOST_REQUIRED_ERR
+          @engine.err HOST_REQUIRED_ERR
           return
         end
 

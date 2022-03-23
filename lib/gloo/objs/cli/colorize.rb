@@ -41,7 +41,7 @@ module Gloo
       # This is used by containers to add children needed
       # for default configurations.
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string 'white', '', self
       end
 
@@ -65,7 +65,7 @@ module Gloo
           msg += ColorizedString[ o.value_display ].colorize( o.name.to_sym )
         end
         $log.show msg
-        $engine.heap.it.set_to msg.to_s
+        @engine.heap.it.set_to msg.to_s
       end
 
     end

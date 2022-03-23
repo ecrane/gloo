@@ -19,7 +19,7 @@ module Gloo
       #
       def run
         unless @tokens.token_count > 1
-          $engine.err MISSING_EXPR_ERR
+          @engine.err MISSING_EXPR_ERR
           return
         end
 
@@ -27,10 +27,10 @@ module Gloo
         result = expr.evaluate
 
         if result
-          $engine.heap.it.set_to result
+          @engine.heap.it.set_to result
           post_alert result
         else
-          $engine.err NO_RESULT_ERR
+          @engine.err NO_RESULT_ERR
         end
       end
 
@@ -60,7 +60,7 @@ module Gloo
       #
       def post_alert( msg )
         $log.info msg
-        return if $engine.args.quiet?
+        return if @engine.args.quiet?
 
         post_osx msg
       end

@@ -27,19 +27,22 @@ Gem::Specification.new do |spec|
   spec.executables << 'o'
   spec.executables << 'gloo'
 
-  spec.add_development_dependency 'bundler', '~> 1.16'
-  spec.add_development_dependency 'minitest', '~> 5.0'
+  # spec.add_development_dependency 'bundler', '~> 2.2.22'
+  # spec.add_development_dependency 'bundler', '~> 2.3.9'
+  spec.add_development_dependency 'bundler', '~> 1.17.3'
+  spec.add_development_dependency 'minitest', '~> 5.1', '>= 5.14.2'
   # spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency "rake", '~> 13.0', '>= 13.0.1'
 
-  spec.add_dependency "gloo-lang", '~> 0.9', ">= 0.9.7"
+  spec.add_dependency "gloo-lang", '~> 0.9', ">= 0.9.9"
 
-  spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.4.6"
+  spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.5"
+  # spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.4.6"
   # spec.add_dependency "activesupport", '~> 5.2', ">= 5.2.4.3"
   # spec.add_dependency 'activesupport', '~> 5.2', '>= 5.2.1'
   spec.add_dependency 'chronic', '~> 0.10', '>= 0.10.2'
   spec.add_dependency 'colorize', '~> 0.8', '>= 0.8.1'
-  spec.add_dependency 'tty', '~> 0.8', '>= 0.8.1'
+  spec.add_dependency 'tty', '~> 0.10', '>= 0.10.0'
   spec.add_dependency 'json', '~> 2.1', '>= 2.1.0'
   spec.add_dependency 'openssl', '~> 2.1', '>= 2.1.0'
   spec.add_dependency 'net-ssh', '~> 6.1', '>= 6.1.0'

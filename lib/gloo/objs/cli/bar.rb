@@ -63,7 +63,7 @@ module Gloo
       # This is used by containers to add children needed
       # for default configurations.
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string NAME, '', self
         fac.create_int TOTAL, 100, self
       end
@@ -100,7 +100,7 @@ module Gloo
       def msg_advance
         x = 1
         if @params&.token_count&.positive?
-          expr = GlooLang::Expr::Expression.new( @params.tokens )
+          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
           x = expr.evaluate.to_i
         end
 
@@ -116,7 +116,7 @@ module Gloo
 
         x = 1
         if @params&.token_count&.positive?
-          expr = GlooLang::Expr::Expression.new( @params.tokens )
+          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
           x = expr.evaluate.to_i
         end
 

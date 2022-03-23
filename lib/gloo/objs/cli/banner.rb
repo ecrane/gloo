@@ -75,7 +75,7 @@ module Gloo
       # This is used by containers to add children needed
       # for default configurations.
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string TEXT, '', self
         fac.create_string STYLE, '', self
         fac.create_string COLOR, '', self

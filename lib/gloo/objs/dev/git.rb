@@ -56,7 +56,7 @@ module Gloo
           branch = branch.strip
         end
 
-        $engine.heap.it.set_to branch
+        @engine.heap.it.set_to branch
       end
 
       #
@@ -87,7 +87,7 @@ module Gloo
           psh = 'git push origin '
           `cd #{path};#{add};#{cmt}"#{msg}";#{psh}#{branch}`
         end
-        $engine.heap.it.set_to msg
+        @engine.heap.it.set_to msg
       end
 
       #
@@ -97,7 +97,7 @@ module Gloo
         path = path_value
         result = `cd #{path}; git status -s` if path_is_dir?( path )
         result ||= ''
-        $engine.heap.it.set_to result
+        @engine.heap.it.set_to result
       end
 
       #
@@ -118,7 +118,7 @@ module Gloo
           result = true unless data.strip.empty?
         end
 
-        $engine.heap.it.set_to result
+        @engine.heap.it.set_to result
       end
 
       #
@@ -132,7 +132,7 @@ module Gloo
           result = File.exist? pn
         end
 
-        $engine.heap.it.set_to result
+        @engine.heap.it.set_to result
       end
 
     end

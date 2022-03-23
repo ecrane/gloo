@@ -72,7 +72,7 @@ module Gloo
       # for default configurations.
       #
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_file FOLDER, '', self
         fac.create_string TYPES, '', self
         fac.create_can SKIP, self

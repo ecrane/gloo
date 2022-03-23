@@ -68,7 +68,7 @@ module Gloo
       # for default configurations.
       #
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string VOICE, '', self
         fac.create_string MSG, DEFAULT_MSG, self
       end

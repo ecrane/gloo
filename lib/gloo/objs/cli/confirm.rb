@@ -64,7 +64,7 @@ module Gloo
       # This is used by containers to add children needed
       # for default configurations.
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string PROMPT, DEFAULT_PROMPT, self
         fac.create_bool RESULT, nil, self
       end
@@ -87,7 +87,7 @@ module Gloo
         prompt = prompt_value
         return unless prompt
 
-        result = $engine.platform.prompt.yes?( prompt )
+        result = @engine.platform.prompt.yes?( prompt )
         set_result result
       end
 

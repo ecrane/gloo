@@ -6,3 +6,6 @@ require 'minitest/autorun'
 # for the dependency loading helper.
 path = File.dirname( File.dirname( File.absolute_path( __FILE__ ) ) )
 require File.join( path, 'lib', 'dependencies.rb' )
+
+require File.join( path, 'test', 'base_test.rb' )
+require File.join( path, 'test', 'base_engine_test.rb' )

@@ -67,7 +67,7 @@ module Gloo
       # for default configurations.
       #
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string PROMPT, '>', self
         fac.create_string RESULT, nil, self
       end
@@ -90,7 +90,7 @@ module Gloo
         prompt = prompt_value
         return unless prompt
 
-        result = $engine.platform.prompt.multiline( prompt )
+        result = @engine.platform.prompt.multiline( prompt )
         set_result result.join
       end
 
@@ -101,7 +101,7 @@ module Gloo
         prompt = prompt_value
         return unless prompt
 
-        result = $engine.platform.prompt.ask( prompt )
+        result = @engine.platform.prompt.ask( prompt )
         set_result result
       end
 

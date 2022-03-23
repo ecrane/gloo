@@ -83,7 +83,7 @@ module Gloo
           o = pn.resolve
           o.set_value data
         else
-          $engine.heap.it.set_to data
+          @engine.heap.it.set_to data
         end
       end
 
@@ -106,7 +106,7 @@ module Gloo
       #
       def msg_check_exists
         result = File.exist? value
-        $engine.heap.it.set_to result
+        @engine.heap.it.set_to result
       end
 
       #
@@ -114,7 +114,7 @@ module Gloo
       #
       def msg_check_is_file
         result = File.file? value
-        $engine.heap.it.set_to result
+        @engine.heap.it.set_to result
       end
 
       #
@@ -122,7 +122,7 @@ module Gloo
       #
       def msg_check_is_dir
         result = File.directory? value
-        $engine.heap.it.set_to result
+        @engine.heap.it.set_to result
       end
 
       #
@@ -130,7 +130,7 @@ module Gloo
       #
       def msg_find_match
         result = !Dir.glob( value ).empty?
-        $engine.heap.it.set_to result
+        @engine.heap.it.set_to result
       end
 
     end

@@ -81,7 +81,7 @@ module Gloo
       # for default configurations.
       #
       def add_default_children
-        fac = $engine.factory
+        fac = @engine.factory
         fac.create_string CMD, DEFAULT_CMD, self
         fac.create_bool GET_OUTPUT, true, self
         fac.create_string RESULT, nil, self
