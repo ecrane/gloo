@@ -17,7 +17,7 @@ require 'pastel'
 
 module Gloo
   module App
-    class Platform
+    class Platform < GlooLang::App::Platform
 
       DEFAULT_TMP_FILE = 'tmp.txt'.freeze
 
