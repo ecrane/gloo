@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class GitTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class GitTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'git_repo', Gloo::Objs::Git.typename
@@ -31,7 +25,7 @@ class GitTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Git.new
+    o = Gloo::Objs::Git.new( @engine )
     refute o.add_children_on_create?
   end
 

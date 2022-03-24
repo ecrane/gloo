@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class PromptTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class PromptTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'prompt', Gloo::Objs::Prompt.typename
@@ -30,7 +24,7 @@ class PromptTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Prompt.new
+    o = Gloo::Objs::Prompt.new( @engine )
     assert o.add_children_on_create?
   end
 

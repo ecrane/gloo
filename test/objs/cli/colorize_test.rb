@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class ColorizeTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class ColorizeTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'colorize', Gloo::Objs::Colorize.typename
@@ -29,7 +23,7 @@ class ColorizeTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Colorize.new
+    o = Gloo::Objs::Colorize.new( @engine )
     assert o.add_children_on_create?
   end
 

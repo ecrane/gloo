@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'gloo-lang'
 
-class InfoTest < Minitest::Test
+class InfoTest < BaseTest
 
   def test_version_number
     refute_nil Gloo::App::Info::VERSION
@@ -22,7 +22,6 @@ class InfoTest < Minitest::Test
     t = Gloo::App::Info.full_version
     assert t
     assert t.start_with? 'Gloo'
-    assert t.end_with? GlooLang::App::Info.display_title
   end
 
 end

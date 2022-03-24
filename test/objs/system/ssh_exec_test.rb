@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class SshExecTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class SshExecTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'ssh_exec', Gloo::Objs::SshExec.typename
@@ -30,7 +24,7 @@ class SshExecTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::SshExec.new
+    o = Gloo::Objs::SshExec.new( @engine )
     assert o.add_children_on_create?
   end
 

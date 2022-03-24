@@ -1,16 +1,9 @@
 require 'test_helper'
 
-class BeepTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-  end
+class BeepTest < BaseEngineTest
 
   def test_beep_verb
-    @engine.start
-    assert @engine.running
-    q = Gloo::Verbs::Beep.new( nil )
+    q = Gloo::Verbs::Beep.new( @engine, nil )
     q.run
   end
 

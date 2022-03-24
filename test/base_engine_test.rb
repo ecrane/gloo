@@ -3,7 +3,7 @@ require 'test_helper'
 class BaseEngineTest < BaseTest
 
   def setup
-    @engine = GlooLang::App::Engine.new( [ '--quiet' ] )
+    @engine = GlooLang::App::Engine.new( default_context )
     @engine.log.quiet = true
     @engine.start
 

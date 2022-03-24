@@ -1,11 +1,6 @@
 require 'test_helper'
 
-class AlertTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-  end
+class AlertTest < BaseEngineTest
 
   def test_the_keyword
     assert_equal 'alert', Gloo::Verbs::Alert.keyword

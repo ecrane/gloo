@@ -1,11 +1,6 @@
 require 'test_helper'
 
-class ClsTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-  end
+class ClsTest < BaseEngineTest
 
   def test_the_keyword
     o = Gloo::Verbs::Cls.keyword

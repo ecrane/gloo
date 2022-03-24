@@ -23,7 +23,7 @@ module Gloo
           return
         end
 
-        expr = Gloo::Expr::Expression.new( @tokens.params )
+        expr = GlooLang::Expr::Expression.new( @engine, @tokens.params )
         result = expr.evaluate
 
         if result
@@ -59,7 +59,7 @@ module Gloo
       # Notice is not posted if we're in quiet mode.
       #
       def post_alert( msg )
-        $log.info msg
+        @engine.log.info msg
         return if @engine.args.quiet?
 
         post_osx msg

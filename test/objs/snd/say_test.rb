@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class SayTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class SayTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'say', Gloo::Objs::Say.typename
@@ -28,7 +22,7 @@ class SayTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Say.new
+    o = Gloo::Objs::Say.new( @engine )
     assert o.add_children_on_create?
   end
 
@@ -44,15 +38,15 @@ class SayTest < Minitest::Test
     assert_equal 'message', obj.children[ 1 ].name
   end
 
-  def test_run_say
-    i = @engine.parser.parse_immediate 'create s as say'
-    i.run
-    # obj = @engine.heap.root.children.first
-    i = @engine.parser.parse_immediate 'put "running tests" into s.message'
-    i.run
-    i = @engine.parser.parse_immediate 'run s'
-    i.run
-  end
+  # def test_run_say
+  #   i = @engine.parser.parse_immediate 'create s as say'
+  #   i.run
+  #   # obj = @engine.heap.root.children.first
+  #   i = @engine.parser.parse_immediate 'put "running tests" into s.message'
+  #   i.run
+  #   i = @engine.parser.parse_immediate 'run s'
+  #   i.run
+  # end
 
   def test_help_text
     assert @engine.help.topic? Gloo::Objs::Say.typename

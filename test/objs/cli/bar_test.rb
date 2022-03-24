@@ -23,7 +23,7 @@ class BarTest < BaseEngineTest
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Bar.new
+    o = Gloo::Objs::Bar.new( @engine )
     assert o.add_children_on_create?
   end
 

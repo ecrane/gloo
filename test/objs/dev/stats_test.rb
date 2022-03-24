@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class StatsTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class StatsTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'stats', Gloo::Objs::Stats.typename
@@ -29,7 +23,7 @@ class StatsTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Stats.new
+    o = Gloo::Objs::Stats.new( @engine )
     assert o.add_children_on_create?
   end
 

@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class SelectTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class SelectTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'select', Gloo::Objs::Select.typename
@@ -29,7 +23,7 @@ class SelectTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Select.new
+    o = Gloo::Objs::Select.new( @engine )
     assert o.add_children_on_create?
   end
 

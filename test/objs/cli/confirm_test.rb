@@ -1,12 +1,6 @@
 require 'test_helper'
 
-class ConfirmTest < Minitest::Test
-
-  def setup
-    @engine = Gloo::App::Engine.new( [ '--quiet' ] )
-    @engine.start
-    @dic = @engine.dictionary
-  end
+class ConfirmTest < BaseEngineTest
 
   def test_the_typename
     assert_equal 'confirm', Gloo::Objs::Confirm.typename
@@ -29,7 +23,7 @@ class ConfirmTest < Minitest::Test
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Confirm.new
+    o = Gloo::Objs::Confirm.new( @engine )
     assert o.add_children_on_create?
   end
 
