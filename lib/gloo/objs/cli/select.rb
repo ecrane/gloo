@@ -116,7 +116,7 @@ module Gloo
         prompt = prompt_value
         return unless prompt
 
-        per = Gloo::App::Settings.page_size
+        per = GlooLang::App::Settings.page_size( @engine )
         result = @engine.platform.prompt.select( prompt, options, :per_page => per )
         set_result self.key_for_option( result )
       end

@@ -77,7 +77,7 @@ module Gloo
         path = path_value
         if path_is_dir?( path )
           if @params&.token_count&.positive?
-            expr = Gloo::Expr::Expression.new( @params.tokens )
+            expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
             msg = expr.evaluate
           end
           branch = `cd #{path}; git rev-parse --abbrev-ref HEAD`

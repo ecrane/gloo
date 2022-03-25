@@ -137,7 +137,7 @@ module Gloo
         o = find_child BEFORE_MENU
         return unless o
 
-        Gloo::Exec::Dispatch.message 'run', o
+        GlooLang::Exec::Dispatch.message( @engine, 'run', o )
       end
 
       #
@@ -148,7 +148,7 @@ module Gloo
         return unless o
 
         o.children.each do |mitem|
-          mitem = Gloo::Objs::Alias.resolve_alias( mitem )
+          mitem = GlooLang::Objs::Alias.resolve_alias( @engine, mitem )
           puts "  #{mitem.shortcut_value} - #{mitem.description_value}"
         end
       end
@@ -161,7 +161,7 @@ module Gloo
         return nil unless o
 
         o.children.each do |mitem|
-          mitem = Gloo::Objs::Alias.resolve_alias( mitem )
+          mitem = GlooLang::Objs::Alias.resolve_alias( @engine, mitem )
           return mitem if mitem.shortcut_value.downcase == cmd.downcase
         end
 
@@ -175,7 +175,7 @@ module Gloo
         obj = find_child DEFAULT
         return unless obj
 
-        s = Gloo::Exec::Script.new obj
+        s = GlooLang::Exec::Script.new( @engine, obj )
         s.run
       end
 
@@ -197,7 +197,7 @@ module Gloo
         script = obj.do_script
         return unless script
 
-        s = Gloo::Exec::Script.new script
+        s = GlooLang::Exec::Script.new( @engine, script )
         s.run
       end
 

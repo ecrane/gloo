@@ -47,7 +47,7 @@ module Gloo
       def msg_open
         return unless value && File.exist?( value )
 
-        cmd = Gloo::Core::GlooSystem.open_for_platform
+        cmd = GlooLang::Core::GlooSystem.open_for_platform
         cmd_with_param = "#{cmd} \"#{value}\""
         `#{cmd_with_param}`
       end
@@ -79,7 +79,7 @@ module Gloo
 
         data = File.read( value )
         if @params&.token_count&.positive?
-          pn = Gloo::Core::Pn.new @params.first
+          pn = GlooLang::Core::Pn.new( @engine, @params.first )
           o = pn.resolve
           o.set_value data
         else
@@ -95,7 +95,7 @@ module Gloo
         return unless value
 
         if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @params.tokens )
+          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
         end
         File.write( value, data )

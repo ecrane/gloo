@@ -13,9 +13,9 @@ module Gloo
     params = []
     ( params << '--cli' ) if ARGV.count.zero?
 
+    platform = Gloo::App::Platform.new
     context = GlooLang::App::EngineContext.new(
-      params, Gloo::App::Platform.new, Gloo::App::Log, nil )
-
+      params, platform, Gloo::App::Log, nil )
     GlooLang::App::Engine.new( context ).start
   end
 end
