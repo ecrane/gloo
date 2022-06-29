@@ -10,3 +10,4 @@
 *.log
 test/gloo/debug/*
 .DS_Store
+Gemfile.lock
