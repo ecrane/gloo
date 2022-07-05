@@ -21,10 +21,6 @@ class AlertTest < BaseEngineTest
     assert_equal 'boo', @engine.heap.it.value
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Verbs::Alert.keyword
-  end
-
   def test_alert_without_expression
     @engine.parser.run 'alert'
     assert @engine.error?

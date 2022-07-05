@@ -26,8 +26,4 @@ class PlayTest < BaseEngineTest
     refute o.add_children_on_create?
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Play.typename
-  end
-
 end

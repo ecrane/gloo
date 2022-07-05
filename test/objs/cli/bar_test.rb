@@ -50,8 +50,4 @@ class BarTest < BaseEngineTest
     assert_equal 100, t.value
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Bar.typename
-  end
-
 end

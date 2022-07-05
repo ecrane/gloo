@@ -54,8 +54,4 @@ class SystemTest < BaseEngineTest
     refute_equal '', obj.children.last.value
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::System.typename
-  end
-
 end

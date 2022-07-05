@@ -11,8 +11,4 @@ class ClsTest < BaseEngineTest
     assert_equal 'cls', Gloo::Verbs::Cls.keyword_shortcut
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Verbs::Cls.keyword
-  end
-
 end

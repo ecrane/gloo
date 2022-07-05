@@ -63,12 +63,6 @@ class EngineTest < BaseTest
     assert o.persist_man
   end
 
-  def test_that_engine_has_help
-    o = GlooLang::App::Engine.new( default_context )
-    o.start
-    assert o.help
-  end
-
   def test_that_engine_has_an_execution_environment
     o = GlooLang::App::Engine.new( default_context )
     o.start

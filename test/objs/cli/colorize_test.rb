@@ -27,8 +27,4 @@ class ColorizeTest < BaseEngineTest
     assert o.add_children_on_create?
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Colorize.typename
-  end
-
 end

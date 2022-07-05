@@ -39,10 +39,6 @@ class StatsTest < BaseEngineTest
     assert_equal 'skip', obj.children.last.name
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Stats.typename
-  end
-
   def test_skip_list
     @engine.parser.run 'create s as stats'
     obj = @engine.heap.root.children.first

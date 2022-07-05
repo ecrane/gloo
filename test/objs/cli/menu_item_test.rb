@@ -39,8 +39,4 @@ class MenuItemTest < BaseEngineTest
     assert_equal 'do', obj.children.last.name
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::MenuItem.typename
-  end
-
 end

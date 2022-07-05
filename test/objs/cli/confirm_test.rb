@@ -39,8 +39,4 @@ class ConfirmTest < BaseEngineTest
     assert_equal 'result', obj.children.last.name
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Confirm.typename
-  end
-
 end

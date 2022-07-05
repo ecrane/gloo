@@ -40,8 +40,4 @@ class SelectTest < BaseEngineTest
     assert_equal 'result', obj.children.last.name
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Select.typename
-  end
-
 end

@@ -63,8 +63,4 @@ class MenuTest < BaseEngineTest
     assert_equal true, loop.value
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Menu.typename
-  end
-
 end

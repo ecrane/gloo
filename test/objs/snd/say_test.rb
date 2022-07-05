@@ -48,8 +48,4 @@ class SayTest < BaseEngineTest
   #   i.run
   # end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Say.typename
-  end
-
 end

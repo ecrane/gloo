@@ -16,8 +16,4 @@ class BeepTest < BaseEngineTest
     assert_equal 'b', Gloo::Verbs::Beep.keyword_shortcut
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Verbs::Beep.keyword
-  end
-
 end

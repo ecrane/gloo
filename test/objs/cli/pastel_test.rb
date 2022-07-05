@@ -38,8 +38,4 @@ class PastelTest < BaseEngineTest
     assert_equal 'color', obj.children.last.name
   end
 
-  def test_help_text
-    assert @engine.help.topic? Gloo::Objs::Pastel.typename
-  end
-
 end
