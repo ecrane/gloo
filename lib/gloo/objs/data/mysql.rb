@@ -126,7 +126,7 @@ module Gloo
         o = find_child HOST
         return nil unless o
 
-        o = GlooLang::Objs::Alias.resolve_alias( o )
+        o = GlooLang::Objs::Alias.resolve_alias( @engine, o )
         return o.value
       end
 
@@ -138,7 +138,7 @@ module Gloo
         o = find_child DB
         return nil unless o
 
-        o = GlooLang::Objs::Alias.resolve_alias( o )
+        o = GlooLang::Objs::Alias.resolve_alias( @engine, o )
         return o.value
       end
 
@@ -150,7 +150,7 @@ module Gloo
         o = find_child USER
         return nil unless o
 
-        o = GlooLang::Objs::Alias.resolve_alias( o )
+        o = GlooLang::Objs::Alias.resolve_alias( @engine, o )
         return o.value
       end
 
@@ -162,7 +162,7 @@ module Gloo
         o = find_child PASSWD
         return nil unless o
 
-        o = GlooLang::Objs::Alias.resolve_alias( o )
+        o = GlooLang::Objs::Alias.resolve_alias( @engine, o )
         return o.value
       end
 
