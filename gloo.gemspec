@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   # spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency "rake", '~> 13.0', '>= 13.0.1'
 
-  spec.add_dependency "gloo-lang", '~> 1.1', ">= 1.2.3"
+  spec.add_dependency "gloo-lang", '~> 1.2', ">= 1.2.4"
 
   spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.5"
   # spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.4.6"

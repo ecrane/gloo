@@ -106,10 +106,28 @@ module Gloo
           password: passwd_value
         }
         client = Mysql2::Client.new( h )
-        return client.query( sql ) unless params
 
-        pst = client.prepare( sql )
-        return pst.execute( *params )
+        heads = []
+        data = []
+        if params
+          pst = client.prepare( sql )
+          rs = pst.execute( *params, :as => :array )
+          rs.each do |row|
+            arr = []
+            row.each do |o| 
+              arr << o
+            end
+            data << arr
+          end
+        else
+          rs = client.query( sql, :as => :array ) 
+          rs.each do |row|
+            data << row
+          end
+        end
+
+        heads = rs.fields 
+        return [ heads, data ]
       end
 
       # ---------------------------------------------------------------------
