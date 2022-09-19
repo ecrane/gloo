@@ -121,12 +121,14 @@ module Gloo
           end
         else
           rs = client.query( sql, :as => :array ) 
-          rs.each do |row|
-            data << row
+          if rs
+            rs.each do |row|
+              data << row
+            end
           end
         end
 
-        heads = rs.fields 
+        heads = rs.fields if rs
         return [ heads, data ]
       end
 
