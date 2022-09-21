@@ -3,6 +3,7 @@
 #
 # The result of a SQL database query.
 #
+require 'tty-table'
 
 module Gloo
   module Objs
@@ -54,22 +55,23 @@ module Gloo
       # Show a single row in a vertical, form style view.
       # 
       def show_single_row
+        arr = []
         row = @data[0]
         @heads.each_with_index do |h, i|
-          puts "#{h}: \t #{row[i]}"
+          arr << [ h, row[i] ]
         end
+        table = TTY::Table.new( [ 'Field', 'Value' ], arr )
+        renderer = TTY::Table::Renderer::Unicode.new(table)
+        puts renderer.render
       end
 
       # 
       # Show multiple rows in a table view.
       # 
       def show_rows
-        puts @heads.map { |o| o }.join( " \t " ).white
-        
-        @data.each do |row|
-          # Show the row data
-          puts row.map { |v| v }.join( " \t " )
-        end
+        table = TTY::Table.new( @heads, @data )
+        renderer = TTY::Table::Renderer::Unicode.new(table)
+        puts renderer.render
       end
 
       # ---------------------------------------------------------------------
