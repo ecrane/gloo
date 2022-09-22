@@ -143,6 +143,7 @@ module Gloo
 
         params = []
         o.children.each do |p|
+          p = GlooLang::Objs::Alias.resolve_alias( @engine, p )
           params << p.value
         end
 
