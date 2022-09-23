@@ -39,6 +39,18 @@ module Gloo
         return @data.count == 1
       end
 
+      # 
+      # Does this query result have data to show?
+      # 
+      def has_data_to_show?
+        return false unless @heads
+        return false unless @data
+        return false if @heads.count == 0
+        return false if @data.count == 0
+
+        return true
+      end
+
 
       # ---------------------------------------------------------------------
       #    Show Results
@@ -61,7 +73,7 @@ module Gloo
           arr << [ h, row[i] ]
         end
         table = TTY::Table.new( [ 'Field', 'Value' ], arr )
-        renderer = TTY::Table::Renderer::Unicode.new(table)
+        renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
         puts renderer.render
       end
 
@@ -70,7 +82,7 @@ module Gloo
       # 
       def show_rows
         table = TTY::Table.new( @heads, @data )
-        renderer = TTY::Table::Renderer::Unicode.new(table)
+        renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
         puts renderer.render
       end
 

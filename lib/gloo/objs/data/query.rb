@@ -119,6 +119,7 @@ module Gloo
         heads = result[0]
         data = result[1]
         qr = QueryResult.new heads, data
+        return unless qr.has_data_to_show?
 
         result_can = find_child RESULT
         result_can = GlooLang::Objs::Alias.resolve_alias( @engine, result_can )

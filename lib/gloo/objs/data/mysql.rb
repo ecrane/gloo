@@ -112,12 +112,14 @@ module Gloo
         if params
           pst = client.prepare( sql )
           rs = pst.execute( *params, :as => :array )
-          rs.each do |row|
-            arr = []
-            row.each do |o| 
-              arr << o
+          if rs
+            rs.each do |row|
+              arr = []
+              row.each do |o| 
+                arr << o
+              end
+              data << arr
             end
-            data << arr
           end
         else
           rs = client.query( sql, :as => :array ) 
