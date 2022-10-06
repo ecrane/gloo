@@ -80,7 +80,14 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[show]
+        return super + %w[run show]
+      end
+
+      #
+      # Alias to show the banner bar
+      #
+      def msg_run
+        msg_show
       end
 
       #

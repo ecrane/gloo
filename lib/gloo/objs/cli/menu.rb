@@ -96,6 +96,7 @@ module Gloo
       # Show the menu options, and prompt for user input.
       #
       def msg_run
+        run_default
         loop do
           begin_menu
           if prompt_value.empty?
