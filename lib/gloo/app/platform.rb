@@ -74,6 +74,18 @@ module Gloo
       end
 
       # ---------------------------------------------------------------------
+      #    Color helper
+      # ---------------------------------------------------------------------
+
+      # 
+      # Get colorized string.
+      # 
+      def getColorizedString( str, color )
+        colorized = ColorizedString[ str.to_s ].colorize( color )
+        return colorized.to_s
+      end
+
+      # ---------------------------------------------------------------------
       #    Table helper
       # ---------------------------------------------------------------------
 
