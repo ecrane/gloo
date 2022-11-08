@@ -79,8 +79,13 @@ module Gloo
           return
         end
 
-        result = db.query( sql_value, param_array )
-        process_result result
+        begin
+          result = db.query( sql_value, param_array )
+          process_result result
+        rescue => e
+          @engine.err e.message
+          return
+        end
       end
 
       # ---------------------------------------------------------------------
