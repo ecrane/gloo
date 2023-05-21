@@ -5,7 +5,7 @@
 #
 require 'chronic'
 
-module GlooLang
+module Gloo
   module Convert
     class StringToTime
 

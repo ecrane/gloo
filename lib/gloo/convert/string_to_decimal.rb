@@ -1,19 +1,18 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2020 Eric Crane.  All rights reserved.
 #
-# Conversion tool:  String to Date Time.
+# Conversion tool:  String to Decimal.
 #
-require 'chronic'
 
-module GlooLang
+module Gloo
   module Convert
-    class StringToDateTime
+    class StringToDecimal
 
       #
-      # Convert the given string value to a date and time.
+      # Convert the given string value to an integer.
       #
       def convert( value )
-        return Chronic.parse( value )
+        return value.to_f
       end
 
     end

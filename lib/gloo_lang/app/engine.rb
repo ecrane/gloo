@@ -52,7 +52,7 @@ module GlooLang
         @event_manager = GlooLang::Core::EventManager.new( self )
 
         @exec_env = Gloo::Exec::ExecEnv.new( self )
-        @converter = GlooLang::Convert::Converter.new( self )
+        @converter = Gloo::Convert::Converter.new( self )
 
         @log.debug 'the engine has started'
         run_mode

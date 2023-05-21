@@ -4,7 +4,7 @@
 # Data conversion manager.
 #
 
-module GlooLang
+module Gloo
   module Convert
     class Converter
 
@@ -25,7 +25,7 @@ module GlooLang
       #
       def convert( value, to_type, default = nil )
         begin
-          name = "GlooLang::Convert::#{value.class}To#{to_type}"
+          name = "Gloo::Convert::#{value.class}To#{to_type}"
           clazz = name.split( '::' ).inject( Object ) { |o, c| o.const_get c }
           o = clazz.new
           return o.convert( value )

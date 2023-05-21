@@ -1,18 +1,19 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2020 Eric Crane.  All rights reserved.
 #
-# Conversion tool:  String to Integer.
+# Conversion tool:  String to Date Time.
 #
+require 'chronic'
 
-module GlooLang
+module Gloo
   module Convert
-    class StringToInteger
+    class StringToDateTime
 
       #
-      # Convert the given string value to an integer.
+      # Convert the given string value to a date and time.
       #
       def convert( value )
-        return value.to_i
+        return Chronic.parse( value )
       end
 
     end
