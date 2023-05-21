@@ -4,7 +4,7 @@
 # A script to be run.
 #
 
-module GlooLang
+module Gloo
   module Exec
     class Script
 

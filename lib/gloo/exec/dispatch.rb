@@ -8,7 +8,7 @@
 # receive the messages sent, handling errors, etc.
 #
 
-module GlooLang
+module Gloo
   module Exec
     class Dispatch
 
@@ -17,8 +17,8 @@ module GlooLang
       #
       def self.message( engine, msg, to_obj, params = nil )
         engine.log.debug "Dispatch message #{msg} to #{to_obj.name}"
-        a = GlooLang::Exec::Action.new msg, to_obj, params
-        GlooLang::Exec::Dispatch.action( engine, a )
+        a = Gloo::Exec::Action.new msg, to_obj, params
+        Gloo::Exec::Dispatch.action( engine, a )
       end
 
       #

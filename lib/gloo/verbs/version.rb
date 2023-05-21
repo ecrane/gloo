@@ -4,7 +4,7 @@
 # Show the current application version.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Version < GlooLang::Core::Verb
 

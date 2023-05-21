@@ -51,7 +51,7 @@ module GlooLang
         @persist_man = Gloo::Persist::PersistMan.new( self )
         @event_manager = GlooLang::Core::EventManager.new( self )
 
-        @exec_env = GlooLang::Exec::ExecEnv.new( self )
+        @exec_env = Gloo::Exec::ExecEnv.new( self )
         @converter = GlooLang::Convert::Converter.new( self )
 
         @log.debug 'the engine has started'

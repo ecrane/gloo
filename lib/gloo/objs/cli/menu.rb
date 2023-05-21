@@ -138,7 +138,7 @@ module Gloo
         o = find_child BEFORE_MENU
         return unless o
 
-        GlooLang::Exec::Dispatch.message( @engine, 'run', o )
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
 
       #
@@ -176,7 +176,7 @@ module Gloo
         obj = find_child DEFAULT
         return unless obj
 
-        s = GlooLang::Exec::Script.new( @engine, obj )
+        s = Gloo::Exec::Script.new( @engine, obj )
         s.run
       end
 
@@ -198,7 +198,7 @@ module Gloo
         script = obj.do_script
         return unless script
 
-        s = GlooLang::Exec::Script.new( @engine, script )
+        s = Gloo::Exec::Script.new( @engine, script )
         s.run
       end
 

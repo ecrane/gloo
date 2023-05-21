@@ -52,7 +52,7 @@ module GlooLang
       #
       def run( cmd )
         v = parse_immediate( cmd )
-        GlooLang::Exec::Runner.go( @engine, v ) if v
+        Gloo::Exec::Runner.go( @engine, v ) if v
       end
 
     end

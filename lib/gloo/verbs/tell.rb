@@ -68,7 +68,7 @@ module Gloo
       #
       def dispatch_msg
         if @target_obj
-          GlooLang::Exec::Dispatch.message(
+          Gloo::Exec::Dispatch.message(
             @engine, @msg, @target_obj, @params )
         else
           @engine.err "#{OBJ_NOT_FOUND_ERR} #{@obj_name}"

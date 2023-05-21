@@ -54,7 +54,7 @@ module Gloo
       # Run a script specified by pathname
       #
       def run_script
-        GlooLang::Exec::Runner.run( @engine, @tokens.second )
+        Gloo::Exec::Runner.run( @engine, @tokens.second )
       end
 
       #

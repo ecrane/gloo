@@ -4,7 +4,7 @@
 # An action is a message sent to an object with optional parameters.
 #
 
-module GlooLang
+module Gloo
   module Exec
     class Action
 

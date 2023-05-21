@@ -4,7 +4,7 @@
 # A stack of items, a call stack.
 #
 
-module GlooLang
+module Gloo
   module Exec
     class Stack
 

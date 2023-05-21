@@ -5,7 +5,7 @@
 # It is used to send the run command to verbs.
 #
 
-module GlooLang
+module Gloo
   module Exec
     class Runner
 

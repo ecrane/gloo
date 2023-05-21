@@ -53,7 +53,7 @@ module Gloo
         o = find_child DO
         return unless o
 
-        GlooLang::Exec::Dispatch.message( @engine, 'run', o )
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
 
       # ---------------------------------------------------------------------

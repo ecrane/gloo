@@ -5,7 +5,7 @@
 # The current state of running scripts and messaging.
 #
 
-module GlooLang
+module Gloo
   module Exec
     class ExecEnv
 
@@ -23,10 +23,10 @@ module GlooLang
         @engine = engine
         @engine.log.debug 'exec env intialized...'
 
-        @verbs = GlooLang::Exec::Stack.new( @engine, VERB_STACK )
-        @actions = GlooLang::Exec::Stack.new( @engine, ACTION_STACK )
-        @scripts = GlooLang::Exec::Stack.new( @engine, SCRIPT_STACK )
-        @here = GlooLang::Exec::Stack.new( @engine, HERE_STACK )
+        @verbs = Gloo::Exec::Stack.new( @engine, VERB_STACK )
+        @actions = Gloo::Exec::Stack.new( @engine, ACTION_STACK )
+        @scripts = Gloo::Exec::Stack.new( @engine, SCRIPT_STACK )
+        @here = Gloo::Exec::Stack.new( @engine, HERE_STACK )
       end
 
       #
