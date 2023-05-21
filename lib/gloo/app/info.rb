@@ -8,7 +8,7 @@
 
 module Gloo
   module App
-    class Info < GlooLang::App::Info
+    class Info
 
       #
       # Load the version from the VERSION file.
@@ -28,6 +28,23 @@ module Gloo
       #
       def self.display_title
         return "#{APP_NAME}, version #{VERSION}"
+      end
+
+
+      #
+      # Get the full application version information,
+      # including engine version.
+      #
+      def self.full_version
+        return "#{display_title}\n#{ruby_info}"
+        return str
+      end
+
+      # 
+      # Get the version of Ruby.
+      # 
+      def self.ruby_info
+        return "Ruby version: #{RUBY_VERSION}"
       end
 
     end

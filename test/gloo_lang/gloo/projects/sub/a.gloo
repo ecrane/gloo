@@ -1,2 +1,0 @@
-a [container] : 
-	on_load [script] : load sub/b

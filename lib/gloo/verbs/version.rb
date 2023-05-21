@@ -15,7 +15,7 @@ module GlooLang
       # Run the verb.
       #
       def run
-        @engine.log.show GlooLang::App::Info.full_version
+        @engine.log.show Gloo::App::Info.full_version
       end
 
       #

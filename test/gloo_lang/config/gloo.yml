@@ -1,5 +1,0 @@
-gloo:
-  project_path: TEST/projects
-  start_with:
-  list_indent: 1
-  debug: false

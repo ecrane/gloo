@@ -39,7 +39,7 @@ module GlooLang
       #
       def start
         @log.debug 'starting the engine...'
-        @log.debug Info.display_title
+        @log.debug Gloo::App::Info.display_title
         @mode = @args.detect_mode
         @running = true
 
