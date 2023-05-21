@@ -1,0 +1,65 @@
+# Author::    Eric Crane  (mailto:eric.crane@mac.com)
+# Copyright:: Copyright (c) 2020 Eric Crane.  All rights reserved.
+#
+# A Time object (does not include a date).
+#
+
+module Gloo
+  module Objs
+    class Time < GlooLang::Core::Obj
+
+      KEYWORD = 'time'.freeze
+      KEYWORD_SHORT = 'time'.freeze
+      DEFAULT_FORMAT = '%I:%M:%S %P'.freeze
+
+      #
+      # The name of the object type.
+      #
+      def self.typename
+        return KEYWORD
+      end
+
+      #
+      # The short name of the object type.
+      #
+      def self.short_typename
+        return KEYWORD_SHORT
+      end
+
+      #
+      # Set the value with any necessary type conversions.
+      #
+      def set_value( new_value )
+        if DtTools.is_dt_type? new_value
+          self.value = new_value
+        else
+          self.value = @engine.converter.convert( new_value, 'Time', nil )
+        end
+
+        if DtTools.is_dt_type? self.value
+          self.value = self.value.strftime( DEFAULT_FORMAT )
+        end
+      end
+
+      # ---------------------------------------------------------------------
+      #    Messages
+      # ---------------------------------------------------------------------
+
+      #
+      # Get a list of message names that this object receives.
+      #
+      def self.messages
+        return super + %w[now]
+      end
+
+      #
+      # Set to the current time.
+      #
+      def msg_now
+        self.set_value( DateTime.now )
+        @engine.heap.it.set_to self.value
+      end
+
+    end
+  end
+end

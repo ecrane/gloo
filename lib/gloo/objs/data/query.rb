@@ -99,7 +99,7 @@ module Gloo
       #
       def db_obj
         o = find_child DB
-        return GlooLang::Objs::Alias.resolve_alias( @engine, o )
+        return Gloo::Objs::Alias.resolve_alias( @engine, o )
       end
 
       #
@@ -127,7 +127,7 @@ module Gloo
         return unless qr.has_data_to_show?
 
         result_can = find_child RESULT
-        result_can = GlooLang::Objs::Alias.resolve_alias( @engine, result_can )
+        result_can = Gloo::Objs::Alias.resolve_alias( @engine, result_can )
 
         if result_can
           qr.update_result_container result_can
@@ -149,7 +149,7 @@ module Gloo
 
         params = []
         o.children.each do |p|
-          p = GlooLang::Objs::Alias.resolve_alias( @engine, p )
+          p = Gloo::Objs::Alias.resolve_alias( @engine, p )
           params << p.value
         end
 

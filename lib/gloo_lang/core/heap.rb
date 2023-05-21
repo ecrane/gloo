@@ -23,7 +23,7 @@ module GlooLang
         @engine = engine
         @engine.log.debug 'object heap intialized...'
 
-        @root = GlooLang::Objs::Container.new( @engine )
+        @root = Gloo::Objs::Container.new( @engine )
         @root.name = 'root'
 
         @context = Pn.root @engine

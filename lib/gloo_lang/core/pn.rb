@@ -204,7 +204,7 @@ module GlooLang
         return nil unless parent
 
         obj = parent.find_child( self.name )
-        return GlooLang::Objs::Alias.resolve_alias( @engine, obj, self.src )
+        return Gloo::Objs::Alias.resolve_alias( @engine, obj, self.src )
       end
 
     end

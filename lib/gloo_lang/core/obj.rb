@@ -185,7 +185,7 @@ module GlooLang
       # Find a child object with the given name.
       #
       def find_child( name )
-        if name.end_with?( GlooLang::Objs::Alias::ALIAS_REFERENCE )
+        if name.end_with?( Gloo::Objs::Alias::ALIAS_REFERENCE )
           name = name[ 0..-2 ]
         end
 
@@ -193,7 +193,7 @@ module GlooLang
           return o if name.downcase == o.name.downcase
         end
 
-        if self.type_display == GlooLang::Objs::Alias.typename
+        if self.type_display == Gloo::Objs::Alias.typename
           ln = GlooLang::Core::Pn.new( @engine, self.value )
           redirect = ln.resolve
           return redirect.find_child( name )

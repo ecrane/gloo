@@ -62,25 +62,25 @@ class QueryTest < BaseEngineTest
   # end
 
   # def test_single_row_check
-  #   o = GlooLang::Objs::Query.new @engine
+  #   o = Gloo::Objs::Query.new @engine
   #   data = [ 1, [ 1 ] ]
   #   assert o.single_row_result?( data )
   # end
 
   # def test_multiple_rows
-  #   o = GlooLang::Objs::Query.new @engine
+  #   o = Gloo::Objs::Query.new @engine
   #   data = [ [ 'one', 'two' ], [ '1', '2' ], [ 2, 3 ] ]
   #   refute o.single_row_result?( data )
   # end
 
   # def test_showing_multiple_rows
-  #   o = GlooLang::Objs::Query.new @engine
+  #   o = Gloo::Objs::Query.new @engine
   #   data = [ [ 'one', 'two' ], [ '1', '2' ], [ 2, 3 ] ]
   #   refute o.show_rows( data )
   # end
 
   # def test_showing_single_row
-  #   o = GlooLang::Objs::Query.new @engine
+  #   o = Gloo::Objs::Query.new @engine
   #   data = [ [ 'one', 'two' ], [ '1', '2' ] ]
   #   o.show_single_row( data )
   # end

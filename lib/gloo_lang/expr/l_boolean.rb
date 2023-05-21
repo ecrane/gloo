@@ -12,14 +12,14 @@ module GlooLang
       # Is the given token a boolean?
       #
       def self.boolean?( token )
-        return GlooLang::Objs::Boolean.boolean? token
+        return Gloo::Objs::Boolean.boolean? token
       end
 
       #
       # Set the value, converting to an boolean.
       #
       def set_value( value )
-        @value = GlooLang::Objs::Boolean.coerse_to_bool value
+        @value = Gloo::Objs::Boolean.coerse_to_bool value
       end
 
       #
