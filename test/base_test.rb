@@ -6,7 +6,7 @@ class BaseTest < Minitest::Test
   # Get the default context for an Engine in TEST.
   #
   def default_context
-    return GlooLang::App::EngineContext.new(
+    return Gloo::App::EngineContext.new(
       [ '--quiet' ], nil, nil, default_user_root )
   end
 

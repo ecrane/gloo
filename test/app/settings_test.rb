@@ -3,7 +3,7 @@ require 'test_helper'
 class SettingsTest < BaseEngineTest
 
   def test_creation
-    s = GlooLang::App::Settings.new( @engine )
+    s = Gloo::App::Settings.new( @engine )
     assert s
     assert s.user_root
     assert s.log_path
@@ -19,4 +19,30 @@ class SettingsTest < BaseEngineTest
     assert @engine.settings.project_path
   end
 
+
+  def test_lines
+    o = Gloo::App::Settings.lines( @engine )
+    assert o
+    assert( o > 1 )
+    assert( o < 99_999_999 )
+  end
+
+  def test_cols
+    o = Gloo::App::Settings.cols( @engine )
+    assert o
+    assert( o > 1 )
+    assert( o < 99_999 )
+  end
+
+  def test_page_size
+    o = Gloo::App::Settings.page_size( @engine )
+    assert o
+    assert( o > 1 )
+    assert( o < 999 )
+  end
+
+  def test_debug_not_on_for_test
+    refute @engine.settings.debug
+  end
+  
 end

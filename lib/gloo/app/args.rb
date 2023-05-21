@@ -7,7 +7,7 @@
 #
 require 'active_support'
 
-module GlooLang
+module Gloo
   module App
     class Args
 
@@ -39,28 +39,28 @@ module GlooLang
       # Is the version switch set?
       #
       def version?
-        @switches.include?( GlooLang::App::Mode::VERSION.to_s )
+        @switches.include?( Gloo::App::Mode::VERSION.to_s )
       end
 
       #
       # Is the help switch set?
       #
       def help?
-        @switches.include?( GlooLang::App::Mode::HELP.to_s )
+        @switches.include?( Gloo::App::Mode::HELP.to_s )
       end
 
       #
       # Is the cli switch set?
       #
       def cli?
-        @switches.include?( GlooLang::App::Mode::CLI.to_s )
+        @switches.include?( Gloo::App::Mode::CLI.to_s )
       end
 
       #
       # Is the embed switch set?
       #
       def embed?
-        @switches.include?( GlooLang::App::Mode::EMBED.to_s )
+        @switches.include?( Gloo::App::Mode::EMBED.to_s )
       end
 
       #
@@ -70,7 +70,7 @@ module GlooLang
       # Then finally use the default: embedded mode.
       #
       def detect_mode
-        mode = if ENV[ GLOO_ENV ] == GlooLang::App::Mode::TEST.to_s
+        mode = if ENV[ GLOO_ENV ] == Gloo::App::Mode::TEST.to_s
                  Mode::TEST
                elsif version?
                  Mode::VERSION

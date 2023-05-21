@@ -197,12 +197,12 @@ module Gloo
 
       # Get the number of lines on screen.
       def msg_screen_lines
-        return GlooLang::App::Settings.lines( @engine )
+        return Gloo::App::Settings.lines( @engine )
       end
 
       # Get the number of columns on screen.
       def msg_screen_cols
-        return GlooLang::App::Settings.cols( @engine )
+        return Gloo::App::Settings.cols( @engine )
       end
 
       # ---------------------------------------------------------------------

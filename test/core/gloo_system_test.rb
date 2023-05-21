@@ -101,21 +101,21 @@ class GlooSystemTest < BaseEngineTest
   def test_screen_lines
     i = @engine.parser.parse_immediate 'show $.screen.lines'
     i.run
-    assert_equal GlooLang::App::Settings.lines( @engine ), @engine.heap.it.value
+    assert_equal Gloo::App::Settings.lines( @engine ), @engine.heap.it.value
 
     i = @engine.parser.parse_immediate 'show $.screen_lines'
     i.run
-    assert_equal GlooLang::App::Settings.lines( @engine ), @engine.heap.it.value
+    assert_equal Gloo::App::Settings.lines( @engine ), @engine.heap.it.value
   end
 
   def test_screen_cols
     i = @engine.parser.parse_immediate 'show $.screen.cols'
     i.run
-    assert_equal GlooLang::App::Settings.cols( @engine ), @engine.heap.it.value
+    assert_equal Gloo::App::Settings.cols( @engine ), @engine.heap.it.value
 
     i = @engine.parser.parse_immediate 'show $.screen_cols'
     i.run
-    assert_equal GlooLang::App::Settings.cols( @engine ), @engine.heap.it.value
+    assert_equal Gloo::App::Settings.cols( @engine ), @engine.heap.it.value
   end
 
   def test_line

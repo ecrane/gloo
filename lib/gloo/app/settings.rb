@@ -6,7 +6,7 @@
 
 require 'yaml'
 
-module GlooLang
+module Gloo
   module App
     class Settings
 
@@ -36,8 +36,8 @@ module GlooLang
         puts "\nApplication Settings:"
         puts '  Startup with:  ' + @start_with
         puts '  Indent in Listing:  ' + @list_indent.to_s
-        puts '  Screen Lines:  ' + GlooLang::App::Settings.lines( @engine ).to_s
-        puts '  Page Size:  ' + GlooLang::App::Settings.page_size( @engine ).to_s
+        puts '  Screen Lines:  ' + Gloo::App::Settings.lines( @engine ).to_s
+        puts '  Page Size:  ' + Gloo::App::Settings.page_size( @engine ).to_s
         puts ''
         self.show_paths
         puts ''
@@ -61,8 +61,8 @@ module GlooLang
       #   puts "\nApplication Settings:".blue
       #   puts '  Startup with:  '.yellow + @start_with.white
       #   puts '  Indent in Listing:  '.yellow + @list_indent.to_s.white
-      #   puts '  Screen Lines:  '.yellow + GlooLang::App::Settings.lines.to_s.white
-      #   puts '  Page Size:  '.yellow + GlooLang::App::Settings.page_size.to_s.white
+      #   puts '  Screen Lines:  '.yellow + Gloo::App::Settings.lines.to_s.white
+      #   puts '  Page Size:  '.yellow + Gloo::App::Settings.page_size.to_s.white
       #   puts ''
       #   self.show_paths
       #   puts ''

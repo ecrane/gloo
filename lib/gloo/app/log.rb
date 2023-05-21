@@ -9,7 +9,60 @@ require 'colorized_string'
 
 module Gloo
   module App
-    class Log < GlooLang::App::Log
+    class Log
+
+      attr_accessor :quiet
+      attr_reader :logger
+
+      # ---------------------------------------------------------------------
+      #    Initialization
+      # ---------------------------------------------------------------------
+
+      #
+      # Set up a logger.
+      # If quiet is true, then message are written to the log
+      # but not to the console.
+      #
+      def initialize( engine, quiet=true )
+        @engine = engine
+        @quite = quiet
+
+        create_logger
+
+        debug 'log intialized...'
+      end
+
+      #
+      # Create the default [file] logger.
+      #
+      def create_logger
+        f = File.join( @engine.settings.log_path, 'gloo.log' )
+        @logger = Logger.new( f )
+        @logger.level = Logger::DEBUG
+      end
+
+      # ---------------------------------------------------------------------
+      #    Standard Output
+      # ---------------------------------------------------------------------
+
+      #
+      # Show a message unless we're in quite mode.
+      #
+      def show( msg )
+        puts msg unless @quiet
+      end
+
+      # ---------------------------------------------------------------------
+      #    Logging functions
+      # ---------------------------------------------------------------------
+
+      #
+      # Write a debug message to the log.
+      #
+      def debug( msg )
+        @logger.debug msg
+      end
+
 
       #
       # Write an information message to the log.
@@ -46,6 +99,25 @@ module Gloo
         else
           puts msg.red unless @quiet
         end
+      end
+
+      # ---------------------------------------------------------------------
+      #    Serialization
+      # ---------------------------------------------------------------------
+
+      #
+      # Prepare for serialization by removing the file reference.
+      # Without this, the engine cannot be serialized.
+      #
+      def prep_serialize
+        @logger = nil
+      end
+
+      #
+      # Restore the logger after deserialization.
+      #
+      def restore_after_deserialization
+        create_logger
       end
 
     end

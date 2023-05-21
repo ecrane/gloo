@@ -14,11 +14,6 @@ files = []
 files << File.join( path, 'gloo', 'core', 'baseo.rb' )
 files << File.join( path, 'gloo', 'core', 'obj.rb' )
 
-root = File.join( path, 'gloo_lang', '**/*.rb' )
-Dir.glob( root ).each do |ruby_file|
-  files << ruby_file unless files.include?( ruby_file )
-end
-
 root = File.join( path, 'gloo', '**/*.rb' )
 Dir.glob( root ).each do |ruby_file|
   files << ruby_file unless files.include?( ruby_file )

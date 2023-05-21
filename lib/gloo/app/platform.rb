@@ -17,7 +17,7 @@ require 'pastel'
 
 module Gloo
   module App
-    class Platform < GlooLang::App::Platform
+    class Platform
 
       DEFAULT_TMP_FILE = 'tmp.txt'.freeze
 
@@ -71,6 +71,13 @@ module Gloo
         File.open( tmp, 'w' ) { |file| file.write( initial_value ) }
         TTY::Editor.open( tmp )
         return File.read( tmp )
+      end
+
+      # 
+      # Get the file mechanism for this platform.
+      # 
+      def getFileMech( engine )
+        return Gloo::Persist::DiscMech.new( engine )
       end
 
       # ---------------------------------------------------------------------

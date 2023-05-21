@@ -3,7 +3,7 @@ require 'test_helper'
 class FactoryTest < BaseEngineTest
 
   def test_factory_built_by_default
-    eng = GlooLang::App::Engine.new( default_context )
+    eng = Gloo::App::Engine.new( default_context )
     assert eng
     refute eng.factory
     eng.start

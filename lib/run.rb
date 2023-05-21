@@ -13,6 +13,6 @@ params = []
 ( params << '--cli' ) if ARGV.count.zero?
 
 platform = Gloo::App::Platform.new
-context = GlooLang::App::EngineContext.new(
+context = Gloo::App::EngineContext.new(
   params, platform, Gloo::App::Log, nil )
-GlooLang::App::Engine.new( context ).start
+Gloo::App::Engine.new( context ).start

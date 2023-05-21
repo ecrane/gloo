@@ -1,5 +1,5 @@
 test [container] : 
-	msg [string] : Hello World!
-	on_load [script] : show basic.hw.msg
+	msg [string] : Hello from gloo!
+	on_load [script] : show test.msg
 	x [int] : 5
 	y [int] : 2

@@ -7,7 +7,7 @@
 # to the relevant element.
 #
 
-module GlooLang
+module Gloo
   module App
     class Engine
 

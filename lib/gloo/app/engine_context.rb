@@ -4,7 +4,7 @@
 # The context (parameters) for the Gloo Script Engine.
 #
 
-module GlooLang
+module Gloo
   module App
     class EngineContext
 
@@ -15,8 +15,8 @@ module GlooLang
       #
       def initialize( params = [], platform=nil, log=nil, user_root=nil )
         @params = params
-        @platform = platform ? platform : Platform.new
-        @log = log ? log : Log
+        @platform = platform ? platform : Gloo::App::Platform.new
+        @log = log ? log : Gloo::App::Log
         @user_root = user_root
       end
 

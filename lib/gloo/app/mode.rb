@@ -4,7 +4,7 @@
 # Mode the Application is running in.
 #
 
-module GlooLang
+module Gloo
   module App
     class Mode
 
