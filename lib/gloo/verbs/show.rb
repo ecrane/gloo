@@ -16,7 +16,7 @@ module Gloo
       #
       def run
         if @tokens.token_count > 1
-          expr = GlooLang::Expr::Expression.new( @engine, @tokens.params )
+          expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
           result = expr.evaluate
           @engine.log.show get_formatted_string( result )
           @engine.heap.it.set_to result
@@ -50,7 +50,7 @@ module Gloo
       #
       def get_formatted_string( str )
         if @params&.token_count&.positive?
-          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           val = expr.evaluate
           color = val.to_sym
           return @engine.platform.getColorizedString( str, color )

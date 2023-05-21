@@ -66,7 +66,7 @@ module Gloo
           return
         end
 
-        expr = GlooLang::Expr::Expression.new( @engine, @tokens.params[ 1..-1 ] )
+        expr = Gloo::Expr::Expression.new( @engine, @tokens.params[ 1..-1 ] )
         @engine.parser.run expr.evaluate
       end
 

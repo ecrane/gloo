@@ -4,7 +4,7 @@
 # Multiplication operator.
 #
 
-module GlooLang
+module Gloo
   module Expr
     class OpMult < GlooLang::Core::Op
 

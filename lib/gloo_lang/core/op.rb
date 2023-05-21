@@ -20,10 +20,10 @@ module GlooLang
       # Create the operator for the given token.
       #
       def self.create_op( token )
-        return GlooLang::Expr::OpMinus.new if token == '-'
-        return GlooLang::Expr::OpMult.new if token == '*'
-        return GlooLang::Expr::OpDiv.new if token == '/'
-        return GlooLang::Expr::OpPlus.new if token == '+'
+        return Gloo::Expr::OpMinus.new if token == '-'
+        return Gloo::Expr::OpMult.new if token == '*'
+        return Gloo::Expr::OpDiv.new if token == '/'
+        return Gloo::Expr::OpPlus.new if token == '+'
 
         return default_op
       end
@@ -32,7 +32,7 @@ module GlooLang
       # Get the default operator (+).
       #
       def self.default_op
-        return GlooLang::Expr::OpPlus.new
+        return Gloo::Expr::OpPlus.new
       end
 
     end

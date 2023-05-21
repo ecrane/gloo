@@ -82,7 +82,7 @@ module Gloo
         if o.nil?
           @engine.err "#{TARGET_ERR} #{target}"
         elsif value.count.positive?
-          expr = GlooLang::Expr::Expression.new( @engine, value )
+          expr = Gloo::Expr::Expression.new( @engine, value )
           result = expr.evaluate
           o.set_value result
           @engine.heap.it.set_to result

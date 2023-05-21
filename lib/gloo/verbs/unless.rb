@@ -67,7 +67,7 @@ module Gloo
       def evals_false( value )
         eval_result = false
         if value.count.positive?
-          expr = GlooLang::Expr::Expression.new( @engine, value )
+          expr = Gloo::Expr::Expression.new( @engine, value )
           result = expr.evaluate
           eval_result = true if result == false
           eval_result = true if result.is_a?( Numeric ) && result.zero?

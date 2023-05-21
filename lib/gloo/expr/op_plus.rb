@@ -4,7 +4,7 @@
 # Addition operator.
 #
 
-module GlooLang
+module Gloo
   module Expr
     class OpPlus < GlooLang::Core::Op
 

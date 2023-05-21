@@ -21,7 +21,7 @@ module Gloo
           return
         end
 
-        expr = GlooLang::Expr::Expression.new( @engine, @tokens.params )
+        expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
         cmd = expr.evaluate
         @engine.log.debug "starting cmd: #{cmd}"
 

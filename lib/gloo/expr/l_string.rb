@@ -4,7 +4,7 @@
 # An Expression that can be evaluated.
 #
 
-module GlooLang
+module Gloo
   module Expr
     class LString < GlooLang::Core::Literal
 

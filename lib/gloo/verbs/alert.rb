@@ -23,7 +23,7 @@ module Gloo
           return
         end
 
-        expr = GlooLang::Expr::Expression.new( @engine, @tokens.params )
+        expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
         result = expr.evaluate
 
         if result

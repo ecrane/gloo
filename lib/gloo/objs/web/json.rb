@@ -74,7 +74,7 @@ module Gloo
       #
       def msg_get
         if @params&.token_count&.positive?
-          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
         end
         return unless data

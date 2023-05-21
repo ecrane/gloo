@@ -61,7 +61,7 @@ module Gloo
       def msg_round
         data = 0
         if @params&.token_count&.positive?
-          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate.to_i
         end
 

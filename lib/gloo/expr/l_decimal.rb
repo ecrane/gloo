@@ -4,7 +4,7 @@
 # A literal decimal value.
 #
 
-module GlooLang
+module Gloo
   module Expr
     class LDecimal < GlooLang::Core::Literal
 

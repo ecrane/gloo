@@ -11,14 +11,14 @@ class BooleanTest < BaseEngineTest
   end
 
   def test_is_boolean
-    assert GlooLang::Expr::LBoolean.boolean?( true )
-    assert GlooLang::Expr::LBoolean.boolean?( false )
-    assert GlooLang::Expr::LBoolean.boolean?( 'true' )
-    assert GlooLang::Expr::LBoolean.boolean?( 'false' )
-    assert GlooLang::Expr::LBoolean.boolean?( 'TRUE' )
-    assert GlooLang::Expr::LBoolean.boolean?( 'False' )
-    refute GlooLang::Expr::LBoolean.boolean?( 'a' )
-    refute GlooLang::Expr::LBoolean.boolean?( 1 )
+    assert Gloo::Expr::LBoolean.boolean?( true )
+    assert Gloo::Expr::LBoolean.boolean?( false )
+    assert Gloo::Expr::LBoolean.boolean?( 'true' )
+    assert Gloo::Expr::LBoolean.boolean?( 'false' )
+    assert Gloo::Expr::LBoolean.boolean?( 'TRUE' )
+    assert Gloo::Expr::LBoolean.boolean?( 'False' )
+    refute Gloo::Expr::LBoolean.boolean?( 'a' )
+    refute Gloo::Expr::LBoolean.boolean?( 1 )
   end
 
   def test_find_type

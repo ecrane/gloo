@@ -17,7 +17,7 @@ module Gloo
       def run
         x = 1
         if @tokens.token_count > 1
-          expr = GlooLang::Expr::Expression.new( @engine, @tokens.params )
+          expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
           x = expr.evaluate.to_i
         end
         sleep x

@@ -100,7 +100,7 @@ module Gloo
       def msg_advance
         x = 1
         if @params&.token_count&.positive?
-          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           x = expr.evaluate.to_i
         end
 
@@ -116,7 +116,7 @@ module Gloo
 
         x = 1
         if @params&.token_count&.positive?
-          expr = GlooLang::Expr::Expression.new( @engine, @params.tokens )
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           x = expr.evaluate.to_i
         end
 

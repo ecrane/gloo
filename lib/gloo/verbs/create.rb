@@ -54,8 +54,8 @@ module Gloo
       # the given initial value.
       #
       def create( name, type, value )
-        if GlooLang::Expr::LString.string?( value )
-          value = GlooLang::Expr::LString.strip_quotes( value )
+        if Gloo::Expr::LString.string?( value )
+          value = Gloo::Expr::LString.strip_quotes( value )
         end
         obj = @engine.factory.create( { name: name, type: type, value: value } )
 
