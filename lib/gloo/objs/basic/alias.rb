@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Alias < GlooLang::Core::Obj
+    class Alias < Gloo::Core::Obj
 
       KEYWORD = 'alias'.freeze
       KEYWORD_SHORT = 'ln'.freeze
@@ -48,7 +48,7 @@ module Gloo
       # Check to see if the referenced object exists.
       #
       def msg_resolve
-        pn = GlooLang::Core::Pn.new( @engine, self.value )
+        pn = Gloo::Core::Pn.new( @engine, self.value )
         s = pn.exists?
         @engine.heap.it.set_to s
         return s
@@ -69,7 +69,7 @@ module Gloo
         return obj unless obj.type_display == Gloo::Objs::Alias.typename
         return obj if ref_name&.end_with?( ALIAS_REFERENCE )
 
-        ln = GlooLang::Core::Pn.new( engine, obj.value )
+        ln = Gloo::Core::Pn.new( engine, obj.value )
         return ln.resolve
       end
 

@@ -5,7 +5,7 @@
 # The list of tokens makes up a command.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Tokens
 

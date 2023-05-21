@@ -6,7 +6,7 @@
 
 module Gloo
   module Expr
-    class OpPlus < GlooLang::Core::Op
+    class OpPlus < Gloo::Core::Op
 
       #
       # Perform the operation and return the result.

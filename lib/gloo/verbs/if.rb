@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class If < GlooLang::Core::Verb
+    class If < Gloo::Core::Verb
 
       KEYWORD = 'if'.freeze
       KEYWORD_SHORT = 'if'.freeze

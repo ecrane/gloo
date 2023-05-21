@@ -43,13 +43,13 @@ module GlooLang
         @mode = @args.detect_mode
         @running = true
 
-        @dictionary = GlooLang::Core::Dictionary.get
+        @dictionary = Gloo::Core::Dictionary.get
 
-        @parser = GlooLang::Core::Parser.new( self )
-        @heap = GlooLang::Core::Heap.new( self )
-        @factory = GlooLang::Core::Factory.new( self )
+        @parser = Gloo::Core::Parser.new( self )
+        @heap = Gloo::Core::Heap.new( self )
+        @factory = Gloo::Core::Factory.new( self )
         @persist_man = Gloo::Persist::PersistMan.new( self )
-        @event_manager = GlooLang::Core::EventManager.new( self )
+        @event_manager = Gloo::Core::EventManager.new( self )
 
         @exec_env = Gloo::Exec::ExecEnv.new( self )
         @converter = Gloo::Convert::Converter.new( self )

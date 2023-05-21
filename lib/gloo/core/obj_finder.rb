@@ -4,7 +4,7 @@
 # Utility used to find objects.
 #
 
-module GlooLang
+module Gloo
   module Core
     class ObjFinder
 

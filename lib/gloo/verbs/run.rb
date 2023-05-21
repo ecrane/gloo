@@ -7,7 +7,7 @@
 
 module Gloo
   module Verbs
-    class Run < GlooLang::Core::Verb
+    class Run < Gloo::Core::Verb
 
       KEYWORD = 'run'.freeze
       KEYWORD_SHORT = 'r'.freeze

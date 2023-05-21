@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Select < GlooLang::Core::Obj
+    class Select < Gloo::Core::Obj
 
       KEYWORD = 'select'.freeze
       KEYWORD_SHORT = 'sel'.freeze

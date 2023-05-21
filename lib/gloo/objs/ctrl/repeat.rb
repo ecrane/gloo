@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Repeat < GlooLang::Core::Obj
+    class Repeat < Gloo::Core::Obj
 
       KEYWORD = 'repeat'.freeze
       KEYWORD_SHORT = 'repeat'.freeze

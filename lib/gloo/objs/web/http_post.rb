@@ -9,7 +9,7 @@ require 'json'
 
 module Gloo
   module Objs
-    class HttpPost < GlooLang::Core::Obj
+    class HttpPost < Gloo::Core::Obj
 
       KEYWORD = 'http_post'.freeze
       KEYWORD_SHORT = 'post'.freeze

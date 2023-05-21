@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Time < GlooLang::Core::Obj
+    class Time < Gloo::Core::Obj
 
       KEYWORD = 'time'.freeze
       KEYWORD_SHORT = 'time'.freeze

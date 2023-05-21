@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Decimal < GlooLang::Core::Obj
+    class Decimal < Gloo::Core::Obj
 
       KEYWORD = 'decimal'.freeze
       KEYWORD_SHORT = 'num'.freeze

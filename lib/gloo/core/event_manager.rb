@@ -5,7 +5,7 @@
 # Run scripts in response to pre-defined events.
 #
 
-module GlooLang
+module Gloo
   module Core
     class EventManager
 
@@ -25,7 +25,7 @@ module GlooLang
         return unless obj || in_heap
 
         @engine.log.debug 'on_load event'
-        arr = GlooLang::Core::ObjFinder.by_name( @engine, 'on_load', obj )
+        arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_load', obj )
         arr.each { |o| Gloo::Exec::Dispatch.message( @engine, 'run', o ) }
       end
 
@@ -36,7 +36,7 @@ module GlooLang
         return unless obj
 
         @engine.log.debug 'on_unload event'
-        arr = GlooLang::Core::ObjFinder.by_name( @engine, 'on_unload', obj )
+        arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_unload', obj )
         arr.each { |o| Gloo::Exec::Dispatch.message( @engine, 'run', o ) }
       end
 

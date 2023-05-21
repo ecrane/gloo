@@ -7,7 +7,7 @@
 
 module Gloo
   module Objs
-    class Script < GlooLang::Core::Obj
+    class Script < Gloo::Core::Obj
 
       KEYWORD = 'script'.freeze
       KEYWORD_SHORT = 'cmd'.freeze

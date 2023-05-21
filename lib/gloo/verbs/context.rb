@@ -7,7 +7,7 @@
 
 module Gloo
   module Verbs
-    class Context < GlooLang::Core::Verb
+    class Context < Gloo::Core::Verb
 
       KEYWORD = 'context'.freeze
       KEYWORD_SHORT = '@'.freeze

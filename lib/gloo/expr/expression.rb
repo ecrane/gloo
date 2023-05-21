@@ -35,7 +35,7 @@ module Gloo
         identify_tokens
 
         @symbols.each do |sym|
-          if sym.is_a? GlooLang::Core::Op
+          if sym.is_a? Gloo::Core::Op
             @op = sym
           elsif @left.nil?
             @left = sym
@@ -46,8 +46,8 @@ module Gloo
           perform_op if @left && @right
         end
 
-        return @left.value if @left.is_a? GlooLang::Core::Literal
-        return resolve_ref @left if @left.is_a? GlooLang::Core::Pn
+        return @left.value if @left.is_a? Gloo::Core::Literal
+        return resolve_ref @left if @left.is_a? Gloo::Core::Pn
 
         return @left
       end
@@ -62,7 +62,7 @@ module Gloo
       # Perform the operation.
       #
       def perform_op
-        @op ||= GlooLang::Core::Op.default_op
+        @op ||= Gloo::Core::Op.default_op
         l = evaluate_sym @left
         r = evaluate_sym @right
         @left = @op.perform l, r
@@ -74,8 +74,8 @@ module Gloo
       # Evaluate the symbol and get a simple value.
       #
       def evaluate_sym( sym )
-        return sym.value if sym.is_a? GlooLang::Core::Literal
-        return resolve_ref sym if sym.is_a? GlooLang::Core::Pn
+        return sym.value if sym.is_a? Gloo::Core::Literal
+        return resolve_ref sym if sym.is_a? Gloo::Core::Pn
 
         return sym
       end
@@ -103,7 +103,7 @@ module Gloo
       # Identify the tokens and create appropriate symbols.
       #
       def identify_token( token )
-        return GlooLang::Core::Op.create_op( token ) if GlooLang::Core::Op.op?( token )
+        return Gloo::Core::Op.create_op( token ) if Gloo::Core::Op.op?( token )
 
         return LBoolean.new( token ) if LBoolean.boolean?( token )
         return LInteger.new( token ) if LInteger.integer?( token )
@@ -111,7 +111,7 @@ module Gloo
         return LDecimal.new( token ) if LDecimal.decimal?( token )
 
         # last chance: an Object reference
-        return GlooLang::Core::Pn.new( @engine, token )
+        return Gloo::Core::Pn.new( @engine, token )
       end
 
     end

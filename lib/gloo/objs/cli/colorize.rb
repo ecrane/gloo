@@ -7,7 +7,7 @@ require 'colorized_string'
 
 module Gloo
   module Objs
-    class Colorize < GlooLang::Core::Obj
+    class Colorize < Gloo::Core::Obj
 
       KEYWORD = 'colorize'.freeze
       KEYWORD_SHORT = 'color'.freeze

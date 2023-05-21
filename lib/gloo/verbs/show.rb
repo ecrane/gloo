@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Show < GlooLang::Core::Verb
+    class Show < Gloo::Core::Verb
 
       KEYWORD = 'show'.freeze
       KEYWORD_SHORT = '='.freeze

@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Save < GlooLang::Core::Verb
+    class Save < Gloo::Core::Verb
 
       KEYWORD = 'save'.freeze
       KEYWORD_SHORT = '>'.freeze

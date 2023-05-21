@@ -8,7 +8,7 @@
 #
 require 'tty-platform'
 
-module GlooLang
+module Gloo
   module Core
     class GlooSystem < Obj
 

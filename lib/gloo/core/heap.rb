@@ -6,7 +6,7 @@
 # the running engine.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Heap
 

@@ -7,7 +7,7 @@
 
 module Gloo
   module Objs
-    class Query < GlooLang::Core::Obj
+    class Query < Gloo::Core::Obj
 
       KEYWORD = 'query'.freeze
       KEYWORD_SHORT = 'sql'.freeze

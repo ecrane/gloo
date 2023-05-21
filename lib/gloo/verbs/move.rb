@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Move < GlooLang::Core::Verb
+    class Move < Gloo::Core::Verb
 
       KEYWORD = 'move'.freeze
       KEYWORD_SHORT = 'mv'.freeze
@@ -61,7 +61,7 @@ module Gloo
         end
 
         name = arr[ 1 ]
-        pn = GlooLang::Core::Pn.new( @engine, name )
+        pn = Gloo::Core::Pn.new( @engine, name )
         o = pn.resolve
 
         @engine.err( "#{MISSING_SRC_OBJ_ERR} #{name}" ) unless o
@@ -78,7 +78,7 @@ module Gloo
           return nil
         end
 
-        pn = GlooLang::Core::Pn.new( @engine, dst )
+        pn = Gloo::Core::Pn.new( @engine, dst )
         o = pn.resolve
         @engine.err( "#{MISSING_DST_OBJ_ERR} '#{dst}'" ) unless o
         return o

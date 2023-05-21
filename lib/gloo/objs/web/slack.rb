@@ -9,7 +9,7 @@ require 'json'
 
 module Gloo
   module Objs
-    class Slack < GlooLang::Core::Obj
+    class Slack < Gloo::Core::Obj
 
       KEYWORD = 'slack'.freeze
       KEYWORD_SHORT = 'slack'.freeze

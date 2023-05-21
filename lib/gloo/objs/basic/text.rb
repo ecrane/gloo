@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Text < GlooLang::Core::Obj
+    class Text < Gloo::Core::Obj
 
       KEYWORD = 'text'.freeze
       KEYWORD_SHORT = 'txt'.freeze

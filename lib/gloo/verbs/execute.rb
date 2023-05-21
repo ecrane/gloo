@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Execute < GlooLang::Core::Verb
+    class Execute < Gloo::Core::Verb
 
       KEYWORD = 'execute'.freeze
       KEYWORD_SHORT = 'exec'.freeze

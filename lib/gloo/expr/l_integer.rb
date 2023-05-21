@@ -6,7 +6,7 @@
 
 module Gloo
   module Expr
-    class LInteger < GlooLang::Core::Literal
+    class LInteger < Gloo::Core::Literal
 
       #
       # Is the given token an integer?

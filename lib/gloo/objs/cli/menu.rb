@@ -8,7 +8,7 @@
 
 module Gloo
   module Objs
-    class Menu < GlooLang::Core::Obj
+    class Menu < Gloo::Core::Obj
 
       KEYWORD = 'menu'.freeze
       KEYWORD_SHORT = 'menu'.freeze

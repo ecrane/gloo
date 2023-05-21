@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Tell < GlooLang::Core::Verb
+    class Tell < Gloo::Core::Verb
 
       KEYWORD = 'tell'.freeze
       KEYWORD_SHORT = '->'.freeze
@@ -59,7 +59,7 @@ module Gloo
       #
       def setup_target
         @obj_name = @tokens.second
-        pn = GlooLang::Core::Pn.new( @engine, @obj_name )
+        pn = Gloo::Core::Pn.new( @engine, @obj_name )
         @target_obj = pn.resolve
       end
 

@@ -7,7 +7,7 @@
 # and can perform an action.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Verb < Baseo
 

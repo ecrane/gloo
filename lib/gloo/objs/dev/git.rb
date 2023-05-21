@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Git < GlooLang::Core::Obj
+    class Git < Gloo::Core::Obj
 
       KEYWORD = 'git_repo'.freeze
       KEYWORD_SHORT = 'git'.freeze

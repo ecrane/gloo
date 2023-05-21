@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Boolean < GlooLang::Core::Obj
+    class Boolean < Gloo::Core::Obj
 
       KEYWORD = 'boolean'.freeze
       KEYWORD_SHORT = 'bool'.freeze

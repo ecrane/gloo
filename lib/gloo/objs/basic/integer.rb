@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Integer < GlooLang::Core::Obj
+    class Integer < Gloo::Core::Obj
 
       KEYWORD = 'integer'.freeze
       KEYWORD_SHORT = 'int'.freeze

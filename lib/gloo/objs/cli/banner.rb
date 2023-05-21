@@ -8,7 +8,7 @@ require 'pastel'
 
 module Gloo
   module Objs
-    class Banner < GlooLang::Core::Obj
+    class Banner < Gloo::Core::Obj
 
       KEYWORD = 'banner'.freeze
       KEYWORD_SHORT = 'ban'.freeze

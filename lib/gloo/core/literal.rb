@@ -5,7 +5,7 @@
 # Base class for all literal values.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Literal
 

@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Confirm < GlooLang::Core::Obj
+    class Confirm < Gloo::Core::Obj
 
       KEYWORD = 'confirm'.freeze
       KEYWORD_SHORT = 'confirm'.freeze

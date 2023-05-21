@@ -5,7 +5,7 @@
 # Path and name elements are separated by periods.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Pn < Baseo
 
@@ -74,8 +74,8 @@ module GlooLang
         return false unless @elements&.count&.positive?
 
         o = @elements.first.downcase
-        return true if o == GlooLang::Core::GlooSystem.typename
-        return true if o == GlooLang::Core::GlooSystem.short_typename
+        return true if o == Gloo::Core::GlooSystem.typename
+        return true if o == Gloo::Core::GlooSystem.short_typename
 
         return false
       end
@@ -189,7 +189,7 @@ module GlooLang
         return @engine.heap.root if self.root?
         return @engine.heap.it if self.it?
         return @engine.heap.error if self.error?
-        return GlooLang::Core::GlooSystem.new(
+        return Gloo::Core::GlooSystem.new(
           @engine, self ) if self.gloo_sys?
 
         if Here.includes_here_ref?( @elements )

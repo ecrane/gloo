@@ -6,7 +6,7 @@
 
 module Gloo
   module Expr
-    class LBoolean < GlooLang::Core::Literal
+    class LBoolean < Gloo::Core::Literal
 
       #
       # Is the given token a boolean?

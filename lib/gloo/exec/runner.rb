@@ -30,7 +30,7 @@ module Gloo
       #
       def self.run( engine, path_name )
         engine.log.debug "running script at #{path_name}"
-        pn = GlooLang::Core::Pn.new( engine, path_name )
+        pn = Gloo::Core::Pn.new( engine, path_name )
         o = pn.resolve
 
         if o

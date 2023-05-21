@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Unless < GlooLang::Core::Verb
+    class Unless < Gloo::Core::Verb
 
       KEYWORD = 'unless'.freeze
       KEYWORD_SHORT = 'if!'.freeze

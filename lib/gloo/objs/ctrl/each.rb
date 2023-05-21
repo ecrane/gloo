@@ -11,7 +11,7 @@
 
 module Gloo
   module Objs
-    class Each < GlooLang::Core::Obj
+    class Each < Gloo::Core::Obj
 
       KEYWORD = 'each'.freeze
       KEYWORD_SHORT = 'each'.freeze

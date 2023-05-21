@@ -8,7 +8,7 @@ class ExpressionTest < BaseTest
   end
 
   def test_tokenizing_boolean
-    o = GlooLang::Core::Tokens.new( 'TRUE' )
+    o = Gloo::Core::Tokens.new( 'TRUE' )
     assert o
     assert_equal 1, o.token_count
 
@@ -20,7 +20,7 @@ class ExpressionTest < BaseTest
   end
 
   def test_tokenizing_integers
-    o = GlooLang::Core::Tokens.new( '7 - 4' )
+    o = Gloo::Core::Tokens.new( '7 - 4' )
     assert o
     assert_equal 3, o.token_count
 
@@ -32,7 +32,7 @@ class ExpressionTest < BaseTest
   end
 
   def test_tokenizing_decimals
-    o = GlooLang::Core::Tokens.new( '2.3 + 3.4' )
+    o = Gloo::Core::Tokens.new( '2.3 + 3.4' )
     assert o
     assert_equal 3, o.token_count
 

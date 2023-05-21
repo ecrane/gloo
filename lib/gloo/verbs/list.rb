@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class List < GlooLang::Core::Verb
+    class List < Gloo::Core::Verb
 
       KEYWORD = 'list'.freeze
       KEYWORD_SHORT = '.'.freeze
@@ -32,7 +32,7 @@ module Gloo
       def determine_target
         return @engine.heap.context if @tokens.token_count == 1
 
-        return GlooLang::Core::Pn.new( @engine, @tokens.second )
+        return Gloo::Core::Pn.new( @engine, @tokens.second )
       end
 
       #

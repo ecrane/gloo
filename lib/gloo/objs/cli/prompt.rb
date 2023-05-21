@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Prompt < GlooLang::Core::Obj
+    class Prompt < Gloo::Core::Obj
 
       KEYWORD = 'prompt'.freeze
       KEYWORD_SHORT = 'ask'.freeze

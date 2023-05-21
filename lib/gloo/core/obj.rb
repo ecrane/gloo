@@ -5,7 +5,7 @@
 # Derives from the Baseo object.  Is not a verb.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Obj < Baseo
 
@@ -194,7 +194,7 @@ module GlooLang
         end
 
         if self.type_display == Gloo::Objs::Alias.typename
-          ln = GlooLang::Core::Pn.new( @engine, self.value )
+          ln = Gloo::Core::Pn.new( @engine, self.value )
           redirect = ln.resolve
           return redirect.find_child( name )
         end

@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Eval < GlooLang::Core::Obj
+    class Eval < Gloo::Core::Obj
 
       KEYWORD = 'eval'.freeze
       KEYWORD_SHORT = 'ruby'.freeze

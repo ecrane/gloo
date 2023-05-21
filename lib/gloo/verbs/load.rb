@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Load < GlooLang::Core::Verb
+    class Load < Gloo::Core::Verb
 
       KEYWORD = 'load'.freeze
       KEYWORD_SHORT = '<'.freeze

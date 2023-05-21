@@ -10,7 +10,7 @@ require 'openssl'
 
 module Gloo
   module Objs
-    class HttpGet < GlooLang::Core::Obj
+    class HttpGet < Gloo::Core::Obj
 
       KEYWORD = 'http_get'.freeze
       KEYWORD_SHORT = 'get'.freeze

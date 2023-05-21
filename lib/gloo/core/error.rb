@@ -4,7 +4,7 @@
 # If the last command to run generated an error it will be here.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Error
 

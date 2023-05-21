@@ -7,7 +7,7 @@ require 'json'
 
 module Gloo
   module Objs
-    class Json < GlooLang::Core::Obj
+    class Json < Gloo::Core::Obj
 
       KEYWORD = 'json'.freeze
       KEYWORD_SHORT = 'json'.freeze
@@ -92,7 +92,7 @@ module Gloo
       #
       def msg_parse
         if @params&.token_count&.positive?
-          pn = GlooLang::Core::Pn.new( @engine, @params.tokens.first )
+          pn = Gloo::Core::Pn.new( @engine, @params.tokens.first )
           unless pn&.exists?
             @engine.err 'Destination path for parsed objects does not exist'
             return

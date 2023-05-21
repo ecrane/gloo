@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Put < GlooLang::Core::Verb
+    class Put < Gloo::Core::Verb
 
       KEYWORD = 'put'.freeze
       KEYWORD_SHORT = 'p'.freeze
@@ -77,7 +77,7 @@ module Gloo
       # Update the target with the new value.
       #
       def update_target( target, value )
-        pn = GlooLang::Core::Pn.new( @engine, target )
+        pn = Gloo::Core::Pn.new( @engine, target )
         o = pn.resolve
         if o.nil?
           @engine.err "#{TARGET_ERR} #{target}"

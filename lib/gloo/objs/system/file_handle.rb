@@ -7,7 +7,7 @@ require 'tty-pager'
 
 module Gloo
   module Objs
-    class FileHandle < GlooLang::Core::Obj
+    class FileHandle < Gloo::Core::Obj
 
       KEYWORD = 'file'.freeze
       KEYWORD_SHORT = 'dir'.freeze
@@ -47,7 +47,7 @@ module Gloo
       def msg_open
         return unless value && File.exist?( value )
 
-        cmd = GlooLang::Core::GlooSystem.open_for_platform
+        cmd = Gloo::Core::GlooSystem.open_for_platform
         cmd_with_param = "#{cmd} \"#{value}\""
         `#{cmd_with_param}`
       end
@@ -79,7 +79,7 @@ module Gloo
 
         data = File.read( value )
         if @params&.token_count&.positive?
-          pn = GlooLang::Core::Pn.new( @engine, @params.first )
+          pn = Gloo::Core::Pn.new( @engine, @params.first )
           o = pn.resolve
           o.set_value data
         else

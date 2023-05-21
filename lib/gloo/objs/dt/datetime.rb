@@ -7,7 +7,7 @@ require 'active_support/all'
 
 module Gloo
   module Objs
-    class Datetime < GlooLang::Core::Obj
+    class Datetime < Gloo::Core::Obj
 
       KEYWORD = 'datetime'.freeze
       KEYWORD_SHORT = 'dt'.freeze

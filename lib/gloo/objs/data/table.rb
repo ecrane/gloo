@@ -7,7 +7,7 @@
 
 module Gloo
   module Objs
-    class Table < GlooLang::Core::Obj
+    class Table < Gloo::Core::Obj
 
       KEYWORD = 'table'.freeze
       KEYWORD_SHORT = 'tbl'.freeze

@@ -9,7 +9,7 @@ require 'json'
 
 module Gloo
   module Objs
-    class Teams < GlooLang::Core::Obj
+    class Teams < Gloo::Core::Obj
 
       KEYWORD = 'teams'.freeze
       KEYWORD_SHORT = 'team'.freeze

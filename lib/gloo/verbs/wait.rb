@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Wait < GlooLang::Core::Verb
+    class Wait < Gloo::Core::Verb
 
       KEYWORD = 'wait'.freeze
       KEYWORD_SHORT = 'w'.freeze

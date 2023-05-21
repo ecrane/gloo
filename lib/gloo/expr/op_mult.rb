@@ -6,7 +6,7 @@
 
 module Gloo
   module Expr
-    class OpMult < GlooLang::Core::Op
+    class OpMult < Gloo::Core::Op
 
       #
       # Perform the operation and return the result.

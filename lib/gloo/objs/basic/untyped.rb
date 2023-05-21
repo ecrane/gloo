@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Untyped < GlooLang::Core::Obj
+    class Untyped < Gloo::Core::Obj
 
       KEYWORD = 'untyped'.freeze
       KEYWORD_SHORT = 'un'.freeze

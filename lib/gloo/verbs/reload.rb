@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Reload < GlooLang::Core::Verb
+    class Reload < Gloo::Core::Verb
 
       KEYWORD = 'reload'.freeze
       KEYWORD_SHORT = 'r!'.freeze

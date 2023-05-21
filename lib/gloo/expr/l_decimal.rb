@@ -6,7 +6,7 @@
 
 module Gloo
   module Expr
-    class LDecimal < GlooLang::Core::Literal
+    class LDecimal < Gloo::Core::Literal
 
       #
       # Is the given token a decimal?

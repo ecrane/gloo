@@ -19,7 +19,7 @@ require 'sqlite3'
 
 module Gloo
   module Objs
-    class Sqlite < GlooLang::Core::Obj
+    class Sqlite < Gloo::Core::Obj
 
       KEYWORD = 'sqlite'.freeze
       KEYWORD_SHORT = 'sqlite'.freeze

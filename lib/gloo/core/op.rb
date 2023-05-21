@@ -5,7 +5,7 @@
 # A static helper class.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Op
 

@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Alert < GlooLang::Core::Verb
+    class Alert < Gloo::Core::Verb
 
       KEYWORD = 'alert'.freeze
       KEYWORD_SHORT = '!'.freeze

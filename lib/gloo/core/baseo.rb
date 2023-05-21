@@ -5,7 +5,7 @@
 # All objects and verbs derive from this.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Baseo
 

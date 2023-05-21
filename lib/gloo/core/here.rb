@@ -5,7 +5,7 @@
 # used to resolve relative referencing.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Here
 

@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Create < GlooLang::Core::Verb
+    class Create < Gloo::Core::Verb
 
       KEYWORD = 'create'.freeze
       KEYWORD_SHORT = '`'.freeze

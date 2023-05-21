@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Version < GlooLang::Core::Verb
+    class Version < Gloo::Core::Verb
 
       KEYWORD = 'version'.freeze
       KEYWORD_SHORT = 'v'.freeze

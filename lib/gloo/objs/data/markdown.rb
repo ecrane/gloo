@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Markdown < GlooLang::Core::Obj
+    class Markdown < Gloo::Core::Obj
 
       KEYWORD = 'markdown'.freeze
       KEYWORD_SHORT = 'md'.freeze

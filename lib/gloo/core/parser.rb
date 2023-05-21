@@ -5,7 +5,7 @@
 # Can parse single line commands or files.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Parser
 
@@ -22,9 +22,9 @@ module GlooLang
       #
       def parse_immediate( cmd )
         cmd, params = split_params cmd
-        params = GlooLang::Core::Tokens.new( params ) if params
-        tokens = GlooLang::Core::Tokens.new( cmd )
-        dic = GlooLang::Core::Dictionary.instance
+        params = Gloo::Core::Tokens.new( params ) if params
+        tokens = Gloo::Core::Tokens.new( cmd )
+        dic = Gloo::Core::Dictionary.instance
         verb = dic.find_verb( tokens.verb )
         return verb.new( @engine, tokens, params ) if verb
 

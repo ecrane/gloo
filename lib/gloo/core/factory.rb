@@ -4,7 +4,7 @@
 # An object factory.
 #
 
-module GlooLang
+module Gloo
   module Core
     class Factory < Baseo
 
@@ -141,7 +141,7 @@ module GlooLang
         objtype = find_type params[ :type ]
         return nil unless objtype
 
-        pn = GlooLang::Core::Pn.new( @engine, params[ :name ] )
+        pn = Gloo::Core::Pn.new( @engine, params[ :name ] )
         parent = params[ :parent ]
         if parent.nil?
           parent = pn.get_parent

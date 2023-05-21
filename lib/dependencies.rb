@@ -11,8 +11,8 @@ files = []
 #
 # We want to start with these to avoid dependency errors later on.
 #
-files << File.join( path, 'gloo_lang', 'core', 'baseo.rb' )
-files << File.join( path, 'gloo_lang', 'core', 'obj.rb' )
+files << File.join( path, 'gloo', 'core', 'baseo.rb' )
+files << File.join( path, 'gloo', 'core', 'obj.rb' )
 
 root = File.join( path, 'gloo_lang', '**/*.rb' )
 Dir.glob( root ).each do |ruby_file|

@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Unload < GlooLang::Core::Verb
+    class Unload < Gloo::Core::Verb
 
       KEYWORD = 'unload'.freeze
       KEYWORD_SHORT = 'u!'.freeze

@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Files < GlooLang::Core::Verb
+    class Files < Gloo::Core::Verb
 
       KEYWORD = 'files'.freeze
       KEYWORD_SHORT = 'fs'.freeze

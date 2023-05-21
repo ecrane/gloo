@@ -5,7 +5,7 @@
 #
 require 'singleton'
 
-module GlooLang
+module Gloo
   module Core
     class Dictionary
 
@@ -29,7 +29,7 @@ module GlooLang
       # if this is the first time.
       #
       def self.get
-        o = GlooLang::Core::Dictionary.instance
+        o = Gloo::Core::Dictionary.instance
         o.init if o.verbs.count == 0
         return o
       end

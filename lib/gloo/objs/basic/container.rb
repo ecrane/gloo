@@ -6,7 +6,7 @@
 
 module Gloo
   module Objs
-    class Container < GlooLang::Core::Obj
+    class Container < Gloo::Core::Obj
 
       KEYWORD = 'container'.freeze
       KEYWORD_SHORT = 'can'.freeze

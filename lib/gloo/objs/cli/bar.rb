@@ -7,7 +7,7 @@ require 'tty-progressbar'
 
 module Gloo
   module Objs
-    class Bar < GlooLang::Core::Obj
+    class Bar < Gloo::Core::Obj
 
       KEYWORD = 'bar'.freeze
       KEYWORD_SHORT = 'bar'.freeze

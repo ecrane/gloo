@@ -6,7 +6,7 @@
 
 module Gloo
   module Expr
-    class LString < GlooLang::Core::Literal
+    class LString < Gloo::Core::Literal
 
       #
       # Set the value, triming opening and closing

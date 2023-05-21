@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Help < GlooLang::Core::Verb
+    class Help < Gloo::Core::Verb
 
       KEYWORD = 'help'.freeze
       KEYWORD_SHORT = '?'.freeze

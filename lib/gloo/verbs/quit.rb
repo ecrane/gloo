@@ -6,7 +6,7 @@
 
 module Gloo
   module Verbs
-    class Quit < GlooLang::Core::Verb
+    class Quit < Gloo::Core::Verb
 
       KEYWORD = 'quit'.freeze
       KEYWORD_SHORT = 'q'.freeze

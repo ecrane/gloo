@@ -39,7 +39,7 @@ module Gloo
       # Save one object to the file.
       #
       def save_one( name )
-        ref = GlooLang::Core::Pn.new( @engine, name )
+        ref = Gloo::Core::Pn.new( @engine, name )
         obj = ref.resolve
 
         fs = find_file_storage( obj )

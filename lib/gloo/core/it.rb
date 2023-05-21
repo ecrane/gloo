@@ -4,7 +4,7 @@
 # It is the value of the last command that was run.
 #
 
-module GlooLang
+module Gloo
   module Core
     class It
 

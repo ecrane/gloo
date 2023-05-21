@@ -20,7 +20,7 @@ require 'mysql2'
 
 module Gloo
   module Objs
-    class Mysql < GlooLang::Core::Obj
+    class Mysql < Gloo::Core::Obj
 
       KEYWORD = 'mysql'.freeze
       KEYWORD_SHORT = 'mysql'.freeze

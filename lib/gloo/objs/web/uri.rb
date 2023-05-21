@@ -9,7 +9,7 @@ require 'openssl'
 
 module Gloo
   module Objs
-    class Uri < GlooLang::Core::Obj
+    class Uri < Gloo::Core::Obj
 
       KEYWORD = 'uri'.freeze
       KEYWORD_SHORT = 'url'.freeze
@@ -138,7 +138,7 @@ module Gloo
       def msg_open
         return unless value
 
-        cmd = GlooLang::Core::GlooSystem.open_for_platform
+        cmd = Gloo::Core::GlooSystem.open_for_platform
         cmd_with_param = "#{cmd} \"#{value}\""
         `#{cmd_with_param}`
       end
