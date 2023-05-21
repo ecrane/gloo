@@ -5,7 +5,7 @@
 # Shortcut for telling a script to run.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Run < GlooLang::Core::Verb
 

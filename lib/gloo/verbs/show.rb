@@ -4,7 +4,7 @@
 # Show a single object's value.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Show < GlooLang::Core::Verb
 

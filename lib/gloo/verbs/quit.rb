@@ -1,23 +1,24 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
 #
-# Save an object to a file or other persistance mechcanism.
+# Quit the running gloo engine.
 #
 
-module GlooLang
+module Gloo
   module Verbs
-    class Save < GlooLang::Core::Verb
+    class Quit < GlooLang::Core::Verb
 
-      KEYWORD = 'save'.freeze
-      KEYWORD_SHORT = '>'.freeze
+      KEYWORD = 'quit'.freeze
+      KEYWORD_SHORT = 'q'.freeze
 
       #
       # Run the verb.
       #
+      # We'll mark the application as not running and let the
+      # engine stop gracefully next time through the loop.
+      #
       def run
-        # TODO:  Not currently using folders or keeping
-        # track of where the object was loaded from.
-        @engine.persist_man.save @tokens.second
+        @engine.stop_running
       end
 
       #

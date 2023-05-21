@@ -4,7 +4,7 @@
 # Create an object, optionally of a type.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Put < GlooLang::Core::Verb
 

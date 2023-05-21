@@ -4,7 +4,7 @@
 # Move an object to a new parent.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Move < GlooLang::Core::Verb
 

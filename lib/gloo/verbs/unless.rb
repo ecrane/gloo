@@ -4,7 +4,7 @@
 # If something is false, do something.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Unless < GlooLang::Core::Verb
 

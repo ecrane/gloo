@@ -4,7 +4,7 @@
 # If something is true, do something.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class If < GlooLang::Core::Verb
 

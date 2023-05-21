@@ -4,26 +4,20 @@
 # Save an object to a file or other persistance mechcanism.
 #
 
-module GlooLang
+module Gloo
   module Verbs
-    class Load < GlooLang::Core::Verb
+    class Save < GlooLang::Core::Verb
 
-      KEYWORD = 'load'.freeze
-      KEYWORD_SHORT = '<'.freeze
-      MISSING_EXPR_ERR = 'Missing Expression!'.freeze
+      KEYWORD = 'save'.freeze
+      KEYWORD_SHORT = '>'.freeze
 
       #
       # Run the verb.
       #
       def run
-        fn = @tokens.second
-
-        if fn
-          @engine.log.debug "Getting ready to load file: #{fn}"
-          @engine.persist_man.load fn
-        else
-          @engine.err MISSING_EXPR_ERR
-        end
+        # TODO:  Not currently using folders or keeping
+        # track of where the object was loaded from.
+        @engine.persist_man.save @tokens.second
       end
 
       #

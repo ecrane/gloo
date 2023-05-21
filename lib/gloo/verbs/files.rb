@@ -1,15 +1,15 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2022 Eric Crane.  All rights reserved.
 #
-# Unload all files.
+# Show all the currently loaded files.
 #
 
-module GlooLang
+module Gloo
   module Verbs
-    class Unload < GlooLang::Core::Verb
+    class Files < GlooLang::Core::Verb
 
-      KEYWORD = 'unload'.freeze
-      KEYWORD_SHORT = 'u!'.freeze
+      KEYWORD = 'files'.freeze
+      KEYWORD_SHORT = 'fs'.freeze
 
       #
       # Run the verb.
@@ -17,8 +17,11 @@ module GlooLang
       def run
         return unless @engine.persist_man.maps
         
-        objs = @engine.persist_man.maps.map { |fs| fs.obj }
-        objs.each { |o| o.msg_unload }
+        @engine.persist_man.maps.each do |map|
+          # puts "#{map.obj.name} - #{map.pn}"
+          @engine.log.show "#{map.obj.name} - #{map.pn}"
+        end
+        @engine.heap.it.set_to @engine.persist_man.maps.count
       end
 
       #

@@ -5,7 +5,7 @@
 # Alternatively if no value is provided, just show the context.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Context < GlooLang::Core::Verb
 

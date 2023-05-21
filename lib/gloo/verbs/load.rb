@@ -1,24 +1,29 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
 #
-# Quit the running gloo engine.
+# Save an object to a file or other persistance mechcanism.
 #
 
-module GlooLang
+module Gloo
   module Verbs
-    class Quit < GlooLang::Core::Verb
+    class Load < GlooLang::Core::Verb
 
-      KEYWORD = 'quit'.freeze
-      KEYWORD_SHORT = 'q'.freeze
+      KEYWORD = 'load'.freeze
+      KEYWORD_SHORT = '<'.freeze
+      MISSING_EXPR_ERR = 'Missing Expression!'.freeze
 
       #
       # Run the verb.
       #
-      # We'll mark the application as not running and let the
-      # engine stop gracefully next time through the loop.
-      #
       def run
-        @engine.stop_running
+        fn = @tokens.second
+
+        if fn
+          @engine.log.debug "Getting ready to load file: #{fn}"
+          @engine.persist_man.load fn
+        else
+          @engine.err MISSING_EXPR_ERR
+        end
       end
 
       #

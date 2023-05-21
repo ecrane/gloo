@@ -4,7 +4,7 @@
 # Wait for the given number of seconds.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Wait < GlooLang::Core::Verb
 

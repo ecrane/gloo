@@ -4,7 +4,7 @@
 # List out an object and it's children.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class List < GlooLang::Core::Verb
 

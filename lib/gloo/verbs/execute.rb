@@ -4,7 +4,7 @@
 # Execute a shell command.
 #
 
-module GlooLang
+module Gloo
   module Verbs
     class Execute < GlooLang::Core::Verb
 

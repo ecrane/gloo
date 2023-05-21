@@ -1,21 +1,24 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2022 Eric Crane.  All rights reserved.
 #
-# Reload all files.
+# Unload all files.
 #
 
-module GlooLang
+module Gloo
   module Verbs
-    class Reload < GlooLang::Core::Verb
+    class Unload < GlooLang::Core::Verb
 
-      KEYWORD = 'reload'.freeze
-      KEYWORD_SHORT = 'r!'.freeze
+      KEYWORD = 'unload'.freeze
+      KEYWORD_SHORT = 'u!'.freeze
 
       #
       # Run the verb.
       #
       def run
-        @engine.persist_man.reload_all
+        return unless @engine.persist_man.maps
+        
+        objs = @engine.persist_man.maps.map { |fs| fs.obj }
+        objs.each { |o| o.msg_unload }
       end
 
       #
