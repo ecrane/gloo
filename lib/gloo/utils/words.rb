@@ -6,7 +6,7 @@
 
 require 'active_support/inflector'
 
-module GlooLang
+module Gloo
   module Utils
     class Words
 

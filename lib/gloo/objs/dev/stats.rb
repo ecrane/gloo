@@ -95,7 +95,7 @@ module Gloo
       # Show all project stats.
       #
       def msg_show_all
-        o = GlooLang::Utils::Stats.new(
+        o = Gloo::Utils::Stats.new(
           @engine, path_value, types_value, skip_list )
         o.show_all
       end
@@ -104,7 +104,7 @@ module Gloo
       # Show file types.
       #
       def msg_show_types
-        o = GlooLang::Utils::Stats.new(
+        o = Gloo::Utils::Stats.new(
           @engine, path_value, types_value, skip_list )
         o.file_types
       end
@@ -113,7 +113,7 @@ module Gloo
       # Show busy folders: those with the most files.
       #
       def msg_show_busy_folders
-        o = GlooLang::Utils::Stats.new(
+        o = Gloo::Utils::Stats.new(
           @engine, path_value, types_value, skip_list )
         o.busy_folders
       end

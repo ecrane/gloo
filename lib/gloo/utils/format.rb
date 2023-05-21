@@ -4,7 +4,7 @@
 # Formatting utilities
 #
 
-module GlooLang
+module Gloo
   module Utils
     class Format
 

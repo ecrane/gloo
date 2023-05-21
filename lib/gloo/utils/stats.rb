@@ -4,7 +4,7 @@
 # Utilities related to words (strings).
 #
 
-module GlooLang
+module Gloo
   module Utils
     class Stats
 
@@ -102,7 +102,7 @@ module GlooLang
         @loc.each do |k, v|
           puts "\n #{k} Lines of Code".yellow
           total += v[ :lines ]
-          formatted = GlooLang::Utils::Format.number( v[ :lines ] )
+          formatted = Gloo::Utils::Format.number( v[ :lines ] )
           puts " ** #{formatted} in #{v[ :files ].count} #{k} files ** "
 
           puts "\n Busy #{k} files:".yellow
@@ -113,7 +113,7 @@ module GlooLang
           end
         end
 
-        formatted = GlooLang::Utils::Format.number( total )
+        formatted = Gloo::Utils::Format.number( total )
         puts "\n #{formatted} Total Lines of Code".white
       end
 
