@@ -1,5 +1,5 @@
 require 'test_helper'
-require 'gloo-lang'
+# require 'gloo-lang'
 
 class InfoTest < BaseTest
 

@@ -1,0 +1,5 @@
+script [can] : 
+	msg [str] : running this script
+	on_load [cmd] : 
+		show can.msg
+		show 2 + 3
