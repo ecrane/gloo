@@ -11,3 +11,4 @@
 test/gloo/debug/*
 Gemfile.lock
 *.DS_Store
+.DS_Store
