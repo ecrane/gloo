@@ -4,7 +4,7 @@
 # Helper class used to load a file and create objects in the heap.
 #
 
-module GlooLang
+module Gloo
   module Persist
     class FileLoader
 

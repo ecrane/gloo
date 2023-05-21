@@ -6,7 +6,7 @@
 # uses mappings to know how/where to save updated objects.
 #
 
-module GlooLang
+module Gloo
   module Persist
     class PersistMan
 
@@ -55,7 +55,7 @@ module GlooLang
 
         pns.each do |pn|
           @engine.log.debug "Load file(s) at: #{pn}"
-          fs = GlooLang::Persist::FileStorage.new( @engine, pn )
+          fs = Gloo::Persist::FileStorage.new( @engine, pn )
           fs.load
           @maps << fs
           @engine.event_manager.on_load fs.obj

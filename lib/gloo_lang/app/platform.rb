@@ -75,7 +75,7 @@ module GlooLang
       # Get the file mechanism for this platform.
       # 
       def getFileMech( engine )
-        return GlooLang::Persist::DiscMech.new( engine )
+        return Gloo::Persist::DiscMech.new( engine )
       end
 
       # 

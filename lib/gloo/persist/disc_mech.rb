@@ -8,7 +8,7 @@
 # For example, in gloo-web, there will be a db based mechanism.
 #
 
-module GlooLang
+module Gloo
   module Persist
     class DiscMech
 

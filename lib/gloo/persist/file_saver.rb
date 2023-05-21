@@ -4,7 +4,7 @@
 # Helper class used to save an object to a file..
 #
 
-module GlooLang
+module Gloo
   module Persist
     class FileSaver
 

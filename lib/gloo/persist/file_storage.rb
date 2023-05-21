@@ -4,7 +4,7 @@
 # Helper class takes an object and writes it to a file.
 #
 
-module GlooLang
+module Gloo
   module Persist
     class FileStorage
 

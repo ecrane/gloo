@@ -5,7 +5,7 @@
 # It is responsible for splitting a line into components.
 #
 
-module GlooLang
+module Gloo
   module Persist
     class LineSplitter
 

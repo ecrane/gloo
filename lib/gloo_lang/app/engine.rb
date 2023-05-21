@@ -48,7 +48,7 @@ module GlooLang
         @parser = GlooLang::Core::Parser.new( self )
         @heap = GlooLang::Core::Heap.new( self )
         @factory = GlooLang::Core::Factory.new( self )
-        @persist_man = GlooLang::Persist::PersistMan.new( self )
+        @persist_man = Gloo::Persist::PersistMan.new( self )
         @event_manager = GlooLang::Core::EventManager.new( self )
 
         @exec_env = GlooLang::Exec::ExecEnv.new( self )
