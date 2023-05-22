@@ -27,20 +27,11 @@ Gem::Specification.new do |spec|
   spec.executables << 'o'
   spec.executables << 'gloo'
 
-  # 
-  # tty uses an older version of bundle
-  # 
-  # spec.add_development_dependency 'bundler', '~> 2.2.22'
-  # spec.add_development_dependency 'bundler', '~> 2.3.17'
-  spec.add_development_dependency 'bundler', '~> 1.17.3'
+  spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'minitest', '~> 5.1', '>= 5.14.2'
-  # spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency "rake", '~> 13.0', '>= 13.0.1'
 
   spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.5"
-  # spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.4.6"
-  # spec.add_dependency "activesupport", '~> 5.2', ">= 5.2.4.3"
-  # spec.add_dependency 'activesupport', '~> 5.2', '>= 5.2.1'
   spec.add_dependency 'chronic', '~> 0.10', '>= 0.10.2'
   spec.add_dependency 'colorize', '~> 0.8', '>= 0.8.1'
   spec.add_dependency 'tty', '~> 0.10', '>= 0.10.0'
