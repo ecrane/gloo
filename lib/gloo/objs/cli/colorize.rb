@@ -64,7 +64,7 @@ module Gloo
         children.each do |o|
           msg += ColorizedString[ o.value_display ].colorize( o.name.to_sym )
         end
-        $log.show msg
+        @engine.log.show msg
         @engine.heap.it.set_to msg.to_s
       end
 

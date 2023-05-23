@@ -63,9 +63,9 @@ module Gloo
       # Review pending changes.
       #
       def msg_review
-        $log.debug 'Reviewing pending changes'
+        @engine.log.debug 'Reviewing pending changes'
         cmd = "cd #{path_value}; git diff"
-        $log.debug cmd
+        @engine.log.debug cmd
         system cmd
       end
 
