@@ -18,6 +18,10 @@ module Gloo
       HIDE_ITEMS = 'hide_items'.freeze
       BEFORE_MENU = 'before_menu'.freeze
       DEFAULT = 'default'.freeze
+      TITLE = 'title'.freeze
+      TITLE_STYLE = 'straight'.freeze
+      TITLE_COLOR = 'bright_cyan'.freeze
+      QUIT_ITEM_NAME = 'q'.freeze
 
       #
       # The name of the object type.
@@ -53,6 +57,53 @@ module Gloo
         return false unless o
 
         return o.value
+      end
+
+      # 
+      # If there is no loop child, add it.
+      # 
+      def add_loop_child
+        o = find_child LOOP
+        return if o
+
+        fac = @engine.factory
+        fac.create_bool LOOP, true, self
+      end
+
+      # 
+      # Add a Quit menu item
+      # 
+      def add_quit_item
+        items = find_child ITEMS
+        q = items.find_child QUIT_ITEM_NAME
+        return if q
+
+        fac = @engine.factory
+        fac.create_bool LOOP, true, self
+
+        params = { :name => QUIT_ITEM_NAME,
+          :type => 'mitem',
+          :value => 'Quit',
+          :parent => items }
+        mitem = fac.create params
+        script = "put false into #{self.pn}.loop"
+        fac.create_script 'do', script, mitem
+      end
+
+      # 
+      # Add any required children not specified in the source.
+      # 
+      def lazy_add_children
+        add_loop_child
+        add_quit_item
+      end
+
+      #
+      # Does the menu have a title?
+      #
+      def title?
+        o = find_child TITLE
+        return o ? true : false
       end
 
       # ---------------------------------------------------------------------
@@ -96,6 +147,7 @@ module Gloo
       # Show the menu options, and prompt for user input.
       #
       def msg_run
+        lazy_add_children
         run_default
         loop do
           begin_menu
@@ -103,7 +155,7 @@ module Gloo
             dt = DateTime.now
             d = dt.strftime( '%Y.%m.%d' )
             t = dt.strftime( '%I:%M:%S' )
-            cmd = @engine.platform.prompt.ask( "#{d.yellow} #{t.white} >" )
+            cmd = @engine.platform.prompt.ask( "\n#{d.yellow} #{t.white} >" )
           else
             cmd = @engine.platform.prompt.ask( prompt_value )
           end
@@ -174,10 +226,22 @@ module Gloo
       #
       def run_default
         obj = find_child DEFAULT
-        return unless obj
+        if obj
+          s = Gloo::Exec::Script.new( @engine, obj )
+          s.run
+        elsif title?
+          run_default_title
+        end
+      end
 
-        s = Gloo::Exec::Script.new( @engine, obj )
-        s.run
+      # 
+      # There is a title, so show it.
+      # 
+      def run_default_title
+        obj = find_child TITLE
+        title = obj.value
+        @engine.platform&.clear_screen
+        Banner.show_banner( title, TITLE_STYLE, TITLE_COLOR )
       end
 
       #

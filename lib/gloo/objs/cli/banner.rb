@@ -96,10 +96,20 @@ module Gloo
       # Show the banner bar
       #
       def msg_show
-        font = TTY::Font.new self.style_value
-        t = font.write( self.text_value )
+        Banner.show_banner( self.text_value, self.style_value, self.color_value )
+      end
+
+      # 
+      # Show the banner bar.
+      # text - the text of the banner
+      # style - the style of the banner
+      # color - the color of the banner
+      # 
+      def self.show_banner( text, style, color )
+        font = TTY::Font.new style
+        t = font.write( text )
         pastel = ::Pastel.new
-        c = self.color_value.split( ' ' ).map( &:to_sym )
+        c = color.split( ' ' ).map( &:to_sym )
         puts pastel.decorate( t, *c )
       end
 
