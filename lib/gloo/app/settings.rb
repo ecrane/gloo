@@ -12,7 +12,7 @@ module Gloo
 
       attr_reader :user_root, :log_path,
         :config_path, :project_path,
-        :start_with, :list_indent, :tmp_path,
+        :start_with, :list_indent, :list_levels, :tmp_path,
         :debug_path, :debug
 
       #
@@ -36,6 +36,7 @@ module Gloo
         puts "\nApplication Settings:"
         puts '  Startup with:  ' + @start_with
         puts '  Indent in Listing:  ' + @list_indent.to_s
+        puts '  Levels Listing:  ' + @list_levels.to_s
         puts '  Screen Lines:  ' + Gloo::App::Settings.lines( @engine ).to_s
         puts '  Page Size:  ' + Gloo::App::Settings.page_size( @engine ).to_s
         puts ''
@@ -162,6 +163,7 @@ module Gloo
 
         @start_with = settings[ 'gloo' ][ 'start_with' ]
         @list_indent = settings[ 'gloo' ][ 'list_indent' ]
+        @list_levels = settings[ 'gloo' ][ 'list_levels' ]
 
         @debug = settings[ 'gloo' ][ 'debug' ]
       end
@@ -191,7 +193,8 @@ module Gloo
           gloo:
             project_path: #{projects}
             start_with:
-            list_indent: 1
+            list_indent: 2
+            list_levels: 3
             debug: false
         TEXT
         return str

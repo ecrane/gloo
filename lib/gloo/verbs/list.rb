@@ -18,9 +18,11 @@ module Gloo
       def run
         levels = determine_levels
         target = self.determine_target
+        indent = self.determine_indent
+
         obj = target.resolve
         if obj
-          show_target( obj, levels )
+          show_target( obj, levels, indent )
         else
           @engine.err "#{TARGET_MISSING_ERR} #{target}"
         end
@@ -63,7 +65,7 @@ module Gloo
         return if levels.zero?
 
         obj.children.each do |o|
-          show_target( o, levels - 1, "#{indent}  " )
+          show_target( o, levels - 1, "#{indent}#{determine_indent}" )
         end
       end
 
@@ -86,11 +88,25 @@ module Gloo
       #
       def determine_levels
         # Check settings for the default value.
-        levels = @engine.settings.list_indent
+        levels = @engine.settings.list_levels
         return levels if levels
 
         # Last chance: use the default
         return 1
+      end
+
+      #
+      # Determine the level of indentation in the outline.
+      #
+      def determine_indent
+        # Check settings for the default value.
+        indent = @engine.settings.list_indent
+        if indent
+          return ( ' ' * indent )
+        end
+
+        # Last chance: use the default
+        return 2
       end
 
     end
