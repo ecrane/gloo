@@ -14,24 +14,28 @@ module Gloo
       HELP_NOT_FOUND_ERR = 'Help command could not be found:'.freeze
 
       DISPATCH = {
+        s: 'show_settings',
         settings: 'show_settings',
-        keywords: 'show_keywords',
         verb: 'show_verbs',
         verbs: 'show_verbs',
         v: 'show_verbs',
         obj: 'show_objs',
         object: 'show_objs',
-        objects: 'show_objs',
-        o: 'show_objs',
-        topics: 'show_topics'
+        objects: 'show_objs'
       }.freeze
 
       #
       # Run the verb.
       #
       def run
-        data = "\n For documentation use the gloo website. \n\n"
-        @engine.log.show data
+        opts = @tokens.second if @tokens
+        opts = opts.strip.downcase if opts
+
+        if opts
+          dispatch opts
+        else
+          show_default_help
+        end
       end
 
       #
@@ -75,6 +79,102 @@ module Gloo
       #
       def show_keywords
         @engine.dictionary.show_keywords
+      end
+
+      # 
+      # Show default help.
+      # No parameters were given.
+      # 
+      def show_default_help
+        data = "\n"
+        data << " Help Options:\n"
+        data << "   ? objects (obj, o) \n"
+        data << "   ? verbs (v) \n"
+        data << "   ? settings (s) \n"
+        data << "\n For detailed documentation use the gloo website. \n"
+        data << "\n     https://gloo.ecrane.us/doc/. \n\n"
+        @engine.log.show data
+      end
+
+      #
+      # Dispatch the help to the right place.
+      #
+      def dispatch( opts )
+      #   return if dispatch_help_page( opts )
+
+        @engine.log.debug 'looking for help topic'
+        cmd = DISPATCH[ opts.to_sym ]
+        if cmd
+          @engine.log.debug 'found help command'
+          send cmd
+        else
+          report_help_error opts
+        end
+      end
+
+      #
+      # Show application settings.
+      #
+      def show_settings
+        @engine.settings.show
+      end
+
+      #
+      # Report an error with the inline help.
+      #
+      def report_help_error( opts )
+        @engine.err "#{HELP_NOT_FOUND_ERR} '#{opts}'"
+      end
+
+      #
+      # List the verbs
+      #
+      def show_verbs
+        data = "\n"
+        data << " Verbs:\n"
+        data << "#{get_verbs}\n\n"
+        @engine.log.show data
+      end
+
+      #
+      # List the object types
+      #
+      def show_objs
+        data = "\n"
+        data << " Objects:\n"
+        data << "#{get_objects}\n\n"
+        @engine.log.show data
+      end
+
+      #
+      # Get the text for the list of verbs.
+      #
+      def get_verbs
+        str = ''
+        verbs = @engine.dictionary.get_verbs.sort_by( &:keyword )
+        verbs.each_with_index do |v, i|
+          cut = v.keyword_shortcut.ljust( 5, ' ' )
+          str << "   #{cut}  #{v.keyword.ljust( 20, ' ' )} \n"
+        end
+
+        return str
+      end
+
+      #
+      # Get the text for the list of objects.
+      #
+      def get_objects
+        str = ''
+        objs = @engine.dictionary.get_obj_types.sort_by( &:typename )
+        objs.each_with_index do |o, i|
+          name = o.typename
+          if o.short_typename != o.typename
+            name = "#{name} (#{o.short_typename})"
+          end
+          str << "   #{name.ljust( 30, ' ' )}\n"
+        end
+
+        return str
       end
 
     end
