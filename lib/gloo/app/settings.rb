@@ -33,51 +33,27 @@ module Gloo
       # Can be seen in app with 'help settings'
       #
       def show
-        puts "\nApplication Settings:"
-        puts '  Startup with:  ' + @start_with
-        puts '  Indent in Listing:  ' + @list_indent.to_s
-        puts '  Levels Listing:  ' + @list_levels.to_s
-        puts '  Screen Lines:  ' + Gloo::App::Settings.lines( @engine ).to_s
-        puts '  Page Size:  ' + Gloo::App::Settings.page_size( @engine ).to_s
-        puts ''
+        puts "\n Application Settings:".blue
+        puts '   Startup with:  '.yellow + @start_with.white
+        puts '   Indent in Listing:  '.yellow + @list_indent.to_s.white
+        puts '   List Levels:  '.yellow + @list_levels.to_s.white
+        puts '   Debug?  '.yellow + @debug.to_s.white
+        puts '   Screen Lines:  '.yellow + Gloo::App::Settings.lines( @engine ).to_s.white
+        puts '   Page Size:  '.yellow + Gloo::App::Settings.page_size( @engine ).to_s.white
         self.show_paths
-        puts ''
       end
-
+      
       #
       # Show path settings
       #
       def show_paths
-        puts '  User Root Path is here:  ' + @user_root
-        puts '  Projects Path:  ' + @project_path
-        puts '  Tmp Path:  ' + @tmp_path
-        puts '  Debug Path:  ' + @debug_path
+        puts "\n Application Paths:".blue
+        puts '   User Root Path is here:  '.yellow + @user_root.white
+        puts '   Projects Path:  '.yellow + @project_path.white
+        puts '   Tmp Path:  '.yellow + @tmp_path.white
+        puts '   Debug Path:  '.yellow + @debug_path.white
+        puts "\n"
       end
-
-      # #
-      # # Show the current application settings.
-      # # Can be seen in app with 'help settings'
-      # #
-      # def show
-      #   puts "\nApplication Settings:".blue
-      #   puts '  Startup with:  '.yellow + @start_with.white
-      #   puts '  Indent in Listing:  '.yellow + @list_indent.to_s.white
-      #   puts '  Screen Lines:  '.yellow + Gloo::App::Settings.lines.to_s.white
-      #   puts '  Page Size:  '.yellow + Gloo::App::Settings.page_size.to_s.white
-      #   puts ''
-      #   self.show_paths
-      #   puts ''
-      # end
-      #
-      # #
-      # # Show path settings
-      # #
-      # def show_paths
-      #   puts '  User Root Path is here:  '.yellow + @user_root.white
-      #   puts '  Projects Path:  '.yellow + @project_path.white
-      #   puts '  Tmp Path:  '.yellow + @tmp_path.white
-      #   puts '  Debug Path:  '.yellow + @debug_path.white
-      # end
 
       #
       # Get the number of vertical lines on screen.

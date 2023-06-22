@@ -19,6 +19,7 @@ module Gloo
         verb: 'show_verbs',
         verbs: 'show_verbs',
         v: 'show_verbs',
+        o: 'show_objs',
         obj: 'show_objs',
         object: 'show_objs',
         objects: 'show_objs'
@@ -131,7 +132,7 @@ module Gloo
       #
       def show_verbs
         data = "\n"
-        data << " Verbs:\n"
+        data << " Verbs (shortcut, name)\n".blue
         data << "#{get_verbs}\n\n"
         @engine.log.show data
       end
@@ -141,7 +142,7 @@ module Gloo
       #
       def show_objs
         data = "\n"
-        data << " Objects:\n"
+        data << " Objects \n".blue
         data << "#{get_objects}\n\n"
         @engine.log.show data
       end
@@ -153,8 +154,9 @@ module Gloo
         str = ''
         verbs = @engine.dictionary.get_verbs.sort_by( &:keyword )
         verbs.each_with_index do |v, i|
-          cut = v.keyword_shortcut.ljust( 5, ' ' )
-          str << "   #{cut}  #{v.keyword.ljust( 20, ' ' )} \n"
+          cut = v.keyword_shortcut.ljust( 5, ' ' ).yellow
+          name = v.keyword.ljust( 20, ' ' ).white
+          str << "   #{cut}  #{name} \n"
         end
 
         return str
@@ -166,10 +168,12 @@ module Gloo
       def get_objects
         str = ''
         objs = @engine.dictionary.get_obj_types.sort_by( &:typename )
-        objs.each_with_index do |o, i|
-          name = o.typename
+        objs.each_with_index do |o, i|          
           if o.short_typename != o.typename
-            name = "#{name} (#{o.short_typename})"
+            short = "(#{o.short_typename})".yellow
+            name = "#{o.typename.white}  #{short}"
+          else
+            name = o.typename.white
           end
           str << "   #{name.ljust( 30, ' ' )}\n"
         end
