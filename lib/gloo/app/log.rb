@@ -26,6 +26,7 @@ module Gloo
       def initialize( engine, quiet=true )
         @engine = engine
         @quite = quiet
+        @debug = engine.settings.debug
 
         create_logger
 
@@ -60,6 +61,8 @@ module Gloo
       # Write a debug message to the log.
       #
       def debug( msg )
+        return unless @debug
+
         @logger.debug msg
       end
 
