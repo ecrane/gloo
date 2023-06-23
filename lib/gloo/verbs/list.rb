@@ -74,12 +74,17 @@ module Gloo
       #
       def show_obj( obj, indent = '  ' )
         if obj.multiline_value? && obj.value_is_array?
-          @engine.log.show "#{indent}#{obj.name} [#{obj.type_display}] :"
+          str = "#{indent}#{obj.name}".white
+          str << " [#{obj.type_display}] : ".yellow
+          @engine.log.show str
           obj.value.each do |line|
             @engine.log.show "#{indent}  #{line}"
           end
         else
-          @engine.log.show "#{indent}#{obj.name} [#{obj.type_display}] : #{obj.value}"
+          str = "#{indent}#{obj.name}".white
+          str << " [#{obj.type_display}] : ".yellow
+          str << "#{obj.value}"
+          @engine.log.show str
         end
       end
 
