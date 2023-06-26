@@ -10,18 +10,31 @@ module Gloo
   module App
     class Info
 
+      APP_NAME = 'Gloo'.freeze
+      VERSION_FILE = 'VERSION'.freeze
+      VERSION_NOTES_FILE = 'VERSION_NOTES'.freeze
+
       #
       # Load the version from the VERSION file.
       #
       def self.get_version
         f = File.dirname( File.absolute_path( __FILE__ ) )
         f = File.dirname( File.dirname( f ) )
-        f = File.join( f, 'VERSION' )
+        f = File.join( f, VERSION_FILE )
         return File.read( f )
       end
 
       VERSION = Gloo::App::Info.get_version
-      APP_NAME = 'Gloo'.freeze
+
+      #
+      # Load the version notes from the VERSION_NOTES file.
+      #
+      def self.get_version_notes
+        f = File.dirname( File.absolute_path( __FILE__ ) )
+        f = File.dirname( File.dirname( f ) )
+        f = File.join( f, VERSION_NOTES_FILE )
+        return File.read( f )
+      end
 
       #
       # Get the application display title.

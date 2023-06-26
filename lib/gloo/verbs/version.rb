@@ -10,12 +10,14 @@ module Gloo
 
       KEYWORD = 'version'.freeze
       KEYWORD_SHORT = 'v'.freeze
+      NOTES = 'notes'.freeze
+      NOTES_SHORT = 'n'.freeze
 
       #
       # Run the verb.
       #
       def run
-        @engine.log.show Gloo::App::Info.full_version
+        vers_notes? ? show_vers_notes : show_vers
       end
 
       #
@@ -30,6 +32,42 @@ module Gloo
       #
       def self.keyword_shortcut
         return KEYWORD_SHORT
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Private functions
+      # ---------------------------------------------------------------------
+
+      private
+
+      # 
+      # Show basic version numbers.
+      # 
+      def show_vers
+        @engine.log.show Gloo::App::Info.full_version
+        @engine.log.show "\nUse `#{KEYWORD} #{NOTES}` to see version notes."
+      end
+
+      # 
+      # Show version notes.
+      # 
+      def show_vers_notes
+        @engine.log.show "Gloo version notes..."
+        notes = Gloo::App::Info.get_version_notes
+        @engine.platform.show( notes, false, true )
+      end
+
+      # 
+      # Is the request to show version notes?
+      # 
+      def vers_notes?
+        if ( @tokens.token_count > 1 ) && ( 
+          ( @tokens.last == NOTES ) || ( @tokens.last == NOTES_SHORT ) )
+          return true
+        end
+
+        return false
       end
 
     end
