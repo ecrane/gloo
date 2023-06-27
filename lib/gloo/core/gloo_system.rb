@@ -257,7 +257,8 @@ module Gloo
         platform = TTY::Platform.new
         return 'open' if platform.mac?
         return 'xdg-open' if platform.linux?
-        return 'Start-Process' if platform.windows?
+        
+        return 'Start-Process' if OS.windows?
 
         return nil
       end
