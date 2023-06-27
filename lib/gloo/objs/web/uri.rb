@@ -140,7 +140,8 @@ module Gloo
 
         cmd = Gloo::Core::GlooSystem.open_for_platform
         cmd_with_param = "#{cmd} \"#{value}\""
-        `#{cmd_with_param}`
+        # `#{cmd_with_param}`
+        exec cmd_with_param
       end
 
     end
