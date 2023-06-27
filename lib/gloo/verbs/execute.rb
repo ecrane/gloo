@@ -25,8 +25,7 @@ module Gloo
         cmd = expr.evaluate
         @engine.log.debug "starting cmd: #{cmd}"
 
-        platform = TTY::Platform.new
-        if platform.mac?
+        if OS.mac?
           pid = fork { exec( cmd ) }
           Process.wait pid
         else

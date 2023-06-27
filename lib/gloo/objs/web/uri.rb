@@ -140,8 +140,12 @@ module Gloo
 
         cmd = Gloo::Core::GlooSystem.open_for_platform
         cmd_with_param = "#{cmd} \"#{value}\""
-        # `#{cmd_with_param}`
-        exec cmd_with_param
+
+        if OS.mac?
+          `#{cmd_with_param}`
+        else
+          exec cmd_with_param
+        end
       end
 
     end
