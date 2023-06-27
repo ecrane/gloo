@@ -1,3 +1,7 @@
+2.4.1 - 2023.06.27
+ - trying alternate for OS detection
+
+
 2.4.0 - 2023.06.27
  - Updates URI open to work on Windows.
  - Updates exec to work on Windows.
