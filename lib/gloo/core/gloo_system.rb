@@ -7,6 +7,7 @@
 # actually an object in the normal sense of the word.
 #
 require 'tty-platform'
+require 'os'
 
 module Gloo
   module Core
@@ -229,8 +230,7 @@ module Gloo
 
       # Is the platform Windows?
       def msg_platform_windows?
-        platform = TTY::Platform.new
-        return platform.windows?
+        return OS.windows?
       end
 
       # Is the platform Unix?
@@ -247,8 +247,7 @@ module Gloo
 
       # Is the platform Mac?
       def msg_platform_mac?
-        platform = TTY::Platform.new
-        return platform.mac?
+        return OS.mac?
       end
 
       #
