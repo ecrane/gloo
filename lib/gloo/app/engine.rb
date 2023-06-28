@@ -193,7 +193,11 @@ module Gloo
           return
         end
 
-        @parser.run @last_cmd
+        begin
+          @parser.run @last_cmd
+        rescue => e
+          err e.message
+        end
       end
 
       #
