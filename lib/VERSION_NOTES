@@ -1,3 +1,7 @@
+2.5.0 - 2023.06.28
+ - Catch run time exceptions and show in error log.
+
+
 2.4.3 - 2023.06.27
  - One more attempt to get URI open to work.
 
