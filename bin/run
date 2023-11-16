@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# 
+#   Run Gloo (this gem) but not as a gem (app), just referencing source code.
+# 
+#   From the root of the project, run Gloo with:
+# 
+#       > bin/run
+# 
+
+ruby ./lib/run.rb
