@@ -211,6 +211,9 @@ module Gloo
       # Do any clean up and quit.
       #
       def quit
+        @log.debug 'triggering on_quit events...'
+        @event_manager.on_quit
+
         @log.debug 'quitting...'
       end
 

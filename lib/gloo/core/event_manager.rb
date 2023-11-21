@@ -40,6 +40,16 @@ module Gloo
         arr.each { |o| Gloo::Exec::Dispatch.message( @engine, 'run', o ) }
       end
 
+      #
+      # Run on_quit scripts in any open objets.
+      # If no obj is given the script will be run in root.
+      #
+      def on_quit
+        @engine.log.debug 'on_quit event'
+        arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_quit' )
+        arr.each { |o| Gloo::Exec::Dispatch.message( @engine, 'run', o ) }
+      end
+
     end
   end
 end
