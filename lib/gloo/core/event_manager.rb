@@ -41,6 +41,17 @@ module Gloo
       end
 
       #
+      # Run on_save scripts in the object that is being saved.
+      #
+      def on_save( obj )
+        return unless obj
+
+        @engine.log.debug 'on_save event'
+        arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_save', obj )
+        arr.each { |o| Gloo::Exec::Dispatch.message( @engine, 'run', o ) }
+      end
+
+      #
       # Run on_quit scripts in any open objets.
       # If no obj is given the script will be run in root.
       #

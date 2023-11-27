@@ -42,6 +42,9 @@ module Gloo
         ref = Gloo::Core::Pn.new( @engine, name )
         obj = ref.resolve
 
+        # Send an on_save event
+        @engine.event_manager.on_save obj
+
         fs = find_file_storage( obj )
         fs.save
       end
