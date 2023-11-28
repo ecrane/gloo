@@ -284,8 +284,6 @@ module Gloo
           return
         end
 
-        @engine.event_manager.on_unload self
-        @engine.heap.unload self
         @engine.persist_man.unload self
       end
 

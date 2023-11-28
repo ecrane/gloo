@@ -41,6 +41,17 @@ module Gloo
       end
 
       #
+      # Run on_reload scripts in the object that will be reloaded.
+      #
+      def on_reload( obj )
+        return unless obj
+
+        @engine.log.debug 'on_reload event'
+        arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_reload', obj )
+        arr.each { |o| Gloo::Exec::Dispatch.message( @engine, 'run', o ) }
+      end
+
+      #
       # Run on_save scripts in the object that is being saved.
       #
       def on_save( obj )

@@ -66,10 +66,20 @@ module Gloo
       end
 
       # 
+      # Unload all loaded objects.
+      # 
+      def unload_all
+        objs = self.maps.map { |fs| fs.obj }
+        objs.each { |o| o.msg_unload }
+      end
+
+      # 
       # The given object is unloading.
       # Do any necessary clean up here.
       # 
       def unload( obj )
+        @engine.event_manager.on_unload obj
+        @engine.heap.unload obj
         @maps.each_with_index do |o, i|
           if o.obj.pn === obj.pn
             @maps.delete_at( i )
@@ -85,6 +95,7 @@ module Gloo
         return unless @maps
         
         @maps.each do |fs|
+          @engine.event_manager.on_reload fs.obj
           @engine.heap.unload fs.obj
           fs.load
         end
@@ -97,6 +108,7 @@ module Gloo
         fs = find_file_storage( obj )
         return unless fs
 
+        @engine.event_manager.on_reload obj
         @engine.heap.unload obj
         fs.load
       end

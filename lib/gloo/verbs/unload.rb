@@ -17,8 +17,7 @@ module Gloo
       def run
         return unless @engine.persist_man.maps
         
-        objs = @engine.persist_man.maps.map { |fs| fs.obj }
-        objs.each { |o| o.msg_unload }
+        @engine.persist_man.unload_all
       end
 
       #
