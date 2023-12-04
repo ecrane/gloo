@@ -80,8 +80,12 @@ module Gloo
         return unless data
 
         h = JSON.parse( self.value )
-        field = h[ data ]
-        @engine.heap.it.set_to field
+        field = h
+        data.split( '.' ).each do |segment|
+          field = field[ segment ]
+        end
+
+          @engine.heap.it.set_to field
         return field
       end
 
