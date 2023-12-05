@@ -79,13 +79,8 @@ module Gloo
         end
         return unless data
 
-        h = JSON.parse( self.value )
-        field = h
-        data.split( '.' ).each do |segment|
-          field = field[ segment ]
-        end
-
-          @engine.heap.it.set_to field
+        field = Gloo::Objs::Json.get_value_in_json self.value, data
+        @engine.heap.it.set_to field
         return field
       end
 
@@ -111,6 +106,10 @@ module Gloo
         self.handle_json( json, parent )
       end
 
+      # ---------------------------------------------------------------------
+      #    JSON Helper functions
+      # ---------------------------------------------------------------------
+
       #
       # Handle JSON, creating objects and setting values.
       # Note that this is a recursive function.
@@ -132,6 +131,17 @@ module Gloo
             handle_json( o, child )
           end
         end
+      end
+
+      # 
+      # Parse the JSON data and look for the value within it.
+      # 
+      def self.get_value_in_json( json, path_to_value )
+        data = JSON.parse( json )
+        path_to_value.split( '.' ).each do |segment|
+          data = data[ segment ]
+        end
+        return data
       end
 
     end
