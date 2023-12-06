@@ -63,8 +63,8 @@ module Gloo
       # Make the JSON pretty.
       #
       def msg_pretty
-        pretty = JSON.pretty_generate( self.value )
-        puts pretty
+        json = JSON.parse( self.value )
+        pretty = JSON.pretty_generate( json )
         set_value pretty
       end
 
