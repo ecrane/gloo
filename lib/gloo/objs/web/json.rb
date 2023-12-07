@@ -103,7 +103,7 @@ module Gloo
         parent = pn.resolve
 
         json = JSON.parse( self.value )
-        self.handle_json( json, parent )
+        self.handle_json_to_obj( json, parent )
       end
 
       # ---------------------------------------------------------------------
@@ -114,12 +114,12 @@ module Gloo
       # Handle JSON, creating objects and setting values.
       # Note that this is a recursive function.
       #
-      def handle_json( json, parent )
+      def handle_json_to_obj( json, parent )
         if json.class == Hash
           json.each do |k, v|
-            if v.class == Array
+            if ( v.class == Array ) || ( v.class == Hash )
               o = parent.find_add_child( k, 'can' )
-              handle_json( v, o )
+              handle_json_to_obj( v, o )
             else
               o = parent.find_add_child( k, 'untyped' )
               o.set_value v
@@ -128,7 +128,7 @@ module Gloo
         elsif json.class == Array
           json.each_with_index do |o, index|
             child = parent.find_add_child( index.to_s, 'can' )
-            handle_json( o, child )
+            handle_json_to_obj( o, child )
           end
         end
       end
