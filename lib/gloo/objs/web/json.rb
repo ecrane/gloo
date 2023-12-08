@@ -56,7 +56,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[get parse pretty]
+        return super + %w[get set parse pretty]
       end
 
       #
@@ -85,6 +85,32 @@ module Gloo
       end
 
       #
+      # Convert the target object to JSON and set the value of
+      # this JSON to that value.
+      #
+      def msg_set
+        if @params&.token_count&.positive?
+          pn = Gloo::Core::Pn.new( @engine, @params.tokens.first )
+          unless pn&.exists?
+            @engine.err 'Source path for objects does not exist'
+            return
+          end
+        else
+          @engine.err 'Source path for objects is required'
+          return
+        end
+        parent = pn.resolve
+
+        h = convert_obj_to_hash( parent )
+        json = JSON.parse( h.to_json )
+        json = JSON.pretty_generate( json )
+
+        set_value json
+        @engine.heap.it.set_to json
+        return json
+      end
+
+      #
       # Parse the JSON data and put it in objects.
       # The additional parameter is the path to the destination
       # for the parsed objects.
@@ -109,6 +135,23 @@ module Gloo
       # ---------------------------------------------------------------------
       #    JSON Helper functions
       # ---------------------------------------------------------------------
+
+      # 
+      # Convert the object to a hash of name and values.
+      # 
+      def convert_obj_to_hash( obj )
+        h = {}
+
+        if obj.child_count > 0
+          obj.children.each do |child|
+            h = h.merge( convert_obj_to_hash( child ) )
+          end
+        else
+          h[ obj.name ] = obj.value
+        end
+
+        return h
+      end
 
       #
       # Handle JSON, creating objects and setting values.
