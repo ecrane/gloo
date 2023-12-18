@@ -92,8 +92,16 @@ module Gloo
         heads = []
         data = []
         client = pg_conn
-        
-        rs = client.exec( sql )
+
+        if params
+          param_arr =  []
+          params.each do |p|
+            param_arr << { :value => p, :type => 0, :format => 0 }
+          end
+          rs = client.exec_params( sql, params )
+        else
+          rs = client.exec( sql )
+        end
         rs[0].each do |name, val|
           heads << name
         end
