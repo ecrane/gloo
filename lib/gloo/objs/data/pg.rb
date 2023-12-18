@@ -89,33 +89,23 @@ module Gloo
       # Return the resulting data.
       #
       def query( sql, params = nil )
+        heads = []
+        data = []
         client = pg_conn
+        
+        rs = client.exec( sql )
+        rs[0].each do |name, val|
+          heads << name
+        end
+        rs.each_with_index do |row, index|
+          arr = []
+          row.each do |name, val|
+            arr << val
+          end
+          data << arr
+        end
 
-        # heads = []
-        # data = []
-        # if params
-        #   pst = client.prepare( sql )
-        #   rs = pst.execute( *params, :as => :array )
-        #   if rs
-        #     rs.each do |row|
-        #       arr = []
-        #       row.each do |o| 
-        #         arr << o
-        #       end
-        #       data << arr
-        #     end
-        #   end
-        # else
-        #   rs = client.query( sql, :as => :array ) 
-        #   if rs
-        #     rs.each do |row|
-        #       data << row
-        #     end
-        #   end
-        # end
-
-        # heads = rs.fields if rs
-        # return [ heads, data ]
+        return [ heads, data ]
       end
 
       # ---------------------------------------------------------------------
