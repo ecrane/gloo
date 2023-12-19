@@ -102,15 +102,18 @@ module Gloo
         else
           rs = client.exec( sql )
         end
-        rs[0].each do |name, val|
-          heads << name
-        end
-        rs.each_with_index do |row, index|
-          arr = []
-          row.each do |name, val|
-            arr << val
+
+        if rs && ( rs.count > 0 )
+          rs[0].each do |name, val|
+            heads << name
           end
-          data << arr
+          rs.each_with_index do |row, index|
+            arr = []
+            row.each do |name, val|
+              arr << val
+            end
+            data << arr
+          end
         end
 
         return [ heads, data ]
