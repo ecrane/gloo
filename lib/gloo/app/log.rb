@@ -11,6 +11,15 @@ module Gloo
   module App
     class Log
 
+      DEBUG = 'debug'.freeze
+      INFO = 'info'.freeze
+      WARN = 'warn'.freeze
+      ERROR = 'error'.freeze
+      LEVELS = [ DEBUG, INFO, WARN, ERROR ].freeze
+
+      LOG_FILE = 'gloo.log'.freeze
+      ERROR_FILE = 'error.log'.freeze
+
       attr_accessor :quiet
       attr_reader :logger
 
@@ -37,13 +46,25 @@ module Gloo
       # Create the default [file] logger.
       #
       def create_loggers
-        f = File.join( @engine.settings.log_path, 'gloo.log' )
+        f = File.join( @engine.settings.log_path, LOG_FILE )
         @logger = Logger.new( f )
         @logger.level = Logger::DEBUG
 
-        err = File.join( @engine.settings.log_path, 'error.log' )
+        err = File.join( @engine.settings.log_path, ERROR_FILE )
         @error = Logger.new( err )
         @error.level = Logger::WARN
+      end
+
+      # ---------------------------------------------------------------------
+      #    Static Helpers
+      # ---------------------------------------------------------------------
+
+      # 
+      # Does the given str represent a logging level?
+      # 
+      def self.is_level? str
+        return false unless str.is_a? String
+        return LEVELS.include? str.strip.downcase
       end
 
       # ---------------------------------------------------------------------
@@ -61,6 +82,21 @@ module Gloo
       #    Logging functions
       # ---------------------------------------------------------------------
 
+      # 
+      # Write to the specified level.
+      # 
+      def write( msg, level )
+        if level == DEBUG
+          debug msg
+        elsif level == INFO
+          info msg
+        elsif level == WARN
+          warn msg
+        elsif level == ERROR
+          error msg
+        end
+      end
+
       #
       # Write a debug message to the log.
       #
@@ -69,7 +105,6 @@ module Gloo
 
         @logger.debug msg
       end
-
 
       #
       # Write an information message to the log.
