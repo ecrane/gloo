@@ -28,7 +28,7 @@ module Gloo
         @quite = quiet
         @debug = engine.settings.debug
 
-        create_logger
+        create_loggers
 
         debug 'log intialized...'
       end
@@ -36,10 +36,14 @@ module Gloo
       #
       # Create the default [file] logger.
       #
-      def create_logger
+      def create_loggers
         f = File.join( @engine.settings.log_path, 'gloo.log' )
         @logger = Logger.new( f )
         @logger.level = Logger::DEBUG
+
+        err = File.join( @engine.settings.log_path, 'error.log' )
+        @error = Logger.new( err )
+        @error.level = Logger::WARN
       end
 
       # ---------------------------------------------------------------------
@@ -82,6 +86,7 @@ module Gloo
       #
       def warn( msg )
         @logger.warn msg
+        @error.warn msg
         puts msg.yellow unless @quiet
       end
 
@@ -93,9 +98,10 @@ module Gloo
       def error( msg, ex = nil, engine = nil )
         engine&.heap&.error&.set_to msg
         @logger.error msg
+        @error.error msg
         if ex
-          @logger.error ex.message
-          @logger.error ex.backtrace
+          @error.error ex.message
+          @error.error ex.backtrace
           puts msg.red unless @quiet
           puts ex.message.red unless @quiet
           puts ex.backtrace unless @quiet
@@ -120,7 +126,7 @@ module Gloo
       # Restore the logger after deserialization.
       #
       def restore_after_deserialization
-        create_logger
+        create_loggers
       end
 
     end
