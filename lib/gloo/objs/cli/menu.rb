@@ -53,6 +53,8 @@ module Gloo
       # Should we keep looping or should we stop?
       #
       def loop?
+        return false unless @engine.running
+
         o = find_child LOOP
         return false unless o
 
@@ -248,22 +250,28 @@ module Gloo
       # Run the selected command.
       #
       def run_command( cmd )
+        @engine.log.debug "Menu Command: #{cmd}"
         obj = find_cmd cmd
 
-        unless obj
+        if obj
+          script = obj.do_script
+          return unless script
+  
+          s = Gloo::Exec::Script.new( @engine, script )
+          s.run
+        else
           if cmd == '?'
             show_options
+          elsif cmd == 'q!'
+            @engine.log.info "Quitting Gloo"
+            @engine.stop_running
           else
-            puts "#{cmd} is not a valid option"
+            msg = "#{cmd} is not a valid option"
+            @engine.log.warn msg
           end
           return
         end
 
-        script = obj.do_script
-        return unless script
-
-        s = Gloo::Exec::Script.new( @engine, script )
-        s.run
       end
 
     end
