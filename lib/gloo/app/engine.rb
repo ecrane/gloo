@@ -187,7 +187,9 @@ module Gloo
       #
       # Process the command.
       #
-      def process_cmd
+      def process_cmd cmd=nil
+        @last_cmd = cmd if cmd
+        
         if last_cmd_blank?
           @platform.clear_screen
           return

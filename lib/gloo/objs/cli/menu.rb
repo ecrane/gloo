@@ -173,10 +173,38 @@ module Gloo
       end
 
       # 
-      # Pop a menu from the stack
+      # Pop a menu from the stack.
+      # If the last item isn't the given menu,
+      # it won't be popped.
       # 
-      def pop_menu
-        @@menu_stack.pop
+      def pop_menu menu
+        if @@menu_stack[-1] == menu
+          @@menu_stack.pop
+        end
+      end
+
+      # 
+      # Quit all menus and drop into gloo.
+      # 
+      def pop_to_top_level_menu
+        @engine.log.debug 'Quitting to top level menu'
+        while @@menu_stack.count > 1
+          menu = @@menu_stack.pop
+          o = menu.find_child LOOP
+          o.set_value( false ) if o
+        end
+      end
+
+      # 
+      # Quit all menus and drop into gloo.
+      # 
+      def quit_all_menus
+        @engine.log.debug 'Dropping into Gloo'
+        @@menu_stack.each do |menu|
+          o = menu.find_child LOOP
+          o.set_value( false ) if o
+        end
+        @engine.loop
       end
 
       # ---------------------------------------------------------------------
@@ -210,7 +238,7 @@ module Gloo
           cmd ? run_command( cmd ) : run_default
           break unless loop?
         end
-        pop_menu
+        pop_menu self
       end
 
       # ---------------------------------------------------------------------
@@ -309,8 +337,18 @@ module Gloo
           if cmd == '?'
             show_options
           elsif cmd == 'q!'
-            @engine.log.info "Quitting Gloo"
+            @engine.log.info 'Quitting Gloo'
             @engine.stop_running
+          elsif cmd == 'qq'
+            pop_to_top_level_menu
+          elsif cmd.starts_with? ':'
+            gloo_cmd = cmd[1..-1].strip
+            if gloo_cmd.blank?
+              quit_all_menus
+            else
+              @engine.log.debug "Running Gloo command: #{gloo_cmd}"
+              @engine.process_cmd gloo_cmd
+            end
           else
             msg = "#{cmd} is not a valid option"
             @engine.log.warn msg
