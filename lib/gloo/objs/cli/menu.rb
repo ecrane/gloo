@@ -23,6 +23,8 @@ module Gloo
       TITLE_COLOR = 'bright_cyan'.freeze
       QUIT_ITEM_NAME = 'q'.freeze
 
+      @@menu_stack = []
+
       #
       # The name of the object type.
       #
@@ -108,6 +110,14 @@ module Gloo
         return o ? true : false
       end
 
+      #
+      # Get the Menu's Title.
+      #
+      def title
+        obj = find_child TITLE
+        return obj.value
+      end
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -135,6 +145,41 @@ module Gloo
       end
 
       # ---------------------------------------------------------------------
+      #    Menu Stack
+      # ---------------------------------------------------------------------
+
+      # 
+      # Show the bread-crumbs for the menu stack.
+      # 
+      def show_menu_stack
+        if @@menu_stack.count < 2
+          puts '...'
+        else
+          msg = ''
+          @@menu_stack[0..-2].each do |menu|
+            msg << ' | ' unless msg.blank?
+            msg << menu.title
+          end
+          msg << ' | ... '
+          puts msg
+        end
+      end
+
+      # 
+      # Add a menu to the stack.
+      # 
+      def push_menu obj
+        @@menu_stack << obj
+      end
+
+      # 
+      # Pop a menu from the stack
+      # 
+      def pop_menu
+        @@menu_stack.pop
+      end
+
+      # ---------------------------------------------------------------------
       #    Messages
       # ---------------------------------------------------------------------
 
@@ -150,6 +195,7 @@ module Gloo
       #
       def msg_run
         lazy_add_children
+        push_menu self
         run_default
         loop do
           begin_menu
@@ -164,6 +210,7 @@ module Gloo
           cmd ? run_command( cmd ) : run_default
           break unless loop?
         end
+        pop_menu
       end
 
       # ---------------------------------------------------------------------
@@ -240,9 +287,8 @@ module Gloo
       # There is a title, so show it.
       # 
       def run_default_title
-        obj = find_child TITLE
-        title = obj.value
         @engine.platform&.clear_screen
+        show_menu_stack
         Banner.show_banner( title, TITLE_STYLE, TITLE_COLOR )
       end
 
