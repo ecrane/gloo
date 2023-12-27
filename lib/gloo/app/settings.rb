@@ -85,6 +85,19 @@ module Gloo
       end
 
       # ---------------------------------------------------------------------
+      #    Functions
+      # ---------------------------------------------------------------------
+
+      # 
+      # Running in app mode, so overriding the root project path.
+      # 
+      def override_project_path path
+        @engine.log.debug "Root project path is #{path}"
+
+        @project_path = path
+      end
+
+      # ---------------------------------------------------------------------
       #    Private
       # ---------------------------------------------------------------------
 

@@ -110,6 +110,9 @@ module Gloo
           run_files
         elsif @mode == Mode::EMBED
           run_keep_alive
+        elsif @mode == Mode::APP
+          @settings.override_project_path @args.app_path
+          run
         else
           run
         end
