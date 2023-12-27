@@ -14,7 +14,7 @@ module Gloo
       QUIET = 'quiet'.freeze
       GLOO_ENV = 'GLOO_ENV'.freeze
 
-      attr_reader :switches, :files
+      attr_reader :switches, :files, :app_path
 
       #
       # Create arguments and setup.
@@ -23,6 +23,7 @@ module Gloo
         @engine = engine
         @switches = []
         @files = []
+        @app_path = nil
 
         params.each { |o| process_one_arg( o ) }
         ARGV.each { |o| process_one_arg( o ) }
@@ -33,6 +34,34 @@ module Gloo
       #
       def quiet?
         return @switches.include?( QUIET )
+      end
+
+      #
+      # Is the app switch set?
+      #
+      def app?
+        @switches.include?( Gloo::App::Mode::APP.to_s )
+      end
+
+      # 
+      # Make sure that if we are running in App mode
+      # that the app path has been set and is a valid path.
+      # 
+      def verify_app_mode
+        return true unless app?
+
+        if @app_path.nil?
+          @engine.log.error "App Path required to run in App mode."
+          return false
+        end
+
+        unless File.directory? @app_path
+          @engine.log.error "'#{@app_path}' is not a valid directory."
+          return false
+        end
+
+        @engine.log.info "App root directory: '#{@app_path}'."
+        return true
       end
 
       #
@@ -72,6 +101,8 @@ module Gloo
       def detect_mode
         mode = if ENV[ GLOO_ENV ] == Gloo::App::Mode::TEST.to_s
                  Mode::TEST
+               elsif app?
+                 Mode::APP
                elsif version?
                  Mode::VERSION
                elsif help?
@@ -85,6 +116,8 @@ module Gloo
                else
                  Mode.default_mode
                end
+
+        mode = Mode::CLI unless verify_app_mode
         @engine.log.debug "running in #{mode} mode"
 
         return mode
@@ -102,6 +135,8 @@ module Gloo
       def process_one_arg( arg )
         if arg.start_with? '--'
           switches << arg[ 2..-1 ]
+        elsif app? && ( @app_path.nil? )
+          @app_path = arg
         else
           files << arg
         end

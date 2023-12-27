@@ -9,6 +9,7 @@ module Gloo
     class Mode
 
       EMBED = :embed      # Run as embedded script processor
+      APP = :app          # Running in APP mode.
       CLI = :cli          # Run in interactive (CLI) mode
       SCRIPT = :script    # Run a script
       VERSION = :version  # Show version information

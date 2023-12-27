@@ -14,6 +14,12 @@ class ArgsTest < BaseEngineTest
     refute o.version?
   end
 
+  def test_app_present
+    o = Gloo::App::Args.new( @engine, [ '--app' ] )
+    assert o.app?
+    refute o.help?
+  end
+
   def test_cli_present
     o = Gloo::App::Args.new( @engine, [ '--cli' ] )
     assert o.cli?
@@ -94,6 +100,30 @@ class ArgsTest < BaseEngineTest
     o = Gloo::App::Engine.new( ctx )
     assert o
     refute o.args.quiet?
+  end
+
+  def test_verify_app_mode_in_other_mode
+    o = Gloo::App::Args.new( @engine, [ '--cli' ] )
+    refute o.app?
+    assert o.verify_app_mode
+  end
+
+  def test_verify_app_mode_no_path
+    o = Gloo::App::Args.new( @engine, [ '--app' ] )
+    assert o.app?
+    refute o.verify_app_mode
+  end
+
+  def test_verify_app_mode_not_a_path
+    o = Gloo::App::Args.new( @engine, [ '--app', 'abc' ] )
+    assert o.app?
+    refute o.verify_app_mode
+  end
+
+  def test_verify_app_mode_with_path
+    o = Gloo::App::Args.new( @engine, [ '--app', '/Users' ] )
+    assert o.app?
+    assert o.verify_app_mode
   end
 
 end
