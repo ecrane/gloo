@@ -1,3 +1,18 @@
+3.0.0 - 2023.12.27
+ - Adds events: on_quit, on_save, on_unload, on_reload
+ - More robust JSON object
+ - Adds Postgres connectivity
+ - Adds log verb and error log file
+ - More options in gloo CLI menus
+    - q! - quit app (and gloo)
+    - update so a quit cmd from gloo script works in menu
+    - show breadcrumb of menu hierarchy
+    - : cmd - use colon or some other symbol to run a gloo command from a menu
+       - Maybe : with no command to drop out of menus to gloo?
+    - qq - Quit to top menu
+ - Option to run in --app mode
+
+
 2.5.0 - 2023.06.28
  - Catch run time exceptions and show in error log.
 
