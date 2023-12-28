@@ -168,6 +168,10 @@ module Gloo
           return nil
         end
 
+        # Check to see if the object exists already
+        existing = parent.find_child name
+        return existing if existing
+
         o = type.new( @engine )
         o.name = name
         o.set_value value
