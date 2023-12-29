@@ -169,8 +169,7 @@ module Gloo
         end
 
         # Check to see if the object exists already
-        existing = parent.find_child name
-        return existing if existing
+        return parent.find_child( name ) if parent.contains_child?( name )
 
         o = type.new( @engine )
         o.name = name
