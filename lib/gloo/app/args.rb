@@ -72,6 +72,13 @@ module Gloo
       end
 
       #
+      # Is the documentation switch set?
+      #
+      def doc?
+        @switches.include?( Gloo::App::Mode::DOC_SVR.to_s )
+      end
+
+      #
       # Is the help switch set?
       #
       def help?
@@ -105,6 +112,8 @@ module Gloo
                  Mode::APP
                elsif version?
                  Mode::VERSION
+               elsif doc?
+                 Mode::DOC_SVR
                elsif help?
                  Mode::HELP
                elsif cli?

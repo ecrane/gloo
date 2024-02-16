@@ -106,6 +106,8 @@ module Gloo
 
         if @mode == Mode::VERSION
           run_version
+        elsif @mode == Mode::DOC_SVR
+          Gloo::WebSvr::Doc.run self
         elsif @mode == Mode::SCRIPT
           run_files
         elsif @mode == Mode::EMBED
