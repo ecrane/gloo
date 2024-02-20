@@ -15,15 +15,17 @@ module Gloo
         engine.log.info "Starting documentation web server…"
         engine.log.quiet = true
 
-        web_server = Server.new( engine )
+        config = Gloo::WebSvr::Config.doc_config engine 
+        engine.log.info "Doc Server URL: #{config.base_url}"
+
+        web_server = Server.new( engine, config )
         web_server.start
         
         # Pause to give the server time to start.
         sleep( 1 )
 
         # Open the web page.
-        url = "http://localhost:8087/"
-        Gloo::Objs::Uri.open_url url
+        Gloo::Objs::Uri.open_url config.base_url
 
         # Show prompt to quit
         prompt = '<return> to quit the documentation web server >'

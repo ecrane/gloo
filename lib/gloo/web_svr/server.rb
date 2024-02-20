@@ -26,8 +26,6 @@ require 'rack'
 module Gloo
   module WebSvr
     class Server
-
-      PORT = 8087
     
       # ---------------------------------------------------------------------
       #    Initialization
@@ -36,7 +34,8 @@ module Gloo
       #
       # Set up the web server.
       #
-      def initialize( engine )
+      def initialize( engine, config = nil )
+        @config = config ? config : Gloo::WebSvr::Config.new
         @engine = engine
         @log = @engine.log
 
@@ -53,12 +52,11 @@ module Gloo
       # 
       def start
         opts = {
-          :Port => PORT,
-          :Host => 'localhost'
+          :Port => @config.port,
+          :Host => @config.host
         }
         Thread.abort_on_exception = true
         @server_thread = Thread.new { Rack::Handler::Thin.run( self, **options=opts ) }
-        # Rack::Handler::Thin.run( self, **options=opts )
         @log.debug 'Web server has started.'
       end
 
