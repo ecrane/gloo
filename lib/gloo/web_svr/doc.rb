@@ -18,7 +18,8 @@ module Gloo
         config = Gloo::WebSvr::Config.doc_config engine 
         engine.log.info "Doc Server URL: #{config.base_url}"
 
-        web_server = Server.new( engine, config )
+        handler = Gloo::WebSvr::HandlerBase.new engine
+        web_server = Server.new( engine, handler, config )
         web_server.start
         
         # Pause to give the server time to start.

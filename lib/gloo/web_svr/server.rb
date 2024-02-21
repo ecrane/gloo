@@ -34,10 +34,11 @@ module Gloo
       #
       # Set up the web server.
       #
-      def initialize( engine, config = nil )
+      def initialize( engine, handler, config = nil )
         @config = config ? config : Gloo::WebSvr::Config.new
         @engine = engine
         @log = @engine.log
+        @handler = handler
 
         @log.debug 'Gloo web server intialized…'
       end
@@ -80,12 +81,12 @@ module Gloo
       # Handle a request for a resource.
       # 
       def call( env )
-        request = Gloo::WebSvr::Request.new( @engine, env )
+        request = Gloo::WebSvr::Request.new( @engine, @handler, env )
         request.log
 
         response = request.process
         response.log
-        
+
         return response.result
       end
 

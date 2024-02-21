@@ -23,9 +23,11 @@ module Gloo
       #
       # Set up the web server.
       #
-      def initialize( engine, env = nil )
+      def initialize( engine, handler, env = nil )
         @engine = engine
         @log = @engine.log
+
+        @handler = handler
 
         @env = env
         detect_env
@@ -40,8 +42,8 @@ module Gloo
       # Process the request and return a result.
       # 
       def process
-        start_timer    
-        result = web? ? web_result : text_result
+        start_timer
+        result = @handler.handle self
         finish_timer
         return result
       end
@@ -81,20 +83,7 @@ module Gloo
         @log.info "Web request complete.  Elapsed time: #{@elapsed} ms"
       end
     
-      def web_result
-        msg = "<html><head><title>test web</title><body>Hello from Rack and Thin server.  at: #{Time.now}</body></html>"
-        return Gloo::WebSvr::Response.html_response( @engine, msg )
-      end
-    
-      def text_result
-        msg = "Hello from Rack and Thin server.  at: #{Time.now}"
-        return Gloo::WebSvr::Response.text_response( @engine, msg )
-      end
-    
-      def web?
-        return @env[ 'REQUEST_PATH' ] == '/web'
-      end
-    
+
       # ---------------------------------------------------------------------
       #    Helper functions
       # ---------------------------------------------------------------------
