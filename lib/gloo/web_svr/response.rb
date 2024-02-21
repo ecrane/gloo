@@ -24,7 +24,10 @@ module Gloo
       #
       # Set up the web server.
       #
-      def initialize( code = SUCCESS, type = HTML_TYPE, data = nil )
+      def initialize( engine, code = SUCCESS, type = HTML_TYPE, data = nil )
+        @engine = engine
+        @log = @engine.log
+
         @code = code
         @type = type
         @data = data
@@ -34,6 +37,20 @@ module Gloo
       # ---------------------------------------------------------------------
       #    Static Helper Functions
       # ---------------------------------------------------------------------
+
+      # 
+      # Helper to create a successful text response with the given data.
+      # 
+      def self.text_response engine, data
+        return Gloo::WebSvr::Response.new( engine, SUCCESS, TEXT_TYPE, data )
+      end
+
+      # 
+      # Helper to create a successful web response with the given data.
+      # 
+      def self.html_response engine, data
+        return Gloo::WebSvr::Response.new( engine, SUCCESS, HTML_TYPE, data )
+      end
 
 
       # ---------------------------------------------------------------------
@@ -61,6 +78,18 @@ module Gloo
       # 
       def result
         return [ @code, headers, @data ]
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Helper functions
+      # ---------------------------------------------------------------------
+
+      # 
+      # Write the result information to the log.
+      # 
+      def log
+        @log.info "Response #{@code} #{@type}"
       end
 
     end
