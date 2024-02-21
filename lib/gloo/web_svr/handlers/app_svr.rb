@@ -1,26 +1,13 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 20124 Eric Crane.  All rights reserved.
 #
-# Base class for a request handler.
-# Takes a request and does what is needed to create a response.
+# Web application request handler.
+# Application is running in gloo.
 # 
 
 module Gloo
   module WebSvr
-    class HandlerBase
-      
-      # ---------------------------------------------------------------------
-      #    Initialization
-      # ---------------------------------------------------------------------
-
-      #
-      # Set up the web server.
-      #
-      def initialize( engine )
-        @engine = engine
-        @log = @engine.log
-      end
-
+    class AppSvr < Gloo::WebSvr::Handler
 
       # ---------------------------------------------------------------------
       #    Process Request
@@ -55,13 +42,6 @@ module Gloo
       # ---------------------------------------------------------------------
       #    Helper functions
       # ---------------------------------------------------------------------
-
-      # 
-      # Write the request information to the log.
-      # 
-      def log
-        @log.debug 'processing request…'
-      end
 
     end
   end
