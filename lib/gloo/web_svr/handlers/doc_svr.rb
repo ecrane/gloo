@@ -28,20 +28,33 @@ module Gloo
       # ---------------------------------------------------------------------
 
       def page
-        contents = <<CONTENTS
-         <html>
-          <head>
-            <title> Gloo Doc </title>
-          </head>
-          <body>
-            <h1> Gloo Documentation </h1>
+        dir = File.dirname( __FILE__ )        
+        dir = File.dirname( dir )
+        dir = File.dirname( dir )
+        dir = File.dirname( dir )
+        index_path = File.join( dir, 'doc', 'index.html.erb')
+        index = File.read( index_path )
 
-            <p> Coming soon... </p>
+        params = {
+          msg: 'Coming soon...'
+        }
+        render = ERB.new( index )
+        contents =  render.result_with_hash( params )
 
-            <p> <em> #{Time.now} </em> </p>
-          </body>
-        </html>
-CONTENTS
+#         contents = <<CONTENTS
+#          <html>
+#           <head>
+#             <title> Gloo Doc </title>
+#           </head>
+#           <body>
+#             <h1> Gloo Documentation </h1>
+
+#             <p> Coming soon... </p>
+
+#             <p> <em> #{Time.now} </em> </p>
+#           </body>
+#         </html>
+# CONTENTS
 
         return contents
       end
