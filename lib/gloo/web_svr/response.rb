@@ -89,7 +89,7 @@ module Gloo
       # Write the result information to the log.
       # 
       def log
-        @log.info "Response #{@code} #{@type}"
+        @log.debug "Response #{@code} #{@type}"
       end
 
     end

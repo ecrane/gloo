@@ -26,7 +26,10 @@ module Gloo
       # Alias to the home page
       HOME = 'home'.freeze
 
-      
+      # Messages
+      SERVER_NOT_RUNNING = 'The web server is not running and cannot be stopped'.freeze
+
+
       #
       # The name of the object type.
       #
@@ -54,6 +57,39 @@ module Gloo
       #
       def multiline_value?
         return false
+      end
+
+      #
+      # Get the Scheme (http or https) from the child object.
+      # Returns nil if there is none.
+      #
+      def scheme_value
+        scheme = find_child SCHEME
+        return nil unless scheme
+
+        return scheme.value
+      end
+      
+      #
+      # Get the host from the child object.
+      # Returns nil if there is none.
+      #
+      def host_value
+        host = find_child HOST
+        return nil unless host
+
+        return host.value
+      end
+
+      #
+      # Get the port from the child object.
+      # Returns nil if there is none.
+      #
+      def port_value
+        port = find_child PORT
+        return nil unless port
+
+        return port.value
       end
 
 
@@ -103,30 +139,30 @@ module Gloo
       # Start the gloo web server.
       #
       def msg_start
-        # return unless value
-        # o = value
-        # uri = URI( value )
-        # response = Net::HTTP.start( uri.host, uri.port, :use_ssl => true )
-        # cert = response.peer_cert
-        # o = cert.not_after
+        @engine.log.debug "Starting web server…"
+        # @engine.log.quiet = true
 
-        # @engine.heap.it.set_to o
-        # return o
+        config = Gloo::WebSvr::Config.new( scheme_value, host_value, port_value )
+        @engine.log.debug "Web Server URL: #{config.base_url}"
+
+        handler = Gloo::WebSvr::AppSvr.new @engine
+        @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
+        @web_server.start
+        @engine.log.debug "Web server started…"
       end
 
       #
       # Stop the running web server.
       #
       def msg_stop
-        # return unless value
-        # o = value
-        # uri = URI( value )
-        # response = Net::HTTP.start( uri.host, uri.port, :use_ssl => true )
-        # cert = response.peer_cert
-        # o = cert.not_after
-
-        # @engine.heap.it.set_to o
-        # return o
+        if @web_server
+          @engine.log.debug "Stopping web server…"
+          @web_server.stop
+          @web_server = nil
+          @engine.log.debug "Web server stopped…"
+        else
+          @engine.log.error SERVER_NOT_RUNNING
+        end
       end
 
     end

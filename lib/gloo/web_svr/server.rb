@@ -67,7 +67,7 @@ module Gloo
       def stop
         @log.debug 'Stopping the web server…'
 
-        @server_thread.stop
+        @server_thread.kill
 
         @log.debug 'The web server has been stopped.'
       end
