@@ -1,29 +1,21 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
 #
-# A web page hosted in a gloo web server.
+# An HTML Element.
+# Note that the object name is the tag!
 #
 
 module Gloo
   module Objs
-    class Page < Gloo::Core::Obj
+    class Element < Gloo::Core::Obj
 
-      KEYWORD = 'page'.freeze
-      KEYWORD_SHORT = 'page'.freeze
+      KEYWORD = 'element'.freeze
+      KEYWORD_SHORT = 'e'.freeze
 
-      # Page Title
-      TITLE = 'title'.freeze
-
-      # Events
-      ON_RENDER = 'on_render'.freeze
-      ON_RENDERED = 'on_rendered'.freeze
-
-      # Parameters used during render.
-      PARAMS = 'params'.freeze
-
-      # Content
-      HEAD = 'head'.freeze
-      BODY = 'body'.freeze
+      # Element
+      ID = 'id'.freeze
+      CLASSES = 'classes'.freeze
+      CONTENT = 'content'.freeze
 
 
       #
@@ -56,21 +48,26 @@ module Gloo
       end
 
       #
-      # Get the title from the child object.
-      # Returns nil if there is none.
+      # Get the opening tag.
       #
-      def title_value
-        title = find_child TITLE
-        return title ? title.value : nil
+      def tag_open
+        return "<#{self.name}>"
       end
 
       #
-      # Get the body obj.
+      # Get the closing tag.
       #
-      def body
-        return find_child BODY
+      def tag_close
+        return "</#{self.name}>"
       end
 
+      # 
+      # Get all the children elements of the content.
+      # 
+      def content_elements
+        content = find_child CONTENT
+        return content ? content.children : []
+      end
 
       # ---------------------------------------------------------------------
       #    Children
@@ -92,14 +89,9 @@ module Gloo
       #
       def add_default_children
         fac = @engine.factory
-        fac.create_string TITLE, '', self
-
-        fac.create_script ON_RENDER, '', self
-        fac.create_script ON_RENDERED, '', self
-
-        fac.create_can PARAMS, self
-        fac.create_can HEAD, self
-        fac.create_can BODY, self
+        fac.create_string ID, '', self
+        fac.create_string CLASSES, '', self
+        fac.create_can CONTENT, self
       end
 
 
@@ -134,22 +126,21 @@ module Gloo
         return "<#{tag}>#{content}</#{tag}>"
       end
 
-
-
       # 
       # Render the page.
       # 
       def render
-        title = wrap 'title', title_value
-        h1 = wrap 'h1', title_value
+        content_text = ''
+        
+        content_elements.each do |e|
+          if e.class == Element
+            content_text << e.render
+          else
+            content_text << e.value.to_s
+          end
+        end
 
-        head = wrap 'head', title
-        body_content = body.render
-        # body = wrap 'body', h1
-        # body << '<p> Coming soon... </p>'
-
-        contents = wrap 'html', head + body_content
-        return contents
+        return "#{tag_open}#{content_text}#{tag_close}"
       end
 
     end

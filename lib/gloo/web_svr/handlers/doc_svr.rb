@@ -41,21 +41,6 @@ module Gloo
         render = ERB.new( index )
         contents =  render.result_with_hash( params )
 
-#         contents = <<CONTENTS
-#          <html>
-#           <head>
-#             <title> Gloo Doc </title>
-#           </head>
-#           <body>
-#             <h1> Gloo Documentation </h1>
-
-#             <p> Coming soon... </p>
-
-#             <p> <em> #{Time.now} </em> </p>
-#           </body>
-#         </html>
-# CONTENTS
-
         return contents
       end
 

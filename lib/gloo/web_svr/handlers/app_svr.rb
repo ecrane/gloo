@@ -10,6 +10,19 @@ module Gloo
     class AppSvr < Gloo::WebSvr::Handler
 
       # ---------------------------------------------------------------------
+      #    Initialization
+      # ---------------------------------------------------------------------
+
+      #
+      # Set up the web server.
+      #
+      def initialize( engine, obj )
+        super( engine )
+        @server_obj = obj
+      end
+
+
+      # ---------------------------------------------------------------------
       #    Process Request
       # ---------------------------------------------------------------------
 
@@ -18,8 +31,18 @@ module Gloo
       # 
       def handle request
         @request = request
-        result = web? ? web_result : text_result
+
+        page = @server_obj.page_for_route @request.path
+        result = render page
+
+        # result = web? ? web_result : text_result
         return result
+      end
+
+      def render page
+        @log.debug 'rendering page…'
+        content = page.render
+        return Gloo::WebSvr::Response.html_response( @engine, content )
       end
 
       def web_result

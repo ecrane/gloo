@@ -145,7 +145,7 @@ module Gloo
         config = Gloo::WebSvr::Config.new( scheme_value, host_value, port_value )
         @engine.log.debug "Web Server URL: #{config.base_url}"
 
-        handler = Gloo::WebSvr::AppSvr.new @engine
+        handler = Gloo::WebSvr::AppSvr.new( @engine, self )
         @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
         @web_server.start
         @engine.log.debug "Web server started…"
@@ -163,6 +163,20 @@ module Gloo
         else
           @engine.log.error SERVER_NOT_RUNNING
         end
+      end
+
+      # ---------------------------------------------------------------------
+      #    Pages
+      # ---------------------------------------------------------------------
+
+      # 
+      # Find and return the page for the given route.
+      # 
+      def page_for_route path
+        pages = find_child PAGES
+        return nil unless pages
+
+        return pages.children[0]
       end
 
     end
