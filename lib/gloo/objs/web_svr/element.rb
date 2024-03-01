@@ -66,7 +66,7 @@ module Gloo
       # 
       def content_elements
         content = find_child CONTENT
-        return content ? content.children : []
+        return content ? content.children : nil
       end
 
       # ---------------------------------------------------------------------
@@ -132,12 +132,17 @@ module Gloo
       def render
         content_text = ''
         
-        content_elements.each do |e|
-          if e.class == Element
-            content_text << e.render
-          else
-            content_text << e.value.to_s
+        elements = content_elements
+        if elements
+          elements.each do |e|
+            if e.class == Element
+              content_text << e.render
+            else
+              content_text << e.value.to_s
+            end
           end
+        else
+          content_text << self.value
         end
 
         return "#{tag_open}#{content_text}#{tag_close}"
