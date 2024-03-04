@@ -72,6 +72,25 @@ module Gloo
       end
 
 
+      #
+      # Get the params hash from the child object.
+      # Returns nil if there is none.
+      #
+      def params_hash
+        {
+          msg: 'Coming soon...'
+        }
+        params_can = find_child PARAMS
+        return nil unless params_can
+
+        h = {}
+        params_can.children.each do |o|
+          h[ o.name ] = o.value
+        end
+
+        return h
+      end
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -134,8 +153,6 @@ module Gloo
         return "<#{tag}>#{content}</#{tag}>"
       end
 
-
-
       # 
       # Render the page.
       # 
@@ -145,8 +162,13 @@ module Gloo
 
         head = wrap 'head', title
         body_content = body.render
-        # body = wrap 'body', h1
-        # body << '<p> Coming soon... </p>'
+
+        # render params
+        params_h = params_hash 
+        if params_h
+          renderer = ERB.new( body_content )
+          body_content =  renderer.result_with_hash( params_h )
+        end
 
         contents = wrap 'html', head + body_content
         return contents

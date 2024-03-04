@@ -3,6 +3,14 @@
 #
 # An HTML Element.
 # Note that the object name is the tag!
+# 
+# An Element's content can be in a container of that nane,
+# or it can be the simple value of the obj.  If there is no
+# content child, the simple value will be used.
+# 
+# Attibutes is a container with all attributes of the tag.
+# ID and CLASSES attributes can be called out more simply
+# as children of the element obj.
 #
 
 module Gloo
@@ -15,6 +23,7 @@ module Gloo
       # Element
       ID = 'id'.freeze
       CLASSES = 'classes'.freeze
+      ATTRIBUTES = 'attributes'.freeze
       CONTENT = 'content'.freeze
 
 
