@@ -91,6 +91,32 @@ module Gloo
         return h
       end
 
+
+      # ---------------------------------------------------------------------
+      #    Events
+      # ---------------------------------------------------------------------
+
+      #
+      # Run the on render script if there is one.
+      #
+      def run_on_render
+        o = find_child ON_RENDER
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+      #
+      # Run the on rendered script if there is one.
+      #
+      def run_on_rendered
+        o = find_child ON_RENDERED
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -157,6 +183,8 @@ module Gloo
       # Render the page.
       # 
       def render
+        run_on_render
+
         title = wrap 'title', title_value
         h1 = wrap 'h1', title_value
 
@@ -171,6 +199,8 @@ module Gloo
         end
 
         contents = wrap 'html', head + body_content
+        run_on_rendered
+
         return contents
       end
 
