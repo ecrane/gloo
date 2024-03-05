@@ -33,7 +33,11 @@ module Gloo
         @request = request
 
         page = @server_obj.page_for_route @request.path
-        result = render page
+        if page
+          result = render page
+        else
+          result = server_error_result
+        end
 
         # result = web? ? web_result : text_result
         return result
@@ -56,7 +60,12 @@ module Gloo
         msg = "Hello from Rack and Thin server.  at: #{Time.now}"
         return Gloo::WebSvr::Response.text_response( @engine, msg )
       end
-    
+
+      def server_error_result
+        msg = "Server error.  at: #{Time.now}"
+        return Gloo::WebSvr::Response.text_response( @engine, msg )
+      end
+
       def web?
         return @request.path == '/web'
       end

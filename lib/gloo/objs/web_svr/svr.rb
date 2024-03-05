@@ -166,18 +166,67 @@ module Gloo
       end
 
       # ---------------------------------------------------------------------
-      #    Pages
+      #    Routing
       # ---------------------------------------------------------------------
 
       # 
       # Find and return the page for the given route.
       # 
       def page_for_route path
-        pages = find_child PAGES
-        return nil unless pages
+        return nil if path == '/favicon.ico'
 
-        return pages.children[0]
+        @engine.log.debug "routing to #{path}"
+        route_segments = path.split '/'
+        route_segments.shift if route_segments.first == ''
+
+        if route_segments.count == 0
+          return home_page
+        else
+          pages = find_child PAGES
+          return nil unless pages
+
+          return find_route_segment( route_segments, pages.children )
+          # return pages.children[1]
+        end
+
+        # TODO: return error page
+        return nil
       end
+
+      # 
+      # Find the route segment in the object container.
+      # 
+      def find_route_segment segment_arr, objs
+        this_segment = segment_arr.shift
+        return nil if this_segment.nil?
+        
+        objs.each do |o|
+          if o.name == this_segment
+            if o.class == Page
+              @engine.log.debug "found page for route: #{o.pn}"
+              return o
+            else
+              return nil unless o.child_count > 0
+
+              return find_route_segment( segment_arr, o.children )
+            end
+          end
+        end
+
+        return nil # objs.first
+      end
+
+      # 
+      # Get the home page, the root/default route.
+      # 
+      def home_page
+        o = find_child HOME
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o
+      end
+
 
     end
   end
