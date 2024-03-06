@@ -201,6 +201,8 @@ module Gloo
         return nil if this_segment.nil?
         
         objs.each do |o|
+          o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+
           if o.name == this_segment
             if o.class == Page
               @engine.log.debug "found page for route: #{o.pn}"
