@@ -1,29 +1,24 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
 #
-# An HTML Element.
-# Note that the object name is the tag!
-# 
-# An Element's content can be in a container of that nane,
-# or it can be the simple value of the obj.  If there is no
-# content child, the simple value will be used.
-# 
-# Attibutes is a container with all attributes of the tag.
-# ID and CLASSES attributes can be called out more simply
-# as children of the element obj.
+# A partial page.
 #
 
 module Gloo
   module Objs
-    class Element < Gloo::Core::Obj
+    class Partial < Gloo::Core::Obj
 
-      KEYWORD = 'element'.freeze
-      KEYWORD_SHORT = 'e'.freeze
+      KEYWORD = 'partial'.freeze
+      KEYWORD_SHORT = 'part'.freeze
 
-      # Element
-      ID = 'id'.freeze
-      CLASSES = 'classes'.freeze
-      ATTRIBUTES = 'attributes'.freeze
+      # Events
+      ON_RENDER = 'on_render'.freeze
+      ON_RENDERED = 'on_rendered'.freeze
+
+      # Parameters used during render.
+      PARAMS = 'params'.freeze
+
+      # Content
       CONTENT = 'content'.freeze
 
 
@@ -57,38 +52,53 @@ module Gloo
       end
 
       #
-      # Get the tag.
-      # This is the name, up until an '_' char.
-      # Because name must be unique in the parent, and with HTML
-      # we need a way to have multiple of the same tag at the
-      # same level.
+      # Get the content obj.
       #
-      def tag
-        i = self.name.index( '_' )        
-        return i ? self.name[ 0..(i-1) ] : self.name
+      def content
+        return find_child CONTENT
       end
 
       #
-      # Get the opening tag.
+      # Get the params hash from the child object.
+      # Returns nil if there is none.
       #
-      def tag_open
-        return "<#{tag}>"
+      def params_hash
+        params_can = find_child PARAMS
+        return nil unless params_can
+
+        h = {}
+        params_can.children.each do |o|
+          h[ o.name ] = o.value
+        end
+
+        return h
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Events
+      # ---------------------------------------------------------------------
+
+      #
+      # Run the on render script if there is one.
+      #
+      def run_on_render
+        o = find_child ON_RENDER
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
 
       #
-      # Get the closing tag.
+      # Run the on rendered script if there is one.
       #
-      def tag_close
-        return "</#{tag}>"
+      def run_on_rendered
+        o = find_child ON_RENDERED
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
 
-      # 
-      # Get all the children elements of the content.
-      # 
-      def content_elements
-        content = find_child CONTENT
-        return content ? content.children : nil
-      end
 
       # ---------------------------------------------------------------------
       #    Children
@@ -110,8 +120,11 @@ module Gloo
       #
       def add_default_children
         fac = @engine.factory
-        fac.create_string ID, '', self
-        fac.create_string CLASSES, '', self
+
+        fac.create_script ON_RENDER, '', self
+        fac.create_script ON_RENDERED, '', self
+
+        fac.create_can PARAMS, self
         fac.create_can CONTENT, self
       end
 
@@ -131,9 +144,9 @@ module Gloo
       # Get the expiration date for the certificate.
       #
       def msg_render
-        content = self.render
-        @engine.heap.it.set_to content 
-        return content
+        part_content = self.render
+        @engine.heap.it.set_to part_content 
+        return part_content
       end
 
       # ---------------------------------------------------------------------
@@ -141,35 +154,25 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
-      # wrap the content in the tag with id and class.
-      # 
-      def wrap( tag, content, id=nil, classes=nil )
-        return "<#{tag}>#{content}</#{tag}>"
-      end
-
-      # 
       # Render the page.
       # 
       def render
-        content_text = ''
+        run_on_render
+
+        part_content = ''
+        content.children.each do |e|
+          part_content << e.render
+        end
         
-        elements = content_elements
-        if elements
-          elements.each do |e|
-            e = Gloo::Objs::Alias.resolve_alias( @engine, e )
-            if e.class == Element
-              content_text << e.render
-            elsif e.class == Partial
-              content_text << e.render
-            else
-              content_text << e.value.to_s
-            end
-          end
-        else
-          content_text << self.value
+        # render params
+        params_h = params_hash 
+        if params_h
+          renderer = ERB.new( part_content )
+          part_content = renderer.result_with_hash( params_h )
         end
 
-        return "#{tag_open}#{content_text}#{tag_close}"
+        run_on_rendered
+        return part_content
       end
 
     end

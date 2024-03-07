@@ -77,9 +77,6 @@ module Gloo
       # Returns nil if there is none.
       #
       def params_hash
-        {
-          msg: 'Coming soon...'
-        }
         params_can = find_child PARAMS
         return nil unless params_can
 
@@ -145,6 +142,9 @@ module Gloo
         fac.create_can PARAMS, self
         fac.create_can HEAD, self
         fac.create_can BODY, self
+
+        # TODO: convert HEAD and BODY to elements
+        # create_new( name, value, type, parent )
       end
 
 
@@ -186,8 +186,6 @@ module Gloo
         run_on_render
 
         title = wrap 'title', title_value
-        h1 = wrap 'h1', title_value
-
         head = wrap 'head', title
         body_content = body.render
 
@@ -195,7 +193,7 @@ module Gloo
         params_h = params_hash 
         if params_h
           renderer = ERB.new( body_content )
-          body_content =  renderer.result_with_hash( params_h )
+          body_content = renderer.result_with_hash( params_h )
         end
 
         contents = wrap 'html', head + body_content
