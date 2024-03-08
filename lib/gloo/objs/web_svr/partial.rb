@@ -163,13 +163,8 @@ module Gloo
         content.children.each do |e|
           part_content << e.render
         end
-        
-        # render params
-        params_h = params_hash 
-        if params_h
-          renderer = ERB.new( part_content )
-          part_content = renderer.result_with_hash( params_h )
-        end
+      
+        part_content = Page.render_params part_content, params_hash
 
         run_on_rendered
         return part_content

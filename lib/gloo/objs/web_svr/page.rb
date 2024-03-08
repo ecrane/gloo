@@ -11,9 +11,6 @@ module Gloo
       KEYWORD = 'page'.freeze
       KEYWORD_SHORT = 'page'.freeze
 
-      # Page Title
-      TITLE = 'title'.freeze
-
       # Events
       ON_RENDER = 'on_render'.freeze
       ON_RENDERED = 'on_rendered'.freeze
@@ -24,7 +21,8 @@ module Gloo
       # Content
       HEAD = 'head'.freeze
       BODY = 'body'.freeze
-
+      CONTENT = 'content'.freeze
+      TITLE = 'title'.freeze
 
       #
       # The name of the object type.
@@ -56,21 +54,18 @@ module Gloo
       end
 
       #
-      # Get the title from the child object.
-      # Returns nil if there is none.
+      # Get the head element.
       #
-      def title_value
-        title = find_child TITLE
-        return title ? title.value : nil
+      def head
+        return find_child HEAD
       end
 
       #
-      # Get the body obj.
+      # Get the body element.
       #
       def body
         return find_child BODY
       end
-
 
       #
       # Get the params hash from the child object.
@@ -134,17 +129,29 @@ module Gloo
       #
       def add_default_children
         fac = @engine.factory
-        fac.create_string TITLE, '', self
 
         fac.create_script ON_RENDER, '', self
         fac.create_script ON_RENDERED, '', self
-
         fac.create_can PARAMS, self
-        fac.create_can HEAD, self
-        fac.create_can BODY, self
 
-        # TODO: convert HEAD and BODY to elements
-        # create_new( name, value, type, parent )
+        params = { :name => HEAD,
+          :type => Gloo::Objs::Element.typename,
+          :value => nil,
+          :parent => self }
+        head = fac.create params
+        content = fac.create_can CONTENT, head
+        params = { :name => TITLE,
+          :type => Gloo::Objs::Element.typename,
+          :value => nil,
+          :parent => content }
+        title = fac.create params
+
+        params = { :name => BODY,
+          :type => Gloo::Objs::Element.typename,
+          :value => nil,
+          :parent => self }
+        body = fac.create params
+        content = fac.create_can CONTENT, body
       end
 
 
@@ -173,7 +180,7 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
-      # wrap the content in the tag with id and class.
+      # Wrap the content in the tag with id and class.
       # 
       def wrap( tag, content, id=nil, classes=nil )
         return "<#{tag}>#{content}</#{tag}>"
@@ -185,21 +192,30 @@ module Gloo
       def render
         run_on_render
 
-        title = wrap 'title', title_value
-        head = wrap 'head', title
+        head_content = head.render
+        head_content = Page.render_params head_content, params_hash
+
         body_content = body.render
+        body_content = Page.render_params body_content, params_hash
 
-        # render params
-        params_h = params_hash 
-        if params_h
-          renderer = ERB.new( body_content )
-          body_content = renderer.result_with_hash( params_h )
-        end
+        contents = wrap 'html', head_content + body_content
 
-        contents = wrap 'html', head + body_content
         run_on_rendered
-
         return contents
+      end
+
+      # 
+      # Render content with the given params.
+      # Params might be nil, in which case the content
+      # is returned with no changes.
+      # 
+      def self.render_params content, params
+        return content unless params
+
+        renderer = ERB.new( content )
+        content = renderer.result_with_hash( params )
+
+        return content
       end
 
     end
