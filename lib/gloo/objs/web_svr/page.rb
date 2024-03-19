@@ -24,6 +24,13 @@ module Gloo
       CONTENT = 'content'.freeze
       TITLE = 'title'.freeze
 
+      # Return Content type and HTML Code
+      HTML_CONTENT = 'html'.freeze
+      TEXT_CONTENT = 'text'.freeze
+      JSON_CONTENT = 'json'.freeze
+      CONTENT = 'content'.freeze
+      CODE = 'code'.freeze
+
       #
       # The name of the object type.
       #
@@ -81,6 +88,29 @@ module Gloo
         end
 
         return h
+      end
+
+      # 
+      # Get the content type.
+      # 
+      def content_type
+        content = find_child CONTENT
+        return content ? content.value : nil
+      end
+
+      # 
+      # Is the return type HTML?
+      # 
+      def is_html?
+        return true if content_type.nil?
+        return content_type == HTML_CONTENT
+      end
+
+      # 
+      # Is the return type TEXT?
+      # 
+      def is_text?
+        return content_type == TEXT_CONTENT
       end
 
 
@@ -192,16 +222,45 @@ module Gloo
       def render
         run_on_render
 
-        head_content = head.render
-        head_content = Page.render_params head_content, params_hash
-
-        body_content = body.render
-        body_content = Page.render_params body_content, params_hash
-
-        contents = wrap 'html', head_content + body_content
-
+        if is_html?
+          contents = render_html
+        elsif is_text?
+          contents = render_text
+        end
+        
         run_on_rendered
         return contents
+      end
+
+      # 
+      # Render the page as HTML.
+      # 
+      def render_html
+        head_content = head.render_html
+        head_content = Page.render_params( head_content, params_hash ) if params_hash
+
+        body_content = body.render_html
+        body_content = Page.render_params( body_content, params_hash ) if params_hash
+
+        contents = wrap( 'html', head_content + body_content )
+        return Gloo::WebSvr::Response.html_response( @engine, contents )
+      end
+
+      # 
+      # Render the page as TEXT.
+      # 
+      def render_text
+        if head
+          head_content = head.render_text
+          head_content = Page.render_params( head_content, params_hash ) if params_hash
+        else
+          head_content = ''
+        end
+
+        body_content = body.render_text
+        body_content = Page.render_params( body_content, params_hash ) if params_hash
+
+        return Gloo::WebSvr::Response.text_response( @engine, head_content + body_content )
       end
 
       # 

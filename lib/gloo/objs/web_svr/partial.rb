@@ -156,12 +156,12 @@ module Gloo
       # 
       # Render the page.
       # 
-      def render
+      def render_html
         run_on_render
 
         part_content = ''
         content.children.each do |e|
-          part_content << e.render
+          part_content << e.render_html
         end
       
         part_content = Page.render_params part_content, params_hash

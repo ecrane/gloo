@@ -186,7 +186,6 @@ module Gloo
           return nil unless pages
 
           return find_route_segment( route_segments, pages.children )
-          # return pages.children[1]
         end
 
         # TODO: return error page

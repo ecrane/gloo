@@ -8,10 +8,15 @@ module Gloo
   module WebSvr
     class Response
 
-      SUCCESS = 200
+      SUCCESS = 200.freeze
 
+      # 
+      # SEE: https://stackoverflow.com/questions/23714383/what-are-all-the-possible-values-for-http-content-type-header#48704300
+      #  for a list of content types.
+      # 
       CONTENT_TYPE = 'Content-Type'
       TEXT_TYPE = 'text/plain'
+      JSON_TYPE = 'application/json'
       HTML_TYPE = 'text/html'
       
       attr_reader :code, :type, :data
@@ -39,17 +44,24 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
+      # Helper to create a successful JSON response with the given data.
+      # 
+      def self.json_response engine, data, code = SUCCESS
+        return Gloo::WebSvr::Response.new( engine, code, JSON_TYPE, data )
+      end
+
+      # 
       # Helper to create a successful text response with the given data.
       # 
-      def self.text_response engine, data
-        return Gloo::WebSvr::Response.new( engine, SUCCESS, TEXT_TYPE, data )
+      def self.text_response engine, data, code = SUCCESS
+        return Gloo::WebSvr::Response.new( engine, code, TEXT_TYPE, data )
       end
 
       # 
       # Helper to create a successful web response with the given data.
       # 
-      def self.html_response engine, data
-        return Gloo::WebSvr::Response.new( engine, SUCCESS, HTML_TYPE, data )
+      def self.html_response engine, data, code = SUCCESS
+        return Gloo::WebSvr::Response.new( engine, code, HTML_TYPE, data )
       end
 
 

@@ -34,7 +34,7 @@ module Gloo
 
         page = @server_obj.page_for_route @request.path
         if page
-          result = render page
+          result = page.render
         else
           result = server_error_result
         end
@@ -43,11 +43,11 @@ module Gloo
         return result
       end
 
-      def render page
-        @log.debug 'rendering page…'
-        content = page.render
-        return Gloo::WebSvr::Response.html_response( @engine, content )
-      end
+      # def render page
+      #   @log.debug 'rendering page…'
+      #   content = page.render
+      #   return Gloo::WebSvr::Response.html_response( @engine, content )
+      # end
 
       def web_result
         @log.debug 'processing html request…'

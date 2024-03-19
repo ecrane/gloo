@@ -136,21 +136,15 @@ module Gloo
         return content
       end
 
+
       # ---------------------------------------------------------------------
       #    Render
       # ---------------------------------------------------------------------
 
       # 
-      # wrap the content in the tag with id and class.
-      # 
-      def wrap( tag, content, id=nil, classes=nil )
-        return "<#{tag}>#{content}</#{tag}>"
-      end
-
-      # 
       # Render the page as HTML.
       # 
-      def render
+      def render_html
         content_text = ''
         
         elements = content_elements
@@ -158,9 +152,9 @@ module Gloo
           elements.each do |e|
             e = Gloo::Objs::Alias.resolve_alias( @engine, e )
             if e.class == Element
-              content_text << e.render
+              content_text << e.render_html
             elsif e.class == Partial
-              content_text << e.render
+              content_text << e.render_html
             else
               content_text << e.value.to_s
             end
