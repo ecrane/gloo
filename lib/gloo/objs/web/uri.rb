@@ -138,8 +138,20 @@ module Gloo
       def msg_open
         return unless value
 
+        Gloo::Objs::Uri.open_url value
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Helper functiont to open a URL
+      # ---------------------------------------------------------------------
+
+      # 
+      # Open the given URL with platform command.
+      # 
+      def self.open_url url
         cmd = Gloo::Core::GlooSystem.open_for_platform
-        cmd_with_param = "#{cmd} \"#{value}\""
+        cmd_with_param = "#{cmd} \"#{url}\""
 
         if OS.mac?
           `#{cmd_with_param}`

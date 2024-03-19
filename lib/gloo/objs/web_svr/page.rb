@@ -1,0 +1,223 @@
+# Author::    Eric Crane  (mailto:eric.crane@mac.com)
+# Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
+#
+# A web page hosted in a gloo web server.
+#
+
+module Gloo
+  module Objs
+    class Page < Gloo::Core::Obj
+
+      KEYWORD = 'page'.freeze
+      KEYWORD_SHORT = 'page'.freeze
+
+      # Events
+      ON_RENDER = 'on_render'.freeze
+      ON_RENDERED = 'on_rendered'.freeze
+
+      # Parameters used during render.
+      PARAMS = 'params'.freeze
+
+      # Content
+      HEAD = 'head'.freeze
+      BODY = 'body'.freeze
+      CONTENT = 'content'.freeze
+      TITLE = 'title'.freeze
+
+      #
+      # The name of the object type.
+      #
+      def self.typename
+        return KEYWORD
+      end
+
+      #
+      # The short name of the object type.
+      #
+      def self.short_typename
+        return KEYWORD_SHORT
+      end
+
+      #
+      # Set the value with any necessary type conversions.
+      #
+      def set_value( new_value )
+        self.value = new_value.to_s
+      end
+
+      #
+      # Does this object support multi-line values?
+      # Initially only true for scripts.
+      #
+      def multiline_value?
+        return false
+      end
+
+      #
+      # Get the head element.
+      #
+      def head
+        return find_child HEAD
+      end
+
+      #
+      # Get the body element.
+      #
+      def body
+        return find_child BODY
+      end
+
+      #
+      # Get the params hash from the child object.
+      # Returns nil if there is none.
+      #
+      def params_hash
+        params_can = find_child PARAMS
+        return nil unless params_can
+
+        h = {}
+        params_can.children.each do |o|
+          h[ o.name ] = o.value
+        end
+
+        return h
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Events
+      # ---------------------------------------------------------------------
+
+      #
+      # Run the on render script if there is one.
+      #
+      def run_on_render
+        o = find_child ON_RENDER
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+      #
+      # Run the on rendered script if there is one.
+      #
+      def run_on_rendered
+        o = find_child ON_RENDERED
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Children
+      # ---------------------------------------------------------------------
+
+      #
+      # Does this object have children to add when an object
+      # is created in interactive mode?
+      # This does not apply during obj load, etc.
+      #
+      def add_children_on_create?
+        return true
+      end
+
+      #
+      # Add children to this object.
+      # This is used by containers to add children needed
+      # for default configurations.
+      #
+      def add_default_children
+        fac = @engine.factory
+
+        fac.create_script ON_RENDER, '', self
+        fac.create_script ON_RENDERED, '', self
+        fac.create_can PARAMS, self
+
+        params = { :name => HEAD,
+          :type => Gloo::Objs::Element.typename,
+          :value => nil,
+          :parent => self }
+        head = fac.create params
+        content = fac.create_can CONTENT, head
+        params = { :name => TITLE,
+          :type => Gloo::Objs::Element.typename,
+          :value => nil,
+          :parent => content }
+        title = fac.create params
+
+        params = { :name => BODY,
+          :type => Gloo::Objs::Element.typename,
+          :value => nil,
+          :parent => self }
+        body = fac.create params
+        content = fac.create_can CONTENT, body
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Messages
+      # ---------------------------------------------------------------------
+
+      #
+      # Get a list of message names that this object receives.
+      #
+      def self.messages
+        return super + [ 'render' ]
+      end
+
+      #
+      # Get the expiration date for the certificate.
+      #
+      def msg_render
+        content = self.render
+        @engine.heap.it.set_to content 
+        return content
+      end
+
+      # ---------------------------------------------------------------------
+      #    Render
+      # ---------------------------------------------------------------------
+
+      # 
+      # Wrap the content in the tag with id and class.
+      # 
+      def wrap( tag, content, id=nil, classes=nil )
+        return "<#{tag}>#{content}</#{tag}>"
+      end
+
+      # 
+      # Render the page.
+      # 
+      def render
+        run_on_render
+
+        head_content = head.render
+        head_content = Page.render_params head_content, params_hash
+
+        body_content = body.render
+        body_content = Page.render_params body_content, params_hash
+
+        contents = wrap 'html', head_content + body_content
+
+        run_on_rendered
+        return contents
+      end
+
+      # 
+      # Render content with the given params.
+      # Params might be nil, in which case the content
+      # is returned with no changes.
+      # 
+      def self.render_params content, params
+        return content unless params
+
+        renderer = ERB.new( content )
+        content = renderer.result_with_hash( params )
+
+        return content
+      end
+
+    end
+  end
+end

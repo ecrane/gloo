@@ -42,4 +42,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sqlite3', '~> 1.4', '>= 1.4.2'
   spec.add_dependency 'os', '~> 1.1', '>= 1.1.4'
   spec.add_dependency 'pg', '~> 1.5.4'
+  spec.add_dependency 'thin', '~> 1.8.2'
 end
