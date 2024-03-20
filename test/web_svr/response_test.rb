@@ -5,7 +5,7 @@ class ResponseTest < BaseEngineTest
   def test_creation
     o = Gloo::WebSvr::Response.new
     assert o
-    assert_equal Gloo::WebSvr::Response::SUCCESS, o.code
+    assert_equal Gloo::WebSvr::ResponseCode::SUCCESS, o.code
     assert_equal Gloo::WebSvr::Response::HTML_TYPE, o.type
     refute o.data
   end
@@ -13,7 +13,7 @@ class ResponseTest < BaseEngineTest
   def test_adding_content
     o = Gloo::WebSvr::Response.new
     assert o
-    assert_equal Gloo::WebSvr::Response::SUCCESS, o.code
+    assert_equal Gloo::WebSvr::ResponseCode::SUCCESS, o.code
     assert_equal Gloo::WebSvr::Response::HTML_TYPE, o.type
     refute o.data
 
@@ -36,7 +36,7 @@ class ResponseTest < BaseEngineTest
   def test_the_result_array
     o = Gloo::WebSvr::Response.new
     assert o
-    assert_equal Gloo::WebSvr::Response::SUCCESS, o.code
+    assert_equal Gloo::WebSvr::ResponseCode::SUCCESS, o.code
     assert_equal Gloo::WebSvr::Response::HTML_TYPE, o.type
     o.add 'one two three'
 

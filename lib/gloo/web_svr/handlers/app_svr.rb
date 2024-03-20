@@ -39,15 +39,8 @@ module Gloo
           result = server_error_result
         end
 
-        # result = web? ? web_result : text_result
         return result
       end
-
-      # def render page
-      #   @log.debug 'rendering page…'
-      #   content = page.render
-      #   return Gloo::WebSvr::Response.html_response( @engine, content )
-      # end
 
       def web_result
         @log.debug 'processing html request…'

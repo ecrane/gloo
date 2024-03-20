@@ -29,7 +29,7 @@ module Gloo
       TEXT_CONTENT = 'text'.freeze
       JSON_CONTENT = 'json'.freeze
       CONTENT = 'content'.freeze
-      CODE = 'code'.freeze
+      RETURN_CODE = 'return_code'.freeze
 
       #
       # The name of the object type.
@@ -96,6 +96,15 @@ module Gloo
       def content_type
         content = find_child CONTENT
         return content ? content.value : nil
+      end
+
+      # 
+      # Get the return code.
+      # SUCCESS is the default if none is set.
+      # 
+      def return_code
+        code = find_child RETURN_CODE
+        return code ? code.value : Gloo::WebSvr::ResponseCode::SUCCESS
       end
 
       # 
@@ -241,7 +250,8 @@ module Gloo
         body_content = render_with_params body, :render_html, params
 
         contents = wrap( 'html', head_content + body_content )
-        return Gloo::WebSvr::Response.html_response( @engine, contents )
+        return Gloo::WebSvr::Response.html_response( 
+          @engine, contents, return_code )
       end
 
       # 
@@ -250,7 +260,8 @@ module Gloo
       def render_text params
         head_content = render_with_params head, :render_text, params
         body_content = render_with_params body, :render_text, params
-        return Gloo::WebSvr::Response.text_response( @engine, head_content + body_content )
+        return Gloo::WebSvr::Response.text_response( 
+          @engine, head_content + body_content, return_code )
       end
 
       # 

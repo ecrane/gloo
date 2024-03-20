@@ -8,16 +8,14 @@ module Gloo
   module WebSvr
     class Response
 
-      SUCCESS = 200.freeze
-
       # 
       # SEE: https://stackoverflow.com/questions/23714383/what-are-all-the-possible-values-for-http-content-type-header#48704300
       #  for a list of content types.
       # 
-      CONTENT_TYPE = 'Content-Type'
-      TEXT_TYPE = 'text/plain'
-      JSON_TYPE = 'application/json'
-      HTML_TYPE = 'text/html'
+      CONTENT_TYPE = 'Content-Type'.freeze
+      TEXT_TYPE = 'text/plain'.freeze
+      JSON_TYPE = 'application/json'.freeze
+      HTML_TYPE = 'text/html'.freeze
       
       attr_reader :code, :type, :data
       
@@ -29,9 +27,12 @@ module Gloo
       #
       # Set up the web server.
       #
-      def initialize( engine, code = SUCCESS, type = HTML_TYPE, data = nil )
+      def initialize( engine = nil, 
+        code = Gloo::WebSvr::ResponseCode::SUCCESS, 
+        type = HTML_TYPE, data = nil )
+        
         @engine = engine
-        @log = @engine.log
+        @log = @engine.log if @engine
 
         @code = code
         @type = type
@@ -46,21 +47,27 @@ module Gloo
       # 
       # Helper to create a successful JSON response with the given data.
       # 
-      def self.json_response engine, data, code = SUCCESS
+      def self.json_response( engine, data, 
+        code = Gloo::WebSvr::ResponseCode::SUCCESS )
+
         return Gloo::WebSvr::Response.new( engine, code, JSON_TYPE, data )
       end
 
       # 
       # Helper to create a successful text response with the given data.
       # 
-      def self.text_response engine, data, code = SUCCESS
+      def self.text_response( engine, data, 
+        code = Gloo::WebSvr::ResponseCode::SUCCESS )
+
         return Gloo::WebSvr::Response.new( engine, code, TEXT_TYPE, data )
       end
 
       # 
       # Helper to create a successful web response with the given data.
       # 
-      def self.html_response engine, data, code = SUCCESS
+      def self.html_response( engine, data, 
+        code = Gloo::WebSvr::ResponseCode::SUCCESS )
+
         return Gloo::WebSvr::Response.new( engine, code, HTML_TYPE, data )
       end
 
@@ -101,6 +108,8 @@ module Gloo
       # Write the result information to the log.
       # 
       def log
+        return unless @log
+
         @log.debug "Response #{@code} #{@type}"
       end
 
