@@ -155,13 +155,14 @@ module Gloo
 
       # 
       # Render the page.
+      # Use the specified render function or HTML by default.
       # 
-      def render_html
+      def render( render_ƒ = :render_html )
         run_on_render
 
         part_content = ''
         content.children.each do |e|
-          part_content << e.render_html
+          part_content << e.send( render_ƒ )
         end
       
         part_content = Page.render_params part_content, params_hash

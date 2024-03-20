@@ -145,23 +145,7 @@ module Gloo
       # Render the page as HTML.
       # 
       def render_html
-        content_text = ''
-        
-        elements = content_elements
-        if elements
-          elements.each do |e|
-            e = Gloo::Objs::Alias.resolve_alias( @engine, e )
-            if e.class == Element
-              content_text << e.render_html
-            elsif e.class == Partial
-              content_text << e.render_html
-            else
-              content_text << e.value.to_s
-            end
-          end
-        else
-          content_text << self.value
-        end
+        content_text = render_content :render_html
 
         return "#{tag_open}#{content_text}#{tag_close}"
       end
@@ -170,6 +154,16 @@ module Gloo
       # Render the page as text, without tags.
       # 
       def render_text
+        content_text = render_content :render_text
+
+        return "#{content_text}"
+      end
+
+      # 
+      # Render the page content using the specified render function.
+      # This is a recursive function (through one of the other render functions).
+      # 
+      def render_content render_ƒ
         content_text = ''
         
         elements = content_elements
@@ -177,9 +171,9 @@ module Gloo
           elements.each do |e|
             e = Gloo::Objs::Alias.resolve_alias( @engine, e )
             if e.class == Element
-              content_text << e.render
+              content_text << e.send( render_ƒ )
             elsif e.class == Partial
-              content_text << e.render
+              content_text << e.render( render_ƒ )
             else
               content_text << e.value.to_s
             end
@@ -188,7 +182,7 @@ module Gloo
           content_text << self.value
         end
 
-        return "#{content_text}"
+        return content_text
       end
                     
     end

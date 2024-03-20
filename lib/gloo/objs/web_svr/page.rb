@@ -221,11 +221,12 @@ module Gloo
       # 
       def render
         run_on_render
+        params = params_hash
 
         if is_html?
-          contents = render_html
+          contents = render_html params
         elsif is_text?
-          contents = render_text
+          contents = render_text params
         end
         
         run_on_rendered
@@ -235,12 +236,9 @@ module Gloo
       # 
       # Render the page as HTML.
       # 
-      def render_html
-        head_content = head.render_html
-        head_content = Page.render_params( head_content, params_hash ) if params_hash
-
-        body_content = body.render_html
-        body_content = Page.render_params( body_content, params_hash ) if params_hash
+      def render_html params
+        head_content = render_with_params head, :render_html, params
+        body_content = render_with_params body, :render_html, params
 
         contents = wrap( 'html', head_content + body_content )
         return Gloo::WebSvr::Response.html_response( @engine, contents )
@@ -249,18 +247,23 @@ module Gloo
       # 
       # Render the page as TEXT.
       # 
-      def render_text
-        if head
-          head_content = head.render_text
-          head_content = Page.render_params( head_content, params_hash ) if params_hash
-        else
-          head_content = ''
-        end
-
-        body_content = body.render_text
-        body_content = Page.render_params( body_content, params_hash ) if params_hash
-
+      def render_text params
+        head_content = render_with_params head, :render_text, params
+        body_content = render_with_params body, :render_text, params
         return Gloo::WebSvr::Response.text_response( @engine, head_content + body_content )
+      end
+
+      # 
+      # Given an object and a render message, render the object.
+      # If the obj is nil, return an empty string.
+      # If the params are nil, no param rendering is done.
+      # 
+      def render_with_params obj, render_ƒ, params
+        return '' unless obj
+
+        content = obj.send render_ƒ
+        content = Page.render_params( content, params ) if params
+        return content
       end
 
       # 
