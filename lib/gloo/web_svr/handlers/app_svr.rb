@@ -9,6 +9,9 @@ module Gloo
   module WebSvr
     class AppSvr < Gloo::WebSvr::Handler
 
+      attr_reader :server_obj
+
+
       # ---------------------------------------------------------------------
       #    Initialization
       # ---------------------------------------------------------------------
@@ -42,27 +45,16 @@ module Gloo
         return result
       end
 
-      def web_result
-        @log.debug 'processing html request…'
-        msg = "<html><head><title>test web</title><body>Hello from Rack and Thin server.  at: #{Time.now}</body></html>"
-        return Gloo::WebSvr::Response.html_response( @engine, msg )
-      end
-    
-      def text_result
-        @log.debug 'processing text request…'
-        msg = "Hello from Rack and Thin server.  at: #{Time.now}"
-        return Gloo::WebSvr::Response.text_response( @engine, msg )
-      end
-
+      # 
+      # Return a server error result.
+      # Use the app's error if there is one, otherwise a generic message.
+      # 
       def server_error_result
+        # TODO: use the app's error if there is one.
+
         msg = "Server error.  at: #{Time.now}"
         return Gloo::WebSvr::Response.text_response( @engine, msg )
-      end
-
-      def web?
-        return @request.path == '/web'
-      end
-    
+      end    
     
       # ---------------------------------------------------------------------
       #    Helper functions

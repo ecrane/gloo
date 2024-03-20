@@ -113,14 +113,16 @@ module Gloo
       #
       def add_default_children
         fac = @engine.factory
-        fac.create_string TITLE, '', self
 
-        fac.create_script ON_RENDER, '', self
-        fac.create_script ON_RENDERED, '', self
+        fac.create_string SCHEME, 'http', self
+        fac.create_string HOST, 'localhost', self
+        fac.create_string PORT, '8080', self
 
-        fac.create_can PARAMS, self
-        fac.create_can HEAD, self
-        fac.create_can BODY, self
+        fac.create_script ON_START, '', self
+        fac.create_script ON_STOP, '', self
+
+        fac.create_can PAGES, self
+        fac.create_can HOME, self
       end
 
 

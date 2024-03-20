@@ -13,9 +13,15 @@
 module Gloo
   module WebSvr
     class Request
-      
+
+      REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+      REQUEST_PATH = 'REQUEST_PATH'.freeze
+      HTTP_HOST = 'HTTP_HOST'.freeze
+      QUERY_STRING = 'QUERY_STRING'.freeze
+
       attr_reader :method, :host, :path, :query
 
+      
       # ---------------------------------------------------------------------
       #    Initialization
       # ---------------------------------------------------------------------
@@ -56,10 +62,10 @@ module Gloo
       # Write the request information to the log.
       # 
       def detect_env
-        @method = @env[ 'REQUEST_METHOD' ]
-        @path = @env[ 'REQUEST_PATH' ]
-        @host = @env[ 'HTTP_HOST' ]
-        @query = @env[ 'QUERY_STRING' ]
+        @method = @env[ REQUEST_METHOD ]
+        @path = @env[ REQUEST_PATH ]
+        @host = @env[ HTTP_HOST ]
+        @query = @env[ QUERY_STRING ]
       end
 
 

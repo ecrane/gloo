@@ -137,9 +137,22 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
+      # Convert the object to JSON.
+      # 
+      def self.convert_obj_to_json( obj )
+
+        # TODO: put container objects in an array
+        
+        h = obj ? convert_obj_to_hash( obj ) : {}
+        json = JSON.parse( h.to_json )
+        json = JSON.pretty_generate( json )
+        return json
+      end
+
+      # 
       # Convert the object to a hash of name and values.
       # 
-      def convert_obj_to_hash( obj )
+      def self.convert_obj_to_hash( obj )
         h = {}
 
         if obj.child_count > 0

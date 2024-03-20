@@ -142,7 +142,7 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
-      # Render the page as HTML.
+      # Render the element as HTML.
       # 
       def render_html
         content_text = render_content :render_html
@@ -151,7 +151,7 @@ module Gloo
       end
 
       #
-      # Render the page as text, without tags.
+      # Render the element as text, without tags.
       # 
       def render_text
         content_text = render_content :render_text
@@ -160,7 +160,7 @@ module Gloo
       end
 
       # 
-      # Render the page content using the specified render function.
+      # Render the element content using the specified render function.
       # This is a recursive function (through one of the other render functions).
       # 
       def render_content render_ƒ

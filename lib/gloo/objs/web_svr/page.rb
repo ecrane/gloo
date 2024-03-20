@@ -25,10 +25,10 @@ module Gloo
       TITLE = 'title'.freeze
 
       # Return Content type and HTML Code
+      CONTENT_TYPE = 'content_type'.freeze
       HTML_CONTENT = 'html'.freeze
       TEXT_CONTENT = 'text'.freeze
       JSON_CONTENT = 'json'.freeze
-      CONTENT = 'content'.freeze
       RETURN_CODE = 'return_code'.freeze
 
       #
@@ -91,20 +91,20 @@ module Gloo
       end
 
       # 
-      # Get the content type.
-      # 
-      def content_type
-        content = find_child CONTENT
-        return content ? content.value : nil
-      end
-
-      # 
       # Get the return code.
       # SUCCESS is the default if none is set.
       # 
       def return_code
         code = find_child RETURN_CODE
         return code ? code.value : Gloo::WebSvr::ResponseCode::SUCCESS
+      end
+
+      # 
+      # Get the content type.
+      # 
+      def content_type
+        type = find_child CONTENT_TYPE
+        return type ? type.value : nil
       end
 
       # 
@@ -120,6 +120,13 @@ module Gloo
       # 
       def is_text?
         return content_type == TEXT_CONTENT
+      end
+
+      # 
+      # Is the return type JSON?
+      # 
+      def is_json?
+        return content_type == JSON_CONTENT
       end
 
 
@@ -234,8 +241,12 @@ module Gloo
 
         if is_html?
           contents = render_html params
+        elsif is_json?
+          contents = render_json
         elsif is_text?
           contents = render_text params
+        else
+          # TODO: Show an error
         end
         
         run_on_rendered
@@ -255,13 +266,20 @@ module Gloo
       end
 
       # 
+      # Render the page as JSON.
+      # 
+      def render_json
+        json_content = Gloo::Objs::Json.convert_obj_to_json( body )
+
+        return Gloo::WebSvr::Response.json_response( @engine, json_content, return_code )
+      end
+
+      # 
       # Render the page as TEXT.
       # 
       def render_text params
-        head_content = render_with_params head, :render_text, params
         body_content = render_with_params body, :render_text, params
-        return Gloo::WebSvr::Response.text_response( 
-          @engine, head_content + body_content, return_code )
+        return Gloo::WebSvr::Response.text_response( @engine, body_content, return_code )
       end
 
       # 
