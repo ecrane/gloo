@@ -38,6 +38,12 @@ module Gloo
         page = @server_obj.page_for_route @request.path
         if page
           result = page.render
+          if redirect_set?
+            page = @engine.running_app.redirect
+            @log.debug "Redirecting to: #{page.pn}"
+            @engine.running_app.redirect = nil
+            result = page.render
+          end
         else
           result = server_error_result
         end
@@ -59,6 +65,14 @@ module Gloo
       # ---------------------------------------------------------------------
       #    Helper functions
       # ---------------------------------------------------------------------
+
+      # 
+      # Is there a redirect page set in the running app?
+      # 
+      def redirect_set?
+        app = @engine.running_app
+        return app && app.redirect
+      end
 
     end
   end

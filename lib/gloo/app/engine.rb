@@ -15,7 +15,8 @@ module Gloo
       attr_reader :args, :mode, :running, :platform,
                   :dictionary, :parser, :heap, :factory
       attr_accessor :last_cmd, :persist_man, :event_manager,
-                    :exec_env, :converter
+                    :exec_env, :converter,
+                    :running_app
 
       #
       # Set up the engine with basic elements.

@@ -233,10 +233,20 @@ module Gloo
       end
 
       # 
+      # Is there a redirect page set in the running app?
+      # 
+      def redirect_set?
+        app = @engine.running_app
+        return app && app.redirect
+      end
+
+      # 
       # Render the page.
       # 
       def render
         run_on_render
+        return nil if redirect_set?
+
         params = params_hash
 
         if is_html?
@@ -250,6 +260,8 @@ module Gloo
         end
         
         run_on_rendered
+        return nil if redirect_set?
+
         return contents
       end
 

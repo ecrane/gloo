@@ -85,9 +85,9 @@ module Gloo
         request.log
 
         response = request.process
-        response.log
+        response.log if response
 
-        return response.result
+        return response ? response.result : nil
       end
 
     

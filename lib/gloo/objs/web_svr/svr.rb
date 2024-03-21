@@ -29,6 +29,12 @@ module Gloo
       # Messages
       SERVER_NOT_RUNNING = 'The web server is not running and cannot be stopped'.freeze
 
+      # 
+      # Should the current request be redirected?
+      # If the redirect is set, then use that page instead
+      # of the one requested.
+      # 
+      attr_accessor :redirect
 
       #
       # The name of the object type.
@@ -144,6 +150,9 @@ module Gloo
         @engine.log.debug "Starting web server…"
         # @engine.log.quiet = true
 
+        # Set running app to this object.
+        @engine.running_app = self
+
         config = Gloo::WebSvr::Config.new( scheme_value, host_value, port_value )
         @engine.log.debug "Web Server URL: #{config.base_url}"
 
@@ -161,6 +170,10 @@ module Gloo
           @engine.log.debug "Stopping web server…"
           @web_server.stop
           @web_server = nil
+
+          # Clear running app.
+          @engine.running_app = nil
+
           @engine.log.debug "Web server stopped…"
         else
           @engine.log.error SERVER_NOT_RUNNING
