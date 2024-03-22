@@ -90,4 +90,16 @@ class ScriptObjTest < BaseEngineTest
     assert_equal 3, @engine.heap.it.value
   end
 
+  def test_running_an_empty_script
+    i = @engine.parser.parse_immediate 'create s as script'
+    i.run
+
+    s = @engine.heap.root.children.first
+    assert s
+    assert_equal '', s.value
+    
+    i = @engine.parser.parse_immediate 'run s'
+    i.run
+    assert_nil @engine.heap.it.value
+  end
 end
