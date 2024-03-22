@@ -13,8 +13,6 @@ module Gloo
       HTTPS = 'https'
       LOCALHOST = 'localhost'
       PORT_DEFAULT = '8080'
-
-      DOC_PORT_DEFAULT = '8087'
       
       attr_reader :scheme, :host, :port
       
@@ -36,18 +34,6 @@ module Gloo
       # ---------------------------------------------------------------------
       #    Static Helper Functions
       # ---------------------------------------------------------------------
-
-      #
-      # Get the configuration for the documentation server.
-      #
-      def self.doc_config( engine )
-
-        # TODO: check the user configuration to see if we want to 
-        # override the default configuration for the doc server.
-        # engine param isn't used, but will be needed to do the above.
-
-        return Gloo::WebSvr::Config.new( HTTP, LOCALHOST, DOC_PORT_DEFAULT )
-      end
 
 
       # ---------------------------------------------------------------------

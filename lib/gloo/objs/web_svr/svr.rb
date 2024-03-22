@@ -156,7 +156,7 @@ module Gloo
         config = Gloo::WebSvr::Config.new( scheme_value, host_value, port_value )
         @engine.log.debug "Web Server URL: #{config.base_url}"
 
-        handler = Gloo::WebSvr::AppSvr.new( @engine, self )
+        handler = Gloo::WebSvr::Handler.new( @engine, self )
         @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
         @web_server.start
         @engine.log.debug "Web server started…"

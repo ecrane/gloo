@@ -15,7 +15,6 @@ module Gloo
       VERSION = :version  # Show version information
       HELP = :help        # Show the help screen
       TEST = :test        # Running in Unit Test mode.
-      DOC_SVR = :doc      # Run gloo as a documentation server.
 
       #
       # Get the default mode.
