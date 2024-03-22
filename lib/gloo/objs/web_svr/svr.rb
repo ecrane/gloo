@@ -23,8 +23,10 @@ module Gloo
       # Container with pages in the web app.
       PAGES = 'pages'.freeze
 
-      # Alias to the home page
+      # Alias to the home and error pages
       HOME = 'home'.freeze
+      ERR_PAGE = 'error'.freeze
+
 
       # Messages
       SERVER_NOT_RUNNING = 'The web server is not running and cannot be stopped'.freeze
@@ -180,6 +182,7 @@ module Gloo
         end
       end
 
+
       # ---------------------------------------------------------------------
       #    Routing
       # ---------------------------------------------------------------------
@@ -203,7 +206,6 @@ module Gloo
           return find_route_segment( route_segments, pages.children )
         end
 
-        # TODO: return error page
         return nil
       end
 
@@ -229,7 +231,7 @@ module Gloo
           end
         end
 
-        return nil # objs.first
+        return nil 
       end
 
       # 
@@ -237,6 +239,17 @@ module Gloo
       # 
       def home_page
         o = find_child HOME
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o
+      end
+
+      # 
+      # Get the application error page.
+      # 
+      def err_page
+        o = find_child ERR_PAGE
         return nil unless o
 
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )

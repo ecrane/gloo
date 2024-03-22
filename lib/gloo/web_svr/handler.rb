@@ -56,10 +56,12 @@ module Gloo
       # Use the app's error if there is one, otherwise a generic message.
       # 
       def server_error_result
-        # TODO: use the app's error if there is one.
+          err_page = @server_obj.err_page
+          return err_page.render if err_page
 
-        msg = "Server error.  at: #{Time.now}"
-        return Gloo::WebSvr::Response.text_response( @engine, msg )
+          # Last resort, just return a generic error message.
+          return Gloo::WebSvr::Response.text_response( @engine, 
+            "Server error!", Gloo::WebSvr::ResponseCode::SERVER_ERR )
       end    
     
       # ---------------------------------------------------------------------
