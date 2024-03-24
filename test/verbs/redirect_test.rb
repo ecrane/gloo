@@ -7,7 +7,7 @@ class RedirectTest < BaseEngineTest
   end
 
   def test_the_keyword_shortcut
-    assert_equal 'redirect', Gloo::Verbs::Redirect.keyword_shortcut
+    assert_equal 'go', Gloo::Verbs::Redirect.keyword_shortcut
   end
 
 end

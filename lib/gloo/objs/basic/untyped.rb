@@ -9,7 +9,7 @@ module Gloo
     class Untyped < Gloo::Core::Obj
 
       KEYWORD = 'untyped'.freeze
-      KEYWORD_SHORT = 'un'.freeze
+      KEYWORD_SHORT = 'any'.freeze
 
       #
       # The name of the object type.

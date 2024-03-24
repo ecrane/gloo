@@ -56,6 +56,40 @@ module Gloo
         return false
       end
 
+      # 
+      # Return the array of attributes if there are any.
+      # 
+      def attributes_hash
+        attr_can = find_child ATTRIBUTES
+
+        if attr_can && attr_can.children.size > 0
+          h = {}
+          attr_can.children.each do |o|
+            h[ o.name ] = o.value
+          end
+          return h
+        end
+
+        return {}
+      end
+
+      # 
+      # Get all attributes of the tag.
+      # 
+      def tag_attributes
+        attr_h = attributes_hash
+        return nil unless attr_h && attr_h.size > 0
+
+        attr_str = ''
+        attr_h.each do |k,v|
+          unless v.blank?
+            attr_str << " #{k}=\"#{v}\"" 
+          end
+        end
+
+        return attr_str
+      end
+
       #
       # Get the tag.
       # This is the name, up until an '_' char.
@@ -72,7 +106,12 @@ module Gloo
       # Get the opening tag.
       #
       def tag_open
-        return "<#{tag}>"
+        tag_attributes = self.tag_attributes
+        if tag_attributes
+          return "<#{tag}#{tag_attributes}>"
+        else
+          return "<#{tag}>"
+        end
       end
 
       #
@@ -110,8 +149,12 @@ module Gloo
       #
       def add_default_children
         fac = @engine.factory
-        fac.create_string ID, '', self
-        fac.create_string CLASSES, '', self
+
+        # Create attributes with ID and Classes
+        attr = fac.create_can ATTRIBUTES, self
+        fac.create_string ID, '', attr
+        fac.create_string CLASSES, '', attr
+
         fac.create_can CONTENT, self
       end
 

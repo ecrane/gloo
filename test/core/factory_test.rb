@@ -106,7 +106,7 @@ class FactoryTest < BaseEngineTest
 
   def test_find_type
     @engine.start
-    o = @engine.factory.find_type 'un'
+    o = @engine.factory.find_type 'any'
     assert_equal Gloo::Objs::Untyped, o
     o = @engine.factory.find_type ''
     assert_equal Gloo::Objs::Untyped, o

@@ -10,7 +10,7 @@ module Gloo
     class Redirect < Gloo::Core::Verb
 
       KEYWORD = 'redirect'.freeze
-      KEYWORD_SHORT = 'redirect'.freeze
+      KEYWORD_SHORT = 'go'.freeze
 
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
 
