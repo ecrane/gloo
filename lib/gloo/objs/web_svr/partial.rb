@@ -171,6 +171,28 @@ module Gloo
         return part_content
       end
 
+      # 
+      # Render the layout with the body and head params.
+      # 
+      def render_layout( head, body )
+        run_on_render
+
+        part_content = ''
+        content.children.each do |e|
+          # part_content << e.render_html
+          part_content << e.value.to_s
+        end
+      
+        params = params_hash || {}
+        params[ 'head' ] = head
+        params[ 'body' ] = body
+
+        part_content = Page.render_params part_content, params
+
+        run_on_rendered
+        return part_content
+      end
+
     end
   end
 end

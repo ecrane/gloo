@@ -24,6 +24,10 @@ module Gloo
       CONTENT = 'content'.freeze
       TITLE = 'title'.freeze
 
+      # Layout for this page.
+      # If not specified, use the layout for the app.
+      LAYOUT = 'layout'.freeze
+
       # Return Content type and HTML Code
       CONTENT_TYPE = 'content_type'.freeze
       HTML_CONTENT = 'html'.freeze
@@ -67,11 +71,37 @@ module Gloo
         return find_child HEAD
       end
 
+      # 
+      # Get the header content.
+      # This might be in a content child, or it might be 
+      # the head object itself.
+      # 
+      def head_content
+        head_obj = head
+        return nil unless head_obj
+
+        content_obj = head_obj.find_child CONTENT
+        return content_obj ? content_obj : head_obj
+      end
+
       #
       # Get the body element.
       #
       def body
         return find_child BODY
+      end
+
+      # 
+      # Get the body content.
+      # This might be in a content child, or it might be 
+      # the body object itself.
+      # 
+      def body_content
+        body_obj = body
+        return nil unless body_obj
+
+        content_obj = body_obj.find_child CONTENT
+        return content_obj ? content_obj : body_obj
       end
 
       #
@@ -105,6 +135,17 @@ module Gloo
       def content_type
         type = find_child CONTENT_TYPE
         return type ? type.value : nil
+      end
+
+      # 
+      # Get the layout for this page.
+      # 
+      def page_layout
+        o = find_child LAYOUT
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o
       end
 
       # 
@@ -270,10 +311,19 @@ module Gloo
       # Render the page as HTML.
       # 
       def render_html params
-        head_content = render_with_params head, :render_html, params
-        body_content = render_with_params body, :render_html, params
+        head_obj = render_with_params head_content, :render_html, params
+        body_obj = render_with_params body_content, :render_html, params
 
-        contents = wrap( 'html', head_content + body_content )
+        layout = page_layout
+        # TODO: check for app layout.
+        if layout
+          @engine.log.debug "Using Page Layout: #{layout.pn}"
+          contents = layout.render_layout( head_obj, body_obj )
+        else
+          @engine.log.debug "No layout for page."
+          contents = wrap( 'html', head_obj + body_obj )
+        end
+
         return Gloo::WebSvr::Response.html_response( 
           @engine, contents, return_code )
       end
@@ -303,8 +353,9 @@ module Gloo
       def render_with_params obj, render_ƒ, params
         return '' unless obj
 
-        content = obj.send render_ƒ
+        content = Element.render_obj( obj, render_ƒ, @engine )
         content = Page.render_params( content, params ) if params
+
         return content
       end
 

@@ -23,6 +23,9 @@ module Gloo
       # Container with pages in the web app.
       PAGES = 'pages'.freeze
 
+      # Default layout for pages.
+      LAYOUT = 'layout'.freeze
+
       # Alias to the home and error pages
       HOME = 'home'.freeze
       ERR_PAGE = 'error'.freeze
@@ -256,6 +259,16 @@ module Gloo
         return o
       end
 
+      # 
+      # Get the default layout for pages.
+      # 
+      def default_layout
+        o = find_child LAYOUT
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o
+      end
 
     end
   end

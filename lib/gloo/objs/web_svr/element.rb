@@ -124,9 +124,8 @@ module Gloo
       # 
       # Get all the children elements of the content.
       # 
-      def content_elements
-        content = find_child CONTENT
-        return content ? content.children : nil
+      def content_child
+        return find_child CONTENT
       end
 
       # ---------------------------------------------------------------------
@@ -207,25 +206,38 @@ module Gloo
       # This is a recursive function (through one of the other render functions).
       # 
       def render_content render_ƒ
-        content_text = ''
-        
-        elements = content_elements
-        if elements
-          elements.each do |e|
-            e = Gloo::Objs::Alias.resolve_alias( @engine, e )
+        obj = content_child
+        obj = self if obj.nil?
+
+        return Element.render_obj( obj, render_ƒ, @engine )
+      end
+
+      # 
+      # Render an object which might be an element,
+      # a container of items, or something else.
+      # 
+      def self.render_obj obj, render_ƒ, engine
+        rendered_obj_content = ''
+        return nil unless obj
+
+        if obj.children.size > 0
+          obj.children.each do |e|
+
+            e = Gloo::Objs::Alias.resolve_alias( engine, e )
+            puts "e: #{e.pn} - #{e.class}"
             if e.class == Element
-              content_text << e.send( render_ƒ )
+              rendered_obj_content << e.send( render_ƒ )
             elsif e.class == Partial
-              content_text << e.render( render_ƒ )
+              rendered_obj_content << e.render( render_ƒ )
             else
-              content_text << e.value.to_s
+              rendered_obj_content << e.value.to_s
             end
           end
         else
-          content_text << self.value
+          rendered_obj_content << obj.value
         end
 
-        return content_text
+        return rendered_obj_content
       end
                     
     end
