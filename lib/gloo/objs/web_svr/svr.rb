@@ -104,6 +104,17 @@ module Gloo
       end
 
 
+      # 
+      # Get the default layout for the app.
+      # 
+      def default_page_layout
+        o = find_child LAYOUT
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o
+      end
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------

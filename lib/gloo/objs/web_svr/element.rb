@@ -224,7 +224,6 @@ module Gloo
           obj.children.each do |e|
 
             e = Gloo::Objs::Alias.resolve_alias( engine, e )
-            puts "e: #{e.pn} - #{e.class}"
             if e.class == Element
               rendered_obj_content << e.send( render_ƒ )
             elsif e.class == Partial

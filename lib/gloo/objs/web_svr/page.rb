@@ -314,8 +314,7 @@ module Gloo
         head_obj = render_with_params head_content, :render_html, params
         body_obj = render_with_params body_content, :render_html, params
 
-        layout = page_layout
-        # TODO: check for app layout.
+        layout = page_layout_or_app_layout
         if layout
           @engine.log.debug "Using Page Layout: #{layout.pn}"
           contents = layout.render_layout( head_obj, body_obj )
@@ -326,6 +325,17 @@ module Gloo
 
         return Gloo::WebSvr::Response.html_response( 
           @engine, contents, return_code )
+      end
+
+      # 
+      # Get the layout for this page or if none for the app.
+      # 
+      def page_layout_or_app_layout
+        layout = page_layout
+        return layout if layout
+
+        app = @engine.running_app
+        return app.default_page_layout if app
       end
 
       # 
@@ -341,8 +351,8 @@ module Gloo
       # Render the page as TEXT.
       # 
       def render_text params
-        body_content = render_with_params body, :render_text, params
-        return Gloo::WebSvr::Response.text_response( @engine, body_content, return_code )
+        text_content = render_with_params body_content, :render_text, params
+        return Gloo::WebSvr::Response.text_response( @engine, text_content, return_code )
       end
 
       # 
