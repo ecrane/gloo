@@ -4,7 +4,7 @@ class ClsTest < BaseEngineTest
 
   def test_the_keyword
     o = Gloo::Verbs::Cls.keyword
-    assert_equal 'cls', o
+    assert_equal 'clear', o
   end
 
   def test_the_keyword_shortcut

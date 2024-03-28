@@ -179,8 +179,12 @@ module Gloo
 
         part_content = ''
         content.children.each do |e|
-          # part_content << e.render_html
-          part_content << e.value.to_s
+          e = Gloo::Objs::Alias.resolve_alias( @engine, e )
+
+          obj = e.find_child CONTENT
+          e = obj if obj
+
+          part_content << Element.render_obj( e, :render_html, @engine )
         end
       
         params = params_hash || {}

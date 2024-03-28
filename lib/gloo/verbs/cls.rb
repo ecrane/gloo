@@ -8,7 +8,7 @@ module Gloo
   module Verbs
     class Cls < Gloo::Core::Verb
 
-      KEYWORD = 'cls'.freeze
+      KEYWORD = 'clear'.freeze
       KEYWORD_SHORT = 'cls'.freeze
 
       #
