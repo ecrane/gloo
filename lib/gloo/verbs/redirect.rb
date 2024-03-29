@@ -24,11 +24,10 @@ module Gloo
         end
 
         # Send the redirect page to the running app.
-        app = @engine.running_app
-        if app
+        if @engine.app_running?
           obj_name = @tokens.second
           pn = Gloo::Core::Pn.new( @engine, obj_name )
-          app.redirect = pn.resolve
+          @engine.running_app.obj.redirect = pn.resolve
         end
       end
 

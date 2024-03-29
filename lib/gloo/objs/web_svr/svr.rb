@@ -167,15 +167,8 @@ module Gloo
         # @engine.log.quiet = true
 
         # Set running app to this object.
-        @engine.running_app = self
-
-        config = Gloo::WebSvr::Config.new( scheme_value, host_value, port_value )
-        @engine.log.debug "Web Server URL: #{config.base_url}"
-
-        handler = Gloo::WebSvr::Handler.new( @engine, self )
-        @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
-        @web_server.start
-        @engine.log.debug "Web server started…"
+        @engine.start_running_app( self )
+        # The running app will call the start function (below)
       end
 
       #
@@ -183,17 +176,69 @@ module Gloo
       #
       def msg_stop
         if @web_server
-          @engine.log.debug "Stopping web server…"
-          @web_server.stop
-          @web_server = nil
-
-          # Clear running app.
-          @engine.running_app = nil
-
-          @engine.log.debug "Web server stopped…"
+          @engine.stop_running_app
+          # The running app will call the stop function (below)
         else
           @engine.log.error SERVER_NOT_RUNNING
         end
+      end
+
+      # ---------------------------------------------------------------------
+      #    Start and Stop Events
+      #    Might come from messages or from other application events.
+      #    RunningApp fires these events.
+      # ---------------------------------------------------------------------
+
+      # 
+      # Start running the web server.
+      # 
+      def start
+        config = Gloo::WebSvr::Config.new( scheme_value, host_value, port_value )
+        @engine.log.debug "Web Server URL: #{config.base_url}"
+
+        handler = Gloo::WebSvr::Handler.new( @engine, self )
+        @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
+        @web_server.start
+        
+        run_on_start
+        @engine.log.debug "Web server started…"
+      end
+
+      # 
+      # Stop the running web server.
+      # 
+      def stop
+        @engine.log.debug "Stopping web server…"
+        @web_server.stop
+        @web_server = nil
+
+        run_on_stop
+        @engine.log.debug "Web server stopped…"
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    On Events - Scripts
+      # ---------------------------------------------------------------------
+
+      #
+      # Run the on render script if there is one.
+      #
+      def run_on_start
+        o = find_child ON_START
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+      #
+      # Run the on rendered script if there is one.
+      #
+      def run_on_stop
+        o = find_child ON_STOP
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
 
 

@@ -277,8 +277,8 @@ module Gloo
       # Is there a redirect page set in the running app?
       # 
       def redirect_set?
-        app = @engine.running_app
-        return app && app.redirect
+        return false unless @engine.app_running?
+        return @engine.running_app.obj.redirect
       end
 
       # 
@@ -334,8 +334,8 @@ module Gloo
         layout = page_layout
         return layout if layout
 
-        app = @engine.running_app
-        return app.default_page_layout if app
+        return nil unless @engine.app_running?
+        return @engine.running_app.obj.default_page_layout
       end
 
       # 

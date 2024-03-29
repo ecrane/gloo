@@ -11,12 +11,11 @@ module Gloo
   module App
     class Engine
 
-      attr_reader :settings, :log
+      attr_reader :settings, :log, :running_app
       attr_reader :args, :mode, :running, :platform,
                   :dictionary, :parser, :heap, :factory
       attr_accessor :last_cmd, :persist_man, :event_manager,
-                    :exec_env, :converter,
-                    :running_app
+                    :exec_env, :converter
 
       #
       # Set up the engine with basic elements.
@@ -217,11 +216,44 @@ module Gloo
       # Do any clean up and quit.
       #
       def quit
+        if app_running?
+          @log.debug 'stopping running app...'
+          stop_running_app
+        end
+
         @log.debug 'triggering on_quit events...'
         @event_manager.on_quit
 
         @log.debug 'quitting...'
       end
+
+      # ---------------------------------------------------------------------
+      #    Running app within gloo
+      # ---------------------------------------------------------------------
+
+      # 
+      # Set the running app object within gloo.
+      # 
+      def start_running_app( obj )
+        @running_app = Gloo::App::RunningApp.new( obj, self )
+        @running_app.start
+      end
+
+      # 
+      # Stop the running app object within gloo.
+      # 
+      def stop_running_app
+        @running_app.stop if @running_app
+        @running_app = nil
+      end
+
+      # 
+      # Is there a running app?
+      # 
+      def app_running?
+        return @running_app ? true : false
+      end
+
 
       # ---------------------------------------------------------------------
       #    Helpers

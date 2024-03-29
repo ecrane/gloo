@@ -39,9 +39,9 @@ module Gloo
         if page
           result = page.render
           if redirect_set?
-            page = @engine.running_app.redirect
+            page = @engine.running_app.obj.redirect
             @log.debug "Redirecting to: #{page.pn}"
-            @engine.running_app.redirect = nil
+            @engine.running_app.obj.redirect = nil
             result = page.render
           end
         else
@@ -72,8 +72,8 @@ module Gloo
       # Is there a redirect page set in the running app?
       # 
       def redirect_set?
-        app = @engine.running_app
-        return app && app.redirect
+        return false unless @engine.app_running?
+        return @engine.running_app.obj.redirect
       end
 
     end
