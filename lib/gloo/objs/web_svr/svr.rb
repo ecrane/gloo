@@ -39,7 +39,7 @@ module Gloo
       # If the redirect is set, then use that page instead
       # of the one requested.
       # 
-      attr_accessor :redirect
+      attr_accessor :redirect, :router
 
       #
       # The name of the object type.
@@ -199,7 +199,9 @@ module Gloo
         handler = Gloo::WebSvr::Handler.new( @engine, self )
         @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
         @web_server.start
-        
+
+        @router = Gloo::WebSvr::Router.new( @engine, self )
+
         run_on_start
         @engine.log.debug "Web server started…"
       end
@@ -243,54 +245,14 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
-      #    Routing
+      #    Pages and standard elements.
       # ---------------------------------------------------------------------
 
       # 
-      # Find and return the page for the given route.
+      # Get the pages container.
       # 
-      def page_for_route path
-        return nil if path == '/favicon.ico'
-
-        @engine.log.debug "routing to #{path}"
-        route_segments = path.split '/'
-        route_segments.shift if route_segments.first == ''
-
-        if route_segments.count == 0
-          return home_page
-        else
-          pages = find_child PAGES
-          return nil unless pages
-
-          return find_route_segment( route_segments, pages.children )
-        end
-
-        return nil
-      end
-
-      # 
-      # Find the route segment in the object container.
-      # 
-      def find_route_segment segment_arr, objs
-        this_segment = segment_arr.shift
-        return nil if this_segment.nil?
-        
-        objs.each do |o|
-          o = Gloo::Objs::Alias.resolve_alias( @engine, o )
-
-          if o.name == this_segment
-            if o.class == Page
-              @engine.log.debug "found page for route: #{o.pn}"
-              return o
-            else
-              return nil unless o.child_count > 0
-
-              return find_route_segment( segment_arr, o.children )
-            end
-          end
-        end
-
-        return nil 
+      def pages_container
+        return find_child PAGES
       end
 
       # 

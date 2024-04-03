@@ -16,7 +16,12 @@ module Gloo
       TEXT_TYPE = 'text/plain'.freeze
       JSON_TYPE = 'application/json'.freeze
       HTML_TYPE = 'text/html'.freeze
-      
+      CSS_TYPE = 'text/css'.freeze
+      JS_TYPE = 'text/javascript'.freeze
+
+      IMAGE_TYPE = 'image/'.freeze
+      FAVICON_TYPE = 'image/x-icon'.freeze
+            
       attr_reader :code, :type, :data
       
 
@@ -69,6 +74,16 @@ module Gloo
         code = Gloo::WebSvr::ResponseCode::SUCCESS )
 
         return Gloo::WebSvr::Response.new( engine, code, HTML_TYPE, data )
+      end
+
+      # 
+      # Helper to create a successful image response with the given data.
+      # 
+      def self.image_response( engine, data, type = 'png',
+        code = Gloo::WebSvr::ResponseCode::SUCCESS )
+
+        img_type = "#{IMAGE_TYPE}#{type}"
+        return Gloo::WebSvr::Response.new( engine, code, img_type, data )
       end
 
 
