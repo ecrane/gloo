@@ -75,11 +75,7 @@ module Gloo
         # return error if it is not
         return file_error_result unless File.exist? pn
 
-        # TODO: handle mltiple kinds of files -- HOW?
-        # Use file name extension to determine type.
-
-        data = File.binread( pn )
-        return Gloo::WebSvr::Response.image_response( @engine, data )
+        return @asset.render_file pn
       end
 
 

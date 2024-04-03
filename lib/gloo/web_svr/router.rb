@@ -31,8 +31,6 @@ module Gloo
       # Find and return the page for the given route.
       # 
       def page_for_route path
-        # return nil if path == '/favicon.ico'
-
         @engine.log.debug "routing to #{path}"
         route_segments = path.split '/'
         route_segments.shift if route_segments.first == ''
@@ -55,7 +53,12 @@ module Gloo
       def find_route_segment segment_arr, objs
         this_segment = segment_arr.shift
         return nil if this_segment.nil?
-        
+
+        # A URL might include a dot in a name, but we can't do that
+        # because dot is a reserve path thing. So we replace it with
+        # an underscore.
+        this_segment = this_segment.gsub( '.', '_' )
+
         objs.each do |o|
           o = Gloo::Objs::Alias.resolve_alias( @engine, o )
 
