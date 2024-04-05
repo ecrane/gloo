@@ -39,7 +39,7 @@ module Gloo
       # If the redirect is set, then use that page instead
       # of the one requested.
       # 
-      attr_accessor :redirect, :router
+      attr_accessor :redirect, :router, :asset
 
       #
       # The name of the object type.
@@ -201,6 +201,8 @@ module Gloo
         @web_server.start
 
         @router = Gloo::WebSvr::Router.new( @engine, self )
+        @asset = Gloo::WebSvr::Asset.new( @engine, self )
+        @asset.add_asset_routes
 
         run_on_start
         @engine.log.debug "Web server started…"

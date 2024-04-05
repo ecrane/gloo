@@ -9,7 +9,7 @@ module Gloo
   module WebSvr
     class Handler
       
-      attr_reader :server_obj, :asset
+      attr_reader :server_obj
 
 
       # ---------------------------------------------------------------------
@@ -23,8 +23,6 @@ module Gloo
         @engine = engine
         @log = @engine.log
         @server_obj = obj
-
-        @asset = Gloo::WebSvr::Asset.new( @engine, @server_obj )
       end
 
 
@@ -69,13 +67,13 @@ module Gloo
       # Handle a request for a static file such as an image.
       # 
       def handle_file file
-        pn = @asset.path_for_file file
+        pn = @server_obj.asset.path_for_file file
 
         # Check to make sure it is a valid file
         # return error if it is not
         return file_error_result unless File.exist? pn
 
-        return @asset.render_file pn
+        return @server_obj.asset.render_file pn
       end
 
 
