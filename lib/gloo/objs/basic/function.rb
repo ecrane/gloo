@@ -19,7 +19,7 @@ module Gloo
       PARAMS = 'params'.freeze
 
       # Return Value or container of objects
-      RETURN = 'return'.freeze
+      RESULT = 'result'.freeze
 
 
       #
@@ -55,14 +55,14 @@ module Gloo
       # Initially only true for scripts.
       #
       def multiline_value?
-        return true
+        return false
       end
 
       # 
-      # Get the return value or container of objects.
+      # Get the result, the return value or container of objects.
       # 
-      def return_any
-        return_any = find_child RETURN
+      def result
+        return_any = find_child RESULT
 
         # TODO: what does it look like to return objects?
         # if return_any is a container with children, return the container
@@ -94,7 +94,7 @@ module Gloo
 
         fac.create_can PARAMS, self
         fac.create_script ON_INVOKE, '', self
-        fac.create_untyped RETURN, '', self
+        fac.create_untyped RESULT, '', self
       end
 
 
@@ -142,13 +142,13 @@ module Gloo
       # 
       def invoke
         @engine.log.debug "Invoking function: #{name}"
-        
+
         # TODO: Populate the parameters
         # How do they get set?
 
         run_on_invoke
 
-        return_value = return_any
+        return_value = result
         @engine.heap.it.set_to return_value
         
         return return_value
