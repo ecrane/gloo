@@ -364,9 +364,14 @@ module Gloo
         return '' unless obj
 
         content = Element.render_obj( obj, render_ƒ, @engine )
-        content = Page.render_params( content, params ) if params
+        # content = Page.render_params( content, params ) if params
+        content = @engine.running_app.obj.embedded_renderer.render content, params
 
         return content
+      end
+
+      def hello
+        return "Hello World"
       end
 
       # 

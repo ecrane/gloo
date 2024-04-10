@@ -165,7 +165,8 @@ module Gloo
           part_content << e.send( render_ƒ )
         end
       
-        part_content = Page.render_params part_content, params_hash
+        # part_content = Page.render_params part_content, params_hash
+        part_content = @engine.running_app.obj.embedded_renderer.render part_content, params_hash
 
         run_on_rendered
         return part_content
@@ -191,7 +192,8 @@ module Gloo
         params[ 'head' ] = head
         params[ 'body' ] = body
 
-        part_content = Page.render_params part_content, params
+        # part_content = Page.render_params part_content, params
+        part_content = @engine.running_app.obj.embedded_renderer.render part_content, params
 
         run_on_rendered
         return part_content
