@@ -9,6 +9,9 @@ module Gloo
   module WebSvr
     class EmbeddedRenderer
       
+      HELPER = 'helper'.freeze
+
+
       # ---------------------------------------------------------------------
       #    Initialization
       # ---------------------------------------------------------------------
@@ -28,14 +31,29 @@ module Gloo
       #    Obj Helper Functions
       # ---------------------------------------------------------------------
 
+      # 
+      # Handle a missing method by looking for a helper function.
+      # If there is one, then call it and return the result.
+      # If not, log an error and return nil.
+      # 
       def method_missing( method_name, *args )
-        puts "1 missing #{method_name} with args #{args}"
-        return "Hello World"
+        @log.debug "missing method '#{method_name}' with args #{args}"
+
+        helper_pn = "#{HELPER}.#{method_name}"
+        @log.debug "looking for function: #{helper_pn}"
+
+        pn = Gloo::Core::Pn.new( @engine, helper_pn )
+        obj = pn.resolve
+        if obj
+          @log.debug "found obj: #{obj.pn}"
+          return obj.invoke args
+        else
+          @log.error "Function not found: #{helper_pn}"        
+        end
+
+        return nil
       end
-      
-      def hello1
-        return "Hello World"
-      end
+
 
       # ---------------------------------------------------------------------
       #    Renderer

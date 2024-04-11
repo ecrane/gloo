@@ -114,7 +114,7 @@ module Gloo
       # Invoke the functdion and return the result.
       #
       def msg_invoke
-        return invoke
+        return invoke( nil )
       end
 
 
@@ -140,18 +140,28 @@ module Gloo
       # 
       # Invoke the function, run the script and return the result.
       # 
-      def invoke
+      def invoke args
         @engine.log.debug "Invoking function: #{name}"
 
-        # TODO: Populate the parameters
-        # How do they get set?
-
+        set_params args if args
         run_on_invoke
-
         return_value = result
         @engine.heap.it.set_to return_value
         
         return return_value
+      end
+
+      # 
+      # Set parameters from the arguments given.
+      # 
+      def set_params args
+        params = find_child PARAMS
+        return unless params
+
+        args.each_with_index do |arg, i|
+          param = params.children[i]
+          param.value = arg if param
+        end
       end
 
     end
