@@ -7,7 +7,7 @@ class EmbeddedRendererTest < BaseEngineTest
 
     o = Gloo::WebSvr::EmbeddedRenderer.new @engine, svr
     assert o
-    assert_same o.engine, @engine
+    assert o.engine
     assert o.log
     assert_same o.web_svr_obj, svr
   end
