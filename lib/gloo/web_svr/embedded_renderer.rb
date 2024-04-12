@@ -11,6 +11,8 @@ module Gloo
       
       HELPER = 'helper'.freeze
 
+      attr_reader :engine, :log, :web_svr_obj
+
 
       # ---------------------------------------------------------------------
       #    Initialization
