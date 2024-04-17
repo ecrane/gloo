@@ -8,6 +8,12 @@ module Gloo
   module WebSvr
     class Router
       
+      INDEX = 'index'.freeze
+      SEGMENT_DIVIDER = '/'.freeze
+
+      attr_reader :route_segments
+
+
       # ---------------------------------------------------------------------
       #    Initialization
       # ---------------------------------------------------------------------
@@ -32,32 +38,29 @@ module Gloo
       # 
       def page_for_route path
         @engine.log.debug "routing to #{path}"
-        route_segments = path.split '/'
-        route_segments.shift if route_segments.first == ''
+        detect_segments path
 
-        if route_segments.count == 0
-          return @web_svr_obj.home_page
-        else
-          pages = @web_svr_obj.pages_container
-          return nil unless pages
+        return @web_svr_obj.home_page if is_root_path?
 
-          return find_route_segment( route_segments, pages.children )
-        end
+        pages = @web_svr_obj.pages_container
+        return find_route_segment( pages.children ) if pages
 
         return nil
       end
 
+
+      
+      # ---------------------------------------------------------------------
+      #    Helper funcions
+      # ---------------------------------------------------------------------
+
       # 
       # Find the route segment in the object container.
       # 
-      def find_route_segment segment_arr, objs
-        this_segment = segment_arr.shift
-        return nil if this_segment.nil?
+      def find_route_segment objs
+        this_segment = next_segment
 
-        # A URL might include a dot in a name, but we can't do that
-        # because dot is a reserve path thing. So we replace it with
-        # an underscore.
-        this_segment = this_segment.gsub( '.', '_' )
+        this_segment = INDEX if this_segment.blank?
 
         objs.each do |o|
           o = Gloo::Objs::Alias.resolve_alias( @engine, o )
@@ -72,12 +75,46 @@ module Gloo
             else
               return nil unless o.child_count > 0
 
-              return find_route_segment( segment_arr, o.children )
+              return find_route_segment( o.children )
             end
           end
         end
 
         return nil 
+      end
+
+      # 
+      # Get the next segment in the route.
+      # 
+      def next_segment
+        this_segment = @route_segments.shift
+        return nil if this_segment.nil?
+
+        # A URL might include a dot in a name, but we can't do that
+        # because dot is a reserve path thing. So we replace it with
+        # an underscore.
+        this_segment = this_segment.gsub( '.', '_' )
+
+        return this_segment
+      end
+
+      # 
+      # Is this the root path?
+      def is_root_path?
+        return @route_segments.count == 0
+      end
+
+      # 
+      # Create a list of path segments.
+      # 
+      def detect_segments path
+        # Split the path into segments.
+        @route_segments = path.split SEGMENT_DIVIDER
+
+        # Remove the first segment if it is empty.
+        @route_segments.shift if @route_segments.first.blank?
+
+        return @route_segments
       end
 
     end
