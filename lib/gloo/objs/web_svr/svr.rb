@@ -201,6 +201,8 @@ module Gloo
         @web_server.start
 
         @router = Gloo::WebSvr::Router.new( @engine, self )
+        @router.add_page_routes
+
         @asset = Gloo::WebSvr::Asset.new( @engine, self )
         @asset.add_asset_routes
 

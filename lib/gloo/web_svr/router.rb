@@ -8,6 +8,7 @@ module Gloo
   module WebSvr
     class Router
       
+      PAGE_CONTAINER = 'page'.freeze
       INDEX = 'index'.freeze
       SEGMENT_DIVIDER = '/'.freeze
 
@@ -48,6 +49,62 @@ module Gloo
         return nil
       end
 
+
+      # ---------------------------------------------------------------------
+      #    Dynamic Add Page Routes
+      # ---------------------------------------------------------------------
+
+      # 
+      # Get the root level page container.
+      #
+      def page_container
+        pn = Gloo::Core::Pn.new( @engine, PAGE_CONTAINER )
+        return pn.resolve
+      end
+
+      # 
+      # Add all page routes to the web server pages (routes).
+      # 
+      def add_page_routes
+        can = page_container
+        return unless can
+
+        @log.debug 'Adding page routes to web server…'
+        @factory = @engine.factory
+
+        add_pages can, @web_svr_obj.pages_container
+      end
+
+      #
+      # Add the pages to the web server pages.
+      # This is a recursive function that will add all
+      # pages in the folder and subfolders.
+      #
+      def add_pages can, parent
+        # for each file in the page container
+        # create a page object and add it to the routes
+        can.children.each do |obj|
+          if obj.class == Gloo::Objs::Container
+            child_can = parent.find_add_child( obj.name, 'container' )
+            add_pages( obj, child_can )
+          elsif obj.class == Gloo::Objs::Page
+            add_route_alias( parent, obj.name, obj.pn )
+          end
+        end
+      end
+
+      # 
+      # Add route alias to the page.
+      # 
+      def add_route_alias( parent, name, pn )
+        name = name.gsub( '.', '_' )
+
+        # First make sure the child doesn't already exist.
+        child = parent.find_child( name )
+        return if child
+
+        @factory.create_alias( name, pn, parent )
+      end
 
       
       # ---------------------------------------------------------------------
