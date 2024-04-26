@@ -108,11 +108,10 @@ module Gloo
 
       #
       # Write an information message to the log.
-      # Also write to the console unless quiet.
       #
       def info( msg )
         @logger.info msg
-        puts msg.blue unless @quiet
+        # puts msg.blue unless @quiet
       end
 
       #

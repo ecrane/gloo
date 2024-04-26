@@ -194,7 +194,7 @@ module Gloo
       # 
       def start
         config = Gloo::WebSvr::Config.new( scheme_value, host_value, port_value )
-        @engine.log.debug "Web Server URL: #{config.base_url}"
+        @engine.log.info "Web Server URL: #{config.base_url}"
 
         handler = Gloo::WebSvr::Handler.new( @engine, self )
         @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
@@ -209,19 +209,19 @@ module Gloo
         @embedded_renderer = Gloo::WebSvr::EmbeddedRenderer.new( @engine, self )
 
         run_on_start
-        @engine.log.debug "Web server started…"
+        @engine.log.info "Web server started and listening…"
       end
 
       # 
       # Stop the running web server.
       # 
       def stop
-        @engine.log.debug "Stopping web server…"
+        @engine.log.info "Stopping web server…"
         @web_server.stop
         @web_server = nil
 
         run_on_stop
-        @engine.log.debug "Web server stopped…"
+        @engine.log.info "Web server stopped…"
       end
 
 

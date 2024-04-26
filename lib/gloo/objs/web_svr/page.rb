@@ -370,10 +370,6 @@ module Gloo
         return content
       end
 
-      def hello
-        return "Hello World"
-      end
-
       # 
       # Render content with the given params.
       # Params might be nil, in which case the content

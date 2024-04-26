@@ -178,6 +178,11 @@ module Gloo
         return @engine.settings.project_path
       end
 
+      # The running app directory.
+      def msg_app
+        return @engine.settings.project_path
+      end
+
       # Get the Gloo log directory
       def msg_gloo_log
         return @engine.settings.log_path

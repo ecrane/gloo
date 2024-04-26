@@ -54,7 +54,7 @@ module Gloo
         @exec_env = Gloo::Exec::ExecEnv.new( self )
         @converter = Gloo::Convert::Converter.new( self )
 
-        @log.debug 'the engine has started'
+        @log.info 'The gloo engine has started'
         run_mode
       end
 
@@ -102,7 +102,7 @@ module Gloo
       # Run gloo in the selected mode.
       #
       def run_mode
-        @log.debug "running gloo in #{@mode} mode"
+        @log.info "Running gloo in #{@mode} mode"
 
         if @mode == Mode::VERSION
           run_version
@@ -224,7 +224,7 @@ module Gloo
         @log.debug 'triggering on_quit events...'
         @event_manager.on_quit
 
-        @log.debug 'quitting...'
+        @log.info 'Gloo engine is quitting...'
       end
 
       # ---------------------------------------------------------------------

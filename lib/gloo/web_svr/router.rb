@@ -38,7 +38,7 @@ module Gloo
       # Find and return the page for the given route.
       # 
       def page_for_route path
-        @engine.log.debug "routing to #{path}"
+        @engine.log.info "routing to #{path}"
         detect_segments path
 
         return @web_svr_obj.home_page if is_root_path?

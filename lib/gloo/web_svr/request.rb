@@ -86,7 +86,7 @@ module Gloo
       def finish_timer
         @finish = Time.now
         @elapsed = ( ( @finish - @start ) * 1000.0 ).round(2)
-        @log.debug "Web request complete.  Elapsed time: #{@elapsed} ms"
+        @log.info "Web request complete.  Elapsed time: #{@elapsed} ms"
       end
     
 
@@ -98,8 +98,8 @@ module Gloo
       # Write the request information to the log.
       # 
       def log
-        @log.debug "#{@method} #{@host}#{@path}"
-        @log.debug "Parameters: #{@query}"
+        @log.info "#{@method} #{@host}#{@path}"
+        @log.info "Parameters: #{@query}"
       end
 
     end

@@ -110,7 +110,7 @@ module Gloo
       def log
         return unless @log
 
-        @log.debug "Response #{@code} #{@type}"
+        @log.info "Response #{@code} #{@type}"
       end
 
     end
