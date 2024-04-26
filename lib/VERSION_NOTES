@@ -1,3 +1,7 @@
+3.1.1 - 2024.04.26
+ - Clean build
+
+
 3.1.0 - 2024.04.26
  - Adds gloo web server and related objects.
  - Adds first pass at functions.
