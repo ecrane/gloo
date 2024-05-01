@@ -1,20 +1,20 @@
 require 'test_helper'
 
-class RedirectTest < BaseEngineTest
+class BreakTest < BaseEngineTest
 
   def test_the_keyword
-    assert_equal 'redirect', Gloo::Verbs::Redirect.keyword
+    assert_equal 'break', Gloo::Verbs::Break.keyword
   end
 
   def test_the_keyword_shortcut
-    assert_equal 'go', Gloo::Verbs::Redirect.keyword_shortcut
+    assert_equal 'stop', Gloo::Verbs::Break.keyword_shortcut
   end
 
   def test_running_script
-    s = '< ctrl/redirect'
+    s = '< ctrl/break'
     @engine.parser.run s
     assert_equal 1, @engine.heap.root.child_count
-    @engine.parser.run 'run redirect.s'
+    @engine.parser.run 'run break'
     assert_equal 3, @engine.heap.it.value
   end
 

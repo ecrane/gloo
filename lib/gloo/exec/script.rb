@@ -9,13 +9,13 @@ module Gloo
     class Script
 
       attr_accessor :obj
-
       #
       # Set up the script.
       #
       def initialize( engine, obj )
         @engine = engine
         @obj = obj
+        @break_out = false
       end
 
       #
@@ -30,6 +30,7 @@ module Gloo
           @engine.parser.run @obj.value
         elsif @obj.value.is_a? Array
           @obj.value.each do |line|
+            break if @break_out
             @engine.parser.run line
           end
         end
@@ -43,6 +44,13 @@ module Gloo
       #
       def display_value
         return @obj.pn
+      end
+
+      # 
+      # Stop running this script.
+      # 
+      def break_out
+        @break_out = true
       end
 
     end

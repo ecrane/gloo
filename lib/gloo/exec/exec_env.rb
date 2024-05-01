@@ -10,6 +10,7 @@ module Gloo
     class ExecEnv
 
       attr_accessor :verbs, :actions, :scripts, :here
+      attr_reader :running_script
 
       VERB_STACK = 'verbs'.freeze
       ACTION_STACK = 'actions'.freeze
@@ -22,6 +23,7 @@ module Gloo
       def initialize( engine )
         @engine = engine
         @engine.log.debug 'exec env intialized...'
+        @running_script = nil
 
         @verbs = Gloo::Exec::Stack.new( @engine, VERB_STACK )
         @actions = Gloo::Exec::Stack.new( @engine, ACTION_STACK )
@@ -43,6 +45,7 @@ module Gloo
       #
       def push_script( script )
         @scripts.push script
+        @running_script = script
         @here.push script.obj
       end
 
@@ -51,6 +54,7 @@ module Gloo
       #
       def pop_script
         @scripts.pop
+        @running_script = @scripts.stack.last
         @here.pop
       end
 

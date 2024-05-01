@@ -1,0 +1,7 @@
+# 
+# Break out of a script.
+# 
+break [script] :
+	show 3
+	break
+	show 4

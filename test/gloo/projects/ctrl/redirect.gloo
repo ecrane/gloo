@@ -1,0 +1,10 @@
+# 
+# Break out of a script.
+# 
+redirect [can] :
+	x [script] :
+		show 3
+	s [script] :
+		show 1
+		redirect ^.x
+		show 2
