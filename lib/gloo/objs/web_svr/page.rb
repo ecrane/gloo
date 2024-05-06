@@ -112,6 +112,14 @@ module Gloo
         params_can = find_child PARAMS
         return nil unless params_can
 
+        if @request
+          url_params = @request.query_params
+          url_params.each do |k,v|
+            o = params_can.find_child k
+            o.set_value( v ) if o
+          end
+        end
+
         h = {}
         params_can.children.each do |o|
           h[ o.name ] = o.value
@@ -283,8 +291,12 @@ module Gloo
 
       # 
       # Render the page.
+      # If this is being called from the web server,
+      # the request will be passed in and will include
+      # request context such as params.
       # 
-      def render
+      def render request=nil
+        @request = request
         run_on_render
         return nil if redirect_set?
 
@@ -302,6 +314,7 @@ module Gloo
         end
         
         run_on_rendered
+        @request = nil
         return nil if redirect_set?
 
         return contents

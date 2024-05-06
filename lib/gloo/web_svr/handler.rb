@@ -53,7 +53,7 @@ module Gloo
       # Render the page, with possible redirect.
       # 
       def handle_page page
-        result = page.render
+        result = page.render @request
         if redirect_set?
           page = @engine.running_app.obj.redirect
           @log.debug "Redirecting to: #{page.pn}"

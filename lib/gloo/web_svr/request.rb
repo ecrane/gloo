@@ -94,6 +94,14 @@ module Gloo
       #    Helper functions
       # ---------------------------------------------------------------------
 
+      #
+      # Get the hash of query parameters.
+      # 
+      def query_params
+        return {} unless @query
+        return Rack::Utils.parse_query( @query )
+      end
+
       # 
       # Write the request information to the log.
       # 
