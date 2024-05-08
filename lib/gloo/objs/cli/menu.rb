@@ -68,7 +68,10 @@ module Gloo
       # 
       def add_loop_child
         o = find_child LOOP
-        return if o
+        if o
+          o.set_value true
+          return 
+        end
 
         fac = @engine.factory
         fac.create_bool LOOP, true, self
@@ -324,7 +327,7 @@ module Gloo
       # Run the selected command.
       #
       def run_command( cmd )
-        @engine.log.debug "Menu Command: #{cmd}"
+        @engine.log.info "Menu Command: #{cmd}"
         obj = find_cmd cmd
 
         if obj
@@ -335,15 +338,18 @@ module Gloo
           s.run
         else
           if cmd == '?'
+            @engine.log.debug 'Showing options'
             show_options
           elsif cmd == 'q!'
-            @engine.log.info 'Quitting Gloo'
+            @engine.log.debug 'Quitting Gloo'
             @engine.stop_running
           elsif cmd == 'qq'
+            @engine.log.debug 'Quitting to top level menu'
             pop_to_top_level_menu
           elsif cmd.starts_with? ':'
             gloo_cmd = cmd[1..-1].strip
             if gloo_cmd.blank?
+              @engine.log.debug 'Quitting all menus and dropping into Gloo'
               quit_all_menus
             else
               @engine.log.debug "Running Gloo command: #{gloo_cmd}"
