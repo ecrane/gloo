@@ -300,6 +300,21 @@ module Gloo
         @engine.persist_man.reload self
       end
 
+
+      # ---------------------------------------------------------------------
+      #    Render
+      # ---------------------------------------------------------------------
+
+      # 
+      # Render the object.
+      # By default this is just the object's value.
+      # The render_ƒ is 'render_html', 'render_text', 'render_json', etc.
+      # 
+      def render render_ƒ
+        return self.value.to_s
+      end
+
+
       # ---------------------------------------------------------------------
       #    Help
       # ---------------------------------------------------------------------

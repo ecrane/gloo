@@ -13,6 +13,7 @@ module Gloo
       KEYWORD_SHORT = 'tbl'.freeze
       HEADERS = 'headers'.freeze
       DATA = 'data'.freeze
+      STYLES = 'styles'.freeze
 
       #
       # The name of the object type.
@@ -64,6 +65,21 @@ module Gloo
         end
       end
 
+      # 
+      # Get the styles for the table, if any.
+      # 
+      def styles
+        style_h = {} 
+        o = find_child STYLES
+        return style_h unless o
+
+        o.children.each do |c|
+          style_h[ c.name ] = c.value
+        end
+
+        return style_h
+      end
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -96,7 +112,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[show]
+        return super + %w[show render]
       end
 
       #
@@ -105,6 +121,23 @@ module Gloo
       def msg_show
         title = self.value
         @engine.platform.show_table headers, data, title
+      end
+
+      def msg_render
+        return render
+      end
+
+      # ---------------------------------------------------------------------
+      #    Render
+      # ---------------------------------------------------------------------
+
+      # 
+      # Render the table.
+      # The render_ƒ is 'render_html', 'render_text', 'render_json', etc.
+      # 
+      def render render_ƒ
+        helper = Gloo::WebSvr::TableRenderer.new( @engine )
+        return helper.can_to_table( self.headers, self.data, self.styles )
       end
 
     end

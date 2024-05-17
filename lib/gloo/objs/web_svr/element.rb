@@ -173,7 +173,7 @@ module Gloo
       # Get the expiration date for the certificate.
       #
       def msg_render
-        content = self.render
+        content = self.render_html
         @engine.heap.it.set_to content 
         return content
       end
@@ -226,10 +226,8 @@ module Gloo
             e = Gloo::Objs::Alias.resolve_alias( engine, e )
             if e.class == Element
               rendered_obj_content << e.send( render_ƒ )
-            elsif e.class == Partial
-              rendered_obj_content << e.render( render_ƒ )
             else
-              rendered_obj_content << e.value.to_s
+              rendered_obj_content << e.render( render_ƒ )
             end
           end
         else
