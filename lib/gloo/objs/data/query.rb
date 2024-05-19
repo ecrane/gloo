@@ -70,7 +70,7 @@ module Gloo
       end
 
       #
-      # SSH to the host and execute the command, then update result.
+      # Run the query and process the results.
       #
       def msg_run
         db = db_obj
@@ -82,6 +82,25 @@ module Gloo
         begin
           result = db.query( sql_value, param_array )
           process_result result
+        rescue => e
+          @engine.err e.message
+          return
+        end
+      end
+
+      #
+      # Run the query and return the results.
+      #
+      def run_query
+        db = db_obj
+        unless db
+          @engine.err DB_MISSING_ERR
+          return
+        end
+
+        begin
+          result = db.query( sql_value, param_array )
+          return result
         rescue => e
           @engine.err e.message
           return

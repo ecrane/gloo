@@ -36,7 +36,7 @@ module Gloo
       # If there is one, then call it and return the result.
       # If not, log an error and return nil.
       # 
-      def can_to_table( headers, data, styles )
+      def data_to_table( headers, data, styles )
         str = "<table class='#{styles[ TABLE ]}'>"
         str << "<thead class='#{styles[ THEAD ]}'><tr>"
 

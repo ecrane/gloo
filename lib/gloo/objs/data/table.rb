@@ -59,9 +59,16 @@ module Gloo
         return [] unless o
 
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
-        cols = self.columns
-        return o.children.map do |e|
-          cols.map { |h| e.find_child( h ).value }
+        
+        if o.is_a? Gloo::Objs::Query
+          @engine.log.info "Table getting data from query."
+          result = o.run_query
+          return result[1]
+        else
+          cols = self.columns
+          return o.children.map do |e|
+            cols.map { |h| e.find_child( h ).value }
+          end
         end
       end
 
@@ -72,6 +79,7 @@ module Gloo
         style_h = {} 
         o = find_child STYLES
         return style_h unless o
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
 
         o.children.each do |c|
           style_h[ c.name ] = c.value
@@ -137,7 +145,7 @@ module Gloo
       # 
       def render render_ƒ
         helper = Gloo::WebSvr::TableRenderer.new( @engine )
-        return helper.can_to_table( self.headers, self.data, self.styles )
+        return helper.data_to_table( self.headers, self.data, self.styles )
       end
 
     end
