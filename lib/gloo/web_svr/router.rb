@@ -10,6 +10,7 @@ module Gloo
       
       PAGE_CONTAINER = 'page'.freeze
       INDEX = 'index'.freeze
+      SHOW = 'show'.freeze
       SEGMENT_DIVIDER = '/'.freeze
 
       attr_reader :route_segments
@@ -44,7 +45,10 @@ module Gloo
         return @web_svr_obj.home_page if is_root_path?
 
         pages = @web_svr_obj.pages_container
-        return find_route_segment( pages.children ) if pages
+        if pages
+          page = find_route_segment( pages.children ) 
+          return [ page, @id ] if page
+        end
 
         return nil
       end
@@ -119,15 +123,21 @@ module Gloo
 
         this_segment = INDEX if this_segment.blank?
 
+        if this_segment.to_i.to_s == this_segment
+          @id = this_segment.to_i
+          @log.debug "found id for route: #{@id}"
+          this_segment = SHOW
+        end
+
         objs.each do |o|
           o = Gloo::Objs::Alias.resolve_alias( @engine, o )
 
           if o.name == this_segment
             if o.class == Gloo::Objs::Page
-              @engine.log.debug "found page for route: #{o.pn}"
+              @log.debug "found page for route: #{o.pn}"
               return o
             elsif o.class == Gloo::Objs::FileHandle
-              @engine.log.debug "found static file for route: #{o.pn}"
+              @log.debug "found static file for route: #{o.pn}"
               return o
             else
               return nil unless o.child_count > 0

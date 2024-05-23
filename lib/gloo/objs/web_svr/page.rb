@@ -17,6 +17,7 @@ module Gloo
 
       # Parameters used during render.
       PARAMS = 'params'.freeze
+      ID = 'id'.freeze
 
       # Content
       HEAD = 'head'.freeze
@@ -290,6 +291,22 @@ module Gloo
       end
 
       # 
+      # Set the ID parameter if there is one.
+      # 
+      def set_id
+        return unless @request.id
+        @engine.log.info "Setting ID: #{@request.id}"
+
+        params_can = find_child PARAMS
+        return nil unless params_can
+
+        id_obj = params_can.find_child( ID )
+        return unless id_obj
+
+        id_obj.set_value( @request.id )
+      end
+
+      # 
       # Render the page.
       # If this is being called from the web server,
       # the request will be passed in and will include
@@ -297,6 +314,7 @@ module Gloo
       # 
       def render request=nil
         @request = request
+        set_id if @request
         run_on_render
         return nil if redirect_set?
 

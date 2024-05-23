@@ -20,6 +20,7 @@ module Gloo
       QUERY_STRING = 'QUERY_STRING'.freeze
 
       attr_reader :method, :host, :path, :query
+      attr_accessor :id
 
       
       # ---------------------------------------------------------------------

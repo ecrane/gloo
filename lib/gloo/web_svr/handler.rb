@@ -36,7 +36,8 @@ module Gloo
       def handle request
         @request = request
 
-        page = @server_obj.router.page_for_route @request.path
+        page, id = @server_obj.router.page_for_route @request.path
+        request.id = id
         if page
           if page.is_a? Gloo::Objs::FileHandle
             return handle_file page
