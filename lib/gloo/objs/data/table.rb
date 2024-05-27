@@ -13,6 +13,7 @@ module Gloo
       KEYWORD_SHORT = 'tbl'.freeze
       HEADERS = 'headers'.freeze
       DATA = 'data'.freeze
+      CELLS = 'cells'.freeze
       STYLES = 'styles'.freeze
 
       #
@@ -88,6 +89,22 @@ module Gloo
         return style_h
       end
 
+      # 
+      # Get cell renderer hash keyed by column name.
+      # 
+      def cell_renderers
+        h = {}
+        o = find_child CELLS
+        return h unless o
+
+        o.children.each do |c|
+          h[ c.name ] = c.value
+        end
+
+        return h
+      end
+
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -112,6 +129,7 @@ module Gloo
         fac.create_can DATA, self
       end
 
+
       # ---------------------------------------------------------------------
       #    Messages
       # ---------------------------------------------------------------------
@@ -135,6 +153,7 @@ module Gloo
         return render
       end
 
+
       # ---------------------------------------------------------------------
       #    Render
       # ---------------------------------------------------------------------
@@ -149,8 +168,16 @@ module Gloo
         head = result[0] if head.empty?
         rows = result[1]
 
+        params = { 
+          head: head, 
+          cols: result[0],
+          rows: rows,
+          styles: self.styles,
+          cell_renderers: self.cell_renderers
+        }
+
         helper = Gloo::WebSvr::TableRenderer.new( @engine )
-        return helper.data_to_table( head, rows, self.styles )
+        return helper.data_to_table params 
       end
 
     end
