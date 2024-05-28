@@ -168,9 +168,12 @@ module Gloo
         head = result[0] if head.empty?
         rows = result[1]
 
+        columns = build_columns result[0]
+
         params = { 
           head: head, 
           cols: result[0],
+          columns: columns,
           rows: rows,
           styles: self.styles,
           cell_renderers: self.cell_renderers
@@ -178,6 +181,49 @@ module Gloo
 
         helper = Gloo::WebSvr::TableRenderer.new( @engine )
         return helper.data_to_table params 
+      end
+
+      # 
+      # Build the column list based on the result data and
+      # the headers defined in the table object.
+      # 
+      def build_columns result_data
+        head_children = find_child HEADERS
+        cell_renderers = find_child CELLS
+
+        columns = []
+        result_data.each_with_index do |c,index|
+          visible = true
+          name = c
+          title = c
+          display_index = index
+
+          if head_children
+            child = head_children.find_child c
+            if child
+              title = child.value
+              display_index = head_children.child_index( c )
+            else
+              visible = false
+            end
+          end
+
+          cell_renderer = nil
+          if cell_renderers
+            this_cr = cell_renderers.find_child( c )
+            cell_renderer = this_cr.value if this_cr
+          end
+
+          columns << { 
+            name: name, 
+            title: title, 
+            visible: visible, 
+            data_index: index,
+            display_index: display_index,
+            cell_renderer: cell_renderer
+          }
+        end
+        return columns.sort_by { |hsh| hsh[ :display_index ] }
       end
 
     end

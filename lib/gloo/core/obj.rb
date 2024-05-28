@@ -202,6 +202,16 @@ module Gloo
       end
 
       #
+      # Get the index of the child with the given name.
+      # 
+      def child_index( name )
+        @children.each_with_index do |o, i|
+          return i if name.downcase == o.name.downcase
+        end
+        return nil
+      end
+
+      #
       # Delete all children from the container.
       #
       def delete_children

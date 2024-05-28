@@ -59,22 +59,21 @@ module Gloo
       # 
       def data_to_single_row_table( params )
         styles = params[ :styles ]
-        headers = params[ :head ]
-
         str = "<table class='#{styles[ TABLE ]}'> <tbody>"
-
         row = params[ :rows ].first
-        row.each_with_index do |cell,i|
-          this_col_name = params[ :cols ][ i ]
-          cell_r = params[ :cell_renderers ][ this_col_name ]
-          if cell_r
-            cell_value = render_cell( cell, cell_r, row, params[ :cols ])
+        
+        params[ :columns ].each do |head|
+          next unless head[ :visible ]
+          cell = row[ head[ :data_index ] ]
+
+          if head[ :cell_renderer ]
+            cell_value = render_cell( row, head, params[ :columns ] )
           else
             cell_value = cell
           end
 
           str += "<tr class='#{styles[ ROW ]}'>"
-          str += "<th style='#{styles[ HEAD_CELL ]}'>#{headers[i]}</th>"
+          str += "<th style='#{styles[ HEAD_CELL ]}'>#{head[ :title ]}</th>"
           str += "<td style='#{styles[ CELL ]}'>#{cell_value}</td>"
           str += "</tr>"
         end
@@ -88,23 +87,29 @@ module Gloo
       # 
       def data_to_table_rows( params )
         styles = params[ :styles ]
-        headers = params[ :head ]
+        # headers = params[ :head ]
 
         str = "<table class='#{styles[ TABLE ]}'>"
         str << "<thead class='#{styles[ THEAD ]}'><tr>"
 
-        headers.each do |header|
-          str += "<th class='#{styles[ HEAD_CELL ]}'>#{header}</th>"
+        params[ :columns ].each do |head|
+          next unless head[ :visible ]
+          str += "<th class='#{styles[ HEAD_CELL ]}'>#{head[ :title ]}</th>"
         end
         str << "</tr></thead><tbody>"
 
         params[ :rows ].each do |row|
           str += "<tr class='#{styles[ ROW ]}'>"
-          row.each_with_index do |cell, i|
-            this_col_name = params[ :cols ][ i ]
-            cell_r = params[ :cell_renderers ][ this_col_name ]
-            if cell_r
-              cell_value = render_cell( cell, cell_r, row, params[ :cols ])
+
+          # row.each_with_index do |cell, i|
+          params[ :columns ].each do |head|
+            next unless head[ :visible ]
+
+            cell = row[ head[ :data_index ] ]
+            this_col_name = head[ :name ]
+
+            if head[ :cell_renderer ]
+              cell_value = render_cell( row, head, params[ :columns ] )
             else
               cell_value = cell
             end
@@ -121,14 +126,14 @@ module Gloo
       # Render a cell using the cell renderer and the given
       # context data (the row's values).
       # 
-      def render_cell cell, cell_renderer, context_data, cols
+      def render_cell row, col, cols
         params = {}
 
-        context_data.each_with_index do |cell, i|
-          params[ cols[i] ] = cell
+        cols.each_with_index do |c, i|
+          params[ c[ :name ] ] = row[ c[ :data_index ] ]
         end
       
-        renderer = ERB.new( cell_renderer )
+        renderer = ERB.new( col[ :cell_renderer ] )
         content = renderer.result_with_hash( params )
       
         return content
