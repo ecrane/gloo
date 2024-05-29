@@ -99,6 +99,7 @@ module Gloo
         end
 
         begin
+          log_query sql_value, param_array
           result = db.query( sql_value, param_array )
           return result
         rescue => e
@@ -107,6 +108,15 @@ module Gloo
         end
       end
 
+      # 
+      # Write the query to the log.
+      # 
+      def log_query sql, params
+        @engine.log.info "QUERY: #{sql}"
+        @engine.log.info "QUERY PARAMS: #{params}" if params
+      end
+
+      
       # ---------------------------------------------------------------------
       #    Private functions
       # ---------------------------------------------------------------------
