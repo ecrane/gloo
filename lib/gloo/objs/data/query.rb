@@ -100,7 +100,14 @@ module Gloo
 
         begin
           log_query sql_value, param_array
+
+          db_start = ::Time.now
           result = db.query( sql_value, param_array )
+          db_done = ::Time.now
+          elapsed = ( ( db_done - db_start ) * 1000.0 ).round(2)
+  
+          app = @engine.running_app
+          app.add_db_time elapsed if app
           return result
         rescue => e
           @engine.err e.message
@@ -112,11 +119,11 @@ module Gloo
       # Write the query to the log.
       # 
       def log_query sql, params
-        @engine.log.info "QUERY: #{sql}"
         @engine.log.info "QUERY PARAMS: #{params}" if params
+        @engine.log.info "QUERY: #{sql}"
       end
 
-      
+
       # ---------------------------------------------------------------------
       #    Private functions
       # ---------------------------------------------------------------------

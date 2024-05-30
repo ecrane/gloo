@@ -79,6 +79,7 @@ module Gloo
       # 
       def start_timer
         @start = Time.now
+        @engine.running_app.reset_db_time
       end
     
       # 
@@ -87,7 +88,8 @@ module Gloo
       def finish_timer
         @finish = Time.now
         @elapsed = ( ( @finish - @start ) * 1000.0 ).round(2)
-        @log.info "Web request complete.  Elapsed time: #{@elapsed} ms"
+        db = @engine.running_app.db_time
+        @log.info "*** Web request complete.  DB: #{db} ms.  Elapsed time: #{@elapsed} ms"
       end
     
 

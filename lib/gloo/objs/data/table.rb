@@ -62,7 +62,7 @@ module Gloo
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         
         if o.is_a? Gloo::Objs::Query
-          @engine.log.info "Table getting data from query."
+          @engine.log.debug "Table getting data from query."
           result = o.run_query
           return result
         else

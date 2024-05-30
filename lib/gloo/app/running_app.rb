@@ -10,7 +10,7 @@ module Gloo
   module App
     class RunningApp
 
-      attr_reader :obj
+      attr_reader :obj, :db_time
 
       #
       # Set up the running app for the given object.
@@ -34,6 +34,21 @@ module Gloo
       def stop
         obj.stop
         @log.debug "running app stopped for #{@obj.pn}"
+      end
+
+      # 
+      # Add the given time to the db time.
+      #
+      def add_db_time time
+        @db_time = 0 unless @db_time
+        @db_time += time
+      end
+
+      # 
+      # Reset the db time to zero
+      # 
+      def reset_db_time
+        @db_time = 0
       end
 
     end
