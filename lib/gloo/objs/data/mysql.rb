@@ -90,22 +90,42 @@ module Gloo
         @engine.heap.it.set_to true
       end
 
+
       # ---------------------------------------------------------------------
       #    DB functions (all database connections)
       # ---------------------------------------------------------------------
+
+      #
+      # Get the client object.
+      # It might be cached, so check first.
+      # If it is not cached, create a new one.
+      #
+      def get_client
+        app = @engine.running_app
+
+        client = app.db_client_for_obj( self ) if app 
+
+        unless client
+          h = {
+            host: host_value,
+            database: db_value,
+            username: user_value,
+            password: passwd_value
+          }
+          client = Mysql2::Client.new( h )
+
+          app.cache_db_client( self, client ) if app
+        end
+        
+        return client
+      end
 
       #
       # Open a connection and execute the SQL statement.
       # Return the resulting data.
       #
       def query( sql, params = nil )
-        h = {
-          host: host_value,
-          database: db_value,
-          username: user_value,
-          password: passwd_value
-        }
-        client = Mysql2::Client.new( h )
+        client = get_client
 
         heads = []
         data = []
@@ -133,6 +153,7 @@ module Gloo
         heads = rs.fields if rs
         return [ heads, data ]
       end
+
 
       # ---------------------------------------------------------------------
       #    Private functions

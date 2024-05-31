@@ -19,6 +19,8 @@ module Gloo
         @engine = engine
         @log = @engine.log
         @obj = obj
+
+        @db_clients = {}
       end
 
       # 
@@ -36,6 +38,11 @@ module Gloo
         @log.debug "running app stopped for #{@obj.pn}"
       end
 
+
+      # ---------------------------------------------------------------------
+      #    DB function timer
+      # ---------------------------------------------------------------------
+
       # 
       # Add the given time to the db time.
       #
@@ -49,6 +56,25 @@ module Gloo
       # 
       def reset_db_time
         @db_time = 0
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Cached Database Connections
+      # ---------------------------------------------------------------------
+
+      # 
+      # Cache the given DB client for the given object.
+      # 
+      def cache_db_client( obj, client )
+        @db_clients[ obj.pn ] = client
+      end
+
+      # 
+      # Get the DB client for the given object.
+      # 
+      def db_client_for_obj( obj )
+        return @db_clients[ obj.pn ]
       end
 
     end
