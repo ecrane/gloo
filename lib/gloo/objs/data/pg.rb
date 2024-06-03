@@ -119,6 +119,14 @@ module Gloo
         return [ heads, data ]
       end
 
+      # 
+      # Based on the result set, build a QueryResult object.
+      # 
+      def get_query_result( result )
+        return QueryResult.new result[0], result[1]
+      end
+
+
       # ---------------------------------------------------------------------
       #    Private functions
       # ---------------------------------------------------------------------

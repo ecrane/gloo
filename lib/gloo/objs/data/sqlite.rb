@@ -116,9 +116,24 @@ module Gloo
         end
 
         db = SQLite3::Database.open name
-        db.results_as_hash = true
-        return db.query( sql, params )
+        # db.results_as_hash = true
+        results = db.query( sql, params )
+
+        return results
       end
+
+      # 
+      # Based on the result set, build a QueryResult object.
+      # 
+      def get_query_result( result )
+        rows = []        
+        while ( row = result.next ) do
+          rows << row
+        end
+
+        return QueryResult.new( result.columns, rows )
+      end
+
 
       # ---------------------------------------------------------------------
       #    Private functions

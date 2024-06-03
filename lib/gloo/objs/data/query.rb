@@ -81,7 +81,7 @@ module Gloo
 
         begin
           result = db.query( sql_value, param_array )
-          process_result result
+          process_result( result, db )
         rescue => e
           @engine.err e.message
           return
@@ -154,21 +154,20 @@ module Gloo
       # If there's a result container, we'll create objects in it.
       # If not, we'll just show the output in the console.
       #
-      def process_result( result )
+      def process_result( result, db )
         return if result.nil?
 
-        heads = result[0]
-        data = result[1]
-        qr = QueryResult.new heads, data
-        return unless qr.has_data_to_show?
+        query_result = db.get_query_result( result )
+        return unless query_result
+        return unless query_result.has_data_to_show?
 
         result_can = find_child RESULT
         result_can = Gloo::Objs::Alias.resolve_alias( @engine, result_can )
 
         if result_can
-          qr.update_result_container result_can
+          query_result.update_result_container result_can
         else
-          qr.show
+          query_result.show
         end
       end
 
