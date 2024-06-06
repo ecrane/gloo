@@ -161,8 +161,13 @@ module Gloo
         run_on_render
 
         part_content = ''
-        content.children.each do |e|
-          part_content << e.send( render_ƒ )
+        data = content
+        if data.children.empty?
+          part_content = data.value
+        else
+          data.children.each do |e|
+            part_content << e.send( render_ƒ )
+          end
         end
       
         # part_content = Page.render_params part_content, params_hash
