@@ -74,10 +74,7 @@ module Gloo
       #
       def msg_run
         db = db_obj
-        unless db
-          @engine.err DB_MISSING_ERR
-          return
-        end
+        return unless db
 
         begin
           result = db.query( sql_value, param_array )
@@ -93,10 +90,7 @@ module Gloo
       #
       def run_query
         db = db_obj
-        unless db
-          @engine.err DB_MISSING_ERR
-          return
-        end
+        return unless db
 
         begin
           log_query sql_value, param_array
@@ -135,6 +129,12 @@ module Gloo
       #
       def db_obj
         o = find_child DB
+
+        unless o
+          @engine.err DB_MISSING_ERR
+          return nil
+        end
+
         return Gloo::Objs::Alias.resolve_alias( @engine, o )
       end
 
