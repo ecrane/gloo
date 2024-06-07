@@ -74,8 +74,14 @@ module Gloo
       #
       # Show a message unless we're in quite mode.
       #
-      def show( msg )
-        puts msg unless @quiet
+      def show( msg, color=nil )
+        return if @quiet
+
+        if color
+          puts ColorizedString[ msg ].colorize( color.to_sym )
+        else
+          puts msg 
+        end
       end
 
       # ---------------------------------------------------------------------

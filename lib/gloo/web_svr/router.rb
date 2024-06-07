@@ -3,6 +3,7 @@
 #
 # A helper class for page routing.
 # 
+require 'tty-table'
 
 module Gloo
   module WebSvr
@@ -114,6 +115,35 @@ module Gloo
       # ---------------------------------------------------------------------
       #    Helper funcions
       # ---------------------------------------------------------------------
+
+      # 
+      # Show all available routes.
+      # 
+      def show_routes
+        @engine.log.show "\n\tRoutes in Running Web App\n", :white
+        @found_routes = []
+        show_routes_in_container page_container, '/'
+
+        table = TTY::Table.new( [ 'Obj', 'Obj Path', 'Route' ], @found_routes )
+        renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
+        puts renderer.render
+        puts "\n"
+      end
+
+      #
+      # Show the routes in the given container.
+      # This is a recursive function travese the object tree.
+      # 
+      def show_routes_in_container can, route_path
+        can.children.each do |obj|
+          if obj.class == Gloo::Objs::Container
+            show_routes_in_container obj, "#{route_path}#{obj.name}/"
+          elsif obj.class == Gloo::Objs::Page
+            route = "#{route_path}#{obj.name}"
+            @found_routes << [ obj.name, obj.pn, route ] 
+          end
+        end
+      end
 
       # 
       # Find the route segment in the object container.

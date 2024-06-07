@@ -32,7 +32,7 @@ module Gloo
 
 
       # Messages
-      SERVER_NOT_RUNNING = 'The web server is not running and cannot be stopped'.freeze
+      SERVER_NOT_RUNNING = 'The web server is not running!'.freeze
 
       # 
       # Should the current request be redirected?
@@ -156,7 +156,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + [ 'start', 'stop' ]
+        return super + [ 'start', 'stop', 'routes' ]
       end
 
       #
@@ -182,6 +182,18 @@ module Gloo
           @engine.log.error SERVER_NOT_RUNNING
         end
       end
+
+      # 
+      # Helper message to show all routes in the running server.
+      # 
+      def msg_routes
+        if @router
+          @router.show_routes
+        else
+          @engine.log.error SERVER_NOT_RUNNING
+        end
+      end
+
 
       # ---------------------------------------------------------------------
       #    Start and Stop Events
@@ -219,6 +231,7 @@ module Gloo
         @engine.log.info "Stopping web server…"
         @web_server.stop
         @web_server = nil
+        @router = nil
 
         run_on_stop
         @engine.log.info "Web server stopped…"
