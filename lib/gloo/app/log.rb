@@ -17,6 +17,8 @@ module Gloo
       ERROR = 'error'.freeze
       LEVELS = [ DEBUG, INFO, WARN, ERROR ].freeze
 
+      CLEARED = "\n\n --- Log files cleared. --- \n\n".freeze
+
       LOG_FILE = 'gloo.log'.freeze
       ERROR_FILE = 'error.log'.freeze
 
@@ -46,14 +48,31 @@ module Gloo
       # Create the default [file] logger.
       #
       def create_loggers
-        f = File.join( @engine.settings.log_path, LOG_FILE )
-        @logger = Logger.new( f )
+        @logger = Logger.new( log_file )
         @logger.level = Logger::DEBUG
 
-        err = File.join( @engine.settings.log_path, ERROR_FILE )
-        @error = Logger.new( err )
+        @error = Logger.new( err_file )
         @error.level = Logger::WARN
       end
+
+      # ---------------------------------------------------------------------
+      #    Files
+      # ---------------------------------------------------------------------
+
+      # 
+      # Get the log file.
+      # 
+      def log_file
+        return File.join( @engine.settings.log_path, LOG_FILE )
+      end
+
+      # 
+      # Get the error log file.
+      # 
+      def err_file
+        return File.join( @engine.settings.log_path, ERROR_FILE )
+      end
+
 
       # ---------------------------------------------------------------------
       #    Static Helpers
@@ -66,6 +85,21 @@ module Gloo
         return false unless str.is_a? String
         return LEVELS.include? str.strip.downcase
       end
+
+      # ---------------------------------------------------------------------
+      #    Log file clearing
+      # ---------------------------------------------------------------------
+
+      # 
+      # Clear the log files.
+      # 
+      def clear
+        File.write( log_file, CLEARED )
+        File.write( err_file, CLEARED )
+
+        create_loggers
+      end
+
 
       # ---------------------------------------------------------------------
       #    Standard Output

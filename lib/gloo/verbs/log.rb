@@ -16,11 +16,11 @@ module Gloo
       #
       def run
         if @tokens.token_count > 1
-          expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
-          result = expr.evaluate
-          level = log_level_specified( result )
-          @engine.log.write result, level
-          @engine.heap.it.set_to result
+          if is_clear_cmd?
+            @engine.log.clear
+          else
+            write_to_log
+          end
         else
           @engine.log.debug ''
         end
@@ -45,6 +45,27 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
+
+      # 
+      # Write to the specified logger.
+      # 
+      def write_to_log
+        expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
+        result = expr.evaluate
+        level = log_level_specified( result )
+        @engine.log.write result, level
+        @engine.heap.it.set_to result
+      end
+
+      # 
+      # Is this a clear logs command?
+      # 
+      def is_clear_cmd?      
+        return true if ( ( @tokens.token_count == 2 ) && 
+          ( @tokens.params.first == 'clear' ) )
+          
+        return false
+      end
 
       #
       # Get the formatted string.
