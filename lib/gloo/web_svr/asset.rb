@@ -11,6 +11,7 @@ module Gloo
       ASSETS_FOLDER = 'assets'.freeze
       IMAGES_FOLDER = 'images'.freeze
       STYLESHEETS_FOLDER = 'stylesheets'.freeze
+      JAVASCRIPT_FOLDER = 'javascript'.freeze
 
       CSS_TYPE = 'text/css'.freeze
       JS_TYPE = 'text/javascript'.freeze
@@ -57,6 +58,13 @@ module Gloo
       #
       def stylesheets_folder
         return File.join( assets_folder, STYLESHEETS_FOLDER )
+      end
+
+      # 
+      # Get the stylesheets folder in the project.
+      #
+      def javascript_folder
+        return File.join( assets_folder, JAVASCRIPT_FOLDER )
       end
 
       # 
@@ -125,6 +133,7 @@ module Gloo
         add_containers
         add_images
         add_stylesheets
+        add_javascript
       end
 
       # 
@@ -141,6 +150,9 @@ module Gloo
 
         @stylesheets = @assets.find_child( STYLESHEETS_FOLDER ) || 
           @factory.create_can( STYLESHEETS_FOLDER, @assets )
+
+        @javascript = @assets.find_child( JAVASCRIPT_FOLDER ) || 
+          @factory.create_can( JAVASCRIPT_FOLDER, @assets )
       end
 
       #
@@ -172,6 +184,22 @@ module Gloo
         Dir.each_child( stylesheets_folder ) do |name|
           pn = File.join( STYLESHEETS_FOLDER, name )
           add_file_obj( @stylesheets, name, pn )
+        end
+      end
+
+      #
+      # Add the Javascript files to the web server pages.
+      #
+      def add_javascript
+        @log.debug 'Adding javascript asset routes to web server…'
+
+        return unless File.exist? javascript_folder
+
+        # for each file in the javascript folder
+        # create a file object and add it to the javascript container
+        Dir.each_child( javascript_folder ) do |name|
+          pn = File.join( JAVASCRIPT_FOLDER, name )
+          add_file_obj( @javascript, name, pn )
         end
       end
 
