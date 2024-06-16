@@ -16,6 +16,10 @@ module Gloo
       HOST = 'host'.freeze
       PORT = 'port'.freeze
 
+      # SSL Configuration
+      SSL_CERT = 'ssl_cert'.freeze
+      SSL_KEY = 'ssl_key'.freeze
+
       # Events
       ON_START = 'on_start'.freeze
       ON_STOP = 'on_stop'.freeze
@@ -115,6 +119,56 @@ module Gloo
         return o
       end
 
+
+      # ---------------------------------------------------------------------
+      #    SSL
+      # ---------------------------------------------------------------------
+
+      # 
+      # Is SSL configured for this server?
+      # True if the Cert and Key are both present.
+      # 
+      def use_ssl?
+        return ssl_cert && ssl_key
+      end
+
+      #
+      # Get the SSL certificate from the child object.
+      # Returns nil if there is none.
+      #
+      def ssl_cert
+        cert = find_child SSL_CERT
+        return nil unless cert
+
+        cert = Gloo::Objs::Alias.resolve_alias( @engine, cert )
+        return cert
+      end
+
+      #
+      # Get the SSL key from the child object.
+      # Returns nil if there is none.
+      #
+      def ssl_key
+        key = find_child SSL_KEY
+        return nil unless key
+
+        key = Gloo::Objs::Alias.resolve_alias( @engine, key )
+        return key
+      end
+
+      # 
+      # Get the SSL configuration for the server.
+      # 
+      def ssl_config
+        return nil unless use_ssl?
+
+        return {
+          :private_key_file => ssl_key.value,
+          :cert_chain_file => ssl_cert.value,
+          :verify_peer => false,
+        }
+      end
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -209,7 +263,7 @@ module Gloo
         @engine.log.info "Web Server URL: #{config.base_url}"
 
         handler = Gloo::WebSvr::Handler.new( @engine, self )
-        @web_server = Gloo::WebSvr::Server.new( @engine, handler, config )
+        @web_server = Gloo::WebSvr::Server.new( @engine, handler, config, ssl_config )
         @web_server.start
 
         @router = Gloo::WebSvr::Router.new( @engine, self )

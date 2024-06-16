@@ -34,8 +34,9 @@ module Gloo
       #
       # Set up the web server.
       #
-      def initialize( engine, handler, config = nil )
+      def initialize( engine, handler, config = nil, ssl_config = nil )
         @config = config ? config : Gloo::WebSvr::Config.new
+        @ssl_config = ssl_config
         @engine = engine
         @log = @engine.log
         @handler = handler
@@ -57,7 +58,14 @@ module Gloo
           :Host => @config.host
         }
         Thread.abort_on_exception = true
-        @server_thread = Thread.new { Rack::Handler::Thin.run( self, **options=opts ) }
+        @server_thread = Thread.new { 
+          Rack::Handler::Thin.run( self, **options=opts ) do |server|
+            if @ssl_config
+              server.ssl = true
+              server.ssl_options = @ssl_config
+            end
+          end
+        }
         @log.debug 'Web server has started.'
       end
 
