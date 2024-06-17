@@ -133,8 +133,11 @@ module Gloo
           params[ c[ :name ] ] = row[ c[ :data_index ] ]
         end
       
-        renderer = ERB.new( col[ :cell_renderer ] )
-        content = renderer.result_with_hash( params )
+        content = col[ :cell_renderer ]
+        content = @engine.running_app.obj.embedded_renderer.render content, params
+
+        # renderer = ERB.new( col[ :cell_renderer ] )
+        # content = renderer.result_with_hash( params )
       
         return content
       end
