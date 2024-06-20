@@ -33,7 +33,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[count delete_children show_key_value_table]
+        return super + %w[count delete_children child_exists show_key_value_table]
       end
 
       #
@@ -57,9 +57,25 @@ module Gloo
       #
       def msg_show_key_value_table
         data = self.children.map { |o| [ o.name, o.value ] }
-        @engine.platform.show_table nil, data, title
+
+        # TODO: this doesn't work:
+        # @engine.platform.show_table nil, data, title
       end
 
+      # 
+      # Check to see if there is a child with the given name.
+      # 
+      def msg_child_exists
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+        end
+        return unless data
+
+        val = self.contains_child?( data )
+        @engine.heap.it.set_to val
+        return val
+      end
     end
   end
 end

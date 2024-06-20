@@ -16,6 +16,7 @@ module Gloo
       SQL = 'sql'.freeze
       RESULT = 'result'.freeze
       PARAMS = 'params'.freeze
+      SIMPLE_LIST = 'simple_list'.freeze
 
       DB_MISSING_ERR = 'The database connection is missing!'.freeze
 
@@ -119,6 +120,21 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
+      #    Output as simple list
+      # ---------------------------------------------------------------------
+
+      # 
+      # Should the output be put in a simple list?
+      # 
+      def simple_list?
+        o = find_child SIMPLE_LIST
+        return false unless o
+
+        return o.value
+      end
+
+
+      # ---------------------------------------------------------------------
       #    Private functions
       # ---------------------------------------------------------------------
 
@@ -165,7 +181,13 @@ module Gloo
         result_can = Gloo::Objs::Alias.resolve_alias( @engine, result_can )
 
         if result_can
-          query_result.update_result_container result_can
+          if simple_list?
+            @engine.log.info "SIMPLE LIST"
+            query_result.update_result_container_simple result_can
+          else
+            @engine.log.info "NOT SIMPLE LIST!!!"
+            query_result.update_result_container result_can
+          end
         else
           query_result.show
         end

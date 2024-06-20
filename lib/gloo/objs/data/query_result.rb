@@ -98,6 +98,14 @@ module Gloo
         single_row_result? ? update_single_row : update_rows
       end
 
+      #
+      # Update the result container with the data from the query.
+      #
+      def update_result_container_simple( in_can )
+        @result_can = in_can
+        single_row_result? ? update_single_row : update_rows_simple
+      end
+
       # 
       # The result has a single row.
       # Map values from the result set to objects that are present.
@@ -122,7 +130,20 @@ module Gloo
           end
         end
       end
-      
+
+      # 
+      # Put all rows in the result object.
+      # 
+      def update_rows_simple
+        @data.each do |row|
+          row.each do |val|
+            o = @result_can.find_add_child( val, 'untyped' )
+            o.set_value val
+          end
+        end
+      end
+
+
       # ---------------------------------------------------------------------
       #    Private functions
       # ---------------------------------------------------------------------
