@@ -227,7 +227,8 @@ module Gloo
             if e.class == Element
               rendered_obj_content << e.send( render_ƒ )
             else
-              rendered_obj_content << e.render( render_ƒ )
+              data = render_thing e, render_ƒ, engine
+              ( rendered_obj_content << data ) if data # e.render( render_ƒ )
             end
           end
         else
@@ -236,7 +237,16 @@ module Gloo
 
         return rendered_obj_content
       end
-                    
+
+      def self.render_thing e, render_ƒ, engine
+        begin
+          return e.render( render_ƒ )
+        rescue => e
+          engine.err e.message
+          return ''
+        end
+      end
+  
     end
   end
 end

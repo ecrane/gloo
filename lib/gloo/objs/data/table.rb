@@ -63,8 +63,13 @@ module Gloo
         
         if o.is_a? Gloo::Objs::Query
           @engine.log.debug "Table getting data from query."
-          result = o.run_query
-          return result
+          begin
+            result = o.run_query
+            return result
+          rescue => e
+            @engine.err e.message
+            return nil
+          end
         else
           cols = self.columns
           return o.children.map do |e|
@@ -163,24 +168,29 @@ module Gloo
       # The render_ƒ is 'render_html', 'render_text', 'render_json', etc.
       # 
       def render render_ƒ
-        result = self.data
-        head = self.headers 
-        head = result[0] if head.empty?
-        rows = result[1]
+        begin
+          result = self.data
+          head = self.headers 
+          head = result[0] if head.empty?
+          rows = result[1]
 
-        columns = build_columns result[0]
+          columns = build_columns result[0]
 
-        params = { 
-          head: head, 
-          cols: result[0],
-          columns: columns,
-          rows: rows,
-          styles: self.styles,
-          cell_renderers: self.cell_renderers
-        }
+          params = { 
+            head: head, 
+            cols: result[0],
+            columns: columns,
+            rows: rows,
+            styles: self.styles,
+            cell_renderers: self.cell_renderers
+          }
 
-        helper = Gloo::WebSvr::TableRenderer.new( @engine )
-        return helper.data_to_table params 
+          helper = Gloo::WebSvr::TableRenderer.new( @engine )
+          return helper.data_to_table params
+        rescue => e
+          @engine.err e.message
+          return nil
+        end
       end
 
       # 
