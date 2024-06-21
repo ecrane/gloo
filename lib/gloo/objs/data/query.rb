@@ -182,7 +182,7 @@ module Gloo
 
         if result_can
           if simple_list?
-\            query_result.update_result_container_simple result_can
+            query_result.update_result_container_simple result_can
           else
             query_result.update_result_container result_can
           end
