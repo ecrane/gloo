@@ -182,10 +182,8 @@ module Gloo
 
         if result_can
           if simple_list?
-            @engine.log.info "SIMPLE LIST"
-            query_result.update_result_container_simple result_can
+\            query_result.update_result_container_simple result_can
           else
-            @engine.log.info "NOT SIMPLE LIST!!!"
             query_result.update_result_container result_can
           end
         else
