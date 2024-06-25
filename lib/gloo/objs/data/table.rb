@@ -72,9 +72,17 @@ module Gloo
           end
         else
           cols = self.columns
-          return o.children.map do |e|
-            cols.map { |h| e.find_child( h ).value }
+
+          if o.children&.first.children.empty?
+            # It is a simgle row table.
+            rows = [ cols.map { |h| o.find_child( h )&.value } ]
+          else
+            rows = o.children.map do |e|
+              cols.map { |h| e.find_child( h )&.value }
+            end
           end
+
+          return [ cols, rows ]
         end
       end
 
@@ -202,6 +210,8 @@ module Gloo
         cell_renderers = find_child CELLS
 
         columns = []
+        return columns unless result_data
+        
         result_data.each_with_index do |c,index|
           visible = true
           name = c

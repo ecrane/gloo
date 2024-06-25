@@ -45,7 +45,7 @@ module Gloo
       def data_to_table params
         data = params[ :rows ]
         
-        if data.length == 0
+        if data.nil? || ( data.length == 0 )
           return "<p>No data found.</p>"
         elsif data.length == 1
           return data_to_single_row_table( params )
