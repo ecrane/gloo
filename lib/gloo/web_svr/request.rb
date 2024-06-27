@@ -67,6 +67,9 @@ module Gloo
         @path = @env[ REQUEST_PATH ]
         @host = @env[ HTTP_HOST ]
         @query = @env[ QUERY_STRING ]
+
+        @body = @env[ 'rack.input' ].read
+        @body = Rack::Utils.parse_query @body
       end
 
 
@@ -111,6 +114,7 @@ module Gloo
       def log
         @log.info "#{@method} #{@host}#{@path}"
         @log.info "Parameters: #{@query}"
+        @log.info "Body: #{@body}" unless @body.empty?
       end
 
     end
