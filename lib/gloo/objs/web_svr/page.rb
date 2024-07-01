@@ -119,6 +119,11 @@ module Gloo
             o = params_can.find_child k
             o.set_value( v ) if o
           end
+
+          @request.body_params.each do |k,v|
+            o = params_can.find_child k
+            o.set_value( v ) if o
+          end
         end
 
         h = {}

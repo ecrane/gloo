@@ -19,7 +19,7 @@ module Gloo
       HTTP_HOST = 'HTTP_HOST'.freeze
       QUERY_STRING = 'QUERY_STRING'.freeze
 
-      attr_reader :method, :host, :path, :query
+      attr_reader :method, :host, :path, :query, :body
       attr_accessor :id
 
       
@@ -106,6 +106,13 @@ module Gloo
       def query_params
         return {} unless @query
         return Rack::Utils.parse_query( @query )
+      end
+
+      # 
+      # Get the hash of body parameters.
+      # 
+      def body_params
+        return @body ? @body : {}
       end
 
       # 
