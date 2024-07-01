@@ -253,4 +253,18 @@ class ObjTest < BaseEngineTest
     assert_equal 1, @engine.heap.root.child_count
   end
 
+  def test_obj_is_alias_check
+    o = Gloo::Objs::Container.new @engine
+    assert o
+    refute o.is_alias?
+
+    o = Gloo::Objs::String.new @engine
+    assert o
+    refute o.is_alias?
+
+    o = Gloo::Objs::Alias.new @engine
+    assert o
+    assert o.is_alias?
+  end
+
 end

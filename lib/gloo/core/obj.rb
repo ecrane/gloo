@@ -137,6 +137,14 @@ module Gloo
         return self.value.to_s.strip.empty?
       end
 
+      # 
+      # Is this an alias to another object?
+      # 
+      def is_alias?
+        return self.type_display == Gloo::Objs::Alias.typename
+      end
+
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -193,7 +201,7 @@ module Gloo
           return o if name.downcase == o.name.downcase
         end
 
-        if self.type_display == Gloo::Objs::Alias.typename
+        if is_alias?
           ln = Gloo::Core::Pn.new( @engine, self.value )
           redirect = ln.resolve
           return redirect.find_child( name )
