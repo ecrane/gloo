@@ -43,4 +43,19 @@ class CreateTest < BaseEngineTest
     assert_equal 0, @engine.heap.root.child_count
   end
 
+  def test_object_creation_with_alias
+    assert_equal 0, @engine.heap.root.child_count
+
+    i = @engine.parser.parse_immediate '` ln as alias : x'
+    i.run
+    assert_equal 1, @engine.heap.root.child_count
+
+    i = @engine.parser.parse_immediate 'create ln* as string : "hello"'
+    i.run
+    s = @engine.heap.root.children.last
+    assert s
+    refute s.is_alias?
+    assert_equal s.value, 'hello'
+  end
+
 end

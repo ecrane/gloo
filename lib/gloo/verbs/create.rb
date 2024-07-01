@@ -57,6 +57,12 @@ module Gloo
         if Gloo::Expr::LString.string?( value )
           value = Gloo::Expr::LString.strip_quotes( value )
         end
+
+        # Check to see if this is an alias
+        pn = Gloo::Core::Pn.new( @engine, name )
+        obj = pn.resolve if pn
+        name = obj.value if obj&.is_alias?
+
         obj = @engine.factory.create( { name: name, type: type, value: value } )
 
         obj.add_default_children if obj&.add_children_on_create?
