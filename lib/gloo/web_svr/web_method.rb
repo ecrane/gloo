@@ -13,7 +13,14 @@ module Gloo
       PUT = 'PUT'.freeze
       DELETE = 'DELETE'.freeze
       PATCH = 'PATCH'.freeze
-      
+
+      # 
+      # Is the method a GET?
+      # 
+      def self.is_get?( method )
+        return method.upcase == GET
+      end
+
       # 
       # Is the method a POST?
       # 

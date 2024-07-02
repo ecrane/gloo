@@ -17,10 +17,12 @@ module Gloo
 
         # 
         # Is the given route segment an implicit create resource?
-        # It is explicit if it is 'create' and implicit if it is a POST to the resource.
+        # It is explicit if it is 'create' 
+        #  and implicit if it is a POST to the resource.
         # 
         def self.is_implicit_create?( method, route_segment )
-          return false unless WebMethod.is_post?( method )
+          return false unless Gloo::WebSvr::WebMethod.is_post?( method )
+
           return ! route_segment.eql?( POST_ROUTE )
         end
    
