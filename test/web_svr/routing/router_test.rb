@@ -7,12 +7,12 @@ class RouterTest < BaseEngineTest
     o.run
     svr = @engine.heap.root.children.first
 
-    r = Gloo::WebSvr::Router.new( @engine, svr )
+    r = Gloo::WebSvr::Routing::Router.new( @engine, svr )
     assert r
   end
 
   def test_route_segments
-    r = Gloo::WebSvr::Router.new( @engine, nil )
+    r = Gloo::WebSvr::Routing::Router.new( @engine, nil )
     assert_equal [], r.detect_segments( '' )
     assert_equal ['a'], r.detect_segments( 'a' )
     assert_equal ['a', 'b'], r.detect_segments( 'a/b' )
@@ -20,7 +20,7 @@ class RouterTest < BaseEngineTest
   end
 
   def test_is_root_path
-    r = Gloo::WebSvr::Router.new( @engine, nil )
+    r = Gloo::WebSvr::Routing::Router.new( @engine, nil )
     r.detect_segments( '' )
     assert r.is_root_path?
 
@@ -32,7 +32,7 @@ class RouterTest < BaseEngineTest
   end
 
   def test_next_segment
-    r = Gloo::WebSvr::Router.new( @engine, nil )
+    r = Gloo::WebSvr::Routing::Router.new( @engine, nil )
     r.detect_segments( '' )
     assert_nil r.next_segment
     assert_equal 0, r.route_segments.count

@@ -266,7 +266,7 @@ module Gloo
         @web_server = Gloo::WebSvr::Server.new( @engine, handler, config, ssl_config )
         @web_server.start
 
-        @router = Gloo::WebSvr::Router.new( @engine, self )
+        @router = Gloo::WebSvr::Routing::Router.new( @engine, self )
         @router.add_page_routes
 
         @asset = Gloo::WebSvr::Asset.new( @engine, self )
