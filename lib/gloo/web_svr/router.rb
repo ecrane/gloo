@@ -10,8 +10,6 @@ module Gloo
     class Router
       
       PAGE_CONTAINER = 'page'.freeze
-      INDEX = 'index'.freeze
-      SHOW = 'show'.freeze
       SEGMENT_DIVIDER = '/'.freeze
 
       attr_reader :route_segments
@@ -39,14 +37,27 @@ module Gloo
       # 
       # Find and return the page for the given route.
       # 
-      def page_for_route path
+      def page_for_route( path, method )
         @engine.log.info "routing to #{path}"
+        @method = method
         detect_segments path
 
         return @web_svr_obj.home_page if is_root_path?
 
         pages = @web_svr_obj.pages_container
         if pages
+          # If the method is POST and the last segment is NOT 'create',
+          # we'll add create to the route segments.
+          if Gloo::WebSvr::Routing::ResourceRouter.is_implicit_create?( method, @route_segments.last )
+            @route_segments << Gloo::WebSvr::Routing::ResourceRouter::POST_ROUTE
+            page = find_route_segment( pages.children )
+            return [ page, @id ] if page
+
+            # We didn't find the page, so remove the last segment and try again 
+            # posting to the resource.
+            @route_segments.pop
+          end
+
           page = find_route_segment( pages.children ) 
           return [ page, @id ] if page
         end
@@ -124,7 +135,7 @@ module Gloo
         @found_routes = []
         show_routes_in_container page_container, '/'
 
-        table = TTY::Table.new( [ 'Obj', 'Obj Path', 'Route' ], @found_routes )
+        table = TTY::Table.new( [ 'Obj', 'Obj Path', 'Route', 'Method' ], @found_routes )
         renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
         puts renderer.render
         puts "\n"
@@ -140,7 +151,12 @@ module Gloo
             show_routes_in_container obj, "#{route_path}#{obj.name}/"
           elsif obj.class == Gloo::Objs::Page
             route = "#{route_path}#{obj.name}"
-            @found_routes << [ obj.name, obj.pn, route ] 
+            @found_routes << [ obj.name, obj.pn, route, Gloo::WebSvr::WebMethod::GET ]
+
+            # If the method is POST, add a route alias for the create.
+            if obj.name.eql? Gloo::WebSvr::Routing::ResourceRouter::POST_ROUTE
+              @found_routes << [ '', '', route_path, Gloo::WebSvr::WebMethod::POST ]
+            end
           end
         end
       end
@@ -151,12 +167,14 @@ module Gloo
       def find_route_segment objs
         this_segment = next_segment
 
-        this_segment = INDEX if this_segment.blank?
+        if this_segment.blank? # && Gloo::WebSvr::WebMethod.is_post?( @method )
+          this_segment = Gloo::WebSvr::Routing::ResourceRouter::INDEX 
+        end
 
         if this_segment.to_i.to_s == this_segment
           @id = this_segment.to_i
           @log.debug "found id for route: #{@id}"
-          this_segment = SHOW
+          this_segment = Gloo::WebSvr::Routing::ResourceRouter::SHOW
         end
 
         objs.each do |o|
