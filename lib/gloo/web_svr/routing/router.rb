@@ -28,6 +28,7 @@ module Gloo
           @log = @engine.log
 
           @web_svr_obj = web_svr_obj
+          @show_routes = ShowRoutes.new( @engine )
         end
 
 
@@ -39,7 +40,7 @@ module Gloo
         # Find and return the page for the given route.
         # 
         def page_for_route( path, method )
-          @engine.log.info "routing to #{path}"
+          @log.info "routing to #{path}"
           @method = method
           detect_segments path
 
@@ -129,37 +130,11 @@ module Gloo
         # ---------------------------------------------------------------------
 
         # 
-        # Show all available routes.
-        # 
-        def show_routes
-          @engine.log.show "\n\tRoutes in Running Web App\n", :white
-          @found_routes = []
-          show_routes_in_container page_container, '/'
-
-          table = TTY::Table.new( [ 'Obj', 'Obj Path', 'Route', 'Method' ], @found_routes )
-          renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
-          puts renderer.render
-          puts "\n"
-        end
-
+        # Show the routes in the running app.
+        # This uses the ShowRoutes helper class.
         #
-        # Show the routes in the given container.
-        # This is a recursive function travese the object tree.
-        # 
-        def show_routes_in_container can, route_path
-          can.children.each do |obj|
-            if obj.class == Gloo::Objs::Container
-              show_routes_in_container obj, "#{route_path}#{obj.name}/"
-            elsif obj.class == Gloo::Objs::Page
-              route = "#{route_path}#{obj.name}"
-              @found_routes << [ obj.name, obj.pn, route, Gloo::WebSvr::WebMethod::GET ]
-
-              # If the method is POST, add a route alias for the create.
-              if obj.name.eql? Gloo::WebSvr::Routing::ResourceRouter::POST_ROUTE
-                @found_routes << [ '', '', route_path, Gloo::WebSvr::WebMethod::POST ]
-              end
-            end
-          end
+        def show_routes
+          @show_routes.show page_container
         end
 
         # 
