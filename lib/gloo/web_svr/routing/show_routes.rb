@@ -57,8 +57,10 @@ module Gloo
               @found_routes << [ obj.name, obj.pn, route, Gloo::WebSvr::WebMethod::GET ]
 
               # If the method is POST, add a route alias for the create.
-              if obj.name.eql? Gloo::WebSvr::Routing::ResourceRouter::POST_ROUTE
+              if obj.name.eql? ResourceRouter::POST_ROUTE
                 @found_routes << [ '', '', route_path, Gloo::WebSvr::WebMethod::POST ]
+              elsif obj.name.eql? ResourceRouter::DELETE
+                @found_routes << [ '', '', route_path, Gloo::WebSvr::WebMethod::DELETE ]
               end
             end
           end
