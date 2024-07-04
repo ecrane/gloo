@@ -40,8 +40,9 @@ module Gloo
         # Find and return the page for the given route.
         # 
         def page_for_route( path, method )
-          @log.info "routing to #{path}"
+          @log.info "routing to #{path} for method #{method}"
           @method = method
+          
           detect_segments path
 
           return @web_svr_obj.home_page if is_root_path?
@@ -147,12 +148,6 @@ module Gloo
             this_segment = Gloo::WebSvr::Routing::ResourceRouter::INDEX 
           end
 
-          if this_segment.to_i.to_s == this_segment
-            @id = this_segment.to_i
-            @log.debug "found id for route: #{@id}"
-            this_segment = Gloo::WebSvr::Routing::ResourceRouter::SHOW
-          end
-
           objs.each do |o|
             o = Gloo::Objs::Alias.resolve_alias( @engine, o )
 
@@ -204,6 +199,15 @@ module Gloo
 
           # Remove the first segment if it is empty.
           @route_segments.shift if @route_segments.first.blank?
+
+          @route_segments.each do |seg|
+            if seg.to_i.to_s == seg
+              @id = seg.to_i
+              @log.info "found id for route: #{@id}"
+              @route_segments.delete seg
+              @route_segments << ResourceRouter.segment_for_method( @method )
+            end
+          end
 
           return @route_segments
         end

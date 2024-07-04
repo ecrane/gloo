@@ -11,6 +11,7 @@ module Gloo
         
         INDEX = 'index'.freeze
         SHOW = 'show'.freeze
+        DELETE = 'delete'.freeze
 
         POST_ROUTE = 'create'.freeze
 
@@ -25,7 +26,18 @@ module Gloo
 
           return ! route_segment.eql?( POST_ROUTE )
         end
-   
+
+        # 
+        # Add the segment based on the method.
+        # 
+        def self.segment_for_method( method ) 
+          if Gloo::WebSvr::WebMethod.is_delete?( method )
+            return DELETE
+          else
+            return SHOW
+          end
+        end
+        
       end
     end
   end
