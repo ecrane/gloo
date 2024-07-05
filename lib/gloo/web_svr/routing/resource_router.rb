@@ -12,6 +12,7 @@ module Gloo
         INDEX = 'index'.freeze
         SHOW = 'show'.freeze
         DELETE = 'delete'.freeze
+        UPDATE = 'update'.freeze
 
         POST_ROUTE = 'create'.freeze
 
@@ -33,6 +34,8 @@ module Gloo
         def self.segment_for_method( method ) 
           if Gloo::WebSvr::WebMethod.is_delete?( method )
             return DELETE
+          elsif Gloo::WebSvr::WebMethod.is_patch?( method )
+            return UPDATE
           else
             return SHOW
           end

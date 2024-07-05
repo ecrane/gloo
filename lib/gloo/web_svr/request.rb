@@ -70,6 +70,7 @@ module Gloo
 
         @body = @env[ 'rack.input' ].read
         @body = Rack::Utils.parse_query @body
+        check_body_method
       end
 
 
@@ -99,6 +100,16 @@ module Gloo
       # ---------------------------------------------------------------------
       #    Helper functions
       # ---------------------------------------------------------------------
+
+      # 
+      # Check the body to see if there is a PATCH or a PUT in 
+      # the method override.
+      # 
+      def check_body_method
+        if @body[ '_method' ]
+          @method = @body[ '_method' ].upcase
+        end
+      end
 
       #
       # Get the hash of query parameters.
