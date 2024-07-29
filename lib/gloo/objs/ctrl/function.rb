@@ -14,6 +14,7 @@ module Gloo
 
       # Events
       ON_INVOKE = 'on_invoke'.freeze
+      AFTER_INVOKE = 'after_invoke'.freeze
 
       # Parameters to the function invocation.
       PARAMS = 'params'.freeze
@@ -132,6 +133,16 @@ module Gloo
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
 
+      #
+      # Run the after invoke script if there is one.
+      #
+      def run_after_invoke
+        o = find_child AFTER_INVOKE
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
 
       # ---------------------------------------------------------------------
       #    Messages
@@ -147,6 +158,7 @@ module Gloo
         run_on_invoke
         return_value = result
         @engine.heap.it.set_to return_value
+        run_after_invoke
         
         return return_value
       end
