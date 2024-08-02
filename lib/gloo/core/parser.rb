@@ -20,8 +20,11 @@ module Gloo
       #
       # Parse a command from the immediate execution context.
       #
-      def parse_immediate( cmd )
-        cmd, params = split_params cmd
+      def parse_immediate( full_cmd )
+        # Break the full command into verb and params
+        cmd, params = split_params full_cmd
+
+        # Params are the parenthetical part of the command at the end
         params = Gloo::Core::Tokens.new( params ) if params
         tokens = Gloo::Core::Tokens.new( cmd )
         dic = Gloo::Core::Dictionary.instance
@@ -42,7 +45,7 @@ module Gloo
         if i && cmd.strip.end_with?( ')' )
           pstr = cmd[ i + 1..-1 ]
           params = pstr.strip[ 0..-2 ] if pstr
-          cmd = cmd[ 0, i - 1 ]
+          cmd = cmd[ 0, i].strip
         end
         return cmd, params
       end

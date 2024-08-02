@@ -56,6 +56,13 @@ module Gloo
         return @value.to_s
       end
 
+      # 
+      # Is this a function object?
+      # 
+      def is_function?
+        return false
+      end
+
     end
   end
 end

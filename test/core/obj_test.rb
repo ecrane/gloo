@@ -267,4 +267,18 @@ class ObjTest < BaseEngineTest
     assert o.is_alias?
   end
 
+  def test_obj_is_function_check
+    o = Gloo::Objs::Container.new @engine
+    assert o
+    refute o.is_function?
+
+    o = Gloo::Objs::String.new @engine
+    assert o
+    refute o.is_function?
+
+    o = Gloo::Objs::Function.new @engine
+    assert o
+    assert o.is_function?
+  end
+
 end

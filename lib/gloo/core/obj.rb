@@ -144,6 +144,13 @@ module Gloo
         return self.type_display == Gloo::Objs::Alias.typename
       end
 
+      # 
+      # Is this a function object?
+      # 
+      def is_function?
+        return self.type_display == Gloo::Objs::Function.typename
+      end
+
 
       # ---------------------------------------------------------------------
       #    Children
