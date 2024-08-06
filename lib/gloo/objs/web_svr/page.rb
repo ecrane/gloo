@@ -196,6 +196,8 @@ module Gloo
         o = find_child ON_RENDER
         return unless o
 
+        @engine.log.debug "running on_render for page"
+
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
 
@@ -205,6 +207,8 @@ module Gloo
       def run_on_rendered
         o = find_child ON_RENDERED
         return unless o
+
+        @engine.log.debug "running on_rendered for page"
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
@@ -321,11 +325,11 @@ module Gloo
         @request = request
         set_id if @request
 
-        # Set Params before running on render
-        params = params_hash
-
         run_on_render
         return nil if redirect_set?
+
+        # Set Params before running on render
+        params = params_hash
 
         if is_html?
           contents = render_html params
@@ -337,7 +341,7 @@ module Gloo
           @engine.log.error "Unknown content type: #{content_type}"
           return nil
         end
-        
+
         run_on_rendered
         @request = nil
         return nil if redirect_set?
