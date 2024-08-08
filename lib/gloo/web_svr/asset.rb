@@ -8,9 +8,9 @@ module Gloo
   module WebSvr
     class Asset
       
-      ASSETS_FOLDER = 'assets'.freeze
-      IMAGES_FOLDER = 'images'.freeze
-      STYLESHEETS_FOLDER = 'stylesheets'.freeze
+      ASSET_FOLDER = 'asset'.freeze
+      IMAGE_FOLDER = 'image'.freeze
+      STYLESHEET_FOLDER = 'stylesheet'.freeze
       JAVASCRIPT_FOLDER = 'javascript'.freeze
 
       CSS_TYPE = 'text/css'.freeze
@@ -42,29 +42,29 @@ module Gloo
       # 
       # Get the asset folder in the project.
       #
-      def assets_folder
-        return File.join( @engine.settings.project_path, ASSETS_FOLDER )
+      def asset_folder
+        return File.join( @engine.settings.project_path, ASSET_FOLDER )
       end
 
       #
       # Get the images folder in the project.
       #
-      def images_folder
-        return File.join( assets_folder, IMAGES_FOLDER )
+      def image_folder
+        return File.join( asset_folder, IMAGE_FOLDER )
       end
 
       # 
       # Get the stylesheets folder in the project.
       #
-      def stylesheets_folder
-        return File.join( assets_folder, STYLESHEETS_FOLDER )
+      def stylesheet_folder
+        return File.join( asset_folder, STYLESHEET_FOLDER )
       end
 
       # 
       # Get the stylesheets folder in the project.
       #
       def javascript_folder
-        return File.join( assets_folder, JAVASCRIPT_FOLDER )
+        return File.join( asset_folder, JAVASCRIPT_FOLDER )
       end
 
       # 
@@ -77,7 +77,7 @@ module Gloo
         return pn if File.exist? pn
 
         # Look in the web server's asset folder.
-        pn = File.join( assets_folder, pn )
+        pn = File.join( asset_folder, pn )
 
         return pn
       end
@@ -125,7 +125,7 @@ module Gloo
       # Add all asssets to the web server pages (routes).
       # 
       def add_asset_routes
-        return unless File.exist? assets_folder
+        return unless File.exist? asset_folder
 
         @log.debug 'Adding asset routes to web server…'
         @factory = @engine.factory
@@ -142,14 +142,14 @@ module Gloo
       def add_containers
         pages = @web_svr_obj.pages_container
 
-        @assets = pages.find_child( ASSETS_FOLDER ) || 
-          @factory.create_can( ASSETS_FOLDER, pages )
+        @assets = pages.find_child( ASSET_FOLDER ) || 
+          @factory.create_can( ASSET_FOLDER, pages )
 
-        @images = @assets.find_child( IMAGES_FOLDER ) || 
-          @factory.create_can( IMAGES_FOLDER, @assets )
+        @images = @assets.find_child( IMAGE_FOLDER ) || 
+          @factory.create_can( IMAGE_FOLDER, @assets )
 
-        @stylesheets = @assets.find_child( STYLESHEETS_FOLDER ) || 
-          @factory.create_can( STYLESHEETS_FOLDER, @assets )
+        @stylesheets = @assets.find_child( STYLESHEET_FOLDER ) || 
+          @factory.create_can( STYLESHEET_FOLDER, @assets )
 
         @javascript = @assets.find_child( JAVASCRIPT_FOLDER ) || 
           @factory.create_can( JAVASCRIPT_FOLDER, @assets )
@@ -161,12 +161,12 @@ module Gloo
       def add_images
         @log.debug 'Adding image asset routes to web server…'
         
-        return unless File.exist? images_folder
+        return unless File.exist? image_folder
 
         # for each file in the images folder
         # create a file object and add it to the images container
-        Dir.each_child( images_folder ) do |name|
-          pn = File.join( IMAGES_FOLDER, name )
+        Dir.each_child( image_folder ) do |name|
+          pn = File.join( IMAGE_FOLDER, name )
           add_file_obj( @images, name, pn )
         end
       end
@@ -177,12 +177,12 @@ module Gloo
       def add_stylesheets
         @log.debug 'Adding stylesheet asset routes to web server…'
 
-        return unless File.exist? stylesheets_folder
+        return unless File.exist? stylesheet_folder
 
         # for each file in the stylesheets folder
         # create a file object and add it to the stylesheets container
-        Dir.each_child( stylesheets_folder ) do |name|
-          pn = File.join( STYLESHEETS_FOLDER, name )
+        Dir.each_child( stylesheet_folder ) do |name|
+          pn = File.join( STYLESHEET_FOLDER, name )
           add_file_obj( @stylesheets, name, pn )
         end
       end
