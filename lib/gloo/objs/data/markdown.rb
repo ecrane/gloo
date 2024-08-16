@@ -3,6 +3,7 @@
 #
 # Markdown data.
 #
+require 'redcarpet'
 
 module Gloo
   module Objs
@@ -55,7 +56,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[show page]
+        return super + %w[show page render]
       end
 
       #
@@ -71,8 +72,65 @@ module Gloo
       def msg_page
         return unless self.value
 
-        @engine.platform.show( md, true, true )
+        @engine.platform.show( self.value, true, true )
       end
+
+      #
+      # Render the markdown as HTML.
+      # Needs an optional parameter of where to put the rendered html.
+      # The html will be in 'it' as well.
+      #
+      def msg_render
+        html = Gloo::Objs::Markdown.md_2_html( value )
+
+        # Put the HTML in the optional parameter if one is given.
+        if @params&.token_count&.positive?
+          pn = Gloo::Core::Pn.new( @engine, @params.first )
+          o = pn.resolve
+          o.set_value html
+        end
+
+        # Put the HTML in it, in any case.
+        @engine.heap.it.set_to html
+      end
+
+      # ---------------------------------------------------------------------
+      #    Static Helpers
+      # ---------------------------------------------------------------------
+
+      # 
+      # Convert markdown to HTML using the
+      # Redcarpet markdown processor.
+      # 
+      def self.md_2_html( md )
+        markdown = Redcarpet::Markdown.new( 
+          Redcarpet::Render::HTML, 
+          autolink: true, 
+          fenced_code_blocks: true,
+          tables: true, 
+          strikethrough: true )
+          
+        return markdown.render( md )
+      end
+
+      # 
+      # Does not work.
+      # See note in the platform.rb file.
+      # 
+      # # 
+      # # Convert markdown to manpage using the
+      # # Redcarpet markdown processor.
+      # # 
+      # def self.md_2_manpage( md )
+      #   markdown = Redcarpet::Markdown.new( 
+      #     Redcarpet::Render::ManPage, 
+      #     autolink: true, 
+      #     fenced_code_blocks: true,
+      #     tables: true, 
+      #     strikethrough: true )
+          
+      #   return markdown.render( md )
+      # end
 
     end
   end

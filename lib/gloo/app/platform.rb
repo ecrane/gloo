@@ -35,7 +35,13 @@ module Gloo
       #
       def show( msg, md=false, page=false )
         if md
-          msg = TTY::Markdown.parse msg
+          # 2024.08.16 - TTY::Markdown.parse msg was not working.
+          # Tried with redcarpet and it was not working either.
+          # So just leaving it for now.  Not sure I even really need it.
+          # TODO: Revisit and clean up.
+
+          # msg = TTY::Markdown.parse msg
+          # msg = Gloo::Objs::Markdown.md_2_manpage( msg )
         end
 
         if page
