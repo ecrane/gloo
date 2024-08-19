@@ -10,6 +10,7 @@ module Gloo
 
       KEYWORD = 'integer'.freeze
       KEYWORD_SHORT = 'int'.freeze
+      DEFAULT_RANDOM_RANGE = 100
 
       #
       # The name of the object type.
@@ -46,7 +47,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[inc dec]
+        return super + %w[inc dec randomize]
       end
 
       #
@@ -67,6 +68,27 @@ module Gloo
         set_value i
         @engine.heap.it.set_to i
         return i
+      end
+
+      # 
+      # Set the value to a random number.
+      # The range is 0 to DEFAULT_RANDOM_RANGE (not including the range).
+      # To model a 6-sided die, 
+      # set DEFAULT_RANDOM_RANGE to 6 and add 1 to the result.
+      # 
+      def msg_randomize
+        range = DEFAULT_RANDOM_RANGE
+
+        # Check for a range.
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          range = expr.evaluate
+        end
+
+        rand_value = rand( range )
+        set_value rand_value
+        @engine.heap.it.set_to rand_value
+        return rand_value
       end
 
     end

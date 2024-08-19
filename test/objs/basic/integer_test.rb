@@ -35,6 +35,7 @@ class IntegerTest < BaseEngineTest
     assert msgs.include?( 'inc' )
     assert msgs.include?( 'dec' )
     assert msgs.include?( 'unload' )
+    assert msgs.include?( 'randomize' )
   end
 
   def test_inc_msg
@@ -53,6 +54,33 @@ class IntegerTest < BaseEngineTest
     assert_equal( -1, o.msg_dec )
     assert_equal( -1, o.value )
     assert_equal( -1, @engine.heap.it.value )
+  end
+
+  def test_randomize_msg
+    o = Gloo::Objs::Integer.new @engine
+    o.set_value 0
+    assert_equal 0, o.value
+
+    10.times do
+      rand_val = o.msg_randomize
+      assert( rand_val >= 0 )
+      assert( rand_val < 100 )
+    end
+  end
+
+  def test_randomize_msg_with_max
+    i = @engine.parser.parse_immediate 'create i as int'
+    i.run
+    assert_equal 1, @engine.heap.root.child_count
+    obj = @engine.heap.root.children.first
+    assert obj
+
+    10.times do
+      i = @engine.parser.parse_immediate 'tell i to randomize(2)'
+      i.run
+      rand_val = obj.value
+      assert ( ( rand_val == 0 ) || ( rand_val == 1 ) )
+    end
   end
 
 end
