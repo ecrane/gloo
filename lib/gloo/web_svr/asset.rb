@@ -155,6 +155,26 @@ module Gloo
           @factory.create_can( JAVASCRIPT_FOLDER, @assets )
       end
 
+      # 
+      # Traverse the given folder and add all files to the container.
+      # This is a recursive method and look look for files in subfolders.
+      # 
+      def add_files_in_folder( folder, container, path )
+        Dir.each_child( folder ) do |name|
+          pn = File.join( path, name )
+          full_path = File.join( folder, name )
+
+          if File.directory? full_path
+            child = container.find_child( name )
+            child = @factory.create_can( name, container ) if child.nil?
+
+            add_files_in_folder( full_path, child, pn )
+          else
+            add_file_obj( container, name, pn )
+          end
+        end
+      end
+
       #
       # Add the images to the web server pages.
       #
@@ -165,10 +185,7 @@ module Gloo
 
         # for each file in the images folder
         # create a file object and add it to the images container
-        Dir.each_child( image_folder ) do |name|
-          pn = File.join( IMAGE_FOLDER, name )
-          add_file_obj( @images, name, pn )
-        end
+        add_files_in_folder( image_folder, @images, IMAGE_FOLDER )
       end
 
       #
@@ -181,10 +198,12 @@ module Gloo
 
         # for each file in the stylesheets folder
         # create a file object and add it to the stylesheets container
-        Dir.each_child( stylesheet_folder ) do |name|
-          pn = File.join( STYLESHEET_FOLDER, name )
-          add_file_obj( @stylesheets, name, pn )
-        end
+        add_files_in_folder( stylesheet_folder, @stylesheets, STYLESHEET_FOLDER )
+
+        # Dir.each_child( stylesheet_folder ) do |name|
+        #   pn = File.join( STYLESHEET_FOLDER, name )
+        #   add_file_obj( @stylesheets, name, pn )
+        # end
       end
 
       #
@@ -197,10 +216,12 @@ module Gloo
 
         # for each file in the javascript folder
         # create a file object and add it to the javascript container
-        Dir.each_child( javascript_folder ) do |name|
-          pn = File.join( JAVASCRIPT_FOLDER, name )
-          add_file_obj( @javascript, name, pn )
-        end
+        add_files_in_folder( javascript_folder, @javascript, JAVASCRIPT_FOLDER )
+
+        # Dir.each_child( javascript_folder ) do |name|
+        #   pn = File.join( JAVASCRIPT_FOLDER, name )
+        #   add_file_obj( @javascript, name, pn )
+        # end
       end
 
       # 
