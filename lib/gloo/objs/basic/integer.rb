@@ -74,7 +74,7 @@ module Gloo
       # Set the value to a random number.
       # The range is 0 to DEFAULT_RANDOM_RANGE (not including the range).
       # To model a 6-sided die, 
-      # set DEFAULT_RANDOM_RANGE to 6 and add 1 to the result.
+      # set range to 6 and add 1 to the result.
       # 
       def msg_randomize
         range = DEFAULT_RANDOM_RANGE
