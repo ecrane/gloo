@@ -56,7 +56,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[show page render]
+        return super + %w[show page render update_asset_path]
       end
 
       #
@@ -93,6 +93,29 @@ module Gloo
         # Put the HTML in it, in any case.
         @engine.heap.it.set_to html
       end
+
+      # 
+      # Update the asset path in the markdown.
+      # Take out leading relative path so that path starts
+      # at the asset root.
+      # 
+      def msg_update_asset_path
+        data = self.value
+        out_data = ""
+        
+        data.lines.each do |line|
+          if line.include?( '![' ) && line.include?( '](') && line.include?( '/asset/')
+            prefix = line[ 0, ( line.index( '](' ) + 2 ) ]
+            suffix = line[ (line.index( '/asset/' )) .. -1 ]
+            out_data << "#{prefix}#{suffix}"
+          else
+            out_data << line
+          end
+        end
+
+        self.value = out_data
+      end
+
 
       # ---------------------------------------------------------------------
       #    Static Helpers
