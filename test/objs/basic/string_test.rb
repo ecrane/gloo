@@ -37,6 +37,11 @@ class StringTest < BaseEngineTest
     assert msgs.include?( 'up' )
     assert msgs.include?( 'down' )
     assert msgs.include?( 'unload' )
+
+    assert msgs.include?( 'gen_alphanumeric' )
+    assert msgs.include?( 'gen_uuid' )
+    assert msgs.include?( 'gen_hex' )
+    assert msgs.include?( 'gen_base64' )
   end
 
   def test_size_msg
