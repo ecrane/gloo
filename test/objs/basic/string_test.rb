@@ -42,6 +42,9 @@ class StringTest < BaseEngineTest
     assert msgs.include?( 'gen_uuid' )
     assert msgs.include?( 'gen_hex' )
     assert msgs.include?( 'gen_base64' )
+
+    assert msgs.include?( 'encode64' )
+    assert msgs.include?( 'decode64' )
   end
 
   def test_size_msg
@@ -64,4 +67,29 @@ class StringTest < BaseEngineTest
     assert_equal 'test', @engine.heap.it.value
   end
 
+  def test_string_encoding_base64
+    orig_value = 'Many hands make light work.'
+    o = Gloo::Objs::String.new @engine
+    o.set_value orig_value
+    assert_equal orig_value, o.value
+
+    o.msg_encode64
+    refute_equal orig_value, o.value
+
+    o.msg_decode64
+    assert_equal orig_value, o.value
+  end
+
+  def test_string_url_escape
+    orig_value = 'http://my.site.come/this is \a test?name=John Doe'
+    o = Gloo::Objs::String.new @engine
+    o.set_value orig_value
+    assert_equal orig_value, o.value
+
+    o.msg_escape
+    refute_equal orig_value, o.value
+    
+    o.msg_unescape
+    assert_equal orig_value, o.value
+  end
 end

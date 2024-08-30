@@ -3,6 +3,8 @@
 #
 # A String.
 #
+require 'base64'
+require 'uri'
 
 module Gloo
   module Objs
@@ -40,7 +42,8 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[up down size gen_alphanumeric gen_uuid gen_hex gen_base64]
+        return super + %w[up down size encode64 decode64 escape unescape
+          gen_alphanumeric gen_uuid gen_hex gen_base64]
       end
 
       #
@@ -48,6 +51,51 @@ module Gloo
       #
       def msg_size
         s = value.size
+        @engine.heap.it.set_to s
+        return s
+      end
+
+      # 
+      # Escape the string.
+      # Make it URL safe.
+      # The value of the string is changed.
+      # 
+      def msg_escape
+        s = URI::DEFAULT_PARSER.escape( value )
+        set_value s
+        @engine.heap.it.set_to s
+        return s
+      end
+
+      # 
+      # Unescape the string.
+      # The value of the string is changed.
+      # 
+      def msg_unescape
+        s = URI::DEFAULT_PARSER.unescape( value )
+        set_value s
+        @engine.heap.it.set_to s
+        return s
+      end
+
+      # 
+      # Encode the string as base64.
+      # Changes the value of the string.
+      # 
+      def msg_encode64
+        s = Base64.encode64( value )
+        set_value s
+        @engine.heap.it.set_to s
+        return s
+      end
+
+      # 
+      # Decode the string from base64.
+      # Changes the value of the string.
+      # 
+      def msg_decode64
+        s = Base64.decode64( value )
+        set_value s
         @engine.heap.it.set_to s
         return s
       end
