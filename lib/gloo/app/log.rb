@@ -34,7 +34,7 @@ module Gloo
       # If quiet is true, then message are written to the log
       # but not to the console.
       #
-      def initialize( engine, quiet=true )
+      def initialize( engine, quiet = true )
         @engine = engine
         @quite = quiet
         @debug = engine.settings.debug
@@ -59,30 +59,30 @@ module Gloo
       #    Files
       # ---------------------------------------------------------------------
 
-      # 
+      #
       # Get the log file.
-      # 
+      #
       def log_file
         return File.join( @engine.settings.log_path, LOG_FILE )
       end
 
-      # 
+      #
       # Get the error log file.
-      # 
+      #
       def err_file
         return File.join( @engine.settings.log_path, ERROR_FILE )
       end
-
 
       # ---------------------------------------------------------------------
       #    Static Helpers
       # ---------------------------------------------------------------------
 
-      # 
+      #
       # Does the given str represent a logging level?
-      # 
-      def self.is_level? str
+      #
+      def self.is_level?( str )
         return false unless str.is_a? String
+
         return LEVELS.include? str.strip.downcase
       end
 
@@ -90,16 +90,15 @@ module Gloo
       #    Log file clearing
       # ---------------------------------------------------------------------
 
-      # 
+      #
       # Clear the log files.
-      # 
+      #
       def clear
         File.write( log_file, CLEARED )
         File.write( err_file, CLEARED )
 
         create_loggers
       end
-
 
       # ---------------------------------------------------------------------
       #    Standard Output
@@ -108,13 +107,13 @@ module Gloo
       #
       # Show a message unless we're in quite mode.
       #
-      def show( msg, color=nil )
+      def show( msg, color = nil )
         return if @quiet
 
         if color
           puts ColorizedString[ msg ].colorize( color.to_sym )
         else
-          puts msg 
+          puts msg
         end
       end
 
@@ -122,9 +121,9 @@ module Gloo
       #    Logging functions
       # ---------------------------------------------------------------------
 
-      # 
+      #
       # Write to the specified level.
-      # 
+      #
       def write( msg, level )
         if level == DEBUG
           debug msg

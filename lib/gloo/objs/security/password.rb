@@ -6,7 +6,7 @@
 # BCrypt is used to hash the password.
 #   https://www.rubydoc.info/gems/bcrypt-ruby
 #   https://github.com/bcrypt-ruby/bcrypt-ruby/blob/master/lib/bcrypt/password.rb
-# 
+#
 require 'bcrypt'
 
 module Gloo
@@ -40,7 +40,7 @@ module Gloo
       #
       def salt
         o = find_child SALT
-        return o ? o.value : nil
+        return o&.value
       end
 
       #
@@ -49,22 +49,22 @@ module Gloo
       #
       def password
         o = find_child PASSWORD
-        return o ? o.value : nil
+        return o&.value
       end
 
       #
       # Update the password value.
       #
-      def update_password new_pwd
+      def update_password( new_pwd )
         o = find_child PASSWORD
         return unless o
 
         o.set_value new_pwd
       end
 
-      # 
+      #
       # Get the salted password.
-      # 
+      #
       def salt_pwd
         return "#{salt}#{password}"
       end
@@ -75,19 +75,18 @@ module Gloo
       #
       def hash
         o = find_child HASH
-        return o ? o.value : nil
+        return o&.value
       end
 
       #
       # Update the hashed password value.
       #
-      def update_hash new_hash
+      def update_hash( new_hash )
         o = find_child HASH
         return unless o
 
         o.set_value new_hash
       end
-
 
       # ---------------------------------------------------------------------
       #    Children
@@ -114,7 +113,6 @@ module Gloo
         fac.create_string HASH, '', self
       end
 
-
       # ---------------------------------------------------------------------
       #    Messages
       # ---------------------------------------------------------------------
@@ -123,7 +121,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + [ 'hash', 'check', 'generate' ]
+        return super + %w[hash check generate]
       end
 
       #
@@ -154,10 +152,10 @@ module Gloo
         update_hash hashed_pwd
       end
 
-      # 
+      #
       # Check the password against the hash.
       # Uses the salt and the hash to check the password.
-      # 
+      #
       def msg_check
         hashed_pwd = BCrypt::Password.new( hash )
         result = ( hashed_pwd == salt_pwd )
