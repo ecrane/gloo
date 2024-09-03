@@ -68,6 +68,15 @@ module Gloo
         @host = @env[ HTTP_HOST ]
         @query = @env[ QUERY_STRING ]
 
+        # 
+        # To Do: Get Cookies
+        # 
+        # https://www.rubydoc.info/gems/rack/1.5.5/Rack/Request#cookies-instance_method
+        #
+        puts "------------------------------------------------"
+        puts Rack::Utils.parse_cookies( @env )
+        puts "------------------------------------------------"
+
         @body = @env[ 'rack.input' ].read
         @body = Rack::Utils.parse_query @body
         check_body_method

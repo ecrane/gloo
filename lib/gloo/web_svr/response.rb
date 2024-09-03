@@ -88,7 +88,20 @@ module Gloo
       # Get the headers for the response.
       # 
       def headers
-        return { CONTENT_TYPE => @type }
+        # 
+        # TO DO: Add more cookie headers here.
+        # 
+        #  https://stackoverflow.com/questions/3295083/how-do-i-set-a-cookie-with-a-ruby-rack-middleware-component
+        #   https://www.rubydoc.info/gems/rack/1.4.7/Rack/Session/Cookie
+        #
+
+        headers = { CONTENT_TYPE => @type }
+        # puts "Headers: #{headers}"
+        # Rack::Utils.set_cookie_header!( headers, "_gloo_session_test", { value: "test", path: "/", http_only: 1, Secure: 1, expires: Time.now } )
+        Rack::Utils.set_cookie_header!( headers, "_gloo_session_test", { value: "test", path: "/", http_only: true, Secure: true } )
+        # puts "Headers after: #{headers}"
+
+        return headers
       end
 
       # 
