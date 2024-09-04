@@ -1,5 +1,5 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
-# Copyright:: Copyright (c) 20124 Eric Crane.  All rights reserved.
+# Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
 #
 # Web application request handler.
 # Takes a request and does what is needed to create a response.

@@ -1,5 +1,5 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
-# Copyright:: Copyright (c) 20124 Eric Crane.  All rights reserved.
+# Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
 #
 # A helper class for static assets.
 # 

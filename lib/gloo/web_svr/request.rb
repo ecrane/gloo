@@ -1,5 +1,5 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
-# Copyright:: Copyright (c) 20124 Eric Crane.  All rights reserved.
+# Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
 #
 # A web Request for a page, action, or static resource.
 #
@@ -68,14 +68,7 @@ module Gloo
         @host = @env[ HTTP_HOST ]
         @query = @env[ QUERY_STRING ]
 
-        # 
-        # To Do: Get Cookies
-        # 
-        # https://www.rubydoc.info/gems/rack/1.5.5/Rack/Request#cookies-instance_method
-        #
-        puts "------------------------------------------------"
-        puts Rack::Utils.parse_cookies( @env )
-        puts "------------------------------------------------"
+        @handler.server_obj.session.set_session_data_for_request( @env )
 
         @body = @env[ 'rack.input' ].read
         @body = Rack::Utils.parse_query @body

@@ -44,6 +44,7 @@ module Gloo
       # of the one requested.
       # 
       attr_accessor :redirect, :router, :asset, :embedded_renderer
+      attr_accessor :session
 
       #
       # The name of the object type.
@@ -274,6 +275,9 @@ module Gloo
 
         @embedded_renderer = Gloo::WebSvr::EmbeddedRenderer.new( @engine, self )
 
+        @session = Gloo::WebSvr::Session.new( @engine, self )
+        @session.add_container_if_missing
+        
         run_on_start
         @engine.log.info "Web server started and listening…"
       end
@@ -286,6 +290,8 @@ module Gloo
         @web_server.stop
         @web_server = nil
         @router = nil
+
+        @session.clear_session_data
 
         run_on_stop
         @engine.log.info "Web server stopped…"

@@ -1,5 +1,5 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
-# Copyright:: Copyright (c) 20124 Eric Crane.  All rights reserved.
+# Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
 #
 # The Response for a web Request.
 #
@@ -95,11 +95,14 @@ module Gloo
         #   https://www.rubydoc.info/gems/rack/1.4.7/Rack/Session/Cookie
         #
 
+
         headers = { CONTENT_TYPE => @type }
-        # puts "Headers: #{headers}"
-        # Rack::Utils.set_cookie_header!( headers, "_gloo_session_test", { value: "test", path: "/", http_only: 1, Secure: 1, expires: Time.now } )
-        Rack::Utils.set_cookie_header!( headers, "_gloo_session_test", { value: "test", path: "/", http_only: true, Secure: true } )
-        # puts "Headers after: #{headers}"
+
+        session = @engine.running_app&.obj&.session
+        if session
+          headers = session.add_session_for_response( headers )
+          # puts "----- Session: #{headers}"
+        end
 
         return headers
       end
