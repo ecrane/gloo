@@ -95,15 +95,11 @@ module Gloo
         #   https://www.rubydoc.info/gems/rack/1.4.7/Rack/Session/Cookie
         #
 
-
         headers = { CONTENT_TYPE => @type }
 
-        session = @engine.running_app&.obj&.session
-        if session
-          headers = session.add_session_for_response( headers )
-          # puts "----- Session: #{headers}"
-        end
-
+        session = @engine&.running_app&.obj&.session      
+        headers = session.add_session_for_response( headers ) if session
+  
         return headers
       end
 

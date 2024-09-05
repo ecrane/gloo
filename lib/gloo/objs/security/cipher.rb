@@ -163,28 +163,46 @@ module Gloo
       # Decrypt the encrypted child object.
       #
       def msg_decrypt
-        cipher = OpenSSL::Cipher.new( CIPHER_TYPE )
-        data = Base64.decode64( encrypted_message )
-        cipher.decrypt
-        cipher.key = Base64.decode64( key )
-        cipher.iv = Base64.decode64( init_vector )
-
-        decrypted_msg = cipher.update( data ) + cipher.final
-        update_decrypted decrypted_msg
+        update_decrypted Cipher.decrypt( encrypted_message, key, init_vector )
       end
 
       #
       # Encrypt the decrypted child object.
       #
       def msg_encrypt
+        update_encrypted Cipher.encrypt( decrypted_message, key, init_vector )
+      end
+
+      # ---------------------------------------------------------------------
+      #    Static Methods
+      # ---------------------------------------------------------------------
+
+      # 
+      # Encrypt the data using the key and initialization vector.
+      # Returns the encrypted data (base64 encoded).
+      # 
+      def self.encrypt( data, key, iv )
         cipher = OpenSSL::Cipher.new( CIPHER_TYPE )
-        data = decrypted_message
         cipher.encrypt
         cipher.key = Base64.decode64( key )
-        cipher.iv = Base64.decode64( init_vector )
+        cipher.iv = Base64.decode64( iv )
 
         encrypted_msg = cipher.update( data ) + cipher.final
-        update_encrypted Base64.encode64( encrypted_msg )
+        return Base64.encode64( encrypted_msg )
+      end
+
+      # 
+      # Decrypt the data using the key and initialization vector.
+      # Returns the decrypted data.
+      #
+      def self.decrypt( data, key, iv )
+        cipher = OpenSSL::Cipher.new( CIPHER_TYPE )
+        data = Base64.decode64( data )
+        cipher.decrypt
+        cipher.key = Base64.decode64( key )
+        cipher.iv = Base64.decode64( iv )
+
+        return cipher.update( data ) + cipher.final
       end
 
     end
