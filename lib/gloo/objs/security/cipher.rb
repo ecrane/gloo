@@ -185,7 +185,7 @@ module Gloo
         cipher = OpenSSL::Cipher.new( CIPHER_TYPE )
         cipher.encrypt
         cipher.key = Base64.decode64( key )
-        cipher.iv = Base64.decode64( iv )
+        cipher.iv = Base64.decode64( iv ) unless iv.blank?
 
         encrypted_msg = cipher.update( data ) + cipher.final
         return Base64.encode64( encrypted_msg )
@@ -200,7 +200,7 @@ module Gloo
         data = Base64.decode64( data )
         cipher.decrypt
         cipher.key = Base64.decode64( key )
-        cipher.iv = Base64.decode64( iv )
+        cipher.iv = Base64.decode64( iv ) unless iv.blank?
 
         return cipher.update( data ) + cipher.final
       end

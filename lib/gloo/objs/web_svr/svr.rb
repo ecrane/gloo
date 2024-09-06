@@ -11,14 +11,29 @@ module Gloo
       KEYWORD = 'server'.freeze
       KEYWORD_SHORT = 'svr'.freeze
 
-      # Configuration
-      SCHEME = 'scheme'.freeze      
+      # ---------------------------------------------------------------------
+      #    CONFIGURATION KEYS
+      # ---------------------------------------------------------------------
+      CONFIG = 'config'.freeze
+      SCHEME = 'scheme'.freeze
+      HTTP = 'http'.freeze
+      HTTPS = 'https'.freeze
       HOST = 'host'.freeze
       PORT = 'port'.freeze
+      SESSION_NAME = 'session_name'.freeze
+      ENCRYPT_KEY = 'encryption_key'.freeze
+      ENCRYPT_IV = 'encryption_iv'.freeze
+      COOKIE_EXPIRES = 'cookie_expires'.freeze
+      COOKIE_PATH = 'cookie_path'.freeze
+      DEFAULT_COOKIE_PATH = '/'.freeze
 
       # SSL Configuration
       SSL_CERT = 'ssl_cert'.freeze
       SSL_KEY = 'ssl_key'.freeze
+
+      # ---------------------------------------------------------------------
+      #    OTHER KEYS
+      # ---------------------------------------------------------------------
 
       # Events
       ON_START = 'on_start'.freeze
@@ -33,6 +48,9 @@ module Gloo
       # Alias to the home and error pages
       HOME = 'home'.freeze
       ERR_PAGE = 'error'.freeze
+
+      # Session
+      SESSION = 'session'.freeze
 
 
       # Messages
@@ -75,12 +93,29 @@ module Gloo
         return false
       end
 
+      # 
+      # Get the default layout for the app.
+      # 
+      def default_page_layout
+        o = find_child LAYOUT
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Configuration
+      # ---------------------------------------------------------------------
+
       #
       # Get the Scheme (http or https) from the child object.
       # Returns nil if there is none.
       #
       def scheme_value
-        scheme = find_child SCHEME
+        config = find_child CONFIG
+        scheme = config.find_child SCHEME
         return nil unless scheme
 
         return scheme.value
@@ -91,7 +126,8 @@ module Gloo
       # Returns nil if there is none.
       #
       def host_value
-        host = find_child HOST
+        config = find_child CONFIG
+        host = config.find_child HOST
         return nil unless host
 
         return host.value
@@ -102,22 +138,161 @@ module Gloo
       # Returns nil if there is none.
       #
       def port_value
-        port = find_child PORT
+        config = find_child CONFIG
+        port = config.find_child PORT
         return nil unless port
 
         return port.value
       end
 
+      # 
+      # Is this server configured to use a session?
+      # It is if theere is a non-empty session name.
+      # 
+      def use_session?
+        return ! session_name.blank?
+      end
 
       # 
-      # Get the default layout for the app.
+      # Get the session cookie name.
       # 
-      def default_page_layout
-        o = find_child LAYOUT
+      def session_name
+        config = find_child CONFIG
+        session_name = config.find_child SESSION_NAME
+        return nil unless session_name
+
+        name = session_name.value
+        return nil if name.blank?
+
+        return name
+      end
+
+      # 
+      # Get the key for the encryption cipher.
+      # 
+      def encryption_key
+        config = find_child CONFIG
+        o = config.find_child ENCRYPT_KEY
         return nil unless o
 
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o.value
+      end
+
+      # 
+      # Get the initialization vector for the cipher.
+      # 
+      def encryption_iv
+        config = find_child CONFIG
+        o = config.find_child ENCRYPT_IV
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o.value
+      end
+
+      # 
+      # Get the path for the session cookie.
+      # If not specified, use the root path.
+      # 
+      def session_cookie_path
+        config = find_child CONFIG
+        o = config.find_child COOKIE_PATH
+        if o
+          return o.value
+        else
+          return DEFAULT_COOKIE_PATH
+        end
+      end
+
+      # 
+      # Get the expiration time for the session cookie.
+      # If not specified, use one week from now.
+      # 
+      def session_cookie_expires
+        config = find_child CONFIG
+        o = config.find_child COOKIE_EXPIRES
+        if o
+          dt = Chronic.parse( o.value )
+          return dt
+        else
+          return 1.week.from_now
+        end
+      end
+
+      # 
+      # Should the session cookie be secure?
+      # Get the value from the scheme settings/config.
+      # 
+      def session_cookie_secure
+        return scheme_value.downcase == HTTPS
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Session
+      # ---------------------------------------------------------------------
+
+      # 
+      # Get the session container object.
+      # If there is none, one will be created.
+      # 
+      def session_container
+        o = find_child SESSION
+
+        unless o
+          o = add_session_container
+        end
+
         return o
+      end
+
+      # 
+      # Add the session container because it is missing.
+      # 
+      def add_session_container
+        fac = @engine.factory
+        return fac.create_can SESSION, self
+      end
+
+      # 
+      # Get the data from the session container.
+      # Data will be in the form of a hash ( key => value ).
+      # 
+      def get_session_data
+        data = {}
+
+        session_container.children.each do |session_var|
+          key = session_var.name
+          value = session_var.value
+          data[ key ] = value
+        end
+
+        return data
+      end
+
+      # 
+      # Get the session child object with the given value.
+      # Create the child if it does not exist.
+      # 
+      def set_session_var( key, value )
+        child_obj = session_container.find_child( key )
+        unless child_obj
+          fac = @engine.factory
+          child_obj = fac.create_string key, value, session_obj
+        end
+        child_obj.value = value
+      end
+
+      # 
+      # Clear out all session data.
+      # Important to do this after the response is sent
+      # to avoid holding on to data that is no longer needed.
+      # 
+      def clear_session_data
+        session_container.children.each do |session_var|
+          session_var.value = ''
+        end
       end
 
 
@@ -191,7 +366,7 @@ module Gloo
       def add_default_children
         fac = @engine.factory
 
-        fac.create_string SCHEME, 'http', self
+        fac.create_string SCHEME, HTTP, self
         fac.create_string HOST, 'localhost', self
         fac.create_string PORT, '8080', self
 
@@ -276,7 +451,6 @@ module Gloo
         @embedded_renderer = Gloo::WebSvr::EmbeddedRenderer.new( @engine, self )
 
         @session = Gloo::WebSvr::Session.new( @engine, self )
-        @session.add_container_if_missing
         
         run_on_start
         @engine.log.info "Web server started and listening…"
@@ -287,11 +461,13 @@ module Gloo
       # 
       def stop
         @engine.log.info "Stopping web server…"
+
+        # Last chance to clear out session data.
+        clear_session_data
+
         @web_server.stop
         @web_server = nil
         @router = nil
-
-        @session.clear_session_data
 
         run_on_stop
         @engine.log.info "Web server stopped…"

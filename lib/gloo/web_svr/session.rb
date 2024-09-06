@@ -41,18 +41,21 @@ module Gloo
       # Add it to the session container.
       # 
       def set_session_data_for_request( env )
-
         cookie_hash = Rack::Utils.parse_cookies( env )
-        data = cookie_hash[ session_name ]
 
-        if data
-          data = decode_decrypt( data ) 
-          # puts "Session Data: #{data}"
+        # Are we using sessions?
+        if @server_obj.use_session?
+          data = cookie_hash[ session_name ]
 
-          data.each do |key, value|
-            puts "#{key} : #{value}"
+          if data
+            data = decode_decrypt( data ) 
+
+            data.each do |key, value|
+              @server_obj.set_session_var( key, value )
+            end
           end
         end
+
       end
 
 
@@ -60,18 +63,37 @@ module Gloo
       #    Get Session Data for Response
       # ---------------------------------------------------------------------
 
+      # 
+      # If there is session data, encrypt and add it to the response.
+      # Once done, clear out the session data.
+      # 
       def add_session_for_response( headers )
-        # 
-        # TO DO: build encrypted session data
-        # 
-        data = { user: 'ecrane', id: 123 }
-        data = encrypt_encode( data )
-        session_hash = { value: data, path: "/", http_only: true, Secure: true }
-        
-        Rack::Utils.set_cookie_header!( headers, session_name, session_hash )
+        # Are we using sessions?
+        if @server_obj.use_session?
+          # Build and add encrypted session data
+          data = @server_obj.get_session_data
+          unless data.empty?
+            data = encrypt_encode( data )
+            session_hash = { 
+              value: data, 
+              path: cookie_path, 
+              expires: cookie_expires,
+              http_only: true }
+
+            if secure_cookie?
+              session_hash[ :secure ] = true
+            end
+
+            Rack::Utils.set_cookie_header!( headers, session_name, session_hash )
+          end
+
+          # Clear out session data
+          @server_obj.clear_session_data
+        end
 
         return headers
       end
+
 
       # ---------------------------------------------------------------------
       #    Helper functions
@@ -96,54 +118,42 @@ module Gloo
       # Get the session cookie name.
       # 
       def session_name
-        # 
-        #  TO DO: Get session cookie name from settings/config
-        # 
-        return '_gloo_session'
+        return @server_obj.session_name
       end
 
       # 
       # Get the key for the encryption cipher.
       # 
       def key
-        # 
-        # TO DO: Get key from settings/config
-        # 
-        return "rJ6xrgFwX5tJ8aOiI2RHOsib4vCqEwbHKvmCwTR84kk="
+        return @server_obj.encryption_key
       end
 
       # 
       # Get the initialization vector for the cipher.
       # 
       def iv
-        # 
-        # TO DO: Get iv from settings/config
-        # 
-        return "90xzPMD4u+IJMuCyPe6SZQ=="
+        return @server_obj.encryption_iv
       end
 
       # 
-      # Clear out all session data.
-      # Important to do this after the response is sent
-      # to avoid holding on to data that is no longer needed.
+      # Get the path for the session cookie.
       # 
-      def clear_session_data
+      def cookie_path
+        return @server_obj.session_cookie_path
       end
 
       # 
-      # Add the session container if it is missing.
+      # Get the expiration time for the session cookie.
       # 
-      def add_container_if_missing
-
+      def cookie_expires
+        return @server_obj.session_cookie_expires
       end
 
       # 
-      # Write the request information to the log.
+      # Should the session cookie be secure?
       # 
-      def log
-        @log.info "#{@method} #{@host}#{@path}"
-        @log.info "Parameters: #{@query}"
-        @log.info "Body: #{@body}" unless @body.empty?
+      def secure_cookie?
+        return @server_obj.session_cookie_secure
       end
 
     end
