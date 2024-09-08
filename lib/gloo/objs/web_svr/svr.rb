@@ -366,15 +366,20 @@ module Gloo
       def add_default_children
         fac = @engine.factory
 
-        fac.create_string SCHEME, HTTP, self
-        fac.create_string HOST, 'localhost', self
-        fac.create_string PORT, '8080', self
+        # Configuration
+        config = fac.create_can CONFIG, self
+        fac.create_string SCHEME, HTTP, config
+        fac.create_string HOST, 'localhost', config
+        fac.create_string PORT, '8080', config
 
         fac.create_script ON_START, '', self
         fac.create_script ON_STOP, '', self
 
+        fac.create_alias LAYOUT, nil, self
+        fac.create_alias HOME, nil, self
+        fac.create_alias ERR_PAGE, nil, self
+
         fac.create_can PAGES, self
-        fac.create_can HOME, self
       end
 
 

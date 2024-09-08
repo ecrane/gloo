@@ -16,8 +16,7 @@ module Gloo
       CIPHER_TYPE = 'AES-256-CBC'.freeze
       KEY = 'key'.freeze
       INIT_VECTOR = 'init_vector'.freeze
-      DECRYPTED = 'decrypted'.freeze
-      ENCRYPTED = 'encrypted'.freeze
+      DATA = 'data'.freeze
 
       #
       # The name of the object type.
@@ -52,18 +51,12 @@ module Gloo
       end
 
       #
-      # Get the value of the decrypted message.
+      # Get the data value of the object.
+      # This might be encrypted or decrypted based on 
+      # what action was last taken.
       #
-      def decrypted_message
-        o = find_child DECRYPTED
-        return o&.value
-      end
-
-      #
-      # Get the value of the encrypted message.
-      #
-      def encrypted_message
-        o = find_child ENCRYPTED
+      def data
+        o = find_child DATA
         return o&.value
       end
 
@@ -88,24 +81,15 @@ module Gloo
       end
 
       #
-      # Update the decrypted value.
+      # Update the data value of the object.
       #
-      def update_decrypted( new_val )
-        o = find_child DECRYPTED
+      def update_data( new_val )
+        o = find_child DATA
         return unless o
 
         o.set_value new_val
       end
 
-      #
-      # Update the encrypted value.
-      #
-      def update_encrypted( new_val )
-        o = find_child ENCRYPTED
-        return unless o
-
-        o.set_value new_val
-      end
 
       # ---------------------------------------------------------------------
       #    Children
@@ -129,8 +113,7 @@ module Gloo
         fac = @engine.factory
         fac.create_string KEY, '', self
         fac.create_string INIT_VECTOR, '', self
-        fac.create_string DECRYPTED, '', self
-        fac.create_string ENCRYPTED, '', self
+        fac.create_string DATA, '', self
       end
 
       # ---------------------------------------------------------------------
@@ -163,14 +146,14 @@ module Gloo
       # Decrypt the encrypted child object.
       #
       def msg_decrypt
-        update_decrypted Cipher.decrypt( encrypted_message, key, init_vector )
+        update_data Cipher.decrypt( data, key, init_vector )
       end
 
       #
       # Encrypt the decrypted child object.
       #
       def msg_encrypt
-        update_encrypted Cipher.encrypt( decrypted_message, key, init_vector )
+        update_data Cipher.encrypt( data, key, init_vector )
       end
 
       # ---------------------------------------------------------------------

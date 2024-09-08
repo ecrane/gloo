@@ -30,17 +30,15 @@ class CipherTest < BaseEngineTest
 
     o = @engine.heap.root.children.first
     assert o
-    assert_equal 4, o.child_count
+    assert_equal 3, o.child_count
 
     key = o.children.first
     iv = o.children.second
-    dec_data = o.children.third
-    enc_data = o.children.last
+    data = o.children.last
 
     assert_equal 'key', key.name
     assert_equal 'init_vector', iv.name
-    assert_equal 'decrypted', dec_data.name
-    assert_equal 'encrypted', enc_data.name
+    assert_equal 'data', data.name
   end
 
   def test_generating_keys
@@ -65,24 +63,20 @@ class CipherTest < BaseEngineTest
     o = @engine.heap.root.children.first
     key = o.children.first
     iv = o.children.second
-    dec_data = o.children.third
-    dec_data.value = str
-    enc_data = o.children.last
+    data = o.children.last
+    data.value = str
 
     i = @engine.parser.parse_immediate 'tell o to generate_keys'
     i.run
 
-    assert enc_data.value.blank?
+    assert_equal str, data.value
     i = @engine.parser.parse_immediate 'tell o to encrypt'
     i.run
-    refute enc_data.value.blank?
+    refute_equal str, data.value
 
-    dec_data.value = ''
-    assert dec_data.value.blank?
     i = @engine.parser.parse_immediate 'tell o to decrypt'
     i.run
-    refute dec_data.value.blank?
-    assert_equal str, dec_data.value
+    assert_equal str, data.value
   end
 
 end
