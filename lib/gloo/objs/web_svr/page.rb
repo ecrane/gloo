@@ -13,6 +13,7 @@ module Gloo
 
       # Events
       ON_RENDER = 'on_render'.freeze
+      ON_PRERENDER = 'on_prerender'.freeze
       ON_RENDERED = 'on_rendered'.freeze
 
       # Parameters used during render.
@@ -190,6 +191,18 @@ module Gloo
       # ---------------------------------------------------------------------
 
       #
+      # Run the on prerender script if there is one.
+      #
+      def run_on_prerender
+        o = find_child ON_PRERENDER
+        return unless o
+
+        @engine.log.debug "running on_prerender for page"
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+      #
       # Run the on render script if there is one.
       #
       def run_on_render
@@ -325,11 +338,14 @@ module Gloo
         @request = request
         set_id if @request
 
-        run_on_render
-        return nil if redirect_set?
+        # Run the on prerender script
+        run_on_prerender
 
         # Set Params before running on render
         params = params_hash
+
+        run_on_render
+        return nil if redirect_set?
 
         if is_html?
           contents = render_html params
