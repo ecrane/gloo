@@ -105,17 +105,24 @@ module Gloo
 
         client = app.db_client_for_obj( self ) if app 
 
-        unless client
-          h = {
-            host: host_value,
-            database: db_value,
-            username: user_value,
-            password: passwd_value
-          }
-          client = Mysql2::Client.new( h )
-
-          app.cache_db_client( self, client ) if app
+        if client && client.ping
+          @engine.log.debug "Connection is established and active."
+          return client
+        elsif client
+          @engine.log.debug "Connection is established but NOT active.  Reconnecting."
+        else
+          @engine.log.debug "Opening a new Connection."
         end
+
+        h = {
+          host: host_value,
+          database: db_value,
+          username: user_value,
+          password: passwd_value
+        }
+        client = Mysql2::Client.new( h )
+
+        app.cache_db_client( self, client ) if app
         
         return client
       end
@@ -129,28 +136,33 @@ module Gloo
 
         heads = []
         data = []
-        if params
-          pst = client.prepare( sql )
-          rs = pst.execute( *params, :as => :array )
-          if rs
-            rs.each do |row|
-              arr = []
-              row.each do |o| 
-                arr << o
+        begin
+          if params
+            pst = client.prepare( sql )
+            rs = pst.execute( *params, :as => :array )
+            if rs
+              rs.each do |row|
+                arr = []
+                row.each do |o| 
+                  arr << o
+                end
+                data << arr
               end
-              data << arr
+            end
+          else
+            rs = client.query( sql, :as => :array ) 
+            if rs
+              rs.each do |row|
+                data << row
+              end
             end
           end
-        else
-          rs = client.query( sql, :as => :array ) 
-          if rs
-            rs.each do |row|
-              data << row
-            end
-          end
+
+          heads = rs.fields if rs
+        rescue => e
+          @engine.err e.message
         end
 
-        heads = rs.fields if rs
         return [ heads, data ]
       end
 
