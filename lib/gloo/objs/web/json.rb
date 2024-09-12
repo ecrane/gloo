@@ -66,6 +66,9 @@ module Gloo
         return unless self.value
 
         json = JSON.parse( self.value )
+        if self.value.start_with?( '"{' )
+          json = JSON.parse( json )
+        end
         pretty = JSON.pretty_generate( json )
         set_value pretty
       end
