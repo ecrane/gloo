@@ -14,7 +14,7 @@ module Gloo
       # Events
       ON_RENDER = 'on_render'.freeze
       ON_PRERENDER = 'on_prerender'.freeze
-      ON_RENDERED = 'on_rendered'.freeze
+      AFTER_RENDER = 'after_render'.freeze
 
       # Parameters used during render.
       PARAMS = 'params'.freeze
@@ -217,11 +217,11 @@ module Gloo
       #
       # Run the on rendered script if there is one.
       #
-      def run_on_rendered
-        o = find_child ON_RENDERED
+      def run_after_render
+        o = find_child AFTER_RENDER
         return unless o
 
-        @engine.log.debug "running on_rendered for page"
+        @engine.log.debug "running after_render for page"
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
@@ -249,7 +249,7 @@ module Gloo
         fac = @engine.factory
 
         fac.create_script ON_RENDER, '', self
-        fac.create_script ON_RENDERED, '', self
+        fac.create_script AFTER_RENDER, '', self
         fac.create_can PARAMS, self
 
         params = { :name => HEAD,
@@ -358,7 +358,7 @@ module Gloo
           return nil
         end
 
-        run_on_rendered
+        run_after_render
         @request = nil
         return nil if redirect_set?
 

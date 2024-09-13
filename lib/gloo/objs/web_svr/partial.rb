@@ -13,7 +13,7 @@ module Gloo
 
       # Events
       ON_RENDER = 'on_render'.freeze
-      ON_RENDERED = 'on_rendered'.freeze
+      AFTER_RENDER = 'after_render'.freeze
 
       # Parameters used during render.
       PARAMS = 'params'.freeze
@@ -92,8 +92,8 @@ module Gloo
       #
       # Run the on rendered script if there is one.
       #
-      def run_on_rendered
-        o = find_child ON_RENDERED
+      def run_after_render
+        o = find_child AFTER_RENDER
         return unless o
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
@@ -122,7 +122,7 @@ module Gloo
         fac = @engine.factory
 
         fac.create_script ON_RENDER, '', self
-        fac.create_script ON_RENDERED, '', self
+        fac.create_script AFTER_RENDER, '', self
 
         fac.create_can PARAMS, self
         fac.create_can CONTENT, self
@@ -149,6 +149,7 @@ module Gloo
         return part_content
       end
 
+
       # ---------------------------------------------------------------------
       #    Render
       # ---------------------------------------------------------------------
@@ -173,7 +174,7 @@ module Gloo
         # part_content = Page.render_params part_content, params_hash
         part_content = @engine.running_app.obj.embedded_renderer.render part_content, params_hash
 
-        run_on_rendered
+        run_after_render
         return part_content
       end
 
@@ -200,7 +201,7 @@ module Gloo
         # part_content = Page.render_params part_content, params
         part_content = @engine.running_app.obj.embedded_renderer.render part_content, params
 
-        run_on_rendered
+        run_after_render
         return part_content
       end
 
