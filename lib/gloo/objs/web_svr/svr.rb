@@ -522,6 +522,7 @@ module Gloo
       def run_on_request
         o = find_child ON_REQUEST
         return unless o
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
@@ -532,6 +533,7 @@ module Gloo
       def run_on_response
         o = find_child ON_RESPONSE
         return unless o
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
@@ -543,6 +545,7 @@ module Gloo
       def set_request_data( request )
         data = find_child RESQUEST_DATA
         return unless data
+        data = Gloo::Objs::Alias.resolve_alias( @engine, data )
 
         data.find_child( METHOD )&.set_value( request.method )
         data.find_child( HOST )&.set_value( request.host )
@@ -559,6 +562,7 @@ module Gloo
       def set_response_data( request, response )
         data = find_child RESPONSE_DATA
         return unless data
+        data = Gloo::Objs::Alias.resolve_alias( @engine, data )
 
         data.find_child( ELAPSED )&.set_value( request.elapsed )
         data.find_child( DB )&.set_value( request.db )
