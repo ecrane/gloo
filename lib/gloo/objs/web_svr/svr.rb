@@ -38,6 +38,19 @@ module Gloo
       # Events
       ON_START = 'on_start'.freeze
       ON_STOP = 'on_stop'.freeze
+      ON_REQUEST = 'on_request'.freeze
+      ON_RESPONSE = 'on_response'.freeze
+      RESQUEST_DATA = 'request_data'.freeze
+      METHOD = 'method'.freeze
+      HOST = 'host'.freeze
+      PATH = 'path'.freeze
+      QUERY = 'query'.freeze
+      IP = 'ip'.freeze
+      RESPONSE_DATA = 'response_data'.freeze
+      TYPE = 'type'.freeze
+      CODE = 'code'.freeze
+      ELAPSED = 'elapsed'.freeze
+      DB = 'db'.freeze
 
       # Container with pages in the web app.
       PAGES = 'pages'.freeze
@@ -484,7 +497,7 @@ module Gloo
       # ---------------------------------------------------------------------
 
       #
-      # Run the on render script if there is one.
+      # Run the on start script if there is one.
       #
       def run_on_start
         o = find_child ON_START
@@ -494,13 +507,63 @@ module Gloo
       end
 
       #
-      # Run the on rendered script if there is one.
+      # Run the on stop script if there is one.
       #
       def run_on_stop
         o = find_child ON_STOP
         return unless o
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+      #
+      # Run the on request script if there is one.
+      #
+      def run_on_request
+        o = find_child ON_REQUEST
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+      #
+      # Run the on response script if there is one.
+      #
+      def run_on_response
+        o = find_child ON_RESPONSE
+        return unless o
+
+        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+      end
+
+      # 
+      # Set up the request data for the page load.
+      # This is done before the on_request event is fired.
+      # 
+      def set_request_data( request )
+        data = find_child RESQUEST_DATA
+        return unless data
+
+        data.find_child( METHOD )&.set_value( request.method )
+        data.find_child( HOST )&.set_value( request.host )
+        data.find_child( PATH )&.set_value( request.path )
+        data.find_child( QUERY )&.set_value( request.query )
+        data.find_child( IP )&.set_value( request.ip )
+      end
+
+      # 
+      # Set up the response data for the page load.
+      # This is done after the page is rendered and before
+      # the on_response event is fired.
+      # 
+      def set_response_data( request, response )
+        data = find_child RESPONSE_DATA
+        return unless data
+
+        data.find_child( ELAPSED )&.set_value( request.elapsed )
+        data.find_child( DB )&.set_value( request.db )
+        data.find_child( TYPE )&.set_value( response.type )
+        data.find_child( CODE )&.set_value( response.code )
       end
 
 

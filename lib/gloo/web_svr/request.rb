@@ -9,6 +9,10 @@
 #   API - returns JSON instead of HTML (but is that different from Web Page?)
 #   Static Resource - File, PDF, Image, etc.
 # 
+# 
+# See More doc here:
+#    https://www.rubydoc.info/gems/rack/Rack/Request/Helpers#path-instance_method
+# 
 
 module Gloo
   module WebSvr
@@ -19,7 +23,8 @@ module Gloo
       HTTP_HOST = 'HTTP_HOST'.freeze
       QUERY_STRING = 'QUERY_STRING'.freeze
 
-      attr_reader :method, :host, :path, :query, :body
+      attr_reader :method, :host, :path, :query, :body, :ip
+      attr_reader :db, :elapsed
       attr_accessor :id
 
       
@@ -50,11 +55,22 @@ module Gloo
       # 
       def process
         start_timer
+
+        # Run the on_request script if there is one.
+        @handler.server_obj.set_request_data self
+        @handler.server_obj.run_on_request
+        
         result = @handler.handle self
         finish_timer
+
+        # Run the on_response script if there is one.
+        @handler.server_obj.set_response_data self, result
+        @handler.server_obj.run_on_response
+
         return result
       end
 
+      
       # ---------------------------------------------------------------------
       #    ENV
       # ---------------------------------------------------------------------
@@ -63,10 +79,18 @@ module Gloo
       # Write the request information to the log.
       # 
       def detect_env
-        @method = @env[ REQUEST_METHOD ]
-        @path = @env[ REQUEST_PATH ]
-        @host = @env[ HTTP_HOST ]
-        @query = @env[ QUERY_STRING ]
+        req = Rack::Request.new( @env )
+
+        @method = req.request_method
+        @path = req.path
+        @host = req.host_with_port
+        @query = req.query_string
+        @ip = req.ip
+
+        # @method = @env[ REQUEST_METHOD ]
+        # @path = @env[ REQUEST_PATH ]
+        # @host = @env[ HTTP_HOST ]
+        # @query = @env[ QUERY_STRING ]
 
         @handler.server_obj.session.set_session_data_for_request( @env )
 
@@ -94,8 +118,8 @@ module Gloo
       def finish_timer
         @finish = Time.now
         @elapsed = ( ( @finish - @start ) * 1000.0 ).round(2)
-        db = @engine.running_app.db_time
-        @log.info "*** Web request complete.  DB: #{db} ms.  Elapsed time: #{@elapsed} ms"
+        @db = @engine.running_app.db_time
+        @log.info "*** Web request complete.  DB: #{@db} ms.  Elapsed time: #{@elapsed} ms"
       end
     
 

@@ -41,13 +41,15 @@ module Gloo
         request.id = id
         if page
           if page.is_a? Gloo::Objs::FileHandle
-            return handle_file page
+            result = handle_file page
           else
-            return handle_page page
+            result = handle_page page
           end
+        else
+          result = server_error_result
         end
 
-        return server_error_result
+        return result
       end
 
       # 
