@@ -42,7 +42,6 @@ module Gloo
       ON_RESPONSE = 'on_response'.freeze
       RESQUEST_DATA = 'request_data'.freeze
       METHOD = 'method'.freeze
-      HOST = 'host'.freeze
       PATH = 'path'.freeze
       QUERY = 'query'.freeze
       IP = 'ip'.freeze
