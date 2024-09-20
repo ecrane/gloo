@@ -3,7 +3,7 @@
 #
 # Show colorized output with the pastel gem.
 #
-require 'pastel'
+# require 'pastel'
 
 module Gloo
   module Objs
@@ -94,9 +94,11 @@ module Gloo
       # Show the banner bar
       #
       def msg_show
-        pastel = ::Pastel.new
-        c = self.color_value.split( ' ' ).map( &:to_sym )
-        puts pastel.decorate( self.text_value, *c )
+        # TODO : replace pastel
+        
+        # pastel = ::Pastel.new
+        # c = self.color_value.split( ' ' ).map( &:to_sym )
+        # puts pastel.decorate( self.text_value, *c )
       end
 
     end

@@ -3,7 +3,7 @@
 #
 # The result of a SQL database query.
 #
-require 'tty-table'
+# require 'tty-table'
 
 module Gloo
   module Objs

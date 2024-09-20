@@ -3,8 +3,8 @@
 #
 # Show a large-text banner.
 #
-require 'tty-font'
-require 'pastel'
+# require 'tty-font'
+# require 'pastel'
 
 module Gloo
   module Objs
@@ -106,11 +106,13 @@ module Gloo
       # color - the color of the banner
       # 
       def self.show_banner( text, style, color )
-        font = TTY::Font.new style
-        t = font.write( text )
-        pastel = ::Pastel.new
-        c = color.split( ' ' ).map( &:to_sym )
-        puts pastel.decorate( t, *c )
+        # font = TTY::Font.new style
+        # t = font.write( text )
+        # pastel = ::Pastel.new
+        # c = color.split( ' ' ).map( &:to_sym )
+        # puts pastel.decorate( t, *c )
+
+        puts text
       end
 
     end

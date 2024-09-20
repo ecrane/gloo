@@ -3,7 +3,7 @@
 #
 # Show a CLI progress bar.
 #
-require 'tty-progressbar'
+# require 'tty-progressbar'
 
 module Gloo
   module Objs

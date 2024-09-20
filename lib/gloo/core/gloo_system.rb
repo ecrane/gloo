@@ -6,7 +6,6 @@
 # system level variables and functions.  But it is not
 # actually an object in the normal sense of the word.
 #
-require 'tty-platform'
 require 'os'
 
 module Gloo
@@ -217,20 +216,21 @@ module Gloo
 
       # Get the platform CPU
       def msg_platform_cpu
-        platform = TTY::Platform.new
-        return platform.cpu
+        return OS.host_cpu
       end
 
       # Get the platform Operating System
       def msg_platform_os
-        platform = TTY::Platform.new
-        return platform.os
+        # platform = TTY::Platform.new
+        # return platform.os
+        return OS.report
       end
 
       # Get the platform version
       def msg_platform_version
-        platform = TTY::Platform.new
-        return platform.version
+        # platform = TTY::Platform.new
+        # return platform.version
+        return OS.report
       end
 
       # Is the platform Windows?
@@ -240,14 +240,12 @@ module Gloo
 
       # Is the platform Unix?
       def msg_platform_unix?
-        platform = TTY::Platform.new
-        return platform.unix?
+        return OS.posix?
       end
 
       # Is the platform Linux?
       def msg_platform_linux?
-        platform = TTY::Platform.new
-        return platform.linux?
+        return OS.posix?
       end
 
       # Is the platform Mac?
@@ -259,9 +257,8 @@ module Gloo
       # Get the command to open a file on this platform.
       #
       def self.open_for_platform
-        platform = TTY::Platform.new
-        return 'open' if platform.mac?
-        return 'xdg-open' if platform.linux?
+        return 'open' if OS.mac?
+        return 'xdg-open' if OS.posix?
         
         return 'Start-Process' if OS.windows?
 

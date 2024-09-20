@@ -3,7 +3,7 @@
 #
 # A helper class for to show routes for a running app.
 # 
-require 'tty-table'
+# require 'tty-table'
 
 module Gloo
   module WebSvr

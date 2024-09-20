@@ -33,10 +33,12 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.5"
   spec.add_dependency 'chronic', '~> 0.10', '>= 0.10.2'
-  spec.add_dependency 'colorize', '~> 0.8', '>= 0.8.1'
-  spec.add_dependency 'tty', '~> 0.10', '>= 0.10.0'
+
+  spec.add_dependency 'colorize', '~> 1.1.0', '>= 1.1.0'
+
+  
   spec.add_dependency 'json', '~> 2.1', '>= 2.1.0'
-  spec.add_dependency 'openssl', '~> 2.1', '>= 2.1.0'
+  spec.add_dependency 'openssl'
   spec.add_dependency 'net-ssh', '~> 6.1', '>= 6.1.0'
   spec.add_dependency 'mysql2', '~> 0.5', '>= 0.5.3'
   spec.add_dependency 'sqlite3', '~> 1.4', '>= 1.4.2'
