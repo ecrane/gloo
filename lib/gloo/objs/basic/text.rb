@@ -55,23 +55,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[edit page]
-      end
-
-      #
-      # Show the contents of the file, paginated.
-      #
-      def msg_page
-        return unless value
-
-        @engine.platform.show( value, false, true )
-      end
-
-      #
-      # Edit the text in the default editor.
-      #
-      def msg_edit
-        self.value = @engine.platform.edit( self.value )
+        return super
       end
 
     end

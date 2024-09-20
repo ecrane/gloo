@@ -19,7 +19,6 @@ class MarkdownTest < BaseEngineTest
     msgs = Gloo::Objs::Markdown.messages
     assert msgs
     assert msgs.include?( 'show' )
-    assert msgs.include?( 'page' )
   end
 
   def test_adds_children_on_create

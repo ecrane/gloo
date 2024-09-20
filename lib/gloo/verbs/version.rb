@@ -55,7 +55,7 @@ module Gloo
       def show_vers_notes
         @engine.log.show "Gloo version notes..."
         notes = Gloo::App::Info.get_version_notes
-        @engine.platform.show( notes, false, true )
+        @engine.platform.show notes
       end
 
       # 

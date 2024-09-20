@@ -56,23 +56,14 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[show page render update_asset_path]
+        return super + %w[show render update_asset_path]
       end
 
       #
       # Show the markdown data in the terminal.
       #
       def msg_show
-        @engine.platform.show( self.value, true, false )
-      end
-
-      #
-      # Show the markdown data in the terminal, paginated.
-      #
-      def msg_page
-        return unless self.value
-
-        @engine.platform.show( self.value, true, true )
+        @engine.platform.show self.value
       end
 
       #
@@ -135,25 +126,6 @@ module Gloo
           
         return markdown.render( md )
       end
-
-      # 
-      # Does not work.
-      # See note in the platform.rb file.
-      # 
-      # # 
-      # # Convert markdown to manpage using the
-      # # Redcarpet markdown processor.
-      # # 
-      # def self.md_2_manpage( md )
-      #   markdown = Redcarpet::Markdown.new( 
-      #     Redcarpet::Render::ManPage, 
-      #     autolink: true, 
-      #     fenced_code_blocks: true,
-      #     tables: true, 
-      #     strikethrough: true )
-          
-      #   return markdown.render( md )
-      # end
 
     end
   end

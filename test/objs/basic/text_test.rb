@@ -27,11 +27,4 @@ class TextTest < BaseEngineTest
     assert_equal 3, o.line_count
   end
 
-  def test_messages
-    msgs = Gloo::Objs::Text.messages
-    assert msgs
-    assert msgs.include?( 'edit' )
-    assert msgs.include?( 'page' )
-  end
-
 end

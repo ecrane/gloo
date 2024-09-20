@@ -58,8 +58,7 @@ module Gloo
       def msg_page
         return unless value && File.file?( value )
 
-        pager = TTY::Pager.new
-        pager.page( path: value )
+        system "less #{value}"
       end
 
       #

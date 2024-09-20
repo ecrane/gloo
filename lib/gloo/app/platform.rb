@@ -25,25 +25,8 @@ module Gloo
       #
       # Show a message.
       #
-      def show( msg, md=false, page=false )
-        # if md
-        #   # 2024.08.16 - TTY::Markdown.parse msg was not working.
-        #   # Tried with redcarpet and it was not working either.
-        #   # So just leaving it for now.  Not sure I even really need it.
-        #   # TODO: Revisit and clean up.
-
-        #   # msg = TTY::Markdown.parse msg
-        #   # msg = Gloo::Objs::Markdown.md_2_manpage( msg )
-        # end
-
-        # if page
-        #   # TODO: Replace tty-pager
-        #   # pager = TTY::Pager::SystemPager.new command: 'less -R'
-        #   # pager = TTY::Pager.new
-        #   # pager.page( msg )
-        # else
+      def show( msg )
         puts msg
-        # end
       end
 
       #
@@ -62,10 +45,6 @@ module Gloo
       # Clear the screen.
       #
       def clear_screen
-        # TODO: Replace tty-cursor
-        # @cursor ||= TTY::Cursor
-        # print @cursor.clear_screen
-        # print @cursor.move_to( 0, 0 )
         puts "\e[H\e[2J"
       end
 
