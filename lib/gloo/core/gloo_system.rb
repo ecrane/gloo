@@ -221,16 +221,12 @@ module Gloo
 
       # Get the platform Operating System
       def msg_platform_os
-        # platform = TTY::Platform.new
-        # return platform.os
-        return OS.report
+        return RUBY_PLATFORM
       end
 
       # Get the platform version
       def msg_platform_version
-        # platform = TTY::Platform.new
-        # return platform.version
-        return OS.report
+        return 'n/a'
       end
 
       # Is the platform Windows?

@@ -48,24 +48,13 @@ module Gloo
         puts "\e[H\e[2J"
       end
 
-      #
-      # Edit some temporary text and return the edited text.
-      #
-      def edit initial_value
-        # TODO: Replace tty-editor
-
-        # tmp = File.join( $settings.tmp_path, DEFAULT_TMP_FILE )
-        # File.open( tmp, 'w' ) { |file| file.write( initial_value ) }
-        # TTY::Editor.open( tmp )
-        # return File.read( tmp )
-      end
-
       # 
       # Get the file mechanism for this platform.
       # 
       def getFileMech( engine )
         return Gloo::Persist::DiscMech.new( engine )
       end
+
 
       # ---------------------------------------------------------------------
       #    Color helper
@@ -78,6 +67,7 @@ module Gloo
         colorized = ColorizedString[ str.to_s ].colorize( color )
         return colorized.to_s
       end
+
 
       # ---------------------------------------------------------------------
       #    Table helper
@@ -119,18 +109,16 @@ module Gloo
       # Get the number of vertical lines on screen.
       #
       def lines
-        # TODO: Replace tty-screen
-        # TTY::Screen.rows
-        return 40
+        rows, columns = $stdout.winsize
+        return rows
       end
 
       #
       # Get the number of horizontal columns on screen.
       #
       def cols
-        # TODO: Replace tty-screen
-        # TTY::Screen.cols
-        return 80
+        rows, columns = $stdout.winsize
+        return columns
       end
 
       # ---------------------------------------------------------------------
