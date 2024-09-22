@@ -1,3 +1,10 @@
+3.4.0 - 2024.09.22
+ - Refactor for old TTY lib
+ - Additional web server functionality
+ - Web session and security helpers
+ - Other functions in support of serving web pages and running web server
+
+
 3.3.0 - 2024.08.16
  - Adds nil converters to string and integer.
  - Adds render to markdown object to convert to html
