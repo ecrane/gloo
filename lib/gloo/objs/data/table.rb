@@ -159,7 +159,7 @@ module Gloo
       #
       def msg_show
         title = self.value
-        @engine.platform.show_table headers, data, title
+        @engine.platform.table.show headers, data[1], title
       end
 
       def msg_render

@@ -58,8 +58,7 @@ module Gloo
       def msg_show_key_value_table
         data = self.children.map { |o| [ o.name, o.value ] }
 
-        # TODO: this doesn't work:
-        # @engine.platform.show_table nil, data, title
+        @engine.platform.table.show [], data
       end
 
       # 

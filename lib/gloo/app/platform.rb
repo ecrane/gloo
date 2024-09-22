@@ -13,13 +13,14 @@ module Gloo
 
       DEFAULT_TMP_FILE = 'tmp.txt'.freeze
 
-      attr_reader :prompt
+      attr_reader :prompt, :table
 
       #
       # Set up Platform.
       #
       def initialize
-        # @prompt = TTY::Prompt.new
+        @prompt = Gloo::App::Prompt.new( self )
+        @table = Gloo::App::Table.new( self )
       end
 
       #
@@ -27,18 +28,6 @@ module Gloo
       #
       def show( msg )
         puts msg
-      end
-
-      #
-      # Prompt for the next command.
-      #
-      def prompt_cmd
-
-        # TODO: Replace tty-prompt
-        puts default_prompt
-        return $stdin.gets.chomp
-
-        # return @prompt.ask( default_prompt )
       end
 
       #
@@ -70,39 +59,6 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
-      #    Table helper
-      # ---------------------------------------------------------------------
-
-      #
-      # Show the given table data.
-      #
-      def show_table( headers, data, title = nil )
-        # TODO: Replace tty-table
-
-        # pastel = ::Pastel.new
-        # if headers
-        #   table = TTY::Table.new headers, data
-        # else
-        #   table = TTY::Table.new rows: data
-        # end
-        # pad = [ 0, 1, 0, 1 ]
-        # rendered = table.render( :ascii, indent: 2, padding: pad ) do |r|
-        #   r.border.style = :blue
-        #   r.filter = proc do |val, row_index, _col_index|
-        #     # col_index % 2 == 1 ? pastel.red.on_green(val) : val
-        #     if headers && row_index.zero?
-        #       pastel.blue( val )
-        #     else
-        #       row_index.odd? ? pastel.white( val ) : pastel.yellow( val )
-        #     end
-        #   end
-        # end
-        # puts
-        # puts "#{title.white}" if title
-        # puts "#{rendered}\n\n"
-      end
-
-      # ---------------------------------------------------------------------
       #    Sceen helpers
       # ---------------------------------------------------------------------
       #
@@ -126,16 +82,6 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
-
-      #
-      # Get the default prompt text.
-      #
-      def default_prompt
-        dt = DateTime.now
-        d = dt.strftime( '%Y.%m.%d' )
-        t = dt.strftime( '%I:%M:%S' )
-        return "#{'gloo'.blue} #{d.yellow} #{t.white} >"
-      end
 
     end
   end

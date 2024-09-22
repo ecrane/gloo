@@ -182,7 +182,7 @@ module Gloo
       #
       def loop
         while @running
-          @last_cmd = @platform.prompt_cmd
+          @last_cmd = @platform.prompt.ask
           process_cmd
         end
       end

@@ -19,8 +19,7 @@ module Gloo
       BEFORE_MENU = 'before_menu'.freeze
       DEFAULT = 'default'.freeze
       TITLE = 'title'.freeze
-      TITLE_STYLE = 'straight'.freeze
-      TITLE_COLOR = 'bright_cyan'.freeze
+      TITLE_COLOR = 'green'.freeze
       QUIT_ITEM_NAME = 'q'.freeze
 
       @@menu_stack = []
@@ -234,7 +233,7 @@ module Gloo
             dt = DateTime.now
             d = dt.strftime( '%Y.%m.%d' )
             t = dt.strftime( '%I:%M:%S' )
-            cmd = @engine.platform.prompt.ask( "\n#{d.yellow} #{t.white} >" )
+            cmd = @engine.platform.prompt.ask( "#{d.yellow} #{t.white} >" )
           else
             cmd = @engine.platform.prompt.ask( prompt_value )
           end
@@ -320,7 +319,9 @@ module Gloo
       def run_default_title
         @engine.platform&.clear_screen
         show_menu_stack
-        Banner.show_banner( title, TITLE_STYLE, TITLE_COLOR )
+
+        title_text = @engine.platform.table.box( title )
+        puts title_text.colorize( :color => :white, :background => :black )
       end
 
       #

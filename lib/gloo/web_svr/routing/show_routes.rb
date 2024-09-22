@@ -3,7 +3,6 @@
 #
 # A helper class for to show routes for a running app.
 # 
-# require 'tty-table'
 
 module Gloo
   module WebSvr
@@ -77,11 +76,9 @@ module Gloo
         # Show the Routes title.
         # 
         def show_table
-          @log.show "\n\tRoutes in Running Web App\n", :white
-
-          table = TTY::Table.new( headers, @found_routes )
-          renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
-          puts renderer.render
+          puts RETURN
+          title = "Routes in Running Web App"
+          @engine.platform.table.show headers, @found_routes, title
           puts RETURN
         end
 

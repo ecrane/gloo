@@ -3,7 +3,6 @@
 #
 # A helper class for page routing.
 # 
-# require 'tty-table'
 
 module Gloo
   module WebSvr

@@ -35,7 +35,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'chronic', '~> 0.10', '>= 0.10.2'
 
   spec.add_dependency 'colorize', '~> 1.1.0', '>= 1.1.0'
-
+  spec.add_dependency 'inquirer'
+  spec.add_dependency 'reline'  
+  spec.add_dependency 'terminal-table'
   
   spec.add_dependency 'json', '~> 2.1', '>= 2.1.0'
   spec.add_dependency 'openssl'

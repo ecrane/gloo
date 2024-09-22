@@ -3,7 +3,6 @@
 #
 # The result of a SQL database query.
 #
-# require 'tty-table'
 
 module Gloo
   module Objs
@@ -15,16 +14,16 @@ module Gloo
       PARAMS = 'params'.freeze
 
 
-
       # ---------------------------------------------------------------------
       #    Set up the Result
       # ---------------------------------------------------------------------
 
       # 
       # Create the Result object
-      def initialize( heads, data )
+      def initialize( heads, data, engine=nil )
         @heads = heads
         @data = data
+        @engine = engine
       end
 
 
@@ -72,18 +71,14 @@ module Gloo
         @heads.each_with_index do |h, i|
           arr << [ h, row[i] ]
         end
-        table = TTY::Table.new( [ 'Field', 'Value' ], arr )
-        renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
-        puts renderer.render
+        @engine.platform.table.show [ 'Field', 'Value' ], arr
       end
 
       # 
       # Show multiple rows in a table view.
       # 
       def show_rows
-        table = TTY::Table.new( @heads, @data )
-        renderer = TTY::Table::Renderer::Unicode.new( table, padding: [0,1] )
-        puts renderer.render
+        @engine.platform.table.show @heads, @data
       end
 
       # ---------------------------------------------------------------------

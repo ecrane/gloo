@@ -3,7 +3,6 @@
 #
 # An object that points to a file in the system.
 #
-# require 'tty-pager'
 
 module Gloo
   module Objs
