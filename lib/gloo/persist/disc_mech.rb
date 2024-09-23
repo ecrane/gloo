@@ -17,6 +17,7 @@ module Gloo
       #
       def initialize( engine )
         @engine = engine
+        @log = @engine.log
       end
 
       #
@@ -32,6 +33,13 @@ module Gloo
       def get_all_files_in( folder )
         pns = []
         dir = File.join( @engine.settings.project_path, folder )
+
+        unless Dir.exist?( dir )
+          @log.debug "Folder does not exist in project: #{folder}"
+          dir = File.join( @engine.settings.user_root, folder )
+          @log.debug "Looking in gloo home? found == #{Dir.exist?( dir )}"
+        end
+
         Dir.glob( "#{dir}*.gloo" ).each do |f|
           pns << f
         end
