@@ -1,3 +1,8 @@
+3.4.1 - 2024.09.23
+ - Removes old, unused sound objects
+ - Adds support for lib folder in gloo rather than in the project folder
+
+
 3.4.0 - 2024.09.22
  - Refactor for old TTY lib
  - Additional web server functionality
