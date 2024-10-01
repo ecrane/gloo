@@ -150,7 +150,7 @@ module Gloo
           @elements[ 0..-2 ].each do |e|
             o = o.find_child( e )
             if o.nil?
-              @engine.log.error "Object '#{e}' was not found."
+              @engine.err "Object '#{e}' was not found."
               return nil
             end
           end

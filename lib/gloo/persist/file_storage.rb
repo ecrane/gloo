@@ -37,7 +37,7 @@ module Gloo
         if @obj
           @engine.log.debug "Loaded object: #{@obj.name}"
         else
-          @engine.log.error "Error loading file at #{@pn}"
+          @engine.err "Error loading file at #{@pn}"
         end
       end
 

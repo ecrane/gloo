@@ -162,7 +162,7 @@ module Gloo
           sql = "SELECT COUNT(name) FROM sqlite_master WHERE type='table'"
           db.get_first_value sql
         rescue => e
-          @engine.err e.message
+          @engine.log_exception e
           @engine.heap.it.set_to false
           return false
         end

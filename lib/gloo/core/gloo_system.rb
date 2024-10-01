@@ -138,7 +138,7 @@ module Gloo
         o = "msg_#{msg}"
         return self.public_send( o ) if self.respond_to? o
 
-        @engine.log.error "Message #{msg} not implemented"
+        @engine.err "Message #{msg} not implemented"
         return false
       end
 

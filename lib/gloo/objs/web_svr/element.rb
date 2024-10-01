@@ -242,7 +242,7 @@ module Gloo
         begin
           return e.render( render_ƒ )
         rescue => e
-          engine.err e.message
+          engine.log_exception e
           return ''
         end
       end

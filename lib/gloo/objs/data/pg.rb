@@ -189,7 +189,7 @@ module Gloo
         begin
           result = pg_conn.exec( "SELECT NOW()" )
         rescue => e
-          @engine.err e.message
+          @engine.log_exception e
           @engine.heap.it.set_to false
           return false
         end

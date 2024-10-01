@@ -51,12 +51,12 @@ module Gloo
         return true unless app?
 
         if @app_path.nil?
-          @engine.log.error "App Path required to run in App mode."
+          @engine.err "App Path required to run in App mode."
           return false
         end
 
         unless File.directory? @app_path
-          @engine.log.error "'#{@app_path}' is not a valid directory."
+          @engine.err "'#{@app_path}' is not a valid directory."
           return false
         end
 

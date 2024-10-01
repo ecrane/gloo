@@ -201,7 +201,7 @@ module Gloo
         begin
           @parser.run @last_cmd
         rescue => e
-          err e.message
+          log_exception e
         end
       end
 
@@ -282,11 +282,30 @@ module Gloo
       # Report an error.
       # Write it to the log and set the heap error value.
       #
-      def err( msg )
+      def err( msg, backtrace=nil )
         @log.error msg
         @heap.error.set_to msg
+
+        @event_manager.on_error( msg, backtrace)
       end
 
+      # 
+      # Log an exception.
+      # This function does not log the full backtrace, but 
+      # does write part of it to the log.
+      # 
+      def log_exception ex
+        # Get the stack trace, and if needed truncate to fit.
+        msg_lines = ex.backtrace
+        if msg_lines.count > 27
+          msg_lines = msg_lines[0..13] + [ '... truncated ...' ] + msg_lines[-13..-1]
+        end
+        backtrace = msg_lines.join( "\n" )
+        @log.error backtrace
+
+        err( ex.message, backtrace)
+      end
+        
     end
   end
 end

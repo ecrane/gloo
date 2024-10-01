@@ -190,7 +190,7 @@ module Gloo
       #
       def add_key( keyword )
         if @keywords.include?( keyword )
-          # @engine.log.error "duplicate keyword '#{keyword}'"
+          # @engine.err "duplicate keyword '#{keyword}'"
           return
         end
 

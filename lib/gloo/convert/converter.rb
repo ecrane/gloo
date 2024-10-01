@@ -30,8 +30,7 @@ module Gloo
           o = clazz.new
           return o.convert( value )
         rescue => e
-          @engine.log.error e.message
-          @engine.heap.error.set_to e.message
+          @engine.log_exception e
         end
 
         return default

@@ -160,7 +160,7 @@ module Gloo
 
           heads = rs.fields if rs
         rescue => e
-          @engine.err e.message
+          @engine.log_exception e
         end
 
         return [ heads, data ]
@@ -242,7 +242,7 @@ module Gloo
           }
           Mysql2::Client.new( h )
         rescue => e
-          @engine.err e.message
+          @engine.log_exception e
           @engine.heap.it.set_to false
           return false
         end

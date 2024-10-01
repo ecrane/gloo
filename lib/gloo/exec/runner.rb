@@ -36,7 +36,7 @@ module Gloo
         if o
           o.send_message 'run'
         else
-          engine.log.error "Could not send message to object.  Bad path: #{path_name}"
+          engine.err "Could not send message to object.  Bad path: #{path_name}"
         end
       end
 

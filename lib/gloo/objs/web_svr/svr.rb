@@ -426,7 +426,7 @@ module Gloo
           @engine.stop_running_app
           # The running app will call the stop function (below)
         else
-          @engine.log.error SERVER_NOT_RUNNING
+          @engine.err SERVER_NOT_RUNNING
         end
       end
 
@@ -437,7 +437,7 @@ module Gloo
         if @router
           @router.show_routes
         else
-          @engine.log.error SERVER_NOT_RUNNING
+          @engine.err SERVER_NOT_RUNNING
         end
       end
 

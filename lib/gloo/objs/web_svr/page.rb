@@ -354,7 +354,7 @@ module Gloo
         elsif is_text?
           contents = render_text params
         else
-          @engine.log.error "Unknown content type: #{content_type}"
+          @engine.err "Unknown content type: #{content_type}"
           return nil
         end
 

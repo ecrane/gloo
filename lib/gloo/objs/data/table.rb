@@ -67,7 +67,7 @@ module Gloo
             result = o.run_query
             return result
           rescue => e
-            @engine.err e.message
+            @engine.log_exception e
             return nil
           end
         else
@@ -196,7 +196,7 @@ module Gloo
           helper = Gloo::WebSvr::TableRenderer.new( @engine )
           return helper.data_to_table params
         rescue => e
-          @engine.err e.message
+          @engine.log_exception e
           return nil
         end
       end

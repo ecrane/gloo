@@ -164,7 +164,7 @@ module Gloo
       #
       def create_new( name, value, type, parent )
         unless parent
-          @engine.log.error "Could not create object.  Bad path: #{name}"
+          @engine.err "Could not create object.  Bad path: #{name}"
           return nil
         end
 
@@ -202,7 +202,7 @@ module Gloo
         end
 
         unless t.can_create?
-          @engine.log.error "'#{type_name}' cannot be created."
+          @engine.err "'#{type_name}' cannot be created."
           return nil
         end
 

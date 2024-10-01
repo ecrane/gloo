@@ -282,7 +282,7 @@ module Gloo
         @params = params
         return self.dispatch msg if self.can_receive_message? msg
 
-        @engine.log.error "Object #{self.name} cannot receive message #{msg}"
+        @engine.err "Object #{self.name} cannot receive message #{msg}"
         return false
       end
 
@@ -295,7 +295,7 @@ module Gloo
           self.public_send( o )
           return true
         else
-          @engine.log.error "Message #{msg} not implemented"
+          @engine.err "Message #{msg} not implemented"
           return false
         end
       end
@@ -305,7 +305,7 @@ module Gloo
       #
       def msg_unload
         if self.root?
-          @engine.log.error 'Cannot unload the root object.'
+          @engine.err 'Cannot unload the root object.'
           return
         end
 
@@ -318,7 +318,7 @@ module Gloo
       #
       def msg_reload
         if self.root?
-          @engine.log.error 'Cannot reload the root object.'
+          @engine.err 'Cannot reload the root object.'
           return
         end
 

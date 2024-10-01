@@ -72,6 +72,25 @@ module Gloo
         arr.each { |o| Gloo::Exec::Dispatch.message( @engine, 'run', o ) }
       end
 
+      # 
+      # Run the on_error scripts in any open objects.
+      # For each on_error script found, look for the error_data container
+      # and set the error message and backtrace.
+      # 
+      def on_error msg, backtrace
+        @engine.log.debug 'on_error event'
+        arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_error' )
+        arr.each do |o|
+          data = o.parent.find_child 'error_data'
+          if data
+            data.find_child( 'message' ).set_value msg
+            data.find_child( 'backtrace' ).set_value backtrace
+          end
+
+          Gloo::Exec::Dispatch.message( @engine, 'run', o )
+        end
+      end
+
     end
   end
 end

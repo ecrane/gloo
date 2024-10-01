@@ -81,7 +81,7 @@ module Gloo
           result = db.query( sql_value, param_array )
           process_result( result, db )
         rescue => e
-          @engine.err e.message
+          @engine.log_exception e
           return
         end
       end
@@ -105,7 +105,7 @@ module Gloo
           app.add_db_time elapsed if app
           return result
         rescue => e
-          @engine.err e.message
+          @engine.log_exception e
           return
         end
       end
