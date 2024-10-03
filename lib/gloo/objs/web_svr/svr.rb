@@ -50,6 +50,7 @@ module Gloo
       CODE = 'code'.freeze
       ELAPSED = 'elapsed'.freeze
       DB = 'db'.freeze
+      PAGE = 'page'.freeze
 
       # Container with pages in the web app.
       PAGES = 'pages'.freeze
@@ -558,7 +559,7 @@ module Gloo
       # This is done after the page is rendered and before
       # the on_response event is fired.
       # 
-      def set_response_data( request, response )
+      def set_response_data( request, response, page_obj=nil )
         data = find_child RESPONSE_DATA
         return unless data
         data = Gloo::Objs::Alias.resolve_alias( @engine, data )
@@ -567,6 +568,10 @@ module Gloo
         data.find_child( DB )&.set_value( request.db )
         data.find_child( TYPE )&.set_value( response.type )
         data.find_child( CODE )&.set_value( response.code )
+
+        if page_obj
+          data.find_child( PAGE )&.set_value( page_obj.pn ) 
+        end
       end
 
 

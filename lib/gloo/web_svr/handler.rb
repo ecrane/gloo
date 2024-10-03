@@ -35,6 +35,7 @@ module Gloo
       # 
       def handle request
         @request = request
+        page_obj = nil
 
         page, id = @server_obj.router.page_for_route( @request.path, @request.method )
         @engine.log.debug "Found Page: #{page&.name}" if page
@@ -44,12 +45,13 @@ module Gloo
             result = handle_file page
           else
             result = handle_page page
+            page_obj = page
           end
         else
           result = server_error_result
         end
 
-        return result
+        return result, page_obj
       end
 
       # 

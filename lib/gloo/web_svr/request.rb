@@ -60,11 +60,11 @@ module Gloo
         @handler.server_obj.set_request_data self
         @handler.server_obj.run_on_request
         
-        result = @handler.handle self
+        result, page_obj = @handler.handle self
         finish_timer
 
         # Run the on_response script if there is one.
-        @handler.server_obj.set_response_data self, result
+        @handler.server_obj.set_response_data( self, result, page_obj )
         @handler.server_obj.run_on_response
 
         return result
