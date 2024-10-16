@@ -12,18 +12,21 @@ module Gloo
       KEYWORD = 'check'.freeze
       KEYWORD_SHORT = '<-'.freeze
       FOR = 'for'.freeze
-      OBJ_NOT_FOUND_ERR = 'Object was not found: '.freeze
       UNKNOWN_MSG_ERR = 'Missing message!'.freeze
 
       #
       # Run the verb.
       #
       def run
-        setup_msg
-        return unless @msg
+        msg = @tokens.after_token( FOR )
 
-        setup_target
-        dispatch_msg
+        unless msg
+          @engine.err( UNKNOWN_MSG_ERR ) 
+          return
+        end
+
+        Gloo::Exec::Dispatch.send_message(
+          @engine, msg, @tokens.second, @params )
       end
 
       #
@@ -45,36 +48,6 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
-
-      #
-      # Lookup the message to send.
-      #
-      def setup_msg
-        @msg = @tokens.after_token( FOR )
-
-        @engine.err( UNKNOWN_MSG_ERR ) unless @msg
-      end
-
-      #
-      # Setup the target of the message.
-      #
-      def setup_target
-        @obj_name = @tokens.second
-        pn = Gloo::Core::Pn.new( @engine, @obj_name )
-        @target_obj = pn.resolve
-      end
-
-      #
-      # Dispatch the message to the target object.
-      #
-      def dispatch_msg
-        if @target_obj
-          Gloo::Exec::Dispatch.message(
-            @engine, @msg, @target_obj, @params )
-        else
-          @engine.err "#{OBJ_NOT_FOUND_ERR} #{@obj_name}"
-        end
-      end
 
     end
   end

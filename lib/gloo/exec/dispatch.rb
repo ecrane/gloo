@@ -12,6 +12,23 @@ module Gloo
   module Exec
     class Dispatch
 
+      OBJ_NOT_FOUND_ERR = 'Object was not found: '.freeze
+
+      # 
+      # Send a message to an object of a given name (and path).
+      # Once the object is found, the message is dispatched.
+      # 
+      def self.send_message( engine, msg, to_obj_pn, params = nil )
+        pn = Gloo::Core::Pn.new( engine, to_obj_pn )
+        target_obj = pn.resolve
+
+        unless target_obj
+          engine.err "#{OBJ_NOT_FOUND_ERR} #{to_obj_pn}"
+          return
+        end
+        Gloo::Exec::Dispatch.message( engine, msg, target_obj, params )
+      end
+
       #
       # Dispatch the given message to the given object.
       #

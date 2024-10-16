@@ -22,7 +22,7 @@ class CheckTest < BaseEngineTest
   def test_object_not_found
     @engine.parser.run 'check x.y.z for blank?'
     assert @engine.error?
-    msg = Gloo::Verbs::Check::OBJ_NOT_FOUND_ERR
+    msg = Gloo::Exec::Dispatch::OBJ_NOT_FOUND_ERR
     assert @engine.heap.error.value.start_with? msg
   end
 
