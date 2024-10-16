@@ -264,7 +264,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return %w[reload unload]
+        return %w[reload unload blank? contains?]
       end
 
       #
@@ -323,6 +323,24 @@ module Gloo
         end
 
         @engine.persist_man.reload self
+      end
+
+      # 
+      # Check to see if the value is blank.
+      # 
+      def msg_blank?
+        val_blank = value.blank?
+        @engine.heap.it.set_to val_blank
+        return val_blank
+      end
+
+      # 
+      # Check to see if there are children.
+      # 
+      def msg_contains?
+        has_children = child_count.positive?
+        @engine.heap.it.set_to has_children
+        return has_children
       end
 
 

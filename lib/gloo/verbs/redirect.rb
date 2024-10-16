@@ -83,6 +83,7 @@ module Gloo
       # 
       def redirect_to_page
         if @engine.app_running?
+          @engine.exec_env.running_script.break_out
           @engine.running_app.obj.redirect = @target_obj
         else
           @engine.err APP_NOT_RUNING_ERR

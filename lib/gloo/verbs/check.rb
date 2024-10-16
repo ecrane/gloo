@@ -1,18 +1,17 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
-# Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
+# Copyright:: Copyright (c) 2024 Eric Crane.  All rights reserved.
 #
-# Send a message to an object.
-# Tell the object to do some known action.
-# Also see the Check verb.
+# Alternate version of the Tell verb.
+# Reads better to check object conditions.
 #
 
 module Gloo
   module Verbs
-    class Tell < Gloo::Core::Verb
+    class Check < Gloo::Core::Verb
 
-      KEYWORD = 'tell'.freeze
-      KEYWORD_SHORT = '->'.freeze
-      TO = 'to'.freeze
+      KEYWORD = 'check'.freeze
+      KEYWORD_SHORT = '<-'.freeze
+      FOR = 'for'.freeze
       OBJ_NOT_FOUND_ERR = 'Object was not found: '.freeze
       UNKNOWN_MSG_ERR = 'Missing message!'.freeze
 
@@ -51,7 +50,7 @@ module Gloo
       # Lookup the message to send.
       #
       def setup_msg
-        @msg = @tokens.after_token( TO )
+        @msg = @tokens.after_token( FOR )
 
         @engine.err( UNKNOWN_MSG_ERR ) unless @msg
       end

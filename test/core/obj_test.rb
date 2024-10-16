@@ -281,4 +281,36 @@ class ObjTest < BaseEngineTest
     assert o.is_function?
   end
 
+  def test_check_for_blank
+    o = @engine.parser.parse_immediate 'create s as string'
+    o.run
+    assert_equal 1, @engine.heap.root.child_count
+    o = @engine.parser.parse_immediate 'check s for blank?'
+    o.run
+    assert @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "put 'x' into s"
+    o.run
+
+    o = @engine.parser.parse_immediate 'check s for blank?'
+    o.run
+    refute @engine.heap.it.value
+  end
+
+  def test_check_for_contains
+    o = @engine.parser.parse_immediate 'create c as can'
+    o.run
+    assert_equal 1, @engine.heap.root.child_count
+    o = @engine.parser.parse_immediate 'check c for contains?'
+    o.run
+    refute @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "create c.a as string"
+    o.run
+
+    o = @engine.parser.parse_immediate 'check c for contains?'
+    o.run
+    assert @engine.heap.it.value
+  end
+
 end
