@@ -39,8 +39,7 @@ module Gloo
       # Returns nil if there is none.
       #
       def salt
-        o = find_child SALT
-        return o&.value
+        return find_child_value SALT
       end
 
       #
@@ -48,15 +47,14 @@ module Gloo
       # Returns nil if there is none.
       #
       def password
-        o = find_child PASSWORD
-        return o&.value
+        return find_child_value PASSWORD
       end
 
       #
       # Update the password value.
       #
       def update_password( new_pwd )
-        o = find_child PASSWORD
+        o = find_child_resolve_alias PASSWORD
         return unless o
 
         o.set_value new_pwd
@@ -74,15 +72,14 @@ module Gloo
       # Returns nil if there is none.
       #
       def hash
-        o = find_child HASH
-        return o&.value
+        return find_child_value HASH
       end
 
       #
       # Update the hashed password value.
       #
       def update_hash( new_hash )
-        o = find_child HASH
+        o = find_child_resolve_alias HASH
         return unless o
 
         o.set_value new_hash

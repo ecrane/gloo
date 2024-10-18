@@ -216,6 +216,30 @@ module Gloo
         return nil
       end
 
+      # 
+      # Find a child, resolve any alias references.
+      # This returns the object, not the value.
+      # 
+      def find_child_resolve_alias( name )
+        o = find_child name
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o
+      end
+
+      # 
+      # Find a child, resolve any alias references,
+      # and return the object's value.
+      # 
+      def find_child_value( name )
+        o = find_child name
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o&.value
+      end
+
       #
       # Get the index of the child with the given name.
       # 
