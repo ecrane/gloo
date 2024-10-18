@@ -33,8 +33,13 @@ module Gloo
 
       # 
       # Does the data contain a single row?
+      # OR, if the result is empty, return false.
       # 
       def single_row_result?
+        if @result_can && ( @result_can.child_count == 0 )
+          return false
+        end
+
         return @data.count == 1
       end
 
@@ -108,7 +113,7 @@ module Gloo
       def update_single_row
         row = @data[0]
         @heads.each_with_index do |h, i|
-          child = @result_can.find_child h          
+          child = @result_can.find_child h
           child.set_value row[i] if child
         end
       end
