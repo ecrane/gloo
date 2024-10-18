@@ -1,3 +1,11 @@
+3.5.0 - 2024.10.18
+ - check obj for message alternate to tell
+ - new base object messages
+ - fixes issue with single row returned from query
+ - adds on_error event
+ - use aliases in pwd obj
+
+
 3.4.1 - 2024.09.23
  - Removes old, unused sound objects
  - Adds support for lib folder in gloo rather than in the project folder
