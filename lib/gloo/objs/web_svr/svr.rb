@@ -292,7 +292,7 @@ module Gloo
         child_obj = session_container.find_child( key )
         unless child_obj
           fac = @engine.factory
-          child_obj = fac.create_string key, value, session_obj
+          child_obj = fac.create_string key, value, session_container
         end
         child_obj.value = value
       end

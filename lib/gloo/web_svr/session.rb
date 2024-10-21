@@ -41,21 +41,24 @@ module Gloo
       # Add it to the session container.
       # 
       def set_session_data_for_request( env )
-        cookie_hash = Rack::Utils.parse_cookies( env )
+        begin
+          cookie_hash = Rack::Utils.parse_cookies( env )
 
-        # Are we using sessions?
-        if @server_obj.use_session?
-          data = cookie_hash[ session_name ]
+          # Are we using sessions?
+          if @server_obj.use_session?
+            data = cookie_hash[ session_name ]
 
-          if data
-            data = decode_decrypt( data ) 
+            if data
+              data = decode_decrypt( data ) 
 
-            data.each do |key, value|
-              @server_obj.set_session_var( key, value )
+              data.each do |key, value|
+                @server_obj.set_session_var( key, value )
+              end
             end
           end
+        rescue => e
+          @engine.log_exception e
         end
-
       end
 
 
