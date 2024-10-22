@@ -38,7 +38,16 @@ module Gloo
         self.value = new_value.to_i
       end
 
-      
+      # 
+      # Value for a SQL query.
+      # 
+      def sql_value
+        return nil if self.value.blank?
+        
+        return self.value
+      end
+
+
       # ---------------------------------------------------------------------
       #    Messages
       # ---------------------------------------------------------------------

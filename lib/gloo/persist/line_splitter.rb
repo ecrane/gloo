@@ -39,6 +39,7 @@ module Gloo
       def detect_name
         @line = @line.strip
         @idx = @line.index( ' ' )
+        @idx = 0 unless @idx
         @name = @line[ 0..@idx - 1 ]
       end
 

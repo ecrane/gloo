@@ -50,7 +50,8 @@ module Gloo
 
             if data
               data = decode_decrypt( data ) 
-
+              return unless data
+              
               data.each do |key, value|
                 @server_obj.set_session_var( key, value )
               end
@@ -113,6 +114,8 @@ module Gloo
       # Decode and decrypt the session data.
       # 
       def decode_decrypt( data )
+        return nil unless data && key && iv
+
         data = Gloo::Objs::Cipher.decrypt( data, key, iv )
         return JSON.parse( data )
       end

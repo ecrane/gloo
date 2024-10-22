@@ -33,6 +33,8 @@ module Gloo
       # Dispatch the given message to the given object.
       #
       def self.message( engine, msg, to_obj, params = nil )
+        return unless to_obj
+        
         engine.log.debug "Dispatch message #{msg} to #{to_obj.name}"
         a = Gloo::Exec::Action.new msg, to_obj, params
         Gloo::Exec::Dispatch.action( engine, a )

@@ -205,7 +205,7 @@ module Gloo
         params = []
         o.children.each do |p|
           p = Gloo::Objs::Alias.resolve_alias( @engine, p )
-          params << p.value
+          params << p.sql_value
         end
 
         return params

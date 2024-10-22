@@ -15,7 +15,7 @@ module Gloo
       # Does the pathname start with here reference?
       #
       def self.includes_here_ref?( elements )
-        return elements.first.start_with?( HERE )
+        return elements.first&.start_with?( HERE )
       end
 
       #

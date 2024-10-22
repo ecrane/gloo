@@ -138,6 +138,13 @@ module Gloo
       end
 
       # 
+      # Value for a SQL query.
+      # 
+      def sql_value
+        return self.value
+      end
+
+      # 
       # Is this an alias to another object?
       # 
       def is_alias?

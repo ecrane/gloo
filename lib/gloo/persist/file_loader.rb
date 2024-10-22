@@ -154,7 +154,7 @@ module Gloo
         params = { name: name, type: type, value: value, parent: @parent }
         @last = @engine.factory.create( params )
 
-        if value.empty? && @last&.multiline_value?
+        if value&.empty? && @last&.multiline_value?
           @multi_indent = 0
           @in_multiline = true
           puts "*** Start multiline. multi_indent: #{@multi_indent}" if @debug

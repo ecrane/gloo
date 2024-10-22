@@ -12,6 +12,8 @@ module Gloo
       # Convert the given string value to an integer.
       #
       def convert( value )
+        return nil if value.blank?
+        
         return value.to_i
       end
 

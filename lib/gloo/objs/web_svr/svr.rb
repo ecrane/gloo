@@ -560,17 +560,21 @@ module Gloo
       # the on_response event is fired.
       # 
       def set_response_data( request, response, page_obj=nil )
-        data = find_child RESPONSE_DATA
-        return unless data
-        data = Gloo::Objs::Alias.resolve_alias( @engine, data )
+        begin
+          data = find_child RESPONSE_DATA
+          return unless data
+          data = Gloo::Objs::Alias.resolve_alias( @engine, data )
 
-        data.find_child( ELAPSED )&.set_value( request.elapsed )
-        data.find_child( DB )&.set_value( request.db )
-        data.find_child( TYPE )&.set_value( response.type )
-        data.find_child( CODE )&.set_value( response.code )
+          data.find_child( ELAPSED )&.set_value( request.elapsed )
+          data.find_child( DB )&.set_value( request.db )
+          data.find_child( TYPE )&.set_value( response.type )
+          data.find_child( CODE )&.set_value( response.code )
 
-        if page_obj
-          data.find_child( PAGE )&.set_value( page_obj.pn ) 
+          if page_obj
+            data.find_child( PAGE )&.set_value( page_obj.pn ) 
+          end
+        rescue => e
+          @engine.log_exception e
         end
       end
 
