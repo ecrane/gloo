@@ -3,6 +3,7 @@
 #
 # A looping construct...do something for each whatever in something.
 # This object has several possible uses:
+#   - each child in a container
 #   - each word in a string
 #   - each line in a string
 #   - each file in a directory
@@ -15,13 +16,9 @@ module Gloo
 
       KEYWORD = 'each'.freeze
       KEYWORD_SHORT = 'each'.freeze
-      CHILD = 'child'.freeze
       WORD = 'word'.freeze
-      LINE = 'line'.freeze
-      FILE = 'file'.freeze
-      REPO = 'repo'.freeze
-      IN = 'IN'.freeze
       DO = 'do'.freeze
+      IN = 'IN'.freeze
 
       #
       # The name of the object type.
@@ -42,8 +39,7 @@ module Gloo
       # Returns nil if there is none.
       #
       def in_value
-        o = find_child IN
-        return o ? o.value : nil
+        return find_child_value IN
       end
 
       #
@@ -55,6 +51,7 @@ module Gloo
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
       end
+
 
       # ---------------------------------------------------------------------
       #    Children
@@ -81,6 +78,7 @@ module Gloo
         fac.create_script DO, '', self
       end
 
+
       # ---------------------------------------------------------------------
       #    Messages
       # ---------------------------------------------------------------------
@@ -94,184 +92,19 @@ module Gloo
 
       # Run the system command.
       def msg_run
-        if each_child?
-          run_each_child
-        elsif each_word?
-          run_each_word
-        elsif each_line?
-          run_each_line
-        elsif each_repo?
-          run_each_repo
+        if EachChild.use_for?( self )
+          EachChild.new( @engine, self ).run
+        elsif EachWord.use_for?( self )
+          EachWord.new( @engine, self ).run
+        elsif EachLine.use_for?( self )
+          EachLine.new( @engine, self ).run
+        elsif EachFile.use_for?( self )
+          EachFile.new( @engine, self ).run
+        elsif EachRepo.use_for?( self )
+          EachRepo.new( @engine, self ).run
+        else 
+          @engine.err "Not set up to run each for that target."
         end
-      end
-
-      # ---------------------------------------------------------------------
-      #    Child Object
-      # ---------------------------------------------------------------------
-
-      #
-      # Is it set up to run for each word?
-      # If there is a child object by the name "word"
-      # then we will loop for each word in the string.
-      #
-      def each_child?
-        return true if contains_child? CHILD
-
-        return false
-      end
-
-      #
-      # Run for each word.
-      #
-      def run_each_child
-        o = find_child IN
-        return unless o
-
-        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
-        o.children.each do |child|
-          set_child child
-          run_do
-        end
-      end
-
-      #
-      # Set the child alias.
-      #
-      def set_child( obj )
-        o = find_child CHILD
-        return unless o
-
-        o.set_value obj.pn
-      end
-
-      # ---------------------------------------------------------------------
-      #    Word
-      # ---------------------------------------------------------------------
-
-      #
-      # Is it set up to run for each word?
-      # If there is a child object by the name "word"
-      # then we will loop for each word in the string.
-      #
-      def each_word?
-        return true if find_child WORD
-
-        return false
-      end
-
-      #
-      # Run for each word.
-      #
-      def run_each_word
-        str = in_value
-        return unless str
-
-        str.split( ' ' ).each do |word|
-          set_word word
-          run_do
-        end
-      end
-
-      #
-      # Set the value of the word.
-      #
-      def set_word( word )
-        o = find_child WORD
-        return unless o
-
-        o.set_value word
-      end
-
-      # ---------------------------------------------------------------------
-      #    Line
-      # ---------------------------------------------------------------------
-
-      #
-      # Is it set up to run for each line?
-      # If there is a child object by the name "line"
-      # then we will loop for each line in the string.
-      #
-      def each_line?
-        return true if find_child LINE
-
-        return false
-      end
-
-      #
-      # Run for each line.
-      #
-      def run_each_line
-        str = in_value
-        return unless str
-
-        str.each_line do |line|
-          set_line line
-          run_do
-        end
-      end
-
-      #
-      # Set the value of the word.
-      #
-      def set_line( line )
-        o = find_child LINE
-        return unless o
-
-        o.set_value line
-      end
-
-      # ---------------------------------------------------------------------
-      #    Git Repo
-      # ---------------------------------------------------------------------
-
-      #
-      # Is it set up to run for each git repo?
-      # If there is a child object by the name "repo"
-      # then we will loop for each repo in the directory.
-      #
-      def each_repo?
-        return true if find_child REPO
-
-        return false
-      end
-
-      #
-      # Find all git projects in a path.
-      #
-      def find_all_git_projects( path )
-        path.children.collect do |f|
-          if f.directory? && ( File.basename( f ) == '.git' )
-            File.dirname( f )
-          elsif f.directory?
-            find_all_git_projects( f )
-          end
-        end.flatten.compact
-      end
-
-      #
-      # Run for each line.
-      #
-      def run_each_repo
-        path = in_value
-        return unless path
-
-        path = Pathname.new( path )
-        repos = find_all_git_projects( path )
-        repos.each do |o|
-          set_repo o
-          run_do
-        end
-      end
-
-      #
-      # Set the value of the repo.
-      # This is a path to the repo.
-      #
-      def set_repo( path )
-        o = find_child REPO
-        return unless o
-
-        o.set_value path
       end
 
     end
