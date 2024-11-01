@@ -33,7 +33,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        basic = %w[read write]
+        basic = %w[read write get_name get_parent]
         checks = %w[check_exists check_is_file check_is_dir]
         search = %w[find_match]
         show = %w[show page open]
@@ -129,6 +129,21 @@ module Gloo
       def msg_find_match
         result = !Dir.glob( value ).empty?
         @engine.heap.it.set_to result
+      end
+
+      #
+      # Get the name of the file.
+      #
+      def msg_get_name
+        file_name = File.basename( value, File.extname( value ) )
+        @engine.heap.it.set_to file_name
+      end
+
+      # 
+      # Get the parent directory of the file.
+      # 
+      def msg_get_parent
+        @engine.heap.it.set_to File.dirname( value )
       end
 
     end
