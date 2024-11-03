@@ -74,7 +74,8 @@ module Gloo
       # If the redirect is set, then use that page instead
       # of the one requested.
       # 
-      attr_accessor :redirect, :router, :asset, :embedded_renderer
+      attr_accessor :redirect, :redirect_hard
+      attr_accessor :router, :asset, :embedded_renderer
       attr_accessor :session
 
       #

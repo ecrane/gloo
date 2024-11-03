@@ -60,7 +60,10 @@ module Gloo
       # 
       def handle_page page
         result = page.render @request
-        if redirect_set?
+        if redirect_hard_set?
+          result = server_error_result
+          @engine.running_app.obj.redirect_hard = nil
+        elsif redirect_set?
           page = @engine.running_app.obj.redirect
           @log.debug "Redirecting to: #{page.pn}"
           @engine.running_app.obj.redirect = nil
@@ -110,7 +113,7 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
-      #    Helper functions
+      #    Redirect Helper functions
       # ---------------------------------------------------------------------
 
       # 
@@ -120,6 +123,23 @@ module Gloo
         return false unless @engine.app_running?
         return @engine.running_app.obj.redirect
       end
+
+      # 
+      # Is there a redirect page set in the running app?
+      # 
+      def redirect_hard_set?
+        return false unless @engine.app_running?
+        return @engine.running_app.obj.redirect_hard
+      end
+
+      # 
+      # Return a redirect result.
+      # 
+      def server_error_result
+        target = @engine.running_app.obj.redirect_hard
+
+        return Gloo::WebSvr::Response.redirect_response( @engine, target )
+      end    
 
     end
   end

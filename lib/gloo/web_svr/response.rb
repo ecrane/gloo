@@ -18,6 +18,7 @@ module Gloo
       HTML_TYPE = 'text/html'.freeze
             
       attr_reader :code, :type, :data
+      attr_accessor :location
       
 
       # ---------------------------------------------------------------------
@@ -37,6 +38,7 @@ module Gloo
         @code = code
         @type = type
         @data = data
+        @location = nil
       end
 
 
@@ -71,6 +73,25 @@ module Gloo
         return Gloo::WebSvr::Response.new( engine, code, HTML_TYPE, data )
       end
 
+      # 
+      # Helper to create a redirect response.
+      # 
+      def self.redirect_response( engine, target )
+        code = Gloo::WebSvr::ResponseCode::FOUND
+        data = <<~TEXT
+        <head>
+          <html>
+            <body><a href="#{target}">target is here</a></body>
+          </html>
+        </head>
+        TEXT
+
+        response = Gloo::WebSvr::Response.new( engine, code, HTML_TYPE, data )
+        response.location = target
+
+        return response
+      end
+
 
       # ---------------------------------------------------------------------
       #    Data Functions
@@ -96,6 +117,10 @@ module Gloo
         #
 
         headers = { CONTENT_TYPE => @type }
+
+        if @location
+          headers[ 'Location' ] = @location
+        end
 
         session = @engine&.running_app&.obj&.session      
         headers = session.add_session_for_response( headers ) if session

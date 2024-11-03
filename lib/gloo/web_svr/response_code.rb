@@ -43,7 +43,7 @@ module Gloo
       TEMP_REDIRECT = 307.freeze
       CODE_307 = 'Temporary Redirect'.freeze
 
-      PERM_REDIRECT = 307.freeze
+      PERM_REDIRECT = 308.freeze
       CODE_308 = 'Permanent Redirect'.freeze
 
       BAD_REQUEST = 400.freeze

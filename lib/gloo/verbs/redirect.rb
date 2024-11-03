@@ -13,6 +13,7 @@ module Gloo
       KEYWORD_SHORT = 'go'.freeze
 
       RUN_MESSAGE = 'run'.freeze
+      KEYWORD_HARD = 'hard'.freeze
 
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
       APP_NOT_RUNING_ERR = 'The application is not running!'.freeze
@@ -27,8 +28,12 @@ module Gloo
           return
         end
 
-        determine_target
-        redirect_to_target
+        if is_hard_redirect?
+          redirect_hard
+        else
+          determine_target
+          redirect_to_target
+        end
       end
 
       #
@@ -50,6 +55,32 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
+
+      # 
+      # Is this a hard redirect?
+      # A hard redirect returns the new URL to the client.
+      # 
+      def is_hard_redirect?
+        return false unless @params&.token_count&.positive?
+
+        param_val = @params.tokens.first
+        return ( param_val.downcase == KEYWORD_HARD )
+      end
+
+      # 
+      # Redirect to the target using a hard redirect.
+      # 
+      def redirect_hard
+        expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
+        to_site = expr.evaluate
+
+        if @engine.app_running?
+          @engine.exec_env.running_script.break_out
+          @engine.running_app.obj.redirect_hard = to_site
+        else
+          @engine.err APP_NOT_RUNING_ERR
+        end
+      end
 
       # 
       # Send the control to the redirect target.
