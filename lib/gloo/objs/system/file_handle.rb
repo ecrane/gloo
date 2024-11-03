@@ -33,8 +33,8 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        basic = %w[read write get_name get_parent]
-        checks = %w[check_exists check_is_file check_is_dir]
+        basic = %w[read write get_name get_ext get_parent]
+        checks = %w[exists? is_file? is_dir?]
         search = %w[find_match]
         show = %w[show page open]
         return super + basic + show + checks + search
@@ -102,7 +102,7 @@ module Gloo
       #
       # Check to see if the file exists.
       #
-      def msg_check_exists
+      def msg_exists?
         result = File.exist? value
         @engine.heap.it.set_to result
       end
@@ -110,7 +110,7 @@ module Gloo
       #
       # Check to see if the file is a file.
       #
-      def msg_check_is_file
+      def msg_is_file?
         result = File.file? value
         @engine.heap.it.set_to result
       end
@@ -118,7 +118,7 @@ module Gloo
       #
       # Check to see if the file is a directory.
       #
-      def msg_check_is_dir
+      def msg_is_dir?
         result = File.directory? value
         @engine.heap.it.set_to result
       end
@@ -135,15 +135,34 @@ module Gloo
       # Get the name of the file.
       #
       def msg_get_name
-        file_name = File.basename( value, File.extname( value ) )
-        @engine.heap.it.set_to file_name
+        if value.blank?
+          @engine.heap.it.set_to ''
+        else
+          file_name = File.basename( value, File.extname( value ) )
+          @engine.heap.it.set_to file_name
+        end
+      end
+
+      #
+      # Get the file's extension.
+      #
+      def msg_get_ext
+        if value.blank?
+          @engine.heap.it.set_to ''
+        else
+          @engine.heap.it.set_to File.extname( value )
+        end
       end
 
       # 
       # Get the parent directory of the file.
       # 
       def msg_get_parent
-        @engine.heap.it.set_to File.dirname( value )
+        if value.blank?
+          @engine.heap.it.set_to ''
+        else
+          @engine.heap.it.set_to File.dirname( value )
+        end
       end
 
     end
