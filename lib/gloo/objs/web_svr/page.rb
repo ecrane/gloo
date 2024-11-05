@@ -110,9 +110,17 @@ module Gloo
       # Get the params hash from the child object.
       # Returns nil if there is none.
       #
-      def params_hash
+      def params_hash route_params=nil
         params_can = find_child PARAMS
         return nil unless params_can
+
+        # First set URL route params if there are any.
+        if route_params
+          route_params.each_with_index do |route_p,i|
+            o = params_can.children[i]
+            o.set_value( route_p ) if o
+          end
+        end
 
         if @request
           url_params = @request.query_params
@@ -334,7 +342,7 @@ module Gloo
       # the request will be passed in and will include
       # request context such as params.
       # 
-      def render request=nil
+      def render request=nil, route_params=nil
         @request = request
         set_id if @request
 
@@ -342,7 +350,7 @@ module Gloo
         run_on_prerender
 
         # Set Params before running on render
-        params = params_hash
+        params = params_hash( route_params )
 
         run_on_render
         return nil if redirect_set?

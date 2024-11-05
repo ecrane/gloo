@@ -36,8 +36,9 @@ module Gloo
       def handle request
         @request = request
         page_obj = nil
+        @route_params = nil
 
-        page, id = @server_obj.router.page_for_route( @request.path, @request.method )
+        page, id, @route_params = @server_obj.router.page_for_route( @request.path, @request.method )
         @engine.log.debug "Found Page: #{page&.name}" if page
         request.id = id
         if page
@@ -59,7 +60,7 @@ module Gloo
       # Render the page, with possible redirect.
       # 
       def handle_page page
-        result = page.render @request
+        result = page.render @request, @route_params
         if redirect_hard_set?
           result = server_error_result
           @engine.running_app.obj.redirect_hard = nil

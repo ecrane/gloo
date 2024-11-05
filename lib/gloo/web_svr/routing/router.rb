@@ -41,6 +41,7 @@ module Gloo
         def page_for_route( path, method )
           @log.info "routing to #{path} for method #{method}"
           @method = method
+          route_params = nil
           
           detect_segments path
 
@@ -53,7 +54,7 @@ module Gloo
             if Gloo::WebSvr::Routing::ResourceRouter.is_implicit_create?( method, @route_segments.last )
               @route_segments << Gloo::WebSvr::Routing::ResourceRouter::POST_ROUTE
               page = find_route_segment( pages.children )
-              return [ page, @id ] if page
+              return [ page, @id, route_params ] if page
 
               # We didn't find the page, so remove the last segment and try again 
               # posting to the resource.
@@ -61,7 +62,13 @@ module Gloo
             end
 
             page = find_route_segment( pages.children ) 
-            return [ page, @id ] if page
+
+            # Are there any remaining segments?
+            if @route_segments.count > 0
+              route_params = @route_segments
+            end
+
+            return [ page, @id, route_params ] if page
           end
 
           return nil
