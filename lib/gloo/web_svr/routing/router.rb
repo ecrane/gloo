@@ -62,8 +62,8 @@ module Gloo
             end
 
             page = find_route_segment( pages.children ) 
-
-            # Are there any remaining segments?
+            
+            # Are there any remaining segments to be added as route parameters?
             if @route_segments.count > 0
               route_params = @route_segments
             end

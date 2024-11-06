@@ -62,7 +62,7 @@ module Gloo
       def handle_page page
         result = page.render @request, @route_params
         if redirect_hard_set?
-          result = server_error_result
+          result = server_redirect_result
           @engine.running_app.obj.redirect_hard = nil
         elsif redirect_set?
           page = @engine.running_app.obj.redirect
@@ -136,7 +136,7 @@ module Gloo
       # 
       # Return a redirect result.
       # 
-      def server_error_result
+      def server_redirect_result
         target = @engine.running_app.obj.redirect_hard
 
         return Gloo::WebSvr::Response.redirect_response( @engine, target )
