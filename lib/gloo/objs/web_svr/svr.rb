@@ -568,8 +568,14 @@ module Gloo
 
           data.find_child( ELAPSED )&.set_value( request.elapsed )
           data.find_child( DB )&.set_value( request.db )
-          data.find_child( TYPE )&.set_value( response.type )
-          data.find_child( CODE )&.set_value( response.code )
+
+          if ( response )
+            data.find_child( TYPE )&.set_value( response.type )
+            data.find_child( CODE )&.set_value( response.code )
+          else
+            data.find_child( TYPE )&.set_value( '' )
+            data.find_child( CODE )&.set_value( '' )
+          end
 
           if page_obj
             data.find_child( PAGE )&.set_value( page_obj.pn ) 
