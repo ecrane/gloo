@@ -34,6 +34,15 @@ module Gloo
         return KEYWORD_SHORT
       end
 
+      # 
+      # Get the result container if it exists.
+      # 
+      def get_result_can
+        result_can = find_child RESULT
+        result_can = Gloo::Objs::Alias.resolve_alias( @engine, result_can )
+        return result_can
+      end
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -78,6 +87,8 @@ module Gloo
         return unless db
 
         begin
+          clear_results
+
           result = db.query( sql_value, param_array )
           process_result( result, db )
         rescue => e
@@ -177,8 +188,7 @@ module Gloo
         return unless query_result
         return unless query_result.has_data_to_show?
 
-        result_can = find_child RESULT
-        result_can = Gloo::Objs::Alias.resolve_alias( @engine, result_can )
+        result_can = get_result_can
 
         if result_can
           if simple_list?
@@ -211,6 +221,44 @@ module Gloo
         return params
       end
 
+      # 
+      # Clear out results container.
+      # Prevents data from the last use being used in this 
+      # one if no data was found.
+      # 
+      def clear_results
+        result_can = get_result_can
+        return unless result_can
+
+        if result_is_values?
+          clear_values
+        else
+          clear_result_rows
+        end
+      end
+
+      # 
+      # Is the result container a list of values?
+      # If not it is a list of rows.
+      # 
+      def result_is_values?
+        return true
+      end
+
+      # 
+      # Delete row data from the result container.
+      # 
+      def clear_result_rows
+      end
+
+      # 
+      # Clear out the values in the results container.
+      # 
+      def clear_values
+        get_result_can.children.each do |c|
+          c.value = nil
+        end
+      end
 
     end
   end
