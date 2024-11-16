@@ -83,4 +83,9 @@ class IntegerTest < BaseEngineTest
     end
   end
 
+  def test_that_it_not_is_a_container
+    o = Gloo::Objs::Integer.new @engine
+    refute o.is_container?
+  end
+
 end

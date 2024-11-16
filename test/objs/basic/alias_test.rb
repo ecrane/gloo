@@ -87,4 +87,9 @@ class AliasTest < BaseEngineTest
     assert_equal 'UP', str.value
   end
 
+  def test_that_it_not_is_a_container
+    o = Gloo::Objs::Alias.new @engine
+    refute o.is_container?
+  end
+
 end

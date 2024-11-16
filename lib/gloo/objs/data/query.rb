@@ -229,11 +229,12 @@ module Gloo
       def clear_results
         result_can = get_result_can
         return unless result_can
+        return unless result_can.child_count.positive?
 
         if result_is_values?
           clear_values
         else
-          clear_result_rows
+          get_result_can.delete_children
         end
       end
 
@@ -242,13 +243,13 @@ module Gloo
       # If not it is a list of rows.
       # 
       def result_is_values?
-        return true
-      end
+        first_child = get_result_can.children.first
 
-      # 
-      # Delete row data from the result container.
-      # 
-      def clear_result_rows
+        if first_child && first_child&.is_container?
+          return false
+        end
+
+        return true
       end
 
       # 

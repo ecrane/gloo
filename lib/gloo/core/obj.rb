@@ -152,6 +152,13 @@ module Gloo
       end
 
       # 
+      # Is this a container object?
+      # 
+      def is_container?
+        return self.type_display == Gloo::Objs::Container.typename
+      end
+
+      # 
       # Is this a function object?
       # 
       def is_function?

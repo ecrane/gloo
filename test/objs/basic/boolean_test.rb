@@ -74,4 +74,9 @@ class BooleanTest < BaseEngineTest
     assert msgs.include?( 'false' )
   end
 
+  def test_that_it_not_is_a_container
+    o = Gloo::Objs::Boolean.new @engine
+    refute o.is_container?
+  end
+
 end

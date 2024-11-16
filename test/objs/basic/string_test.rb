@@ -92,4 +92,9 @@ class StringTest < BaseEngineTest
     o.msg_unescape
     assert_equal orig_value, o.value
   end
+
+  def test_that_it_not_is_a_container
+    o = Gloo::Objs::String.new @engine
+    refute o.is_container?
+  end
 end

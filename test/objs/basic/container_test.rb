@@ -57,4 +57,9 @@ class ContainerTest < BaseEngineTest
     assert_equal 0, can.child_count
   end
 
+  def test_that_it_is_a_container
+    o = Gloo::Objs::Container.new @engine
+    assert o.is_container?
+  end
+
 end
