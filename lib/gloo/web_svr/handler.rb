@@ -36,11 +36,15 @@ module Gloo
       def handle request
         @request = request
         page_obj = nil
-        @route_params = nil
+        route_params = nil
 
-        page, id, @route_params = @server_obj.router.page_for_route( @request.path, @request.method )
+        page, id, route_params = @server_obj.router.page_for_route( @request.path, @request.method )
         @engine.log.debug "Found Page: #{page&.name}" if page
-        request.id = id
+
+        request.request_params.id = id
+        request.request_params.route_params = route_params
+        request.request_params.log_id_keys
+
         if page
           if page.is_a? Gloo::Objs::FileHandle
             result = handle_file page
@@ -60,7 +64,7 @@ module Gloo
       # Render the page, with possible redirect.
       # 
       def handle_page page
-        result = page.render @request, @route_params
+        result = page.render @request
         if redirect_hard_set?
           result = server_redirect_result
           @engine.running_app.obj.redirect_hard = nil

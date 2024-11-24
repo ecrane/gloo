@@ -110,26 +110,26 @@ module Gloo
       # Get the params hash from the child object.
       # Returns nil if there is none.
       #
-      def params_hash route_params=nil
+      def params_hash
         params_can = find_child PARAMS
         return nil unless params_can
 
         # First set URL route params if there are any.
-        if route_params
-          route_params.each_with_index do |route_p,i|
+        if @request.request_params.route_params
+          @request.request_params.route_params.each_with_index do |route_p,i|
             o = params_can.children[i]
             o.set_value( route_p ) if o
           end
         end
 
         if @request
-          url_params = @request.query_params
+          url_params = @request.request_params.query_params
           url_params.each do |k,v|
             o = params_can.find_child k
             o.set_value( v ) if o
           end
 
-          @request.body_params.each do |k,v|
+          @request.request_params.body_params.each do |k,v|
             o = params_can.find_child k
             o.set_value( v ) if o
           end
@@ -324,8 +324,8 @@ module Gloo
       # Set the ID parameter if there is one.
       # 
       def set_id
-        return unless @request.id
-        @engine.log.info "Setting ID: #{@request.id}"
+        return unless @request.request_params.id
+        @engine.log.info "Setting ID: #{@request.request_params.id}"
 
         params_can = find_child PARAMS
         return nil unless params_can
@@ -333,7 +333,7 @@ module Gloo
         id_obj = params_can.find_child( ID )
         return unless id_obj
 
-        id_obj.set_value( @request.id )
+        id_obj.set_value( @request.request_params.id )
       end
 
       # 
@@ -342,15 +342,17 @@ module Gloo
       # the request will be passed in and will include
       # request context such as params.
       # 
-      def render request=nil, route_params=nil
+      def render request=nil
         @request = request
+
+        # TODO : refactor this
         set_id if @request
 
         # Run the on prerender script
         run_on_prerender
 
         # Set Params before running on render
-        params = params_hash( route_params )
+        params = params_hash
 
         run_on_render
         return nil if redirect_set?

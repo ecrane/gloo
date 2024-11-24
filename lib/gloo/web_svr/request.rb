@@ -23,9 +23,9 @@ module Gloo
       HTTP_HOST = 'HTTP_HOST'.freeze
       QUERY_STRING = 'QUERY_STRING'.freeze
 
-      attr_reader :method, :host, :path, :query, :body, :ip
+      attr_reader :method, :host, :path, :ip, :query
       attr_reader :db, :elapsed
-      attr_accessor :id
+      attr_accessor :request_params
 
       
       # ---------------------------------------------------------------------
@@ -38,6 +38,7 @@ module Gloo
       def initialize( engine, handler, env = nil )
         @engine = engine
         @log = @engine.log
+        @request_params = RequestParams.new( @log )
 
         @handler = handler
 
@@ -85,18 +86,13 @@ module Gloo
         @path = req.path
         @host = req.host_with_port
         @query = req.query_string
+
+        @request_params.init_query_params( @query )
         @ip = req.ip
-
-        # @method = @env[ REQUEST_METHOD ]
-        # @path = @env[ REQUEST_PATH ]
-        # @host = @env[ HTTP_HOST ]
-        # @query = @env[ QUERY_STRING ]
-
         @handler.server_obj.session.set_session_data_for_request( @env )
 
-        @body = @env[ 'rack.input' ].read
-        @body = Rack::Utils.parse_query @body
-        check_body_method
+        @request_params.init_body_params( @env[ 'rack.input' ].read )
+        @method = @request_params.get_body_method_override @method
       end
 
 
@@ -128,37 +124,12 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
-      # Check the body to see if there is a PATCH or a PUT in 
-      # the method override.
-      # 
-      def check_body_method
-        if @body[ '_method' ]
-          @method = @body[ '_method' ].upcase
-        end
-      end
-
-      #
-      # Get the hash of query parameters.
-      # 
-      def query_params
-        return {} unless @query
-        return Rack::Utils.parse_query( @query )
-      end
-
-      # 
-      # Get the hash of body parameters.
-      # 
-      def body_params
-        return @body ? @body : {}
-      end
-
-      # 
       # Write the request information to the log.
       # 
       def log
         @log.info "#{@method} #{@host}#{@path}"
-        @log.info "Parameters: #{@query}"
-        @log.info "Body: #{@body}" unless @body.empty?
+
+        @request_params.log_params
       end
 
     end
