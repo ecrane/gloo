@@ -42,6 +42,7 @@ module Gloo
           @log.info "routing to #{path} for method #{method}"
           @method = method
           route_params = nil
+          @id = nil
           
           detect_segments path
 
