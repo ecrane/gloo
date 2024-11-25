@@ -115,10 +115,10 @@ module Gloo
         return nil unless params_can
 
         # First set URL route params if there are any.
-        if @request.request_params.route_params
+        if @request&.request_params&.route_params
           @request.request_params.route_params.each_with_index do |route_p,i|
             o = params_can.children[i]
-            o.set_value( route_p ) if o
+            o.set_value( route_p ) if o && o.name != ID
           end
         end
 
