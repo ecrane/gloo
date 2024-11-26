@@ -1,3 +1,10 @@
+3.6.0 - 2024.11.26
+ - Adds support for route parameters
+ - Updates iterators
+ - Clear results for SQL queries
+ - Bug fixes
+
+
 3.5.0 - 2024.10.18
  - check obj for message alternate to tell
  - new base object messages
