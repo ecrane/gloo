@@ -4,8 +4,6 @@
 # Application information such as Version and public name.
 #
 
-# require 'gloo-lang'
-
 module Gloo
   module App
     class Info
