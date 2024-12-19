@@ -156,7 +156,9 @@ module Gloo
         if OS.mac?
           `#{cmd_with_param}`
         else
-          exec cmd_with_param
+          # This does not work in Linux or in WSL on Windows:
+          # exec cmd_with_param
+          @engine.log.warn 'Opening URL not supported on this platform.'
         end
       end
 

@@ -1,3 +1,7 @@
+3.6.1 - 2024.12.19
+ - tell URI to open fails on non-Mac platforms, so showing warning for now.
+
+
 3.6.0 - 2024.11.26
  - Adds support for route parameters
  - Updates iterators
