@@ -1,3 +1,7 @@
+3.6.2 - 2024.12.19
+ - Bug fix for URI open
+
+
 3.6.1 - 2024.12.19
  - tell URI to open fails on non-Mac platforms, so showing warning for now.
 

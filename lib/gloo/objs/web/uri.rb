@@ -138,7 +138,7 @@ module Gloo
       def msg_open
         return unless value
 
-        Gloo::Objs::Uri.open_url value
+        Gloo::Objs::Uri.open_url value, @engine
       end
 
 
@@ -149,16 +149,18 @@ module Gloo
       # 
       # Open the given URL with platform command.
       # 
-      def self.open_url url
+      def self.open_url( url, engine=nil )
         cmd = Gloo::Core::GlooSystem.open_for_platform
         cmd_with_param = "#{cmd} \"#{url}\""
 
         if OS.mac?
+          engine.log.warn 'Opening URL.' if engine
+
           `#{cmd_with_param}`
         else
           # This does not work in Linux or in WSL on Windows:
           # exec cmd_with_param
-          @engine.log.warn 'Opening URL not supported on this platform.'
+          engine.log.warn 'Opening URL not supported on this platform.' if engine
         end
       end
 
