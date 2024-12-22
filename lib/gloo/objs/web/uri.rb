@@ -154,8 +154,6 @@ module Gloo
         cmd_with_param = "#{cmd} \"#{url}\""
 
         if OS.mac?
-          engine.log.warn 'Opening URL.' if engine
-
           `#{cmd_with_param}`
         else
           # This does not work in Linux or in WSL on Windows:
