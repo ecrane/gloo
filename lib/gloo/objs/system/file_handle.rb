@@ -11,6 +11,10 @@ module Gloo
       KEYWORD = 'file'.freeze
       KEYWORD_SHORT = 'dir'.freeze
 
+      FILE_NAME_ERR = 'file and path name expected'.freeze
+      FILE_MISSING_ERR = 'file not found'.freeze
+
+
       #
       # The name of the object type.
       #
@@ -33,7 +37,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        basic = %w[read write get_name get_ext get_parent]
+        basic = %w[read write get_name get_ext get_parent get_sha256]
         checks = %w[exists? is_file? is_dir?]
         search = %w[find_match]
         show = %w[show page open]
@@ -73,7 +77,7 @@ module Gloo
       # Read the contents of the file into the object.
       #
       def msg_read
-        return unless value && File.file?( value )
+        return unless check_file_exists?
 
         data = File.read( value )
         if @params&.token_count&.positive?
@@ -163,6 +167,44 @@ module Gloo
         else
           @engine.heap.it.set_to File.dirname( value )
         end
+      end
+
+      #
+      # Get the SHA256 hash of the file contents.
+      #
+      def msg_get_sha256
+        return unless check_file_exists?
+
+        file_hash = FileHandle.hash_for_file( value )
+        @engine.heap.it.set_to file_hash
+      end
+
+      # 
+      # Get the SHA256 hash of the file contents.
+      #
+      def self.hash_for_file( file_path )
+        require 'digest'
+        file_data = File.read( file_path )
+        file_hash = Digest::SHA256.hexdigest( file_data )
+        return file_hash
+      end
+
+      #
+      # Check to see if the file exists.
+      # Show error if not.
+      #
+      def check_file_exists?
+        if value.blank?
+          @engine.log.error FILE_NAME_ERR
+          return false
+        end
+
+        unless File.exist?( value )
+          @engine.log.error FILE_MISSING_ERR
+          return false
+        end
+
+        return true
       end
 
     end

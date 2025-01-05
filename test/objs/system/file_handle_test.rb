@@ -28,6 +28,7 @@ class FileHandleTest < BaseEngineTest
     assert msgs.include?( 'exists?' )
     assert msgs.include?( 'is_file?' )
     assert msgs.include?( 'is_dir?' )
+    assert msgs.include?( 'get_sha256' )
   end
 
   def test_adds_children_on_create
