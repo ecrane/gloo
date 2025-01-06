@@ -117,6 +117,31 @@ module Gloo
       end
 
 
+
+      # ---------------------------------------------------------------------
+      #    Asset with Fingerprints
+      # ---------------------------------------------------------------------
+
+      # 
+      # Register an asset with the web server.
+      # Adds fingerprint to the file names for later access.
+      # 
+      # full_path is the FILE from which we build the SHA256 hash
+      # pn is the path and name within the assets directory
+      # name is the simple file name (icon.png)
+      # 
+      def register_asset name, pn, full_path
+        @log.info "*** FULL PATH: #{full_path} #PN: #{pn} name: #{name}"
+
+        hash = Gloo::Objs::FileHandle.hash_for_file( full_path )
+        @log.info "Hash: #{hash}"
+      end
+
+      def published_name asset_name
+        return asset_name
+      end
+
+
       # ---------------------------------------------------------------------
       #    Dynamic Add Assets
       # ---------------------------------------------------------------------
@@ -170,6 +195,7 @@ module Gloo
 
             add_files_in_folder( full_path, child, pn )
           else
+            register_asset( name, pn, full_path )
             add_file_obj( container, name, pn )
           end
         end
