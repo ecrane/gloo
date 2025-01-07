@@ -38,10 +38,6 @@ module Gloo
       end
 
       def image_tag( img_name, *args )
-        puts "------------- image name: #{img_name}"
-        puts "------------- args: #{args}"
-
-        # img_name = args[0]
         image_path = "/asset/image/#{img_name}"
         published_name = @engine.running_app.obj.asset.published_name( image_path )
         return "<image src='#{published_name}' />"

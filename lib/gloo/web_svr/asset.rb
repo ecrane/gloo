@@ -116,6 +116,12 @@ module Gloo
         return Gloo::WebSvr::Response.new( @engine, code, type, data )
       end
 
+      #
+      # Check if the given name is an asset.
+      # 
+      def is_asset? name
+        return name == ASSET_FOLDER
+      end
 
 
       # ---------------------------------------------------------------------
@@ -131,14 +137,15 @@ module Gloo
       # name is the simple file name (icon.png)
       # 
       def register_asset name, pn, full_path
-        @log.info "*** FULL PATH: #{full_path} #PN: #{pn} name: #{name}"
-
-        hash = Gloo::Objs::FileHandle.hash_for_file( full_path )
-        @log.info "Hash: #{hash}"
+        asset_pn = "/asset/#{pn}"
+        return AssetInfo.new( @engine, full_path, name, asset_pn ).register
       end
 
+      # 
+      # Get the published name for the given asset name.
+      #
       def published_name asset_name
-        return asset_name
+        return AssetInfo.find_published_name_for( asset_name )
       end
 
 
@@ -195,8 +202,8 @@ module Gloo
 
             add_files_in_folder( full_path, child, pn )
           else
-            register_asset( name, pn, full_path )
-            add_file_obj( container, name, pn )
+            info = register_asset( name, pn, full_path )
+            add_file_obj( container, name, pn, info )
           end
         end
       end
@@ -253,7 +260,7 @@ module Gloo
       # 
       # Add a file object (page route) to the given container.
       # 
-      def add_file_obj( can, name, pn )
+      def add_file_obj( can, name, pn, info )
         name = name.gsub( '.', '_' )
         @log.debug "Adding route for file: #{name}"
 
@@ -262,6 +269,66 @@ module Gloo
         return if child
 
         @factory.create_file( name, pn, can )
+        # @factory.create_file( info.published_name, pn, can )
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    List Asset Helpers
+      # ---------------------------------------------------------------------
+
+      # 
+      # List all image assets.
+      # This looks in the image container and lists the images found earlier.
+      # A Debugging tool.
+      # 
+      def list_image_assets
+        data = []
+        @images.children.each do |o|
+          data << [ o.name, o.pn, o.value ]
+        end
+        headers = [ "Name", "PN", "Value" ]
+
+        puts Gloo::App::Platform::RETURN
+        title = "Image Assets with Routes"
+        @engine.platform.table.show headers, data, title
+        puts Gloo::App::Platform::RETURN
+      end
+
+      # 
+      # List all js assets.
+      # This looks in the js container and lists the js files found earlier.
+      # A Debugging tool.
+      # 
+      def list_js_assets
+        data = []
+        @javascript.children.each do |o|
+          data << [ o.name, o.pn, o.value ]
+        end
+        headers = [ "Name", "PN", "Value" ]
+
+        puts Gloo::App::Platform::RETURN
+        title = "JavaScript Assets with Routes"
+        @engine.platform.table.show headers, data, title
+        puts Gloo::App::Platform::RETURN
+      end
+
+      # 
+      # List all css assets.
+      # This looks in the css container and lists the css files found earlier.
+      # A Debugging tool.
+      #
+      def list_css_assets
+        data = []
+        @stylesheets.children.each do |o|
+          data << [ o.name, o.pn, o.value ]
+        end
+        headers = [ "Name", "PN", "Value" ]
+
+        puts Gloo::App::Platform::RETURN
+        title = "Stylesheet Assets with Routes"
+        @engine.platform.table.show headers, data, title        
+        puts Gloo::App::Platform::RETURN
       end
 
     end

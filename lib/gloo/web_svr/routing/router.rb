@@ -216,6 +216,19 @@ module Gloo
             end
           end
 
+          # 
+          # For Assets, substitute the published name with fingerprint
+          # for the simple asset name.
+          # 
+          if @web_svr_obj.asset.is_asset? @route_segments.first
+            name_given = @route_segments.last
+            asset_info = Gloo::WebSvr::AssetInfo.find_info_for( path )
+            unless asset_info.blank?
+              @route_segments = @route_segments[ 0..-2 ]
+              @route_segments << asset_info.name
+            end
+          end
+
           return @route_segments
         end
 
