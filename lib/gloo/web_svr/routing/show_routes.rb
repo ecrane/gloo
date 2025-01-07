@@ -10,7 +10,6 @@ module Gloo
       class ShowRoutes
 
         SEGMENT_DIVIDER = '/'.freeze
-        RETURN = "\n".freeze
 
 
         # ---------------------------------------------------------------------
@@ -76,10 +75,10 @@ module Gloo
         # Show the Routes title.
         # 
         def show_table
-          puts RETURN
+          puts Gloo::App::Platform::RETURN
           title = "Routes in Running Web App"
           @engine.platform.table.show headers, @found_routes, title
-          puts RETURN
+          puts Gloo::App::Platform::RETURN
         end
 
         # 

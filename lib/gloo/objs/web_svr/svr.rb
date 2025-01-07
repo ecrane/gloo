@@ -405,7 +405,9 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + [ 'start', 'stop', 'routes' ]
+        return super + [ 'start', 'stop', 
+          'list_routes', 'list_assets', 
+          'list_asset_img', 'list_asset_css', 'list_asset_js' ]
       end
 
       #
@@ -434,10 +436,59 @@ module Gloo
 
       # 
       # Helper message to show all routes in the running server.
+      # A Debugging tool.
       # 
-      def msg_routes
+      def msg_list_routes
         if @router
           @router.show_routes
+        else
+          @engine.err SERVER_NOT_RUNNING
+        end
+      end
+
+      # 
+      # Helper message to show all assets in the running server.
+      # A Debugging tool.
+      # 
+      def msg_list_assets
+        if @router
+          Gloo::WebSvr::AssetInfo.list_all( @engine )
+        else
+          @engine.err SERVER_NOT_RUNNING
+        end
+      end
+
+      # 
+      # List all asset images in the running server.
+      # A Debugging tool.
+      # 
+      def msg_list_asset_img
+        if @router
+          @asset.list_image_assets
+        else
+          @engine.err SERVER_NOT_RUNNING
+        end
+      end
+
+      # 
+      # List all asset css in the running server.
+      # A Debugging tool.
+      # 
+      def msg_list_asset_css
+        if @router
+          @asset.list_css_assets
+        else
+          @engine.err SERVER_NOT_RUNNING
+        end
+      end
+
+      # 
+      # List all asset javascript in the running server.
+      # A Debugging tool.
+      # 
+      def msg_list_asset_js
+        if @router
+          @asset.list_js_assets
         else
           @engine.err SERVER_NOT_RUNNING
         end

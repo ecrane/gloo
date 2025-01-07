@@ -12,6 +12,7 @@ module Gloo
     class Platform
 
       DEFAULT_TMP_FILE = 'tmp.txt'.freeze
+      RETURN = "\n".freeze
 
       attr_reader :prompt, :table
 
