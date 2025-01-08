@@ -33,14 +33,43 @@ module Gloo
       #    Tag Helpers
       # ---------------------------------------------------------------------
 
-      def favicon_tag( *args )
-
+      # 
+      # Render a favicon tag.
+      # By default the name is 'favicon.ico' and does not need to be provided
+      # if that is the correct file name.
+      # 
+      def favicon_tag( name = 'favicon.ico' )
+        icon_path = "/#{Asset::ASSET_FOLDER}/#{Asset::IMAGE_FOLDER}/#{name}"
+        published_name = @engine.running_app.obj.asset.published_name( icon_path )
+        return "<link rel='shortcut icon' type='image/x-icon' href='#{published_name}' />"
       end
 
-      def image_tag( img_name, *args )
-        image_path = "/asset/image/#{img_name}"
+      # 
+      # Render an image tag for the given image name.
+      # Include optional proterties as part of the tag.
+      #
+      def image_tag( img_name, properties = '' )
+        image_path = "/#{Asset::ASSET_FOLDER}/#{Asset::IMAGE_FOLDER}/#{img_name}"
         published_name = @engine.running_app.obj.asset.published_name( image_path )
-        return "<image src='#{published_name}' />"
+        return "<image src='#{published_name}' #{properties} />"
+      end
+
+      # 
+      # Render a script tag for the given script name.
+      #
+      def js_tag( name )
+        js_path = "/#{Asset::ASSET_FOLDER}/#{Asset::JAVASCRIPT_FOLDER}/#{name}"
+        published_name = @engine.running_app.obj.asset.published_name( js_path )
+        return "<script src='#{published_name}'></script>"
+      end
+
+      #
+      # Render a stylesheet tag for the given stylesheet name.
+      #
+      def css_tag( name )
+        css_path = "/#{Asset::ASSET_FOLDER}/#{Asset::STYLESHEET_FOLDER}/#{name}"
+        published_name = @engine.running_app.obj.asset.published_name( css_path )
+        return "<link rel='stylesheet' media='all' href='#{published_name}' />"
       end
 
 

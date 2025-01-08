@@ -48,12 +48,11 @@ module Gloo
       # Register the asset with indexes, inflating all needed data elements.
       # 
       def register
-        @log.info "*** REGISTERING ASSET: #{@name}"
-        @log.info "*** #{@full_path} "
-        @log.info "*** #PN: #{@pn} name: #{@name}"
+        @log.debug "*** REGISTERING ASSET: #{@name}"
+        @log.debug "*** #{@full_path} "
+        @log.debug "*** #PN: #{@pn} name: #{@name}"
 
         @hash = Gloo::Objs::FileHandle.hash_for_file( @full_path )
-        # @log.info "*** Hash: #{@hash}"
 
         # Build published name
         ext = File.extname( @pn )           # Gets just the extension
@@ -63,8 +62,8 @@ module Gloo
         @published_name = "#{n}-#{@hash}#{ext}"
         @published_pn = "#{pn}-#{@hash}#{ext}"
 
-        @log.info "*** Published Name: #{@published_name}"
-        @log.info "*** Published Path: #{@published_pn}"
+        @log.debug "*** Published Name: #{@published_name}"
+        @log.debug "*** Published Path: #{@published_pn}"
 
         # Add to indexes
         AssetInfo.index self
@@ -85,6 +84,9 @@ module Gloo
         return @@index_by_pn[ pn ].published_pn
       end
 
+      # 
+      # Find the asset info for the given published name.
+      # 
       def self.find_info_for pn
         return @@index_by_published[ pn ]
       end

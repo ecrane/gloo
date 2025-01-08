@@ -201,6 +201,13 @@ module Gloo
         # Create a list of path segments.
         # 
         def detect_segments path
+          # For Assets, substitute the published name with fingerprint
+          # for the simple asset name (if it is found).
+          asset_info = Gloo::WebSvr::AssetInfo.find_info_for( path )
+          unless asset_info.blank?
+            path = asset_info.pn
+          end
+
           # Split the path into segments.
           @route_segments = path.split SEGMENT_DIVIDER
 
@@ -213,19 +220,6 @@ module Gloo
               @log.info "found id for route: #{@id}"
               @route_segments.delete seg
               @route_segments << ResourceRouter.segment_for_method( @method )
-            end
-          end
-
-          # 
-          # For Assets, substitute the published name with fingerprint
-          # for the simple asset name.
-          # 
-          if @web_svr_obj.asset.is_asset? @route_segments.first
-            name_given = @route_segments.last
-            asset_info = Gloo::WebSvr::AssetInfo.find_info_for( path )
-            unless asset_info.blank?
-              @route_segments = @route_segments[ 0..-2 ]
-              @route_segments << asset_info.name
             end
           end
 
