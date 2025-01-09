@@ -1,3 +1,10 @@
+3.7.0 - 2025.01.09
+ - Adds File message to get SHA256 hash
+ - Asset Fingerprinting
+ - Adds message to web app to show assets (in the terminal)
+ - Adds asset helper tags
+
+
 3.6.2 - 2024.12.19
  - Bug fix for URI open
 
