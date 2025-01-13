@@ -46,6 +46,26 @@ module Gloo
         return ActiveSupport::SecurityUtils.secure_compare( token1, token2 )
       end
 
+      # 
+      # Return a hidden field with the masked csrf token.
+      #
+      def self.get_csrf_token_hidden_field( base_token )
+        form_token = mask_token( base_token )
+   
+        return "<input type='hidden' name='authenticity_token' value='#{form_token}' />"
+      end
+
+      # 
+      # Validate a masked csrf token that came from a form submit.
+      #
+      def self.valid_csrf_token?( base_token, masked_token )
+        return false unless base_token && masked_token
+
+        unmasked_token = unmask_token( masked_token )
+
+        return compare_tokens( base_token, unmasked_token )
+      end
+
     end
   end
 end
