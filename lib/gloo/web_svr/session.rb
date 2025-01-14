@@ -29,6 +29,7 @@ module Gloo
         @log = @engine.log
 
         @server_obj = server_obj
+        @include_in_response = false
       end
 
 
@@ -68,12 +69,24 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
+      # Temporarily set the flag to add the session data to the response.
+      # Once this is done, the flag will be cleared and it will not
+      # be added to the next request unless specifically set.
+      # 
+      def add_session_to_response
+        @include_in_response = true
+      end
+
+      # 
       # If there is session data, encrypt and add it to the response.
       # Once done, clear out the session data.
       # 
       def add_session_for_response( headers )
         # Are we using sessions?
-        if @server_obj.use_session?
+        if @server_obj.use_session? && @include_in_response
+          # Reset the flag because we are adding to the session data now
+          @include_in_response = false
+
           # Build and add encrypted session data
           data = @server_obj.get_session_data
           unless data.empty?
@@ -90,9 +103,6 @@ module Gloo
 
             Rack::Utils.set_cookie_header!( headers, session_name, session_hash )
           end
-
-          # Clear out session data
-          @server_obj.clear_session_data
         end
 
         return headers

@@ -407,6 +407,7 @@ module Gloo
       def self.messages
         return super + [ 'start', 'stop', 
           'list_routes', 'list_assets', 
+          'add_session_to_response', 'clear_session_data',
           'list_asset_img', 'list_asset_css', 'list_asset_js' ]
       end
 
@@ -494,6 +495,21 @@ module Gloo
         end
       end
 
+      # 
+      # Add the session data to the response.
+      # This will be done for the current (next) request only.
+      # 
+      def msg_add_session_to_response
+        @session.add_session_to_response if @session
+      end
+
+      # 
+      # Clear out the session data, and remove it from the response.
+      # 
+      def msg_clear_session_data
+        clear_session_data
+        @session.add_session_to_response if @session
+      end
 
       # ---------------------------------------------------------------------
       #    Start and Stop Events
