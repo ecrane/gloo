@@ -46,6 +46,9 @@ module Gloo
         request.request_params.log_id_keys
 
         if page
+          # Run the on_request script with the found page.
+          @server_obj.run_on_request( page )
+
           if page.is_a? Gloo::Objs::FileHandle
             result = handle_file page
           else

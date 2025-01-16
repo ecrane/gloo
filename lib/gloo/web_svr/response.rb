@@ -126,7 +126,7 @@ module Gloo
         headers = session.add_session_for_response( headers ) if session
   
         # Clear out session data after the response is prepared.
-        @engine&.running_app&.obj&.clear_session_data
+        @engine&.running_app&.obj&.reset_session_data
 
         return headers
       end

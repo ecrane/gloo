@@ -51,7 +51,8 @@ module Gloo
       ELAPSED = 'elapsed'.freeze
       DB = 'db'.freeze
       PAGE = 'page'.freeze
-
+      CURRENT_PAGE = 'current_page'.freeze
+      
       # Container with pages in the web app.
       PAGES = 'pages'.freeze
 
@@ -303,7 +304,7 @@ module Gloo
       # Important to do this after the response is sent
       # to avoid holding on to data that is no longer needed.
       # 
-      def clear_session_data
+      def reset_session_data
         session_container.children.each do |session_var|
           session_var.value = ''
         end
@@ -507,9 +508,10 @@ module Gloo
       # Clear out the session data, and remove it from the response.
       # 
       def msg_clear_session_data
-        clear_session_data
-        @session.add_session_to_response if @session
+        reset_session_data
+        @session.clear_session_data if @session
       end
+
 
       # ---------------------------------------------------------------------
       #    Start and Stop Events
@@ -549,7 +551,7 @@ module Gloo
         @engine.log.info "Stopping web server…"
 
         # Last chance to clear out session data.
-        clear_session_data
+        reset_session_data
 
         @web_server.stop
         @web_server = nil
@@ -586,13 +588,18 @@ module Gloo
 
       #
       # Run the on request script if there is one.
+      # Set thee current page object so the app knows
+      # which page is being requested.
       #
-      def run_on_request
+      def run_on_request current_page
+        for_page = find_child CURRENT_PAGE
+        alias_value = current_page.pn
+        for_page.set_value( alias_value ) if for_page
         o = find_child ON_REQUEST
         return unless o
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
 
-        Gloo::Exec::Dispatch.message( @engine, 'run', o )
+        Gloo::Exec::Dispatch.message( @engine, 'run', o, CURRENT_PAGE => current_page )
       end
 
       #
@@ -611,6 +618,10 @@ module Gloo
       # This is done before the on_request event is fired.
       # 
       def set_request_data( request )
+        # Clear out the redirect if there is one since this is the start of
+        # a new request.
+        @redirect = nil
+
         data = find_child RESQUEST_DATA
         return unless data
         data = Gloo::Objs::Alias.resolve_alias( @engine, data )

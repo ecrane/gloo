@@ -15,6 +15,7 @@ module Gloo
     class Session
 
       SESSION_CONTAINER = 'session'.freeze
+      SESSION_ID_NAME = 'session_id'.freeze
 
       
       # ---------------------------------------------------------------------
@@ -30,6 +31,7 @@ module Gloo
 
         @server_obj = server_obj
         @include_in_response = false
+        @clearing_session = false
       end
 
 
@@ -53,8 +55,12 @@ module Gloo
               data = decode_decrypt( data ) 
               return unless data
               
+              @session_id = data[ SESSION_ID_NAME ]
+
               data.each do |key, value|
-                @server_obj.set_session_var( key, value )
+                unless key == SESSION_ID_NAME
+                  @server_obj.set_session_var( key, value )
+                end
               end
             end
           end
@@ -65,7 +71,7 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
-      #    Get Session Data for Response
+      #    Set Session Data for Response
       # ---------------------------------------------------------------------
 
       # 
@@ -75,6 +81,36 @@ module Gloo
       # 
       def add_session_to_response
         @include_in_response = true
+      end
+
+      def init_session_id
+        @session_id = Gloo::Objs::CsrfToken.generate_csrf_token
+        return @session_id
+      end
+
+      # 
+      # Initialize the session id and add it to the data.
+      # Use the current session ID if it is there.
+      # 
+      def get_session_id
+        if @clearing_session
+          @clearing_session = false
+          return nil
+        end
+
+        init_session_id if @session_id.blank?
+
+        return @session_id
+      end
+
+      # 
+      # Clear out the session Id.
+      # Set the flag to add the session data to the response.
+      # 
+      def clear_session_data
+        @session_id = nil
+        @clearing_session = true
+        add_session_to_response
       end
 
       # 
@@ -89,6 +125,8 @@ module Gloo
 
           # Build and add encrypted session data
           data = @server_obj.get_session_data
+          data[ SESSION_ID_NAME ] = get_session_id
+
           unless data.empty?
             data = encrypt_encode( data )
             session_hash = { 
