@@ -10,6 +10,7 @@ module Gloo
     class EmbeddedRenderer
       
       HELPER = 'helper'.freeze
+      AUTHENTICITY_TOKEN = 'authenticity_token'.freeze
 
       attr_reader :engine, :log, :web_svr_obj
 
@@ -70,6 +71,16 @@ module Gloo
         css_path = "/#{Asset::ASSET_FOLDER}/#{Asset::STYLESHEET_FOLDER}/#{name}"
         published_name = @engine.running_app.obj.asset.published_name( css_path )
         return "<link rel='stylesheet' media='all' href='#{published_name}' />"
+      end
+
+      # 
+      # Embed a hidden field with the autenticity token.
+      # 
+      def autenticity_token_tag
+        session_id = @engine.running_app.obj&.session&.get_session_id
+        authenticity_token = Gloo::Objs::CsrfToken.mask_token( session_id )
+        return "<input type='hidden' name='#{AUTHENTICITY_TOKEN
+          }' value='#{authenticity_token}' />"
       end
 
 
