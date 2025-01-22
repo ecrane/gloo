@@ -60,7 +60,14 @@ module Gloo
         # Run the on_request script if there is one.
         @handler.server_obj.set_request_data self
         
-        result, page_obj = @handler.handle self
+        # Check authenticity token if it's given.
+        if @request_params.check_authenticity_token( @engine )
+          result, page_obj = @handler.handle self
+        else
+          # Render the error page.
+          result = @handler.server_error_result
+        end
+
         finish_timer
 
         # Run the on_response script if there is one.

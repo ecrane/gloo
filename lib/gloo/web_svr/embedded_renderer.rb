@@ -10,7 +10,6 @@ module Gloo
     class EmbeddedRenderer
       
       HELPER = 'helper'.freeze
-      AUTHENTICITY_TOKEN = 'authenticity_token'.freeze
 
       attr_reader :engine, :log, :web_svr_obj
 
@@ -78,9 +77,7 @@ module Gloo
       # 
       def autenticity_token_tag
         session_id = @engine.running_app.obj&.session&.get_session_id
-        authenticity_token = Gloo::Objs::CsrfToken.mask_token( session_id )
-        return "<input type='hidden' name='#{AUTHENTICITY_TOKEN
-          }' value='#{authenticity_token}' />"
+        return Gloo::Objs::CsrfToken.get_csrf_token_hidden_field( session_id )
       end
 
 

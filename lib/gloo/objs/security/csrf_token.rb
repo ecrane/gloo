@@ -12,6 +12,7 @@ module Gloo
     class CsrfToken
 
       TOKEN_LENGTH = 32
+      AUTHENTICITY_TOKEN = 'authenticity_token'.freeze
 
       # 
       # Generate a random token
@@ -52,7 +53,7 @@ module Gloo
       def self.get_csrf_token_hidden_field( base_token )
         form_token = mask_token( base_token )
    
-        return "<input type='hidden' name='authenticity_token' value='#{form_token}' />"
+        return "<input type='hidden' name='#{AUTHENTICITY_TOKEN}' value='#{form_token}' />"
       end
 
       # 

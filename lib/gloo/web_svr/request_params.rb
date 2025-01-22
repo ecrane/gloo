@@ -57,6 +57,29 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
+      #    Authenticity Token checking
+      # ---------------------------------------------------------------------
+
+      # 
+      # Check the authenticity token if it is present.
+      # Returns true if it is present and valid, and
+      # also if it is not present.
+      # Returns false if it is present but not valid.
+      # 
+      def check_authenticity_token engine
+        auth_token = @query_params[ Gloo::Objs::CsrfToken::AUTHENTICITY_TOKEN ]
+        if auth_token
+          session_id = engine.running_app.obj&.session&.get_session_id
+          return false unless session_id
+
+          return Gloo::Objs::CsrfToken.valid_csrf_token?( session_id, auth_token )
+        end
+
+        return true
+      end
+
+
+      # ---------------------------------------------------------------------
       #    Helper functions
       # ---------------------------------------------------------------------
 
