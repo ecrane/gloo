@@ -1,3 +1,9 @@
+3.8.0 - 2025.01.23
+- Fixes issue with sessions
+- Adds authenticity token tag and supporting session id and validation
+
+
+
 3.7.0 - 2025.01.09
  - Adds File message to get SHA256 hash
  - Asset Fingerprinting
