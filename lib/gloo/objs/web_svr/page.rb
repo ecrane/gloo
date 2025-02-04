@@ -137,6 +137,8 @@ module Gloo
 
         h = {}
         params_can.children.each do |o|
+          # resolve aliases
+          o = Gloo::Objs::Alias.resolve_alias( @engine, o )
           h[ o.name ] = o.value
         end
 
