@@ -11,7 +11,7 @@ class RedirectTest < BaseEngineTest
   end
 
   def test_running_script
-    s = '< ctrl/redirect'
+    s = 'load ctrl/redirect'
     @engine.parser.run s
     assert_equal 1, @engine.heap.root.child_count
     @engine.parser.run 'run redirect.s'

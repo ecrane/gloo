@@ -7,7 +7,7 @@ class SaveTest < BaseEngineTest
   end
 
   def test_the_keyword_shortcut
-    assert_equal '>', Gloo::Verbs::Save.keyword_shortcut
+    assert_equal 'sv', Gloo::Verbs::Save.keyword_shortcut
   end
 
 end

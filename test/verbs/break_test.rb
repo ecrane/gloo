@@ -11,7 +11,7 @@ class BreakTest < BaseEngineTest
   end
 
   def test_running_script
-    s = '< ctrl/break'
+    s = 'load ctrl/break'
     @engine.parser.run s
     assert_equal 1, @engine.heap.root.child_count
     @engine.parser.run 'run break'

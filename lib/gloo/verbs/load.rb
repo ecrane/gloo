@@ -9,7 +9,7 @@ module Gloo
     class Load < Gloo::Core::Verb
 
       KEYWORD = 'load'.freeze
-      KEYWORD_SHORT = '<'.freeze
+      KEYWORD_SHORT = 'ld'.freeze
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
 
       #

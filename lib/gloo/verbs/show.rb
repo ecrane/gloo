@@ -9,7 +9,7 @@ module Gloo
     class Show < Gloo::Core::Verb
 
       KEYWORD = 'show'.freeze
-      KEYWORD_SHORT = '='.freeze
+      KEYWORD_SHORT = 'print'.freeze
 
       #
       # Run the verb.

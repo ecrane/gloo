@@ -9,7 +9,7 @@ module Gloo
     class Save < Gloo::Core::Verb
 
       KEYWORD = 'save'.freeze
-      KEYWORD_SHORT = '>'.freeze
+      KEYWORD_SHORT = 'sv'.freeze
 
       #
       # Run the verb.

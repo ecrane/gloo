@@ -19,7 +19,7 @@ class CreateTest < BaseEngineTest
   def test_object_creation_integer
     i = @engine.parser.parse_immediate '` x as integer : 1'
     i.run
-    i = @engine.parser.parse_immediate '= x'
+    i = @engine.parser.parse_immediate 'show x'
     i.run
     assert_equal 1, @engine.heap.it.value
   end

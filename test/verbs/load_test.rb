@@ -7,7 +7,7 @@ class LoadTest < BaseEngineTest
   end
 
   def test_the_keyword_shortcut
-    assert_equal '<', Gloo::Verbs::Load.keyword_shortcut
+    assert_equal 'ld', Gloo::Verbs::Load.keyword_shortcut
   end
 
   def test_file_load
@@ -19,7 +19,7 @@ class LoadTest < BaseEngineTest
 
   def test_file_load_multiline_script
     assert_equal 0, @engine.heap.root.child_count
-    i = @engine.parser.parse_immediate '< script'
+    i = @engine.parser.parse_immediate 'load script'
     i.run
     assert_equal 1, @engine.heap.root.child_count
     assert_equal 5, @engine.heap.it.value

@@ -7,7 +7,7 @@ class ShowTest < BaseEngineTest
   end
 
   def test_the_keyword_shortcut
-    assert_equal '=', Gloo::Verbs::Show.keyword_shortcut
+    assert_equal 'print', Gloo::Verbs::Show.keyword_shortcut
   end
 
   def test_showing_a_string_literal
