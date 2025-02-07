@@ -8,6 +8,8 @@ module Gloo
   module Expr
     class OpMult < Gloo::Core::Op
 
+      SYMBOL = '*'.freeze
+
       #
       # Perform the operation and return the result.
       #

@@ -8,6 +8,8 @@ module Gloo
   module Expr
     class OpMinus < Gloo::Core::Op
 
+      SYMBOL = '-'.freeze
+
       #
       # Perform the operation and return the result.
       #
