@@ -12,6 +12,7 @@ module Gloo
 
       KEYWORD = 'string'.freeze
       KEYWORD_SHORT = 'str'.freeze
+      MISSING_PARAM_MSG = 'Missing parameter!'.freeze
 
       #
       # The name of the object type.
@@ -42,8 +43,66 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[up down size encode64 decode64 escape unescape
+        return super + %w[up down size starts_with? ends_with? contains? 
+          encode64 decode64 escape unescape
           gen_alphanumeric gen_uuid gen_hex gen_base64]
+      end
+
+      # 
+      # Does the string start with the given string?
+      # 
+      def msg_starts_with?
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+
+          result = self.value.start_with?( data )
+          @engine.heap.it.set_to result
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+      end
+
+      # 
+      # Does the string end with the given string?
+      # 
+      def msg_ends_with?
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+
+          result = value.end_with?( data )
+          @engine.heap.it.set_to result
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+      end
+
+      # 
+      # Does the string contain the given string?
+      #
+      def msg_contains?
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+
+          result = value.include?( data )
+          @engine.heap.it.set_to result
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
       end
 
       #

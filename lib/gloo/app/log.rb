@@ -169,7 +169,7 @@ module Gloo
       # Also write to the console unless quiet.
       #
       def error( msg, ex = nil, engine = nil )
-        engine&.heap&.error&.set_to msg
+        engine&.heap&.error&.set_to( msg ) if engine
         @logger.error msg
         @error.error msg
         if ex

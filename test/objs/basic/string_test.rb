@@ -34,6 +34,10 @@ class StringTest < BaseEngineTest
   def test_messages
     msgs = Gloo::Objs::String.messages
     assert msgs
+    assert msgs.include?( 'starts_with?' )
+    assert msgs.include?( 'ends_with?' )
+    assert msgs.include?( 'contains?' )
+
     assert msgs.include?( 'up' )
     assert msgs.include?( 'down' )
     assert msgs.include?( 'unload' )
@@ -51,6 +55,78 @@ class StringTest < BaseEngineTest
     o = Gloo::Objs::String.new @engine
     o.set_value 'one'
     assert_equal 3, o.msg_size
+  end
+
+  def test_starts_with_msg
+    o = @engine.parser.parse_immediate 'create s as string : "abc"'
+    o.run
+    assert_equal 1, @engine.heap.root.child_count
+    s = @engine.heap.root.children.first
+    assert_equal 'abc', s.value
+
+    o = @engine.parser.parse_immediate "check s for starts_with? ('a')"
+    o.run
+    assert @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for starts_with? ('ab')"
+    o.run
+    assert @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for starts_with? ('abc')"
+    o.run
+    assert @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for starts_with? ('x')"
+    o.run
+    refute @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for starts_with? ('abcd')"
+    o.run
+    refute @engine.heap.it.value
+  end
+
+  def test_ends_with_msg
+    o = @engine.parser.parse_immediate 'create s as string : "abc"'
+    o.run
+    assert_equal 1, @engine.heap.root.child_count
+    s = @engine.heap.root.children.first
+    assert_equal 'abc', s.value
+
+    o = @engine.parser.parse_immediate "check s for ends_with? ('c')"
+    o.run
+    assert @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for ends_with? ('abc')"
+    o.run
+    assert @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for ends_with? ('abcd')"
+    o.run
+    refute @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for ends_with? ('b')"
+    o.run
+    refute @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for ends_with? ('bc')"
+    o.run
+    assert @engine.heap.it.value
+  end
+
+  def test_contains_msg
+    o = @engine.parser.parse_immediate 'create s as string : "abc"'
+    o.run
+    assert_equal 1, @engine.heap.root.child_count
+    s = @engine.heap.root.children.first
+    assert_equal 'abc', s.value
+
+    o = @engine.parser.parse_immediate "check s for contains? ('bc')"
+    o.run
+    assert @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for contains? ('abcd')"
+    o.run
+    refute @engine.heap.it.value
   end
 
   def test_up_msg
