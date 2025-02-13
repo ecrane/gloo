@@ -44,8 +44,35 @@ module Gloo
       #
       def self.messages
         return super + %w[up down size starts_with? ends_with? contains? 
-          encode64 decode64 escape unescape
+          format_for_html encode64 decode64 escape unescape
           gen_alphanumeric gen_uuid gen_hex gen_base64]
+      end
+
+      # 
+      # Convert whitespace to HTML friendly spaces.
+      # 
+      def msg_format_for_html
+        text = self.value
+        out = ""
+        return out unless text
+
+        # indentation
+        text.each_line do |line|
+          i = 0
+          while line[i] == ' '
+            i += 1
+            out << "&nbsp;"
+          end
+    
+          i = 0
+          while line[i] == "\t"
+            i += 1
+            out << "&nbsp;&nbsp;&nbsp;&nbsp;"
+          end
+          out << line
+        end
+    
+        self.value = out.gsub( "\n", "<br/>" )
       end
 
       # 
