@@ -73,8 +73,8 @@ module Gloo
           end
 
           str += "<tr class='#{styles[ ROW ]}'>"
-          str += "<th style='#{styles[ HEAD_CELL ]}'>#{head[ :title ]}</th>"
-          str += "<td style='#{styles[ CELL ]}'>#{cell_value}</td>"
+          str += "<th class='#{styles[ HEAD_CELL ]}'>#{head[ :title ]}</th>"
+          str += "<td class='#{styles[ CELL ]}'>#{cell_value}</td>"
           str += "</tr>"
         end
 
@@ -113,7 +113,7 @@ module Gloo
             else
               cell_value = cell
             end
-            str += "<td style='#{styles[ CELL ]}'>#{cell_value}</td>"
+            str += "<td class='#{styles[ CELL ]}'>#{cell_value}</td>"
           end
           str += "</tr>"
         end
