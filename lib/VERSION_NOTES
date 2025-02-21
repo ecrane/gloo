@@ -1,3 +1,12 @@
+3.9.0 - 2025.02.21
+ - Fixes alias in page parameters
+ - Adds comparison operators
+ - Renames some verb shortcuts for compatibility
+ - Adds Group-By option in for each child loop
+ - Adds starts_with?, ends_with?, contains?, and format_for_html messages to string
+
+
+
 3.8.0 - 2025.01.23
 - Fixes issue with sessions
 - Adds authenticity token tag and supporting session id and validation
