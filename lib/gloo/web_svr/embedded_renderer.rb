@@ -45,6 +45,17 @@ module Gloo
       end
 
       # 
+      # Render a Apple Touch Icon tag.
+      # By default the name is 'apple-touch-icon.png' and does not need to be provided
+      # if that is the correct file name.
+      # 
+      def apple_touch_icon_tag( name = 'apple-touch-icon.png', type = 'image/png' )
+        icon_path = "/#{Asset::ASSET_FOLDER}/#{Asset::IMAGE_FOLDER}/#{name}"
+        published_name = @engine.running_app.obj.asset.published_name( icon_path )
+        return "<link rel='apple-touch-icon' type='#{type}' href='#{published_name}' />"
+      end
+
+      # 
       # Render an image tag for the given image name.
       # Include optional proterties as part of the tag.
       #
