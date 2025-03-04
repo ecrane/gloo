@@ -89,6 +89,7 @@ module Gloo
         begin
           clear_results
 
+          log_query sql_value, param_array
           result = db.query( sql_value, param_array )
           process_result( result, db )
         rescue => e
@@ -125,8 +126,8 @@ module Gloo
       # Write the query to the log.
       # 
       def log_query sql, params
-        @engine.log.info "QUERY PARAMS: #{params}" if params
-        @engine.log.info "QUERY: #{sql}"
+        @engine.log.info "SQL PARAMS: #{params}" if params
+        @engine.log.info "SQL: #{sql}"
       end
 
 

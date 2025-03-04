@@ -107,10 +107,9 @@ module Gloo
       end
 
       #
-      # Get the params hash from the child object.
-      # Returns nil if there is none.
+      # Init params container with request values.
       #
-      def params_hash
+      def init_params
         params_can = find_child PARAMS
         return nil unless params_can
 
@@ -134,6 +133,15 @@ module Gloo
             o.set_value( v ) if o
           end
         end
+      end
+
+      #
+      # Get the params hash from the child object.
+      # Returns nil if there is none.
+      #
+      def params_hash
+        params_can = find_child PARAMS
+        return nil unless params_can
 
         h = {}
         params_can.children.each do |o|
@@ -350,10 +358,13 @@ module Gloo
         # TODO : refactor this
         set_id if @request
 
+        # Put params from request into params container.
+        init_params
+
         # Run the on prerender script
         run_on_prerender
 
-        # Set Params before running on render
+        # Get Params hash before running on render
         params = params_hash
 
         run_on_render
