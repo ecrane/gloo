@@ -41,7 +41,16 @@ module Gloo
           self.value = self.value.strftime( DEFAULT_FORMAT )
         end
       end
-    
+
+      #
+      # Value for a SQL query.
+      #
+      def sql_value
+        return nil if self.value.blank?
+        
+        return Chronic.parse( self.value )
+      end
+
       # ---------------------------------------------------------------------
       #    Messages
       # ---------------------------------------------------------------------
