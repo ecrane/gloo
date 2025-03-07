@@ -174,6 +174,7 @@ module Gloo
         o = find_child SQL
         return nil unless o
 
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         return o.value
       end
 
