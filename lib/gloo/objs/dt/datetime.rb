@@ -59,9 +59,85 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[now is_today is_future is_past is_yesterday is_tomorrow is_this_week]
+        return super + %w[now is_today is_future 
+          is_past is_yesterday is_tomorrow is_this_week
+          begin_day end_day begin_week end_week
+          begin_month end_month begin_year end_year]
       end
 
+      #
+      # Set the value to the beginning of the month.
+      #
+      def msg_begin_month
+        dt = DtTools.beginning_of_month( self.value.to_time )
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      #
+      # Set the value to the end of the month.
+      #
+      def msg_end_month
+        dt = DtTools.end_of_month( self.value.to_time )
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      #
+      # Set the value to the beginning of the year.
+      #
+      def msg_begin_year
+        dt = self.value.to_time.beginning_of_year
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      #
+      # Set the value to the end of the year.
+      #
+      def msg_end_year
+        dt = self.value.to_time.end_of_year
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      #
+      # Set the value to the beginning of the week.
+      #
+      def msg_begin_week
+        dt = self.value.to_time.beginning_of_week( start_day = :sunday )
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      #
+      # Set the value to the end of the week.
+      #
+      def msg_end_week
+        dt = self.value.to_time.end_of_week( start_day = :sunday )
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      #
+      # Set the value to the beginning of the day.
+      #
+      def msg_begin_day
+        dt = self.value.to_time.beginning_of_day
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      # 
+      # Set the value to the end of the day.
+      # 
+      def msg_end_day
+        dt = self.value.to_time.end_of_day
+        self.set_value dt
+        @engine.heap.it.set_to dt
+      end
+
+      #
       #
       # Tell the datetime to check if it is today.
       #
@@ -123,7 +199,8 @@ module Gloo
         self.set_value( DateTime.now )
         @engine.heap.it.set_to self.value
       end
-
+  
     end
   end
 end
+

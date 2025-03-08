@@ -3,6 +3,7 @@
 #
 # A Date and Time object.
 #
+require 'active_support/time'
 
 class DtTools
 
@@ -97,4 +98,30 @@ class DtTools
     return true
   end
   
+
+  # ---------------------------------------------------------------------
+  #    Begin/end Helpers
+  # ---------------------------------------------------------------------
+
+  def self.get_utc_offset t
+    utc_offset = ActiveSupport::TimeZone[ t.zone ].utc_offset
+    return utc_offset
+  end
+  
+  # 
+  # Returns the beginning of the month for the given time.
+  # 
+  def self.beginning_of_month t
+    utc_offset = get_utc_offset t
+    Time.new(t.year, t.month, 1, 0, 0, 0, utc_offset)
+  end
+
+  # 
+  # Returns the end of the month for the given time.
+  # 
+  def self.end_of_month t
+    utc_offset = get_utc_offset t
+    Time.new(t.year, t.month, t.end_of_month.day, 23, 59, 59, utc_offset)
+  end
+
 end
