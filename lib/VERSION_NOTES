@@ -1,3 +1,10 @@
+3.10.0 - 2025.03.09
+ - Fixes bug with page parameters
+ - Fixes bug with date-times in SQL
+ - Use alias redirect in SQL query
+ - adds date time messages to get begin, end of day, week, month, year
+
+
 3.9.1 - 2025.02.25
 adds tag helper for apple touch icon
 
