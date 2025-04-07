@@ -15,6 +15,7 @@ module Gloo
       DATA = 'data'.freeze
       CELLS = 'cells'.freeze
       STYLES = 'styles'.freeze
+      ALWAYS_ROWS = 'always_rows'.freeze
 
       #
       # The name of the object type.
@@ -39,6 +40,16 @@ module Gloo
         return [] unless o
 
         return o.children.map( &:value )
+      end
+
+      #
+      # Always show rows, even if only 1 row is found.
+      #
+      def always_rows
+        o = find_child ALWAYS_ROWS
+
+        return false unless o
+        return o.value
       end
 
       #
@@ -192,6 +203,11 @@ module Gloo
             styles: self.styles,
             cell_renderers: self.cell_renderers
           }
+
+          puts "Always rows: #{self.always_rows}"
+          if self.always_rows
+            params[ :always_rows ] = true
+          end
 
           helper = Gloo::WebSvr::TableRenderer.new( @engine )
           return helper.data_to_table params
