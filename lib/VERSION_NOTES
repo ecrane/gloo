@@ -1,3 +1,9 @@
+3.11.0 - 2025.04.07
+ - Fixes issue with alias in Query results
+ - Adds option for table rendering to always show as rows
+
+
+
 3.10.1 - 2025.03.11
  Fix issue with Date parsing.
 
