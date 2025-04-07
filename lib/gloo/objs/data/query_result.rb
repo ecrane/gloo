@@ -114,6 +114,7 @@ module Gloo
         row = @data[0]
         @heads.each_with_index do |h, i|
           child = @result_can.find_child h
+          child = Gloo::Objs::Alias.resolve_alias( @engine, child )
           child.set_value row[i] if child
         end
       end

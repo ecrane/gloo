@@ -45,7 +45,6 @@ module Gloo
       def data_to_table params
         data = params[ :rows ]
 
-        puts "Always rows: #{params[ :always_rows ]}"
         single_row = true if ( data.length == 1 )
         single_row = false if params[ :always_rows ]
         

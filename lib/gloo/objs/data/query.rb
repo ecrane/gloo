@@ -259,6 +259,7 @@ module Gloo
       # 
       def clear_values
         get_result_can.children.each do |c|
+          c = Gloo::Objs::Alias.resolve_alias( @engine, c )
           c.value = nil
         end
       end

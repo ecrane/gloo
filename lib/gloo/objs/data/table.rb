@@ -204,7 +204,6 @@ module Gloo
             cell_renderers: self.cell_renderers
           }
 
-          puts "Always rows: #{self.always_rows}"
           if self.always_rows
             params[ :always_rows ] = true
           end
