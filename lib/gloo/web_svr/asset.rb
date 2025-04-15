@@ -113,7 +113,7 @@ module Gloo
         data = File.binread file 
         code = Gloo::WebSvr::ResponseCode::SUCCESS
 
-        return Gloo::WebSvr::Response.new( @engine, code, type, data )
+        return Gloo::WebSvr::Response.new( @engine, code, type, data, true )
       end
 
       #

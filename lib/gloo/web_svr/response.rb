@@ -30,7 +30,9 @@ module Gloo
       #
       def initialize( engine = nil, 
         code = Gloo::WebSvr::ResponseCode::SUCCESS, 
-        type = HTML_TYPE, data = nil )
+        type = HTML_TYPE, 
+        data = nil,
+        assetCache = false )
         
         @engine = engine
         @log = @engine.log if @engine
@@ -38,6 +40,7 @@ module Gloo
         @code = code
         @type = type
         @data = data
+        @assetCache = assetCache
         @location = nil
       end
 
@@ -120,6 +123,10 @@ module Gloo
 
         if @location
           headers[ 'Location' ] = @location
+        end
+
+        if @assetCache
+          headers[ 'Cache-Control' ] = 'public, max-age=604800'
         end
 
         session = @engine&.running_app&.obj&.session
