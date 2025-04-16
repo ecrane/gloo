@@ -45,11 +45,21 @@ module Gloo
         @parent = @engine.heap.root
         @parent_stack.push @parent
         f = @mech.read( @pn )
+
+        f = join_continuations( f )
+
         f.each_line do |line|
           next if skip_line? line
 
           handle_one_line line
         end
+      end
+
+      # 
+      # Join continuation lines.
+      #
+      def join_continuations( data )
+        return data.gsub( "\\\n", '' )
       end
 
       #
