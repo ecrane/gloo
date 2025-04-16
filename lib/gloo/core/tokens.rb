@@ -100,10 +100,14 @@ module Gloo
       #
       # Get the expression after the given token
       #
-      def expr_after( token )
+      def expr_after( token, break_token = nil )
         str = ''
-        tokens_after( token ).each do |t|
+        token_list = tokens_after( token )
+        return str if token_list.nil?
+
+        token_list.each do |t|
           str << ' ' unless str.empty?
+          break if t == break_token
           str << t.to_s
         end
         return str

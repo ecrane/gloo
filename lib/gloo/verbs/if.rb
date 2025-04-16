@@ -11,6 +11,7 @@ module Gloo
       KEYWORD = 'if'.freeze
       KEYWORD_SHORT = 'if'.freeze
       THEN = 'then'.freeze
+      ELSE = 'else'.freeze
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
 
       #
@@ -20,9 +21,14 @@ module Gloo
         value = value_tokens
         return if value.nil?
 
-        return unless evals_true( value )
+        @then = @tokens.expr_after( THEN, ELSE )
+        @else = @tokens.expr_after( ELSE )
 
-        run_then
+        if evals_true( value )
+          run_then
+        else
+          run_else unless @else.blank?
+        end
       end
 
       #
@@ -80,13 +86,21 @@ module Gloo
       # Run the 'then' command.
       #
       def run_then
-        cmd = @tokens.expr_after( THEN )
-        i = @engine.parser.parse_immediate cmd
+        i = @engine.parser.parse_immediate @then
         return unless i
 
         i.run
       end
 
+      #
+      # Run the 'else' command.
+      #
+      def run_else
+        i = @engine.parser.parse_immediate @else
+        return unless i
+
+        i.run
+      end
     end
   end
 end

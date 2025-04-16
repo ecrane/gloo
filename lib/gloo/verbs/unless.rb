@@ -11,6 +11,7 @@ module Gloo
       KEYWORD = 'unless'.freeze
       KEYWORD_SHORT = 'if!'.freeze
       DO = 'do'.freeze
+      ELSE = 'else'.freeze
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
 
       #
@@ -20,9 +21,14 @@ module Gloo
         value = value_tokens
         return if value.nil?
 
-        return unless evals_false( value )
+        @do = @tokens.expr_after( DO, ELSE )
+        @else = @tokens.expr_after( ELSE )
 
-        run_do
+        if evals_false( value )
+          run_do
+        else
+          run_else unless @else.blank?
+        end
       end
 
       #
@@ -80,13 +86,21 @@ module Gloo
       # Run the 'do' command.
       #
       def run_do
-        cmd = @tokens.expr_after( DO )
-        i = @engine.parser.parse_immediate cmd
+        i = @engine.parser.parse_immediate @do
         return unless i
 
         i.run
       end
 
+      #
+      # Run the 'else' command.
+      #
+      def run_else
+        i = @engine.parser.parse_immediate @else
+        return unless i
+
+        i.run
+      end
     end
   end
 end
