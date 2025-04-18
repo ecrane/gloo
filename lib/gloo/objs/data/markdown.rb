@@ -72,7 +72,8 @@ module Gloo
       # The html will be in 'it' as well.
       #
       def msg_render
-        html = Gloo::Objs::Markdown.md_2_html( value )
+        html = Gloo::Objs::MarkdownExt.render_extensions( value )
+        html = Gloo::Objs::Markdown.md_2_html( html )
 
         # Put the HTML in the optional parameter if one is given.
         if @params&.token_count&.positive?
