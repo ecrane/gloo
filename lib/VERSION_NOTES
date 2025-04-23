@@ -1,3 +1,12 @@
+4.0.0 - 2025.04.23
+ - Adds cache for assets
+ - Continuation character
+ - Adds else option to if and unless verbs
+ - Adds Markdown extensions for panels
+ - Adds Outline object to convert strings with paths to HTML outline
+
+
+
 3.11.0 - 2025.04.07
  - Fixes issue with alias in Query results
  - Adds option for table rendering to always show as rows
