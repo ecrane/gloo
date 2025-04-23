@@ -104,11 +104,13 @@ module Gloo
       #
       def add_default_children
         fac = @engine.factory
-        fac.create_string KEY, '', self
-        fac.create_string INIT_VECTOR, '', self
-        fac.create_string DATA, '', self
+        fac.create_alias OBJ_SOURCE, nil, self
+        fac.create_string ENTITY_PATH, nil, self
+        fac.create_string SEPARATOR, '/', self
+        fac.create_string DATA, nil, self
       end
 
+      
       # ---------------------------------------------------------------------
       #    Messages
       # ---------------------------------------------------------------------
