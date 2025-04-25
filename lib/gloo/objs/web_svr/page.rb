@@ -35,7 +35,13 @@ module Gloo
       HTML_CONTENT = 'html'.freeze
       TEXT_CONTENT = 'text'.freeze
       JSON_CONTENT = 'json'.freeze
+      FILE_CONTENT = 'file'.freeze
       RETURN_CODE = 'return_code'.freeze
+
+      # Children for FILE pages.
+      FILE_TYPE = 'file_type'.freeze
+      FILE_PATH = 'file_path'.freeze
+
 
       #
       # The name of the object type.
@@ -203,6 +209,10 @@ module Gloo
         return content_type == JSON_CONTENT
       end
 
+      def is_file?
+        return content_type == FILE_CONTENT
+      end
+
 
       # ---------------------------------------------------------------------
       #    Events
@@ -311,6 +321,7 @@ module Gloo
         return content
       end
 
+
       # ---------------------------------------------------------------------
       #    Render
       # ---------------------------------------------------------------------
@@ -376,6 +387,8 @@ module Gloo
           contents = render_json
         elsif is_text?
           contents = render_text params
+        elsif is_file?
+          contents = render_file params
         else
           @engine.err "Unknown content type: #{content_type}"
           return nil
@@ -464,6 +477,45 @@ module Gloo
 
         return content
       end
+
+
+      # ---------------------------------------------------------------------
+      #    File Renderer
+      # ---------------------------------------------------------------------
+
+      # 
+      # Get the type of the file.
+      # 
+      def file_type
+        o = find_child FILE_TYPE
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o&.value
+      end
+
+      # 
+      # Get the path to the file.
+      # 
+      def file_path
+        o = find_child FILE_PATH
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o&.value
+      end
+
+      # 
+      # Render a file.
+      # 
+      def render_file params
+        type = file_type
+        data = File.binread file_path
+        code = Gloo::WebSvr::ResponseCode::SUCCESS
+
+        return Gloo::WebSvr::Response.new( @engine, code, type, data, true )
+      end
+
 
     end
   end
