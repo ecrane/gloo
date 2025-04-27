@@ -19,6 +19,7 @@ module Gloo
             
       attr_reader :code, :type, :data
       attr_accessor :location
+      attr_accessor :file_name
       
 
       # ---------------------------------------------------------------------
@@ -32,7 +33,9 @@ module Gloo
         code = Gloo::WebSvr::ResponseCode::SUCCESS, 
         type = HTML_TYPE, 
         data = nil,
-        assetCache = false )
+        assetCache = false,
+        file_name = nil,
+        download = false )
         
         @engine = engine
         @log = @engine.log if @engine
@@ -42,6 +45,8 @@ module Gloo
         @data = data
         @assetCache = assetCache
         @location = nil
+        @file_name = file_name
+        @download = download
       end
 
 
@@ -127,6 +132,11 @@ module Gloo
 
         if @assetCache
           headers[ 'Cache-Control' ] = 'public, max-age=604800'
+        end
+
+        if @file_name
+          disp = @download ? 'attachment' : 'inline'
+          headers[ 'Content-Disposition' ] = "#{disp}; filename=#{@file_name}"
         end
 
         session = @engine&.running_app&.obj&.session

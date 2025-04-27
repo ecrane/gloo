@@ -41,7 +41,8 @@ module Gloo
       # Children for FILE pages.
       FILE_TYPE = 'file_type'.freeze
       FILE_PATH = 'file_path'.freeze
-
+      FILE_NAME = 'file_name'.freeze
+      DOWNLOAD_FILE = 'download_file'.freeze
 
       #
       # The name of the object type.
@@ -506,14 +507,36 @@ module Gloo
       end
 
       # 
+      # Get the name of the file.
+      # 
+      def file_name
+        o = find_child FILE_NAME
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o&.value
+      end
+
+      def download_file
+        o = find_child DOWNLOAD_FILE
+        return false unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o&.value
+      end
+
+      # 
       # Render a file.
       # 
       def render_file params
         type = file_type
         data = File.binread file_path
         code = Gloo::WebSvr::ResponseCode::SUCCESS
+        fname = file_name
+        download = download_file
 
-        return Gloo::WebSvr::Response.new( @engine, code, type, data, true )
+        return Gloo::WebSvr::Response.new( 
+          @engine, code, type, data, true, fname, download )
       end
 
 
