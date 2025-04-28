@@ -130,13 +130,15 @@ module Gloo
           headers[ 'Location' ] = @location
         end
 
-        if @assetCache
+        if @assetCache || @file_name
           headers[ 'Cache-Control' ] = 'public, max-age=604800'
+          headers[ 'Expires' ] = (Time.now.utc + 604800).to_s
         end
 
         if @file_name
           disp = @download ? 'attachment' : 'inline'
           headers[ 'Content-Disposition' ] = "#{disp}; filename=#{@file_name}"
+          headers[ 'Content-Length' ] = @data.length.to_s
         end
 
         session = @engine&.running_app&.obj&.session
