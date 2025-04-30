@@ -15,7 +15,7 @@ module Gloo
     class RequestParams
 
       attr_accessor :id, :route_params
-      attr_reader :query_params, :body_params
+      attr_reader :query_params, :body_params, :body_binary
       
       # ---------------------------------------------------------------------
       #    Initialization
@@ -48,11 +48,57 @@ module Gloo
       # Detect the parameters from the body of the request.
       # 
       def init_body_params body
-        if body
-          @body_params = Rack::Utils.parse_query body
+        if body && body.length > 0
+          # if body is binary, then it is not a query string
+          begin
+            @body_params = Rack::Utils.parse_query body
+          rescue => exception
+            init_multipart body 
+          end
         else
           @body_params = {} 
         end
+      end
+
+      # 
+      # Set the body to a binary file.
+      # 
+      # TODO: find a lib or method to handle this.
+      # This is very rough and will need to be fixed.
+      # 
+      def init_multipart body
+        # puts "*********** first lines: *********** "
+        # body.lines[0..3].each { |line| puts line }
+        # puts "*********** last lines: *********** "
+        # body.lines.last(5).each { |line| puts line }
+        # puts "************************************"
+
+        # boundary = body.lines.first
+        # puts "boundary: #{boundary}"
+
+        header = body.lines[1..3].join
+        # puts "header: #{header}"
+
+        footer = body.lines.last(5).join
+        # puts "footer: #{footer}"
+
+        binary_data = body.lines[4..-6].join
+        # puts "binary_data length: #{binary_data.length}"
+        # puts "binary first line: #{binary_data.lines.first}"
+        # puts "binary last line: #{binary_data.lines.last}"
+
+        i = header.lines.first.index( 'filename=' )
+        filename = header.lines.first[ i+10..-4 ]
+        content_type = header.lines.second[14..-3]
+        # puts "filename: #{filename}"
+        # puts "content_type: #{content_type}"
+
+        @body_binary = body
+        @body_params = {}
+        @body_params[ 'content_type' ] = content_type
+        @body_params[ 'file_name' ] = filename
+        @body_params[ 'file_size' ] = binary_data.length
+        @body_params[ 'file_data' ] = binary_data
       end
 
 
@@ -105,7 +151,15 @@ module Gloo
         end
 
         if @body_params && ! @body_params.empty?
-          @log.info "--- Body Parameters: #{@body_params}"
+          if @body_params[ 'file_data' ]
+            # exclude the file data from the params shown
+            params = @body_params.dup
+            params.delete( 'file_data' )
+            params[ 'file_data' ] = '...'
+            @log.info "--- Body Parameters: #{params}"
+          else
+            @log.info "--- Body Parameters: #{@body_params}"
+          end
         end
       end
 
