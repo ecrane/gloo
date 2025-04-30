@@ -73,6 +73,8 @@ module Gloo
       # Index the the given asset info record.
       # 
       def self.index info
+        return unless info
+
         @@index_by_pn[ info.pn ] = info
         @@index_by_published[ info.published_pn ] = info
       end
@@ -81,7 +83,9 @@ module Gloo
       # Find the asset info for the given published name.
       #
       def self.find_published_name_for pn
-        return @@index_by_pn[ pn ].published_pn
+        return nil unless pn
+
+        return @@index_by_pn[ pn ]&.published_pn
       end
 
       # 
