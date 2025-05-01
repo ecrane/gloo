@@ -1,3 +1,9 @@
+4.1.0 - 2025.05.01
+ - Adds File Render as page option
+ - Adds initial support for multipart forms (file uploads)
+ - Adds delete message for a file
+
+
 4.0.0 - 2025.04.23
  - Adds cache for assets
  - Continuation character
