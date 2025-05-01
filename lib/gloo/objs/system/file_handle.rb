@@ -37,7 +37,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        basic = %w[read write get_name get_ext get_parent get_sha256]
+        basic = %w[read write delete get_name get_ext get_parent get_sha256]
         checks = %w[exists? is_file? is_dir?]
         search = %w[find_match]
         show = %w[show page open]
@@ -101,6 +101,14 @@ module Gloo
           data = expr.evaluate
         end
         File.write( value, data )
+      end
+
+      #
+      # Delete the file.
+      #
+      def msg_delete
+        return unless value
+        File.delete( value )
       end
 
       #
