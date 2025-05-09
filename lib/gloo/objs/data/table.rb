@@ -69,8 +69,9 @@ module Gloo
       def data
         o = find_child DATA
         return [] unless o
-
+        
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return [] unless o
         
         if o.is_a? Gloo::Objs::Query
           @engine.log.debug "Table getting data from query."

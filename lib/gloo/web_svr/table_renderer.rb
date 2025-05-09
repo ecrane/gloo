@@ -14,6 +14,8 @@ module Gloo
       ROW = 'row'.freeze
       CELL = 'cell'.freeze
 
+      NO_DATA_FOUND = "<p>No data found.</p>".freeze
+
       # ---------------------------------------------------------------------
       #    Initialization
       # ---------------------------------------------------------------------
@@ -44,13 +46,12 @@ module Gloo
       # 
       def data_to_table params
         data = params[ :rows ]
+        return NO_DATA_FOUND if data.nil? || ( data.length == 0 )
 
         single_row = true if ( data.length == 1 )
         single_row = false if params[ :always_rows ]
         
-        if data.nil? || ( data.length == 0 )
-          return "<p>No data found.</p>"
-        elsif single_row
+        if single_row
           return data_to_single_row_table( params )
         else
           return data_to_table_rows( params )
