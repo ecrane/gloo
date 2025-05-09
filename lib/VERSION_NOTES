@@ -1,3 +1,7 @@
+4.1.1 - 2025.05.09
+Fixes issue with empty table renderer data.
+
+
 4.1.0 - 2025.05.01
  - Adds File Render as page option
  - Adds initial support for multipart forms (file uploads)
