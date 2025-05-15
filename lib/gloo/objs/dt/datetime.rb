@@ -97,11 +97,16 @@ module Gloo
         self.set_value( DtTools.sub( dt, modifier ) )
         @engine.heap.it.set_to self.value
       end
+
       #
       # Set the value to the beginning of the month.
       #
       def msg_begin_month
-        dt = DtTools.beginning_of_month( self.value.to_time )
+        # dt = DtTools.beginning_of_month( self.value.to_time )
+        dt = self.value.to_time.beginning_of_month
+        self.set_value dt
+        @engine.heap.it.set_to dt
+
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -110,7 +115,8 @@ module Gloo
       # Set the value to the end of the month.
       #
       def msg_end_month
-        dt = DtTools.end_of_month( self.value.to_time )
+        # dt = DtTools.end_of_month( self.value.to_time )
+        dt = self.value.to_time.end_of_month
         self.set_value dt
         @engine.heap.it.set_to dt
       end
