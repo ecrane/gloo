@@ -1,3 +1,7 @@
+4.2.1 - 2025.05.15
+ - Fixes bug with begin and end month date messages
+
+
 4.2.0 - 2025.05.15
  - Adds add and sub messages to date objects
 
