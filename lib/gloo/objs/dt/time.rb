@@ -58,7 +58,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[now]
+        return super + %w[now add sub]
       end
 
       #
@@ -69,6 +69,38 @@ module Gloo
         @engine.heap.it.set_to self.value
       end
 
+      #
+      # Add the given modifier to the time.
+      #
+      def msg_add
+        modifier = "1 hour"
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+          modifier = data
+        end
+        
+        dt = Chronic.parse( self.value )
+        new_value = DtTools.add( dt, modifier )
+        self.set_value( new_value )
+        @engine.heap.it.set_to self.value
+      end
+
+      #
+      # Subtract the given modifier from the time.
+      #
+      def msg_sub
+        modifier = "1 hour"
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+          modifier = data
+        end
+
+        dt = Chronic.parse( self.value )
+        self.set_value( DtTools.sub( dt, modifier ) )
+        @engine.heap.it.set_to self.value
+      end
     end
   end
 end

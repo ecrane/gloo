@@ -2,6 +2,70 @@ require 'test_helper'
 
 class DtToolsTest < BaseEngineTest
 
+  def test_add
+    t = Time.now
+    t = DtTools.add( t, "1 day" )
+    assert t > Time.now
+
+    t = Time.now
+    t = DtTools.add( t, "1 week" )
+    assert t > Time.now
+
+    t = Time.now
+    t = DtTools.add( t, "1 month" )
+    assert t > Time.now
+
+    t = Time.now
+    t = DtTools.add( t, "1 year" )
+    assert t > Time.now
+  end
+
+  def test_add_time
+    t = Time.now
+    t = DtTools.add( t, "1 hour" )
+    assert t > Time.now
+
+    t = Time.now
+    t = DtTools.add( t, "1 minute" )
+    assert t > Time.now
+
+    t = Time.now
+    t = DtTools.add( t, "1 second" )
+    assert t > Time.now
+  end
+    
+  def test_subtract
+    t = Time.now
+    t = DtTools.sub( t, "1 day" )
+    assert t < Time.now
+
+    t = Time.now
+    t = DtTools.sub( t, "1 week" )
+    assert t < Time.now
+
+    t = Time.now
+    t = DtTools.sub( t, "1 month" )
+    assert t < Time.now
+
+    t = Time.now
+    t = DtTools.sub( t, "1 year" )
+    assert t < Time.now
+  end
+
+  def test_subtract_time
+    t = Time.now
+    t = DtTools.sub( t, "1 hour" )
+    assert t < Time.now
+
+    t = Time.now
+    t = DtTools.sub( t, "1 minute" )
+    assert t < Time.now
+
+    t = Time.now
+    t = DtTools.sub( t, "1 second" )
+    assert t < Time.now
+  end
+
   def test_is_today
     assert DtTools.is_today?( Time.now )
 

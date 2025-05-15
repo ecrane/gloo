@@ -21,6 +21,38 @@ class DtTools
     return false
   end
 
+
+  # ---------------------------------------------------------------------
+  #    Date Math
+  # ---------------------------------------------------------------------
+
+  # 
+  # Given a date, add the modifier to it.
+  # The modifier takes the form of "1 day" or "2 weeks".
+  # 
+  def self.add date, modifier="1 day"
+    # Split out amount and unit
+    amount, unit = modifier.split(' ')  
+
+    # converts "1 day" to 1.day
+    duration = amount.to_i.send( unit )
+    return date + duration
+  end
+
+  # 
+  # Given a date, subtract the modifier from it.
+  # The modifier takes the form of "1 day" or "2 weeks".
+  # 
+  def self.sub dt, modifier="1 day"
+    # Split out amount and unit
+    amount, unit = modifier.split(' ')  
+
+    # converts "1 day" to 1.day
+    duration = amount.to_i.send( unit )  
+    return dt - duration
+  end
+
+
   # ---------------------------------------------------------------------
   #    Language helpers
   # ---------------------------------------------------------------------
