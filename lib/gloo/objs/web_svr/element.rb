@@ -226,6 +226,8 @@ module Gloo
             e = Gloo::Objs::Alias.resolve_alias( engine, e )
             if e.class == Element
               rendered_obj_content << e.send( render_ƒ )
+            elsif e.class == Form
+              rendered_obj_content << e.render
             elsif e
               data = render_thing e, render_ƒ, engine
               ( rendered_obj_content << data ) if data # e.render( render_ƒ )
