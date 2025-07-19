@@ -22,6 +22,7 @@ module Gloo
       PLACEHOLDER = 'placeholder'.freeze
       AUTOFOCUS = 'autofocus'.freeze
       COLS = 'cols'.freeze
+      ROWS = 'rows'.freeze
       
 
       #
@@ -154,6 +155,26 @@ module Gloo
         return ''
       end
 
+      # 
+      # Get the rows for the form field.
+      # Only applies to textarea fields.
+      # 
+      def rows_value
+        o = find_child ROWS
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o ? o.value : nil
+      end
+
+      #
+      # Get the rows tag for the form field.
+      # Only applies to textarea fields.
+      #
+      def rows_tag
+        rows = rows_value
+        return "rows='#{rows}'" if rows
+        return ''
+      end
+
 
       # ---------------------------------------------------------------------
       #    Children
@@ -219,6 +240,8 @@ module Gloo
           return render_text
         when 'hidden'
           return render_hidden
+        when 'textarea'
+          return render_textarea
         end
       end
 
@@ -238,10 +261,24 @@ module Gloo
         return <<~HTML
           <div class="form-group #{cols_tag} mt-3">
             #{label_tag}
-            <input #{placeholder_tag} #{autofocus_tag}
+            <input #{placeholder_tag} #{autofocus_tag} #{rows_tag}
               class="form-control gloo-form-field" 
               type="#{type_value}" #{value_tag}
               name="#{name_value}" id="#{name_value}" />
+          </div>
+        HTML
+      end
+
+      # 
+      # Render the textarea field as HTML.
+      # 
+      def render_textarea
+        return <<~HTML
+          <div class="form-group #{cols_tag} mt-3">
+            #{label_tag}
+            <textarea #{placeholder_tag} #{autofocus_tag} #{rows_tag}
+              class="form-control gloo-form-field" 
+              name="#{name_value}" id="#{name_value}">#{field_value}</textarea>
           </div>
         HTML
       end
