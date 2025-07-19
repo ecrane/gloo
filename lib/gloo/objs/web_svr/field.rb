@@ -20,6 +20,9 @@ module Gloo
       VALUE = 'value'.freeze
       LABEL = 'label'.freeze
       PLACEHOLDER = 'placeholder'.freeze
+      AUTOFOCUS = 'autofocus'.freeze
+      COLS = 'cols'.freeze
+      
 
       #
       # The name of the object type.
@@ -57,10 +60,19 @@ module Gloo
       #
       # Get the value for the form field.
       #
-      def value_value
+      def field_value
         o = find_child VALUE
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         return o ? o.value : nil
+      end
+
+      #
+      # Get the value tag for the form field.
+      #
+      def value_tag
+        value = field_value
+        return "value='#{value}'" if value
+        return ''
       end
 
       #
@@ -73,6 +85,22 @@ module Gloo
       end
 
       #
+      # Get the label tag for the form field.
+      #
+      def label_tag
+        label = label_value
+        label_data = ''
+        if label
+          label_data = <<~HTML
+            <label class="control-label mb-1" for="#{name_value}">
+              #{label}
+            </label>
+          HTML
+        end
+        return label_data
+      end
+
+      #
       # Get the placeholder for the form field.
       #
       def placeholder_value
@@ -80,6 +108,52 @@ module Gloo
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         return o ? o.value : nil
       end
+
+      #
+      # Get the placeholder tag for the form field.
+      #
+      def placeholder_tag
+        placeholder = placeholder_value
+        return "placeholder='#{placeholder}'" if placeholder
+        return ''
+      end
+
+      # 
+      # Should this field autofocus?
+      # 
+      def autofocus?
+        o = find_child AUTOFOCUS
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return nil unless o
+        return o.value
+      end
+
+      #
+      # Get the autofocus tag for the form field.
+      #
+      def autofocus_tag
+        return "autofocus='autofocus'" if autofocus?
+        return ''
+      end
+
+      # 
+      # Get the cols for the form field.
+      # 
+      def cols_value
+        o = find_child COLS
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o ? o.value : nil
+      end
+
+      #
+      # Get the cols tag for the form field.
+      #
+      def cols_tag
+        cols = cols_value
+        return "col-#{cols}" if cols
+        return ''
+      end
+
 
       # ---------------------------------------------------------------------
       #    Children
@@ -138,29 +212,36 @@ module Gloo
       # ---------------------------------------------------------------------
 
       # 
-      # Render the Form as HTML.
-      # 
+      # Render the field, switch on type.
       def render
-        name = name_value
-        label = label_value
-        label_data = ""
-        if label
-          label_data = <<-HTML
-            <label class="control-label mb-1" for="#{name}">
-              #{label}
-            </label>
-          HTML
+        case type_value
+        when 'text'
+          return render_text
+        when 'hidden'
+          return render_hidden
         end
-        return <<-HTML
-          <div class="form-group col-12 mt-3">
-            #{label_data}
-            <input 
-              placeholder="#{placeholder_value}" 
+      end
+
+      # 
+      # Render the hidden field as HTML.
+      # 
+      def render_hidden
+        return <<~HTML
+          <input type="hidden" #{value_tag} name="#{name_value}" id="#{name_value}" />
+        HTML
+      end
+
+      # 
+      # Render the text field as HTML.
+      # 
+      def render_text
+        return <<~HTML
+          <div class="form-group #{cols_tag} mt-3">
+            #{label_tag}
+            <input #{placeholder_tag} #{autofocus_tag}
               class="form-control gloo-form-field" 
-              autofocus="autofocus" 
-              type="#{type_value}" 
-              name="#{name}" 
-              id="#{name}" />
+              type="#{type_value}" #{value_tag}
+              name="#{name_value}" id="#{name_value}" />
           </div>
         HTML
       end

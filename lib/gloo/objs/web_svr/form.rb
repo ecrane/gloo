@@ -149,13 +149,13 @@ module Gloo
 
         cancel_button = ""
         if cancel_path_value
-          cancel_button = <<-HTML
+          cancel_button = <<~HTML
             <a class="btn btn-sm btn-secondary" 
               href="#{cancel_path_value}"> 
               Cancel</a>
           HTML
         end
-        return <<-HTML
+        return <<~HTML
           <form class='#{name}'
                 id='#{name}'
                 method='#{method_value}'
@@ -214,7 +214,7 @@ module Gloo
       # 
       # Render a string or other object.
       # 
-      def self.render_thing e
+      def render_thing e
         begin
           return e.render( 'render_html' )
         rescue => e
