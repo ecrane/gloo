@@ -322,7 +322,7 @@ module Gloo
       # 
       def render_checkbox
         return <<~HTML
-          <div class="form-group mt-3 col-md-3 col-sm-6">
+          <div class="form-group #{cols_tag} mt-3">
             #{label_tag}
             <label class="col-sm-12 checkbox form-control gloo-form-field">
               <input type="checkbox" 
