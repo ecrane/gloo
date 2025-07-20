@@ -25,7 +25,7 @@ module Gloo
       ROWS = 'rows'.freeze
       DESCRIPTION = 'description'.freeze
       CHECKED = 'checked'.freeze
-      
+      OPTIONS = 'options'.freeze
       
 
       #
@@ -205,6 +205,30 @@ module Gloo
         return ''
       end
 
+      # 
+      # Get options for the select list.
+      # 
+      def select_options
+        o = find_child OPTIONS
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return nil unless o
+
+        selected_value = field_value
+
+        options = ''
+        o.children.each do |child|
+          if selected_value == child.name || selected_value == child.value
+            selected = 'selected="selected"'
+          else
+            selected = ''
+          end
+          options += <<~HTML
+            <option value="#{child.name}" #{selected}>#{child.value}</option>
+          HTML
+        end
+        return options
+      end
+
 
       # ---------------------------------------------------------------------
       #    Children
@@ -249,7 +273,7 @@ module Gloo
       end
 
       #
-      # Get the expiration date for the certificate.
+      # Render the form field.
       #
       def msg_render
         content = self.render
@@ -276,6 +300,8 @@ module Gloo
           return render_checkbox
         when 'search'
           return render_text
+        when 'select'
+          return render_select
         end
       end
 
@@ -330,6 +356,21 @@ module Gloo
                 name="#{name_value}" id="#{name_value}" />
                 #{description_value}
             </label>
+          </div>
+        HTML
+      end
+
+      # 
+      # Render the select field as HTML.
+      # 
+      def render_select
+        return <<~HTML
+          <div class="form-group #{cols_tag} mt-3">
+            #{label_tag}
+            <select class="form-control gloo-form-field" 
+              name="#{name_value}" id="#{name_value}">
+              #{select_options}
+            </select>
           </div>
         HTML
       end

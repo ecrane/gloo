@@ -128,7 +128,7 @@ module Gloo
       end
 
       #
-      # Get the expiration date for the certificate.
+      # Render the form and all contained fields.
       #
       def msg_render
         content = self.render
