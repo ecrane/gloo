@@ -23,6 +23,9 @@ module Gloo
       AUTOFOCUS = 'autofocus'.freeze
       COLS = 'cols'.freeze
       ROWS = 'rows'.freeze
+      DESCRIPTION = 'description'.freeze
+      CHECKED = 'checked'.freeze
+      
       
 
       #
@@ -175,6 +178,33 @@ module Gloo
         return ''
       end
 
+      #
+      # Get the description for the form field.
+      #
+      def description_value
+        o = find_child DESCRIPTION
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o ? o.value : nil
+      end
+
+      # 
+      # Should this field be checked?
+      # 
+      def checked?
+        o = find_child CHECKED
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return nil unless o
+        return o.value
+      end
+
+      #
+      # Get the checked tag for the form field.
+      #
+      def checked_tag
+        return "checked='checked'" if checked?
+        return ''
+      end
+
 
       # ---------------------------------------------------------------------
       #    Children
@@ -242,6 +272,10 @@ module Gloo
           return render_hidden
         when 'textarea'
           return render_textarea
+        when 'checkbox'
+          return render_checkbox
+        when 'search'
+          return render_text
         end
       end
 
@@ -279,6 +313,23 @@ module Gloo
             <textarea #{placeholder_tag} #{autofocus_tag} #{rows_tag}
               class="form-control gloo-form-field" 
               name="#{name_value}" id="#{name_value}">#{field_value}</textarea>
+          </div>
+        HTML
+      end
+
+      # 
+      # Render the checkbox field as HTML.
+      # 
+      def render_checkbox
+        return <<~HTML
+          <div class="form-group mt-3 col-md-3 col-sm-6">
+            #{label_tag}
+            <label class="col-sm-12 checkbox form-control gloo-form-field">
+              <input type="checkbox" 
+                #{checked_tag} value="true"
+                name="#{name_value}" id="#{name_value}" />
+                #{description_value}
+            </label>
           </div>
         HTML
       end
