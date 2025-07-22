@@ -96,7 +96,7 @@ module Gloo
         label_data = ''
         if label
           label_data = <<~HTML
-            <label class="control-label mb-1" for="#{name_value}">
+            <label class="#{field_label_styles}" for="#{name_value}">
               #{label}
             </label>
           HTML
@@ -229,6 +229,27 @@ module Gloo
         return options
       end
 
+      # 
+      # Get the field group styles.
+      # 
+      def field_group_styles
+        return @styles['field_group'] || ''
+      end
+
+      # 
+      # Get the field label styles.
+      # 
+      def field_label_styles
+        return @styles['field_label'] || ''
+      end
+
+      # 
+      # Get the field control styles.
+      # 
+      def field_control_styles
+        return @styles['field_control'] || ''
+      end
+
 
       # ---------------------------------------------------------------------
       #    Children
@@ -288,7 +309,9 @@ module Gloo
 
       # 
       # Render the field, switch on type.
-      def render
+      def render styles = {}
+        @styles = styles
+
         case type_value
         when 'text'
           return render_text
@@ -319,10 +342,10 @@ module Gloo
       # 
       def render_text
         return <<~HTML
-          <div class="form-group #{cols_tag} mt-3">
+          <div class="#{field_group_styles} #{cols_tag}">
             #{label_tag}
             <input #{placeholder_tag} #{autofocus_tag} #{rows_tag}
-              class="form-control gloo-form-field" 
+              class="#{field_control_styles}" 
               type="#{type_value}" #{value_tag}
               name="#{name_value}" id="#{name_value}" />
           </div>
@@ -334,10 +357,10 @@ module Gloo
       # 
       def render_textarea
         return <<~HTML
-          <div class="form-group #{cols_tag} mt-3">
+          <div class="#{field_group_styles} #{cols_tag}">
             #{label_tag}
             <textarea #{placeholder_tag} #{autofocus_tag} #{rows_tag}
-              class="form-control gloo-form-field" 
+              class="#{field_control_styles}" 
               name="#{name_value}" id="#{name_value}">#{field_value}</textarea>
           </div>
         HTML
@@ -348,9 +371,9 @@ module Gloo
       # 
       def render_checkbox
         return <<~HTML
-          <div class="form-group #{cols_tag} mt-3">
+          <div class="#{field_group_styles} #{cols_tag}">
             #{label_tag}
-            <label class="col-sm-12 checkbox form-control gloo-form-field">
+            <label class="checkbox #{field_control_styles}">
               <input type="checkbox" 
                 #{checked_tag} value="true"
                 name="#{name_value}" id="#{name_value}" />
@@ -365,9 +388,9 @@ module Gloo
       # 
       def render_select
         return <<~HTML
-          <div class="form-group #{cols_tag} mt-3">
+          <div class="#{field_group_styles} #{cols_tag}">
             #{label_tag}
-            <select class="form-control gloo-form-field" 
+            <select class="#{field_control_styles}" 
               name="#{name_value}" id="#{name_value}">
               #{select_options}
             </select>

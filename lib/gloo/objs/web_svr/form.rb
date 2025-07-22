@@ -21,6 +21,7 @@ module Gloo
       ACTION = 'action'.freeze
       CANCEL_PATH = 'cancel_path'.freeze
       CONTENT = 'content'.freeze
+      STYLES = 'styles'.freeze
 
 
       #
@@ -82,6 +83,47 @@ module Gloo
         o = find_child CONTENT
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         return o
+      end
+
+      # 
+      # Get the styles for the form.
+      # Retuns styles in the form of a hash:
+      # { 'field_group' => 'form-group mt-3', … }
+      # 
+      def styles
+        style_h = {} 
+        o = find_child STYLES
+        return style_h unless o
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+
+        o.children.each do |c|
+          style_h[ c.name ] = c.value
+        end
+
+        # puts "styles: #{style_h}"
+        return style_h
+      end
+
+      # 
+      # Get the form styles.
+      # Use the name if none is provided.
+      # 
+      def form_styles
+        return @styles['form'] || name_value
+      end
+
+      # 
+      # Get the submit button styles.
+      # 
+      def submit_button_styles
+        return @styles['submit'] || ''
+      end
+
+      # 
+      # Get the cancel button styles.
+      # 
+      def cancel_button_styles
+        return @styles['cancel'] || ''
       end
 
 
@@ -150,13 +192,13 @@ module Gloo
         cancel_button = ""
         if cancel_path_value
           cancel_button = <<~HTML
-            <a class="btn btn-sm btn-secondary" 
+            <a class="#{cancel_button_styles}"
               href="#{cancel_path_value}"> 
               Cancel</a>
           HTML
         end
         return <<~HTML
-          <form class='#{name}'
+          <form class='#{form_styles}'
                 id='#{name}'
                 method='#{method_value}'
                 action='#{action_value}'
@@ -165,7 +207,7 @@ module Gloo
               <input type="submit" 
                 name="commit" 
                 value="Save" 
-                class="btn btn-sm btn-success" 
+                class="#{submit_button_styles}" 
                 data-disable-with="Saving..." />
 
             #{cancel_button}
@@ -184,6 +226,7 @@ module Gloo
       # Render the Form as HTML.
       # 
       def render
+        @styles = styles
         return open_form + render_content + close_form
       end
 
@@ -199,7 +242,7 @@ module Gloo
         field_can.children.each do |o|
           o = Gloo::Objs::Alias.resolve_alias( @engine, o )
           if o.class == Field
-            fields << o.render
+            fields << o.render( @styles )
           elsif o.class == Element
             fields << o.render_html
           elsif o
