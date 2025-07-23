@@ -47,6 +47,10 @@ module Gloo
       # 
       def name_value
         o = find_child NAME
+
+        # If there is no child, use the obj's name
+        return self.name unless o
+
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         return o ? o.value : nil
       end
@@ -84,6 +88,10 @@ module Gloo
       #
       def label_value
         o = find_child LABEL
+
+        # If there is no child, use the obj's name
+        return self.name_value.capitalize unless o
+
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         return o ? o.value : nil
       end
