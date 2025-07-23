@@ -27,6 +27,10 @@ module Gloo
       CHECKED = 'checked'.freeze
       OPTIONS = 'options'.freeze
       
+      # Style attributes
+      FIELD_GROUP = 'field_group'.freeze
+      FIELD_LABEL = 'field_label'.freeze
+      FIELD_CONTROL = 'field_control'.freeze
 
       #
       # The name of the object type.
@@ -241,21 +245,39 @@ module Gloo
       # Get the field group styles.
       # 
       def field_group_styles
-        return @styles['field_group'] || ''
+        o = find_child FIELD_GROUP
+        if o
+          o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+          return o ? o.value : ''
+        end
+        
+        return @styles[FIELD_GROUP] || ''
       end
 
       # 
       # Get the field label styles.
       # 
       def field_label_styles
-        return @styles['field_label'] || ''
+        o = find_child FIELD_LABEL
+        if o
+          o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+          return o ? o.value : ''
+        end
+        
+        return @styles[FIELD_LABEL] || ''
       end
 
       # 
       # Get the field control styles.
       # 
       def field_control_styles
-        return @styles['field_control'] || ''
+        o = find_child FIELD_CONTROL
+        if o
+          o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+          return o ? o.value : ''
+        end
+        
+        return @styles[FIELD_CONTROL] || ''
       end
 
 
