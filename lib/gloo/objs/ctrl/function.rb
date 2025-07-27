@@ -71,6 +71,22 @@ module Gloo
         return return_any ? return_any.value : nil
       end
 
+      #
+      # Get the params hash from the child object.
+      # Returns nil if there is none.
+      #
+      def params_hash
+        params_can = find_child PARAMS
+        return nil unless params_can
+
+        h = {}
+        params_can.children.each do |o|
+          h[ o.name ] = o.value
+        end
+
+        return h
+      end
+
 
       # ---------------------------------------------------------------------
       #    Children
@@ -156,7 +172,12 @@ module Gloo
 
         set_params args if args
         run_on_invoke
-        return_value = result
+
+        if @engine.running_app&.obj&.embedded_renderer 
+          return_value = @engine.running_app.obj.embedded_renderer.render result, params_hash
+        else
+          return_value = result
+        end
         @engine.heap.it.set_to return_value
         run_after_invoke
         
