@@ -304,11 +304,7 @@ module Gloo
 
         # Create attributes with ID and Classes
         fac.create_string NAME, '', self
-        fac.create_string METHOD, 'post', self
-        fac.create_string ACTION, '', self
-        fac.create_string CANCEL_PATH, '', self
-
-        fac.create_can CONTENT, self
+        fac.create_string TYPE, 'text', self
       end
 
 
