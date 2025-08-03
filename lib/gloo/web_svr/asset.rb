@@ -8,6 +8,7 @@ module Gloo
   module WebSvr
     class Asset
       
+      LIB_FOLDER = 'lib'.freeze
       ASSET_FOLDER = 'asset'.freeze
       IMAGE_FOLDER = 'image'.freeze
       STYLESHEET_FOLDER = 'stylesheet'.freeze
@@ -32,6 +33,55 @@ module Gloo
         @log = @engine.log
 
         @web_svr_obj = web_svr_obj
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    lib asset Helpers
+      # ---------------------------------------------------------------------
+
+      # 
+      # Get the asset folder in the User's lib.
+      # Returns nil if it does not exist.
+      #
+      def lib_asset_folder
+        dir = File.join( @engine.settings.user_root, LIB_FOLDER, ASSET_FOLDER )
+        return dir if Dir.exist?( dir )
+
+        return nil
+      end
+
+      # 
+      # Get the stylesheets folder in the User's lib.
+      # Returns nil if it does not exist.
+      #
+      def lib_stylesheet_folder
+        dir = File.join( lib_asset_folder, STYLESHEET_FOLDER )
+        return dir if Dir.exist?( dir )
+
+        return nil
+      end
+
+      # 
+      # Get the javascript folder in the User's lib.
+      # Returns nil if it does not exist.
+      #
+      def lib_javascript_folder
+        dir = File.join( lib_asset_folder, JAVASCRIPT_FOLDER )
+        return dir if Dir.exist?( dir )
+
+        return nil
+      end
+
+      # 
+      # Get the images folder in the User's lib.
+      # Returns nil if it does not exist.
+      #
+      def lib_image_folder
+        dir = File.join( lib_asset_folder, IMAGE_FOLDER )
+        return dir if Dir.exist?( dir )
+
+        return nil
       end
 
 
@@ -78,6 +128,12 @@ module Gloo
 
         # Look in the web server's asset folder.
         pn = File.join( asset_folder, pn )
+
+        # Try the lib assets if not found
+        unless File.exist? pn
+          lib = lib_asset_folder
+          pn = File.join( lib, file.value ) if lib
+        end
 
         return pn
       end
@@ -214,6 +270,11 @@ module Gloo
       def add_images
         @log.debug 'Adding image asset routes to web server…'
         
+        lib = lib_image_folder
+        if lib
+          add_files_in_folder( lib, @images, IMAGE_FOLDER )
+        end
+
         return unless File.exist? image_folder
 
         # for each file in the images folder
@@ -226,6 +287,11 @@ module Gloo
       #
       def add_stylesheets
         @log.debug 'Adding stylesheet asset routes to web server…'
+
+        lib = lib_stylesheet_folder
+        if lib
+          add_files_in_folder( lib, @stylesheets, STYLESHEET_FOLDER )
+        end
 
         return unless File.exist? stylesheet_folder
 
@@ -244,6 +310,11 @@ module Gloo
       #
       def add_javascript
         @log.debug 'Adding javascript asset routes to web server…'
+
+        lib = lib_javascript_folder
+        if lib
+          add_files_in_folder( lib, @javascript, JAVASCRIPT_FOLDER )
+        end
 
         return unless File.exist? javascript_folder
 
