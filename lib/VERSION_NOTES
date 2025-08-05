@@ -1,3 +1,7 @@
+4.5.0 - 2025.08.05
+ - Adds option to use assets in the user lib.
+
+
 4.4.0 - 2025.07.30
  - Adds form and fields
  - Adds option to include image_tag and other asset tags in helper rendering.
