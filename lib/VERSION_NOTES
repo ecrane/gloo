@@ -1,3 +1,7 @@
+4.6.0 - 2025.08.24
+ - Adds option to render inline file data (rather than a file on disk)
+
+
 4.5.0 - 2025.08.05
  - Adds option to use assets in the user lib.
 
