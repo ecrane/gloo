@@ -42,6 +42,7 @@ module Gloo
       FILE_TYPE = 'file_type'.freeze
       FILE_PATH = 'file_path'.freeze
       FILE_NAME = 'file_name'.freeze
+      FILE_DATA = 'file_data'.freeze
       DOWNLOAD_FILE = 'download_file'.freeze
 
       #
@@ -507,6 +508,17 @@ module Gloo
       end
 
       # 
+      # Get the File content
+      # 
+      def file_data
+        o = find_child FILE_DATA
+        return nil unless o
+
+        o = Gloo::Objs::Alias.resolve_alias( @engine, o )
+        return o&.value
+      end
+
+      # 
       # Get the name of the file.
       # 
       def file_name
@@ -530,7 +542,12 @@ module Gloo
       # 
       def render_file params
         type = file_type
-        data = File.binread file_path
+        inline_content = file_data
+        if inline_content.nil?
+          data = File.binread( file_path )
+        else
+          data = inline_content
+        end
         code = Gloo::WebSvr::ResponseCode::SUCCESS
         fname = file_name
         download = download_file
