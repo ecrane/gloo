@@ -145,9 +145,6 @@ module Gloo
       # Convert the object to JSON.
       # 
       def self.convert_obj_to_json( obj )
-
-        # TODO: put container objects in an array
-        
         h = obj ? convert_obj_to_hash( obj ) : {}
         json = JSON.parse( h.to_json )
         json = JSON.pretty_generate( json )
@@ -162,10 +159,10 @@ module Gloo
 
         if obj.child_count > 0
           obj.children.each do |child|
-            h = h.merge( convert_obj_to_hash( child ) )
+            h[ child.name ] = convert_obj_to_hash( child )
           end
         else
-          h[ obj.name ] = obj.value
+          return obj.value
         end
 
         return h
