@@ -1,3 +1,7 @@
+4.6.1 - 2025.09.25
+ - Adds container support to object to JSON conversion.
+
+
 4.6.0 - 2025.08.24
  - Adds option to render inline file data (rather than a file on disk)
 
