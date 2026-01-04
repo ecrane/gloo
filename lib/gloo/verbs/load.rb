@@ -22,7 +22,10 @@ module Gloo
           @engine.log.debug "Getting ready to load file: #{fn}"
           @engine.persist_man.load fn
         else
-          @engine.err MISSING_EXPR_ERR
+          # @engine.err MISSING_EXPR_ERR
+          @engine.ext_manager.load_ext 'beep'
+          # @engine.ext_manager.load_ext 'test'
+          # @engine.ext_manager.load_ext 'alpha'
         end
       end
 

@@ -13,7 +13,8 @@ module Gloo
 
       attr_reader :settings, :log, :running_app
       attr_reader :args, :mode, :running, :platform,
-                  :dictionary, :parser, :heap, :factory
+                  :dictionary, :parser, :heap, :factory,
+                  :ext_manager
       attr_accessor :last_cmd, :persist_man, :event_manager,
                     :exec_env, :converter
 
@@ -50,6 +51,7 @@ module Gloo
         @factory = Gloo::Core::Factory.new( self )
         @persist_man = Gloo::Persist::PersistMan.new( self )
         @event_manager = Gloo::Core::EventManager.new( self )
+        @ext_manager = Gloo::Core::ExtManager.new( self )
 
         @exec_env = Gloo::Exec::ExecEnv.new( self )
         @converter = Gloo::Convert::Converter.new( self )
@@ -57,6 +59,7 @@ module Gloo
         @log.info 'The gloo engine has started'
         run_mode
       end
+
 
       # ---------------------------------------------------------------------
       #    Serialization
@@ -93,6 +96,7 @@ module Gloo
       def restore_after_deserialization
         @log.restore_after_deserialization
       end
+
 
       # ---------------------------------------------------------------------
       #    Run
@@ -227,6 +231,7 @@ module Gloo
         @log.info 'Gloo engine is quitting...'
       end
 
+
       # ---------------------------------------------------------------------
       #    Running app within gloo
       # ---------------------------------------------------------------------
@@ -267,6 +272,7 @@ module Gloo
         quit
       end
 
+      
       # ---------------------------------------------------------------------
       #    Error Handling
       # ---------------------------------------------------------------------

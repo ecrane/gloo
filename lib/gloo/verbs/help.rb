@@ -22,7 +22,11 @@ module Gloo
         o: 'show_objs',
         obj: 'show_objs',
         object: 'show_objs',
-        objects: 'show_objs'
+        objects: 'show_objs',
+        e: 'show_ext',
+        ext: 'show_ext',
+        extension: 'show_ext',
+        extensions: 'show_ext'
       }.freeze
 
       #
@@ -91,6 +95,7 @@ module Gloo
         data << " Help Options:\n"
         data << "   ? objects (obj, o) \n"
         data << "   ? verbs (v) \n"
+        data << "   ? ext (e) \n"
         data << "   ? settings (s) \n"
         data << "\n For detailed documentation use the gloo website. \n"
         data << "\n     https://gloo.ecrane.us/doc/. \n\n"
@@ -180,6 +185,30 @@ module Gloo
 
         return str
       end
+
+      #
+      # List the extensions
+      #
+      def show_ext
+        data = "\n"
+        data << " Extensions\n".blue
+        data << "#{get_extensions}\n\n"
+        @engine.log.show data
+      end
+
+      #
+      # Get the text for the list of extensions.
+      #
+      def get_extensions
+        str = ''
+        exts = @engine.ext_manager.loaded_extensions.sort
+        exts.each do |name, ext|
+          str << "   #{name.white} \n"
+        end
+
+        return str
+      end
+
 
     end
   end

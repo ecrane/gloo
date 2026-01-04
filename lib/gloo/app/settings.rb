@@ -11,7 +11,7 @@ module Gloo
     class Settings
 
       attr_reader :user_root, :log_path,
-        :config_path, :project_path,
+        :config_path, :project_path, :ext_path,
         :start_with, :list_indent, :list_levels, :tmp_path,
         :debug_path, :debug
 
@@ -50,6 +50,7 @@ module Gloo
         puts "\n Application Paths:".blue
         puts '   User Root Path is here:  '.yellow + @user_root.white
         puts '   Projects Path:  '.yellow + @project_path.white
+        puts '   Extensions Path:  '.yellow + @ext_path.white
         puts '   Tmp Path:  '.yellow + @tmp_path.white
         puts '   Debug Path:  '.yellow + @debug_path.white
         puts "\n"
@@ -130,6 +131,9 @@ module Gloo
 
         @config_path = File.join( @user_root, 'config' )
         Dir.mkdir( @config_path ) unless File.exist?( @config_path )
+
+        @ext_path = File.join( @user_root, 'extensions' )
+        Dir.mkdir( @ext_path ) unless File.exist?( @ext_path )
 
         @tmp_path = File.join( @user_root, 'tmp' )
         Dir.mkdir( @tmp_path ) unless File.exist?( @tmp_path )
