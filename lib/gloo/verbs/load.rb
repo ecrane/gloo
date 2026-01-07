@@ -24,6 +24,7 @@ module Gloo
         else
           # @engine.err MISSING_EXPR_ERR
           @engine.ext_manager.load_ext 'beep'
+          @engine.ext_manager.load_ext 'teams'
           # @engine.ext_manager.load_ext 'test'
           # @engine.ext_manager.load_ext 'alpha'
         end

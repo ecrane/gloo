@@ -43,11 +43,10 @@ module Gloo
       #
       def load_ext( name )
         @engine.log.debug "Loading extension: #{name}"
-
         fn = ext_start_file name
+        
         @extensions[name] = fn
         register_extension name, fn
-
         @engine.log.debug "Extension loaded: #{name}"
       end
 
@@ -62,7 +61,8 @@ module Gloo
         begin
           plugin_class = Object.const_get( class_name )
           inst = plugin_class.new
-          inst.register( ExtCallback.new( @engine ) )
+          ext_cb = ExtCallback.new( @engine )
+          inst.register( ext_cb )
         rescue NameError
           @engine.log.error "Warning: Could not find class #{class_name} in file #{full_path}"
         end
