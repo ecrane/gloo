@@ -28,7 +28,7 @@ class LoadTest < BaseEngineTest
   def test_load_without_expression
     @engine.parser.run 'load'
     assert @engine.error?
-    assert_equal Gloo::Verbs::Load::MISSING_EXPR_ERR, @engine.heap.error.value
+    assert_equal Gloo::Verbs::Load::WRONG_NUM_ARGS_ERR, @engine.heap.error.value
   end
 
 end
