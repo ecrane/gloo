@@ -17,6 +17,13 @@ class LoadTest < BaseEngineTest
     assert_equal 1, @engine.heap.root.child_count
   end
 
+  def test_file_load_with_opt
+    assert_equal 0, @engine.heap.root.child_count
+    i = @engine.parser.parse_immediate 'load file test'
+    i.run
+    assert_equal 1, @engine.heap.root.child_count
+  end
+
   def test_file_load_multiline_script
     assert_equal 0, @engine.heap.root.child_count
     i = @engine.parser.parse_immediate 'load script'

@@ -36,7 +36,6 @@ module Gloo
 
         if fn.blank?
           @engine.err MISSING_EXPR_ERR
-          return
         elsif opt == FILE_OPT
           load_gloo_file fn
         elsif opt == EXT_OPT
@@ -46,7 +45,6 @@ module Gloo
           @engine.err FEATURE_NOT_IMPLEMENTED_ERR
         else 
           @engine.err UNKNOWN_OPT_ERR
-          return
         end
       end
 
