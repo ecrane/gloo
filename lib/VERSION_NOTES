@@ -1,3 +1,8 @@
+4.7.0 - 2026.01.18
+- Adds the Extension Manager.
+- Moves alert, beep, slack, teams out of gloo into extensions.
+
+
 4.6.1 - 2025.09.25
  - Adds container support to object to JSON conversion.
 
