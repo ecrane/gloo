@@ -33,7 +33,19 @@ module Gloo
       # 
       def ext_start_file name
         root = @engine.settings.ext_path
-        return File.join( root, name, name + EXT_FILE )
+
+        unless File.exist?( root )
+          @engine.log.error "Extension directory does not exist: #{root}"
+          return nil
+        end
+        
+        f = File.join( root, name, name + EXT_FILE )
+        unless File.exist?( f )
+          @engine.log.error "Extension start file does not exist: #{f}"
+          return nil
+        end
+        
+        return f
       end
 
       # 
@@ -44,6 +56,11 @@ module Gloo
       def load_ext( name )
         @engine.log.debug "Loading extension: #{name}"
         fn = ext_start_file name
+
+        unless fn
+          @engine.log.error "Extension start file not found for: #{name}"
+          return
+        end
         
         @extensions[name] = fn
         register_extension name, fn
