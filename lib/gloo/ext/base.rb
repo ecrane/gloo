@@ -3,8 +3,8 @@
 # Used by extensions to register verbs and objects.
 # 
 module Gloo
-  module Core
-    class ExtBase
+  module Ext
+    class Base
 
       # 
       # Register verbs and objects.

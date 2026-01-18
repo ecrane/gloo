@@ -2,8 +2,8 @@
 # A mechanism for registering extension components.
 # 
 module Gloo
-  module Core
-    class ExtCallback
+  module Ext
+    class Callback
 
       # 
       # Initialize the callback.

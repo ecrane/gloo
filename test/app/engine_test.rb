@@ -38,6 +38,12 @@ class EngineTest < BaseTest
     assert o.heap
   end
 
+  def test_that_the_running_engine_has_an_ext_manager
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    assert o.ext_manager
+  end
+
   def test_last_command_blank
     o = Gloo::App::Engine.new( default_context )
     o.last_cmd = nil

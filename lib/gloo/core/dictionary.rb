@@ -138,6 +138,7 @@ module Gloo
         end
       end
 
+      
       # ---------------------------------------------------------------------
       #    Register after start up
       # ---------------------------------------------------------------------
@@ -177,6 +178,7 @@ module Gloo
         @keywords.delete( obj_class.typename )
         @keywords.delete( obj_class.short_typename )
       end
+
 
       # ---------------------------------------------------------------------
       #    Private

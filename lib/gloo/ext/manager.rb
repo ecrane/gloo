@@ -6,8 +6,8 @@
 #
 
 module Gloo
-  module Core
-    class ExtManager
+  module Ext
+    class Manager
 
       # Constants for extension management
       EXT_FILE = '_ext.rb'
@@ -61,7 +61,7 @@ module Gloo
         begin
           plugin_class = Object.const_get( class_name )
           inst = plugin_class.new
-          ext_cb = ExtCallback.new( @engine )
+          ext_cb = Callback.new( @engine )
           inst.register( ext_cb )
         rescue NameError
           @engine.log.error "Warning: Could not find class #{class_name} in file #{full_path}"
