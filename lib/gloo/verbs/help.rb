@@ -25,6 +25,10 @@ module Gloo
         objects: 'show_objs',
         e: 'show_ext',
         ext: 'show_ext',
+        l: 'show_lib',
+        lib: 'show_lib',
+        library: 'show_lib',
+        libraries: 'show_lib',
         extension: 'show_ext',
         extensions: 'show_ext'
       }.freeze
@@ -96,6 +100,7 @@ module Gloo
         data << "   ? objects (obj, o) \n"
         data << "   ? verbs (v) \n"
         data << "   ? ext (e) \n"
+        data << "   ? lib (l) \n"
         data << "   ? settings (s) \n"
         data << "\n For detailed documentation use the gloo website. \n"
         data << "\n     https://gloo.ecrane.us/doc/. \n\n"
@@ -203,6 +208,29 @@ module Gloo
         str = ''
         exts = @engine.ext_manager.loaded_extensions.sort
         exts.each do |name, ext|
+          str << "   #{name.white} \n"
+        end
+
+        return str
+      end
+
+      #
+      # List the libraries
+      #
+      def show_lib
+        data = "\n"
+        data << " Libraries\n".blue
+        data << "#{get_libraries}\n\n"
+        @engine.log.show data
+      end
+
+      #
+      # Get the text for the list of libraries.
+      #
+      def get_libraries
+        str = ''
+        libs = @engine.lib_manager.loaded_libraries.sort
+        libs.each do |name, lib|
           str << "   #{name.white} \n"
         end
 

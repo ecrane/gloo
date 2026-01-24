@@ -14,7 +14,7 @@ module Gloo
       attr_reader :settings, :log, :running_app
       attr_reader :args, :mode, :running, :platform,
                   :dictionary, :parser, :heap, :factory,
-                  :ext_manager
+                  :ext_manager, :lib_manager
       attr_accessor :last_cmd, :persist_man, :event_manager,
                     :exec_env, :converter
 
@@ -52,6 +52,7 @@ module Gloo
         @persist_man = Gloo::Persist::PersistMan.new( self )
         @event_manager = Gloo::Core::EventManager.new( self )
         @ext_manager = Gloo::Plugin::ExtManager.new( self )
+        @lib_manager = Gloo::Plugin::LibManager.new( self )
 
         @exec_env = Gloo::Exec::ExecEnv.new( self )
         @converter = Gloo::Convert::Converter.new( self )

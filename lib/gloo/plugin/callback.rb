@@ -31,4 +31,3 @@ module Gloo
     end
   end
 end
-  

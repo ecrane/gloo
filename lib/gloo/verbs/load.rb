@@ -41,8 +41,7 @@ module Gloo
         elsif opt == EXT_OPT
           load_extension fn
         elsif opt == LIB_OPT
-          # TODO: implement library loading
-          @engine.err FEATURE_NOT_IMPLEMENTED_ERR
+          load_library fn
         else 
           @engine.err UNKNOWN_OPT_ERR
         end
@@ -78,6 +77,13 @@ module Gloo
         @engine.ext_manager.load_ext name
       end
 
+      # 
+      # Load a library
+      # 
+      def load_library( name )
+        @engine.log.debug "Getting ready to load library: #{name}"
+        @engine.lib_manager.load_lib name
+      end
     end
   end
 end
