@@ -6,8 +6,8 @@
 #
 
 module Gloo
-  module Ext
-    class Manager
+  module Plugin
+    class ExtManager
 
       # Constants for extension management
       EXT_FILE = '_ext.rb'

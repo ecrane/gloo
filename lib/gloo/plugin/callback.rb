@@ -2,7 +2,7 @@
 # A mechanism for registering extension components.
 # 
 module Gloo
-  module Ext
+  module Plugin
     class Callback
 
       # 

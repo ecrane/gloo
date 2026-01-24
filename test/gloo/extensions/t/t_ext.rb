@@ -1,7 +1,7 @@
 # 
 # Registers the t extension.
 # 
-class TExt < Gloo::Ext::Base
+class TExt < Gloo::Plugin::Base
 
     # 
     # Register verbs and objects.

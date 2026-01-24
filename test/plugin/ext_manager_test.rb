@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ManagerTest < BaseEngineTest
+class ExtManagerTest < BaseEngineTest
 
   def test_empty_ext_list
     o = @engine.ext_manager.loaded_extensions

@@ -3,7 +3,7 @@
 # Used by extensions to register verbs and objects.
 # 
 module Gloo
-  module Ext
+  module Plugin
     class Base
 
       # 

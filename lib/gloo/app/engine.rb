@@ -51,7 +51,7 @@ module Gloo
         @factory = Gloo::Core::Factory.new( self )
         @persist_man = Gloo::Persist::PersistMan.new( self )
         @event_manager = Gloo::Core::EventManager.new( self )
-        @ext_manager = Gloo::Ext::Manager.new( self )
+        @ext_manager = Gloo::Plugin::ExtManager.new( self )
 
         @exec_env = Gloo::Exec::ExecEnv.new( self )
         @converter = Gloo::Convert::Converter.new( self )
