@@ -61,10 +61,11 @@ module Gloo
       # Require a gem by name, installing it if it's not available.
       #
       def require_gem gem_name
-        puts "Going to require gem: #{gem_name}"
+        @engine.log.debug "Going to require gem: #{gem_name}"
         begin
           gem gem_name
         rescue Gem::LoadError
+          @engine.log.info "Gem not found, attempting to install: #{gem_name}"
           system("gem install #{gem_name}")
           Gem.clear_paths
           gem gem_name
