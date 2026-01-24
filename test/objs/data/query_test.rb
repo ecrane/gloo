@@ -41,48 +41,4 @@ class QueryTest < BaseEngineTest
     assert_equal 'result', obj.children.last.name
   end
 
-  # def test_sqlite_query
-  #   @engine.parser.run 'create o as sqlite'
-  #   @engine.parser.run "put 'test/test.db' into o.database"
-  #   @engine.parser.run "create s as query"
-  #   assert_equal 2, @engine.heap.root.child_count
-  #   s = @engine.heap.root.children.last
-  #   assert s
-  #   assert_equal 3, s.child_count
-
-  #   @engine.parser.run "put 'o' into s.database*"
-  #   @engine.parser.run "put 'select * from key_values' into s.sql"
-
-  #   r = s.children.last
-  #   assert r
-  #   assert_equal 0, r.child_count
-
-  #   @engine.parser.run "tell s to run"
-  #   assert r.child_count > 0
-  # end
-
-  # def test_single_row_check
-  #   o = Gloo::Objs::Query.new @engine
-  #   data = [ 1, [ 1 ] ]
-  #   assert o.single_row_result?( data )
-  # end
-
-  # def test_multiple_rows
-  #   o = Gloo::Objs::Query.new @engine
-  #   data = [ [ 'one', 'two' ], [ '1', '2' ], [ 2, 3 ] ]
-  #   refute o.single_row_result?( data )
-  # end
-
-  # def test_showing_multiple_rows
-  #   o = Gloo::Objs::Query.new @engine
-  #   data = [ [ 'one', 'two' ], [ '1', '2' ], [ 2, 3 ] ]
-  #   refute o.show_rows( data )
-  # end
-
-  # def test_showing_single_row
-  #   o = Gloo::Objs::Query.new @engine
-  #   data = [ [ 'one', 'two' ], [ '1', '2' ] ]
-  #   o.show_single_row( data )
-  # end
-
 end
