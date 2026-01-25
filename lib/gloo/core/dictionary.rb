@@ -223,7 +223,12 @@ module Gloo
       # Add an object to the dictionary
       # 
       def add_object o
-        # @engine.log.debug o
+        # Make sure it hasn't already been registered
+        if ( @objs.key?(o.typename) || @objs.key?(o.short_typename) )
+          @engine.err "duplicate object type '#{o.typename}' or '#{o.short_typename}'"
+          return
+        end
+
         @objs[ o.typename ] = o
         @objs[ o.short_typename ] = o
         add_key o.typename
@@ -234,7 +239,13 @@ module Gloo
       # Add a verb to the dictionary
       # 
       def add_verb v
-        # @engine.log.debug v
+        # Make sure it hasn't already been registered
+        if ( verb?( v.keyword ) || verb?( v.keyword_shortcut ))
+          puts "duplicate verb keyword '#{v.keyword}' or '#{v.keyword_shortcut}'"
+          @engine.err "duplicate verb keyword '#{v.keyword}' or '#{v.keyword_shortcut}'"
+          return
+        end
+
         @verbs[ v.keyword ] = v
         @verbs[ v.keyword_shortcut ] = v
         # v.send( :new ).run
