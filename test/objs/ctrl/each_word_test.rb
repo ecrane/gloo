@@ -10,7 +10,6 @@ class EachWordTest < BaseEngineTest
     assert obj
 
     assert Gloo::Objs::EachWord.use_for?( obj )
-    refute Gloo::Objs::EachRepo.use_for?( obj )
     refute Gloo::Objs::EachChild.use_for?( obj )
     refute Gloo::Objs::EachFile.use_for?( obj )
     refute Gloo::Objs::EachLine.use_for?( obj )
