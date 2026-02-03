@@ -27,28 +27,51 @@ Gem::Specification.new do |spec|
   spec.executables << 'o'
   spec.executables << 'gloo'
 
+  # 
+  # Development Dependencies
+  # 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'minitest', '~> 5.1', '>= 5.14.2'
   spec.add_development_dependency "rake", '~> 13.0', '>= 13.0.1'
   spec.add_development_dependency 'concurrent-ruby', '1.3.4'
 
+  # Used by many objects
   spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.5" 
+
+  # Used by date and time tools
   spec.add_dependency 'chronic', '~> 0.10', '>= 0.10.2'
 
+  # Used by json tools
+  spec.add_dependency 'json', '~> 2.1', '>= 2.1.0'
+
+  # Used by cipher string tool
+  spec.add_dependency 'openssl'
+
+  # Used by password generation
+  spec.add_dependency 'bcrypt', '~> 3.1.20'
+
+  # Used by gloo system
+  spec.add_dependency 'os', '~> 1.1', '>= 1.1.4'
+
+  # 
+  # CLI libs
+  # Need to vet these
+  # 
   spec.add_dependency 'colorize', '~> 1.1.0', '>= 1.1.0'
   spec.add_dependency 'inquirer'
   spec.add_dependency 'reline'  
   spec.add_dependency 'terminal-table'
   
-  spec.add_dependency 'json', '~> 2.1', '>= 2.1.0'
-  spec.add_dependency 'openssl'
-
-  # Removed the ssh_exec obj
-  # spec.add_dependency 'net-ssh', '~> 6.1', '>= 6.1.0'
-  spec.add_dependency 'mysql2', '~> 0.5', '>= 0.5.3'
-  spec.add_dependency 'os', '~> 1.1', '>= 1.1.4'
-  # spec.add_dependency 'pg', '~> 1.5.4'
+  # Used for web server
   spec.add_dependency 'thin', '~> 1.8.2'
+
+  # Used for markdown rendering
   spec.add_dependency 'redcarpet', '~> 3.6.0'
-  spec.add_dependency 'bcrypt', '~> 3.1.20'
+
+  # 
+  # Remove Dependencies
+  # 
+  # Database dependencies
+  spec.add_dependency 'mysql2', '~> 0.5', '>= 0.5.3'
+
 end
