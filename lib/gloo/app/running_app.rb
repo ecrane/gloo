@@ -77,6 +77,19 @@ module Gloo
         return @db_clients[ obj.pn ]
       end
 
+
+      # ---------------------------------------------------------------------
+      #    Running app helpers
+      # ---------------------------------------------------------------------
+
+      #
+      # Create a table renderer if the web server core lib is loaded.
+      #
+      def create_table_renderer
+        # if exists 
+        return Gloo::WebSvr::TableRenderer.new( @engine )
+      end
+
     end
   end
 end
