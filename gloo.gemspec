@@ -65,9 +65,6 @@ Gem::Specification.new do |spec|
   # Used for web server
   spec.add_dependency 'thin', '~> 1.8.2'
 
-  # Used for markdown rendering
-  spec.add_dependency 'redcarpet', '~> 3.6.0'
-
   # 
   # Remove Dependencies
   # 
