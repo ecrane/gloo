@@ -60,14 +60,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'inquirer'
   spec.add_dependency 'reline'  
   spec.add_dependency 'terminal-table'
-  
-  # Used for web server
-  spec.add_dependency 'thin', '~> 1.8.2'
-
-  # 
-  # Remove Dependencies
-  # 
-  # Database dependencies
-  spec.add_dependency 'mysql2', '~> 0.5', '>= 0.5.3'
 
 end

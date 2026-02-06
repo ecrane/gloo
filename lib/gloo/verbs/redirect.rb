@@ -87,7 +87,8 @@ module Gloo
       # This could be a page or a script.
       # 
       def redirect_to_target
-        if @target_obj.class == Gloo::Objs::Page 
+        # TODO: Use a better way to determine if the target is a page or a script.
+        if @engine.app_running? && ( @target_obj.class.name == 'Page' )
           redirect_to_page
         elsif @target_obj.can_receive_message?( RUN_MESSAGE )
           redirect_to_script

@@ -87,7 +87,7 @@ module Gloo
       #
       def create_table_renderer
         # if exists 
-        return Gloo::WebSvr::TableRenderer.new( @engine )
+        return WebSvr::TableRenderer.new( @engine )
       end
 
     end
