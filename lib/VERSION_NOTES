@@ -1,8 +1,8 @@
 5.0 - 2026.02.07
-Adds plugin systems for extensions and core libraries
-Adds exists? verb
-Updates help to show extensions and libraries
-Moves a number of objects into the new core libraries structure
+ - Adds plugin systems for extensions and core libraries
+ - Adds exists? verb
+ - Updates help to show extensions and libraries
+ - Moves a number of objects into the new core libraries structure
 
 
 4.7.0 - 2026.01.18
