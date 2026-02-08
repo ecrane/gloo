@@ -13,8 +13,7 @@ module Gloo
       VERB_TYPE = 'verb'.freeze
       OBJ_TYPE = 'object'.freeze
       ANY_TYPE = 'any'.freeze
-      MISSING_EXPR_ERR = 'Missing Expression!'.freeze
-      WRONG_NUM_ARGS_ERR = 'Wrong number of arguments! 2 or 3 expected.'.freeze
+      WRONG_NUM_ARGS_ERR = 'Wrong number of arguments! 1 or 2 expected.'.freeze
 
       #
       # Run the verb.
