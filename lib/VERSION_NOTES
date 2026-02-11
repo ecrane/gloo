@@ -1,3 +1,7 @@
+5.0.1 - 2026.02.11
+ - Fixes bug with redirect to login.
+
+
 5.0 - 2026.02.07
  - Adds plugin systems for extensions and core libraries
  - Adds exists? verb
