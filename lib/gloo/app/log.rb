@@ -183,25 +183,6 @@ module Gloo
         end
       end
 
-      # ---------------------------------------------------------------------
-      #    Serialization
-      # ---------------------------------------------------------------------
-
-      #
-      # Prepare for serialization by removing the file reference.
-      # Without this, the engine cannot be serialized.
-      #
-      def prep_serialize
-        @logger = nil
-      end
-
-      #
-      # Restore the logger after deserialization.
-      #
-      def restore_after_deserialization
-        create_loggers
-      end
-
     end
   end
 end

@@ -63,43 +63,6 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
-      #    Serialization
-      # ---------------------------------------------------------------------
-
-      #
-      # Prepare for serialization by removing any file references.
-      # Without this, the engine cannot be serialized.
-      #
-      def prep_serialize
-        @log.prep_serialize
-      end
-
-      #
-      # Get the serialized version of this Engine.
-      #
-      def serialize
-        prep_serialize
-        Marshal::dump( self )
-      end
-
-      #
-      # Deserialize the Engine data.
-      #
-      def self.deserialize data
-        e = Marshal::load( data )
-        e.restore_after_deserialization
-        return e
-      end
-
-      #
-      # Restore the engine after deserialization.
-      #
-      def restore_after_deserialization
-        @log.restore_after_deserialization
-      end
-
-
-      # ---------------------------------------------------------------------
       #    Run
       # ---------------------------------------------------------------------
 
