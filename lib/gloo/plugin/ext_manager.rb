@@ -80,8 +80,8 @@ module Gloo
           inst = plugin_class.new
           ext_cb = Callback.new( @engine )
           inst.register( ext_cb )
-        rescue NameError
-          @engine.log.error "Warning: Could not find class #{class_name} in file #{full_path}"
+        rescue NameError => ex
+          @engine.log.error "Could not find class #{class_name} in file #{full_path}", ex
         end
       end
 
