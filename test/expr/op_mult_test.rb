@@ -17,4 +17,9 @@ class OpMultTest < BaseEngineTest
     assert_equal 3.3, @engine.heap.it.value.round( 1 )
   end
 
+  def test_inc_dec_mult
+    @engine.parser.run 'show 100 * 0.75'
+    assert_equal 75.0, @engine.heap.it.value
+  end
+
 end

@@ -50,6 +50,14 @@ class DecimalTest < BaseEngineTest
     assert_equal 13.0, x.value
   end
 
+  def test_int_dec_mult
+    @engine.parser.run 'create x as decimal'
+    x = @engine.heap.root.children.first
+
+    @engine.parser.run 'put 100 * 0.75 into x'
+    assert_equal 75.0, x.value
+  end
+
   # def test_inc_msg
   #   o = Gloo::Objs::Decimal.new
   #   o.set_value 0
