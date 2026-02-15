@@ -81,7 +81,8 @@ module Gloo
           ext_cb = Callback.new( @engine )
           inst.register( ext_cb )
         rescue NameError => ex
-          @engine.log.error "Could not find class #{class_name} in file #{full_path}", ex
+          @engine.log_exception ex
+          @engine.log.error "Could not find class #{class_name} in file #{full_path}"
         end
       end
 
