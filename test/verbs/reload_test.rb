@@ -17,6 +17,16 @@ class ReloadTest < BaseEngineTest
 
     @engine.parser.run 'reload'
 
+    assert_equal 0, @engine.heap.root.child_count
+  end
+
+  def test_reloading_a_file
+    @engine.parser.run 'load test'
+    assert_equal 1, @engine.heap.root.child_count
+    assert_equal 'test', @engine.heap.root.children.first.name
+
+    @engine.parser.run 'tell test to reload'
+
     assert_equal 1, @engine.heap.root.child_count
     assert_equal 'test', @engine.heap.root.children.first.name
   end

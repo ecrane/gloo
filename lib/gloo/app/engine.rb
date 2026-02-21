@@ -61,6 +61,27 @@ module Gloo
         run_mode
       end
 
+      # 
+      # Reset the engine state.
+      # Clear out anything that needs clearing or resetting
+      # to get the engine back to a clean state.
+      #
+      def reset_state
+        stop_running_app
+        @heap = Gloo::Core::Heap.new( self )
+        @persist_man = Gloo::Persist::PersistMan.new( self )
+      end
+
+      # 
+      # Restart the engine with the same settings
+      # and the same mode (with files, etc).
+      #
+      def restart
+        @log.info 'Restarting the engine...'
+        reset_state
+        run_mode
+      end
+
 
       # ---------------------------------------------------------------------
       #    Run

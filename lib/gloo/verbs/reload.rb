@@ -13,6 +13,8 @@ module Gloo
 
       #
       # Run the verb.
+      # First all objects will be notified of the event.
+      # Then the engine will restart with the original parameters.
       #
       def run
         @engine.persist_man.reload_all

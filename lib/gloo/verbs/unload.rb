@@ -13,6 +13,7 @@ module Gloo
 
       #
       # Run the verb.
+      # This will unload all loaded objects and reset the engine state.
       #
       def run
         return unless @engine.persist_man.maps

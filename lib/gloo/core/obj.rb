@@ -340,6 +340,8 @@ module Gloo
 
       #
       # Send the object the unload message.
+      # This will unload the object but the rest of the engine state will
+      # remain unchanged.
       #
       def msg_unload
         if self.root?
@@ -353,6 +355,8 @@ module Gloo
       #
       # Send the object the reload message.
       # Note that this will only work for objects with file assoications.
+      # This will reload the object but the rest of the engine state will
+      # remain unchanged.
       #
       def msg_reload
         if self.root?

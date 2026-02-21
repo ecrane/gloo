@@ -67,15 +67,19 @@ module Gloo
 
       # 
       # Unload all loaded objects.
+      # The engine  is reset to a clean state.
       # 
       def unload_all
         objs = self.maps.map { |fs| fs.obj }
         objs.each { |o| o.msg_unload }
+        @engine.reset_state
       end
 
       # 
       # The given object is unloading.
       # Do any necessary clean up here.
+      # This is used to unload a single object and comes from a
+      # message sent to the object.
       # 
       def unload( obj )
         @engine.event_manager.on_unload obj
@@ -90,19 +94,24 @@ module Gloo
 
       # 
       # Reload all objects.
+      # First send a message to each object to let it know it is being reloaded.
+      # Then let the engine restart to reload the files.
       # 
       def reload_all
         return unless @maps
         
         @maps.each do |fs|
           @engine.event_manager.on_reload fs.obj
-          @engine.heap.unload fs.obj
-          fs.load
         end
+
+        # Acutal unloading is done in the engine.restart.
+        @engine.restart
       end
 
       # 
       # Re-load the given object from file.
+      # This is used to reload a single object and comes from a
+      # message sent to the object.
       # 
       def reload( obj )
         fs = find_file_storage( obj )
