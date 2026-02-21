@@ -49,6 +49,12 @@ module Gloo
       # within the gloo libraries directory.
       #
       def load_lib( name )
+        # Check to see if the library is already loaded.
+        if @libraries.key?( name )
+          @engine.log.warn "Library #{name} is already loaded."
+          return
+        end
+
         @engine.log.debug "Loading core library: #{name}"
         gem_name = core_lib_name name
         

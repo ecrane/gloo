@@ -54,6 +54,11 @@ module Gloo
       # within the gloo extensions directory.
       #
       def load_ext( name )
+        if @extensions.key?( name )
+          @engine.log.warn "Extension #{name} is already loaded."
+          return
+        end
+        
         @engine.log.debug "Loading extension: #{name}"
         fn = ext_start_file name
 
