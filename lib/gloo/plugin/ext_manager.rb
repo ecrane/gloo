@@ -55,7 +55,7 @@ module Gloo
       #
       def load_ext( name )
         if @extensions.key?( name )
-          @engine.log.warn "Extension #{name} is already loaded."
+          @engine.log.info "Extension #{name} is already loaded."
           return
         end
         

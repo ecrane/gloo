@@ -51,7 +51,7 @@ module Gloo
       def load_lib( name )
         # Check to see if the library is already loaded.
         if @libraries.key?( name )
-          @engine.log.warn "Library #{name} is already loaded."
+          @engine.log.info "Library #{name} is already loaded."
           return
         end
 
