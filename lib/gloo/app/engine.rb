@@ -11,6 +11,12 @@ module Gloo
   module App
     class Engine
 
+      # 
+      # Constants for the name of the test library.
+      # This is the short name as it would be used with the load verb.
+      # 
+      TEST_LIB_NAME = 'test'
+
       attr_reader :settings, :log, :running_app
       attr_reader :args, :mode, :running, :platform,
                   :dictionary, :parser, :heap, :factory,
@@ -102,6 +108,8 @@ module Gloo
         elsif @mode == Mode::APP
           @settings.override_project_path @args.app_path
           run
+        elsif @mode == Mode::TEST
+          run_test
         else
           run
         end
@@ -121,6 +129,27 @@ module Gloo
       # 
       def load_files
         @args.files.each { |f| @persist_man.load( f ) }
+      end
+
+      # 
+      # Run in gloo unit test mode.
+      #
+      def run_test
+        @log.info 'Running in Test mode…'
+        puts 'Running in Test mode…'
+
+        begin
+          puts 'load test library => ' + TEST_LIB_NAME
+          # @lib_manager.load_lib TEST_LIB_NAME
+
+          puts 'Running tests...'
+          TestRunner.run
+        rescue => ex
+          log_exception ex
+        end
+
+        puts 'Done with tests.'
+        quit
       end
 
       #
@@ -145,7 +174,7 @@ module Gloo
       # start the engine, but wait for external inputs.
       #
       def run_keep_alive
-        @log.debug 'Running in Embedded mode...'
+        @log.debug 'Running in Embedded mode…'
       end
 
       #

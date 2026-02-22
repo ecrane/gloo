@@ -93,6 +93,13 @@ module Gloo
       end
 
       #
+      # Is the test switch set?
+      #
+      def test?
+        @switches.include?( Gloo::App::Mode::TEST.to_s )
+      end
+
+      #
       # Detect the mode to be run in.
       # Start by seeing if a mode is specified.
       # Then look for the presence of files.
@@ -113,6 +120,8 @@ module Gloo
                  Mode::EMBED
                elsif @files.count.positive?
                  Mode::SCRIPT
+               elsif test?
+                 Mode::TEST
                else
                  Mode.default_mode
                end
