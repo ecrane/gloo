@@ -38,6 +38,20 @@ module Gloo
         return false
       end
 
+      # 
+      # Is [it] true?
+      # 
+      def is_true?
+        return @value == true
+      end
+
+      # 
+      # Is [it] false?
+      # 
+      def is_false?
+        return @value == false
+      end
+
     end
   end
 end

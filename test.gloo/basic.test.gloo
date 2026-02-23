@@ -1,0 +1,13 @@
+#
+# Addition tests
+#
+
+tests [can] :
+
+  show_message [test] :
+    name [string] : 'Show a message'
+    expect [string] : 'Showing a message to set the value in it'
+    on_test [script] :
+      show 'Hello, world!'
+      it = 'Hello, world!'
+      assert 'expected it to be Hello , world!'

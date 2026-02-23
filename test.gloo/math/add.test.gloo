@@ -1,0 +1,12 @@
+#
+# Addition tests
+#
+
+tests [can] :
+
+  add_ints [test] :
+    name [string] : 'Add two integers'
+    expect [string] : 'Basic integer addition works'
+    on_test [script] :
+      2 + 3 = 5
+      assert '2 + 3 = 5'

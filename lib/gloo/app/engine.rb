@@ -140,10 +140,10 @@ module Gloo
 
         begin
           puts 'load test library => ' + TEST_LIB_NAME
-          # @lib_manager.load_lib TEST_LIB_NAME
+          @lib_manager.load_lib TEST_LIB_NAME
 
           puts 'Running tests...'
-          TestRunner.run
+          TestRunner.new( self, @args.files ).run
         rescue => ex
           log_exception ex
         end

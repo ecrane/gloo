@@ -118,10 +118,10 @@ module Gloo
                  Mode::CLI
                elsif embed?
                  Mode::EMBED
-               elsif @files.count.positive?
-                 Mode::SCRIPT
                elsif test?
                  Mode::TEST
+               elsif @files.count.positive?
+                 Mode::SCRIPT
                else
                  Mode.default_mode
                end
