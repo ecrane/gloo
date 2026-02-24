@@ -4,6 +4,9 @@
 
 tests [can] :
 
+  on_load [script] :
+    log 'Include functionality for all test in on_load' (debug)
+
   show_message [test] :
     name [string] : 'Show a message'
     expects [string] : 'Showing a message sets the value in it'
