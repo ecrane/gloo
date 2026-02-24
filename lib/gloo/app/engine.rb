@@ -135,20 +135,16 @@ module Gloo
       # Run in gloo unit test mode.
       #
       def run_test
-        @log.info 'Running in Test mode…'
-        puts 'Running in Test mode…'
+        @log.debug 'Running in Test mode…'
 
         begin
-          puts 'load test library => ' + TEST_LIB_NAME
           @lib_manager.load_lib TEST_LIB_NAME
-
-          puts 'Running tests...'
           TestRunner.new( self, @args.files ).run
         rescue => ex
           log_exception ex
         end
 
-        puts 'Done with tests.'
+        @log.debug 'Tests complete.'
         quit
       end
 
