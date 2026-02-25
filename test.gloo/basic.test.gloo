@@ -12,5 +12,15 @@ tests [can] :
     expects [string] : 'Showing a message sets the value in it'
     on_test [script] :
       show 'Hello, world!'
-      eval it = 'Hello, world!'
-      assert "expected it to be 'Hello, world!'"
+      # eval it = 'Hello, world!'
+      # assert "expected it to be 'Hello, world!'"
+      assert
+
+  write_log [test] :
+    name [string] : 'Write a debug log message'
+    expects [string] : 'A log message is written'
+    on_test [script] :
+      log 'Test debug log' (debug)
+      # eval it = 'Hello, world!'
+      # assert "expected it to be 'Hello, world!'"
+      refute

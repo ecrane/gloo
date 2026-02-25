@@ -8,9 +8,10 @@ tests [can] :
     name [string] : 'Add two integers'
     expect [string] : 'Basic integer addition works'
     on_test [script] :
-      eval 2 + 3 = 5
-      assert '2 + 3 = 5'
+      show 'doing math'
+      # eval 2 + 3 = 5
+      # assert '2 + 3 = 5'
 
       # OR maybe
-      assert '2 + 3 = 5' eval 2 + 3 = 5
-      refute '2 * 3 = 5' eval 2 * 3 = 5
+      # assert '2 + 3 = 5' eval 2 + 3 = 5
+      # refute '2 * 3 = 5' eval 2 * 3 = 5

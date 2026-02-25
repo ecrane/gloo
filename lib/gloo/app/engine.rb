@@ -22,7 +22,7 @@ module Gloo
                   :dictionary, :parser, :heap, :factory,
                   :ext_manager, :lib_manager
       attr_accessor :last_cmd, :persist_man, :event_manager,
-                    :exec_env, :converter
+                    :exec_env, :converter, :context_object
 
       #
       # Set up the engine with basic elements.
