@@ -69,11 +69,20 @@ module Gloo
       # Expand a single file path.
       # 
       def expand( name )
+        # Try full path
         ext_path = File.expand_path( name )
         return [ ext_path ] if self.valid?( ext_path )
 
+        # Try in user root, projects
         full_name = "#{name}#{file_ext}"
-        return [ File.join( @engine.settings.project_path, full_name ) ]
+        pn = File.join( @engine.settings.project_path, full_name )
+        return [ pn ] if self.valid?( pn )
+        
+        # Try in user root
+        pn = File.join( @engine.settings.user_root, full_name )
+        return [ pn ] if self.valid?( pn )
+        
+        return nil
       end
 
       # 
