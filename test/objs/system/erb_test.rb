@@ -22,7 +22,7 @@ class ErbTest < BaseEngineTest
   end
 
   def test_adds_children_on_create
-    o = Gloo::Objs::Eval.new @engine
+    o = Gloo::Objs::Erb.new @engine
     assert o.add_children_on_create?
   end
 
