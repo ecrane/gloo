@@ -9,13 +9,13 @@ tests [can] :
     # # Use this test to verify that errors cause the test to fail.
     # # 
     # math_fail [test] :
-    #   description [string] : 'Expect bad math to fail'
+    #   description [string] : Expect bad math to fail
     #   on_test [script] : 
     #     eval 2 + 3 = 2
     #     assert 'that is wrong!'
 
     add_ints [test] :
-      description [string] : 'Add two integers'
+      description [string] : Add two integers
       on_test [script] : 
         eval 2 + 3 = 5
         assert 'expected 2 + 3 = 5'

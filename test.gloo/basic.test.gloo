@@ -9,7 +9,7 @@ tests [can] :
       log 'Include functionality for all test in on_load' (debug)
 
     # show_message [test] :
-    #   description [string] : 'Show a message'
+    #   description [string] : Show a message
     #   on_test [script] :
     #     show 'hello'
     #     eval it = 'hello'
@@ -18,7 +18,7 @@ tests [can] :
     #     refute "expected it to not be 'not hello'"
 
     assert_noop [test] :
-      description [string] : 'Assert no operation'
+      description [string] : Assert no operation
       on_test [script] :
         noop
         assert 'noop should be true'
@@ -27,14 +27,14 @@ tests [can] :
     # # Use this test to verify that errors cause the test to fail.
     # # 
     # refute_true [test] :
-    #   description [string] : 'Refute true'
+    #   description [string] : Refute true
     #   on_test [script] :
     #     noop
     #     refute 'expected this to fail!'
     #     refute 'also this'
 
     write_log [test] :
-      description [string] : 'Write a debug log message'
+      description [string] : Write a debug log message
       on_test [script] :
         log 'Test debug log' (debug)
         eval it = 'Test debug log'
