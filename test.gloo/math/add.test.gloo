@@ -3,15 +3,28 @@
 #
 
 tests [can] :
+  math [can] :
 
-  add_ints [test] :
-    name [string] : 'Add two integers'
-    expect [string] : 'Basic integer addition works'
-    on_test [script] :
-      show 'doing math'
-      # eval 2 + 3 = 5
-      # assert '2 + 3 = 5'
+    # # 
+    # # Use this test to verify that errors cause the test to fail.
+    # # 
+    # math_fail [test] :
+    #   description [string] : 'Expect bad math to fail'
+    #   on_test [script] : 
+    #     eval 2 + 3 = 2
+    #     assert 'that is wrong!'
 
-      # OR maybe
-      # assert '2 + 3 = 5' eval 2 + 3 = 5
-      # refute '2 * 3 = 5' eval 2 * 3 = 5
+    add_ints [test] :
+      description [string] : 'Add two integers'
+      on_test [script] : 
+        eval 2 + 3 = 5
+        assert 'expected 2 + 3 = 5'
+
+        eval 10 + 20 = 30
+        assert 'expected 10 + 20 = 30'
+
+        eval 100 + 200 = 300
+        assert 'expected 100 + 200 = 300'
+
+        eval 1 + 2 = 4
+        refute 'expected 1 + 2 != 4'

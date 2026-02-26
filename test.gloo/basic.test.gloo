@@ -3,24 +3,39 @@
 #
 
 tests [can] :
+  basic [can] :
 
-  on_load [script] :
-    log 'Include functionality for all test in on_load' (debug)
+    on_load [script] :
+      log 'Include functionality for all test in on_load' (debug)
 
-  show_message [test] :
-    name [string] : 'Show a message'
-    expects [string] : 'Showing a message sets the value in it'
-    on_test [script] :
-      show 'Hello, world!'
-      # eval it = 'Hello, world!'
-      # assert "expected it to be 'Hello, world!'"
-      assert
+    # show_message [test] :
+    #   description [string] : 'Show a message'
+    #   on_test [script] :
+    #     show 'hello'
+    #     eval it = 'hello'
+    #     assert "expected it to be 'hello'"
+    #     eval it = 'not hello'
+    #     refute "expected it to not be 'not hello'"
 
-  write_log [test] :
-    name [string] : 'Write a debug log message'
-    expects [string] : 'A log message is written'
-    on_test [script] :
-      log 'Test debug log' (debug)
-      # eval it = 'Hello, world!'
-      # assert "expected it to be 'Hello, world!'"
-      refute
+    assert_noop [test] :
+      description [string] : 'Assert no operation'
+      on_test [script] :
+        noop
+        assert 'noop should be true'
+
+    # # 
+    # # Use this test to verify that errors cause the test to fail.
+    # # 
+    # refute_true [test] :
+    #   description [string] : 'Refute true'
+    #   on_test [script] :
+    #     noop
+    #     refute 'expected this to fail!'
+    #     refute 'also this'
+
+    write_log [test] :
+      description [string] : 'Write a debug log message'
+      on_test [script] :
+        log 'Test debug log' (debug)
+        eval it = 'Test debug log'
+        assert "expected it to be 'Test debug log'"
