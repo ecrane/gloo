@@ -100,6 +100,8 @@ module Gloo
           EachLine.new( @engine, self ).run
         elsif EachFile.use_for?( self )
           EachFile.new( @engine, self ).run
+        elsif EachDir.use_for?( self )
+          EachDir.new( @engine, self ).run
         # elsif EachRepo.use_for?( self )
         #   EachRepo.new( @engine, self ).run
         else 
