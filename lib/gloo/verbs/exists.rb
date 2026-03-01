@@ -13,6 +13,7 @@ module Gloo
       VERB_TYPE = 'verb'.freeze
       OBJ_TYPE = 'object'.freeze
       ANY_TYPE = 'any'.freeze
+      INSTANCE = 'instance'.freeze
       WRONG_NUM_ARGS_ERR = 'Wrong number of arguments! 1 or 2 expected.'.freeze
 
       #
@@ -64,9 +65,21 @@ module Gloo
           return @engine.dictionary.obj?(keyword)
         elsif type == ANY_TYPE
           return @engine.dictionary.verb?(keyword) || @engine.dictionary.obj?(keyword)
+        elsif type == INSTANCE
+          return instance_exists?(keyword)
         end
 
         return false
+      end
+
+      # 
+      # Check to see if an instance of an object exists.
+      # 
+      def instance_exists?( pn )
+        pn = Gloo::Core::Pn.new( @engine, pn )
+        o = pn.resolve
+        return false if o.nil?
+        return true
       end
 
     end

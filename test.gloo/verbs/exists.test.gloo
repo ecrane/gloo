@@ -1,0 +1,49 @@
+#
+# Exists verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    exists [can] :
+
+      verb [test] :
+        description [string] : Check on existance of exists verb
+        on_test [script] :
+          exists? verb exists?
+          assert "expected exists? to exist"
+
+          exists? verb does_not_exist
+          refute "expected does_not_exist to not exist"
+
+      object [test] :
+        description [string] : Check on existance of exists object type
+        on_test [script] :
+          exists? object container
+          assert "expected container to exist"
+
+          exists? object can
+          assert "expected can to exist"
+
+          exists? object does_not_exist
+          refute "expected does_not_exist to not exist"
+
+      any_v_or_o [test] :
+        description [string] : Check on existance of any type
+        on_test [script] :
+          exists? str
+          assert "expected str to exist"
+
+          exists? show
+          assert "expected show to exist"
+
+          exists? does_not_exist
+          refute "expected does_not_exist to not exist"
+
+      instance [test] :
+        description [string] : Check on existance of objects.
+        on_test [script] :
+          exists? instance tests.verbs.exists.instance
+          assert "expected instance to exist"
+
+          exists? instance tests.verbs.exists.instance2
+          refute "expected instance to not exist"
