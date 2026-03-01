@@ -1,0 +1,67 @@
+#
+# String tests
+#
+
+tests [can] :
+  string [can] :
+
+    on_load [script] :
+      log 'Include functionality for all test in on_load' (debug)
+
+    s [string] : 
+
+    put_value [test] :
+      description [string] : Put a value into the string
+      on_test [script] :
+        put 'hello' into ^^.s
+        eval ^^.s = "hello"
+        assert "expected s to be 'hello'"
+
+        put ^^.s and ' world' into ^^.s
+        eval ^^.s = "hello world"
+        assert "expected s to be 'hello world'"
+
+    uppercase [test] :
+      description [string] : Uppercase the string
+      on_test [script] :
+        put 'hello' into ^^.s
+        tell ^^.s to up
+        eval ^^.s = "HELLO"
+        assert "expected s to be 'HELLO'"
+
+    lowercase [test] :
+      description [string] : Lowercase the string
+      on_test [script] :
+        put 'HELLO' into ^^.s
+        tell ^^.s to down
+        eval ^^.s = "hello"
+        assert "expected s to be 'hello'"
+
+    length [test] :
+      description [string] : Get the length of the string
+      on_test [script] :
+        put 'hello' into ^^.s
+        tell ^^.s to size
+        eval it = 5 
+        assert "expected length to be 5"
+
+    starts_with [test] :
+      description [string] : Check if the string starts with a value
+      on_test [script] :
+        put 'hello' into ^^.s
+        tell ^^.s to starts_with? ('he')
+        assert "expected it to be true that s starts with 'he'"
+
+    ends_with [test] :
+      description [string] : Check if the string ends with a value
+      on_test [script] :
+        put 'hello' into ^^.s
+        tell ^^.s to ends_with? ('lo')
+        assert "expected it to be true that s ends with 'lo'"
+
+    contains [test] :
+      description [string] : Check if the string ends with a value
+      on_test [script] :
+        put 'hello world' into ^^.s
+        tell ^^.s to contains? ('lo w')
+        assert "expected it to be true that s contains 'lo w'"

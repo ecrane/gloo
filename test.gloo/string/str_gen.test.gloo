@@ -1,0 +1,76 @@
+#
+# String generation tests
+#
+
+tests [can] :
+  string [can] :
+
+    on_load [script] :
+      log 'Include functionality for all test in on_load' (debug)
+
+    s [string] : 
+    a [string] : 
+
+    uuid [test] :
+      description [string] : Generate a couple of UUIDs
+      on_test [script] :
+        tell ^^.s to gen_uuid
+        tell ^^.a to gen_uuid
+        eval ^^.a != ^^.s
+        assert "expected a to be different from s"
+
+        tell ^^.a to size
+        eval it = 36
+        assert "expected a to be 36 characters long"
+
+    gen_alpha [test] :
+      description [string] : Generate a couple of alpha strings
+      on_test [script] :
+        tell ^^.s to gen_alphanumeric (10)
+        tell ^^.a to gen_alphanumeric (10)
+        eval ^^.a != ^^.s
+        assert "expected a to be different from s"
+
+        tell ^^.a to size
+        eval it = 10
+        assert "expected a to be 10 characters long"
+
+        tell ^^.a to gen_alphanumeric (7)
+        tell ^^.a to size
+        eval it = 7
+        assert "expected a to be 7 characters long"
+
+    gen_hex [test] :
+      description [string] : Generate a couple of hex strings
+      on_test [script] :
+        tell ^^.s to gen_hex (10)
+        tell ^^.a to gen_hex (10)
+        eval ^^.a != ^^.s
+        assert "expected a to be different from s"
+
+        tell ^^.a to size
+        eval it >= 10
+        assert "expected a to be 10 characters long"
+
+        tell ^^.a to gen_hex (30)
+        tell ^^.a to size
+        eval it >= 30
+        assert "expected a to be 30 characters long"
+
+    gen_base64 [test] :
+      description [string] : Generate a couple of base64 strings
+      on_test [script] :
+        tell ^^.s to gen_base64 (30)
+        tell ^^.a to gen_base64 (30)
+        eval ^^.a != ^^.s
+        assert "expected a to be different from s"
+
+        tell ^^.a to size
+        eval it >= 30
+        assert "expected a to be >= 30 characters long"
+
+        tell ^^.a to gen_base64 (10)
+        tell ^^.a to size
+        eval it >= 10
+        assert "expected a to be >= 10 characters long"
+

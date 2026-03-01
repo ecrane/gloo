@@ -1,0 +1,37 @@
+#
+# Multiplication tests
+#
+
+tests [can] :
+  math [can] :
+    mult [can] :
+
+      mult_ints [test] :
+        description [string] : Multiply two integers
+        on_test [script] : 
+          eval 2 * 3 = 6
+          assert 'expected 2 * 3 = 6'
+
+          eval 10 * 20 = 200
+          assert 'expected 10 * 20 = 200'
+
+          eval 100 * 200 = 20000
+          assert 'expected 100 * 200 = 20000'
+
+          eval 1 * 3 = 1
+          refute 'expected 1 * 3 != 1'
+
+      mult_decimals [test] :
+        description [string] : Multiply two decimals
+        on_test [script] : 
+          eval 1.5 * 5.5 = 8.25
+          assert 'expected 1.5 * 5.5 = 8.25'
+
+          eval 10.5 * 20.5 = 214.5
+          assert 'expected 10.5 * 20.5 = 214.5'
+
+          eval 100.5 * 200.5 = 20100.25
+          assert 'expected 100.5 * 200.5 = 20100.25'
+
+          eval 1.5 * 10.5 = 10
+          refute 'expected 1.5 * 10.5 != 10'

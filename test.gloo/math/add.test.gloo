@@ -4,27 +4,43 @@
 
 tests [can] :
   math [can] :
+    add [can] :
 
-    # # 
-    # # Use this test to verify that errors cause the test to fail.
-    # # 
-    # math_fail [test] :
-    #   description [string] : Expect bad math to fail
-    #   on_test [script] : 
-    #     eval 2 + 3 = 2
-    #     assert 'that is wrong!'
+      # # 
+      # # Use this test to verify that errors cause the test to fail.
+      # # 
+      # math_fail [test] :
+      #   description [string] : Expect bad math to fail
+      #   on_test [script] : 
+      #     eval 2 + 3 = 2
+      #     assert 'that is wrong!'
 
-    add_ints [test] :
-      description [string] : Add two integers
-      on_test [script] : 
-        eval 2 + 3 = 5
-        assert 'expected 2 + 3 = 5'
+      add_ints [test] :
+        description [string] : Add two integers
+        on_test [script] : 
+          eval 2 + 3 = 5
+          assert 'expected 2 + 3 = 5'
 
-        eval 10 + 20 = 30
-        assert 'expected 10 + 20 = 30'
+          eval 10 + 20 = 30
+          assert 'expected 10 + 20 = 30'
 
-        eval 100 + 200 = 300
-        assert 'expected 100 + 200 = 300'
+          eval 100 + 200 = 300
+          assert 'expected 100 + 200 = 300'
 
-        eval 1 + 2 = 4
-        refute 'expected 1 + 2 != 4'
+          eval 1 + 2 = 4
+          refute 'expected 1 + 2 != 4'
+
+      add_decimals [test] :
+        description [string] : Add two decimals
+        on_test [script] : 
+          eval 1.5 + 5.5 = 7
+          assert 'expected 1.5 + 5.5 = 7'
+
+          eval 10.5 + 20.5 = 31
+          assert 'expected 10.5 + 20.5 = 31'
+
+          eval 100.5 + 200.5 = 301
+          assert 'expected 100.5 + 200.5 = 301'
+
+          eval 1.5 + 2.5 = 3
+          refute 'expected 1.5 + 2.5 != 3'
