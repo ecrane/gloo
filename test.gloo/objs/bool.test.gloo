@@ -1,0 +1,60 @@
+#
+# Boolean tests
+#
+
+tests [can] :
+  objs [can] :
+    bool [can] :
+
+      a [boolean] : 
+      b [boolean] : 
+
+      set_value_with_msg [test] :
+        description [string] : Set the value of the boolean
+        on_test [script] :
+          tell ^^.b to true
+          assert "expected it to be true"
+
+          eval ^^.b
+          assert "expected b to be true"
+
+          tell ^^.b to false
+          refute "expected it to be false"
+
+          eval ^^.b
+          refute "expected b to be false"
+
+      not_value [test] :
+        description [string] : Set the value of the boolean and not it
+        on_test [script] :
+          tell ^^.b to true
+          tell ^^.b to not
+          refute "expected it to be false"
+
+          tell ^^.b to false
+          tell ^^.b to not
+          assert "expected it to be true"
+
+      compare_values [test] :
+        description [string] : Compare the value of two booleans
+        on_test [script] :
+          tell ^^.a to true
+          put true into ^^.b
+          eval ^^.b = ^^.a
+          assert "expected both to be true"
+
+          tell ^^.a to false
+          put false into ^^.b
+          eval ^^.b = ^^.a
+          assert "expected both to be false"
+
+      set_value [test] :
+        description [string] : Set the value of the boolean
+        on_test [script] :
+          put true into ^^.b
+          eval ^^.b = true
+          assert "expected b to be true"
+
+          put false into ^^.b
+          eval ^^.b = false
+          assert "expected b to be false"

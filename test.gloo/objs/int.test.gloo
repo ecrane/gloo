@@ -1,0 +1,56 @@
+#
+# Integer tests
+#
+
+tests [can] :
+  objs [can] :
+    int [can] :
+
+      a [int] : 
+      b [int] : 
+
+      set_value_with_msg [test] :
+        description [string] : Set the value of the integer
+        on_test [script] :
+          put 1 into ^^.b
+          eval ^^.b = 1
+          assert "expected it to be 1"
+
+          put 2 into ^^.a
+          eval ^^.a = ^^.b
+          refute "expected them to not be equal"
+
+          put 1 into ^^.a
+          eval ^^.a = ^^.b
+          assert "expected them to be equal"
+
+      inc_int [test] :
+        description [string] : Increment the integer
+        on_test [script] :
+          put 1 into ^^.a
+          tell ^^.a to inc
+          eval ^^.a = 2
+          assert "expected it to be 2"
+
+      dec_int [test] :
+        description [string] : Decrement the integer
+        on_test [script] :
+          put 1 into ^^.a
+          tell ^^.a to dec
+          eval ^^.a = 0
+          assert "expected it to be 0"
+
+      rand_int [test] :
+        description [string] : Randomize the integer
+        on_test [script] :
+          put 1 into ^^.a
+          tell ^^.a to randomize
+          eval ^^.a >= 0
+          assert "expected it to be greater than or equal to 0"
+          eval ^^.a <= 100
+          assert "expected it to be less than or equal to 100"
+          
+          tell ^^.a to randomize (10000)
+          tell ^^.b to randomize (10000)
+          eval ^^.a = ^^.b
+          refute "expected them to not be equal"
