@@ -36,7 +36,7 @@ class StringTest < BaseEngineTest
     assert msgs
     assert msgs.include?( 'starts_with?' )
     assert msgs.include?( 'ends_with?' )
-    assert msgs.include?( 'contains?' )
+    assert msgs.include?( 'substring?' )
 
     assert msgs.include?( 'up' )
     assert msgs.include?( 'down' )
@@ -120,11 +120,11 @@ class StringTest < BaseEngineTest
     s = @engine.heap.root.children.first
     assert_equal 'abc', s.value
 
-    o = @engine.parser.parse_immediate "check s for contains? ('bc')"
+    o = @engine.parser.parse_immediate "check s for substring? ('bc')"
     o.run
     assert @engine.heap.it.value
 
-    o = @engine.parser.parse_immediate "check s for contains? ('abcd')"
+    o = @engine.parser.parse_immediate "check s for substring? ('abcd')"
     o.run
     refute @engine.heap.it.value
   end

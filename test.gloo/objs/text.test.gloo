@@ -80,5 +80,5 @@ tests [can] :
         description [string] : Check if the string contains a value
         on_test [script] :
           put 'hello world' into ^^.b
-          tell ^^.b to contains? ('lo w')
+          tell ^^.b to substring? ('lo w')
           assert "expected it to be true that it contains 'lo w'"

@@ -113,6 +113,6 @@ tests [can] :
       description [string] : Check if the string ends with a value
       on_test [script] :
         put 'hello world' into ^^.s
-        tell ^^.s to contains? ('lo w')
+        tell ^^.s to substring? ('lo w')
         assert "expected it to be true that s contains 'lo w'"
 

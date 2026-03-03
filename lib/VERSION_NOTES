@@ -96,7 +96,6 @@ adds tag helper for apple touch icon
  - Adds starts_with?, ends_with?, contains?, and format_for_html messages to string
 
 
-
 3.8.0 - 2025.01.23
 - Fixes issue with sessions
 - Adds authenticity token tag and supporting session id and validation

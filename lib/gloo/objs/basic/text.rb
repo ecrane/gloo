@@ -58,7 +58,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[up down size starts_with? ends_with? contains? 
+        return super + %w[up down size starts_with? ends_with? substring? 
           count_lines count_words count_chars
           format_for_html encode64 decode64 escape unescape
           gen_alphanumeric gen_uuid gen_hex gen_base64]

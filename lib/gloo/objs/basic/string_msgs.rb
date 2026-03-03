@@ -51,10 +51,10 @@ module Gloo
       # 
       # Does the string contain the given string?
       #
-      # This is an overload.
+      # This was formerly an overload of obj.contains?
       # Contains? for the Obj checks for the presense of children.
       #
-      def msg_contains?
+      def msg_substring?
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
