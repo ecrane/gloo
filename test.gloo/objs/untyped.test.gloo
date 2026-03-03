@@ -1,0 +1,25 @@
+#
+# Script tests
+#
+
+tests [can] :
+  objs [can] :
+    untyped [can] :
+
+      a [any] : 
+
+      test_untyped [test] :
+        description [string] : Test untyped with different values
+        on_test [script] :
+          put "hello" into ^^.a
+          eval ^^.a = "hello"
+          assert "expected it to be hello"
+
+          put 123 into ^^.a
+          eval ^^.a = 123
+          assert "expected it to be 123"
+
+          put true into ^^.a
+          eval ^^.a = true
+          assert "expected it to be true"
+

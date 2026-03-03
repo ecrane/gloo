@@ -1,0 +1,47 @@
+#
+# Container tests
+#
+
+tests [can] :
+  objs [can] :
+    can [can] :
+
+      a [can] :
+        b [string] : "b"
+        c [string] : "c"
+        d [string] : "d"
+      
+      count_children [test] :
+        description [string] : Verify the number of children
+        on_test [script] :
+          tell tests.objs.can.a to count
+          eval it = 3
+          assert "expected it to be 3"
+      
+      test_contains [test] :
+        description [string] : Verify the container contains
+        on_test [script] :
+          check tests.objs.can.a for contains?
+          assert "expected can to contains"
+
+          check tests.objs.can.a.b for contains?
+          refute "expected string to not contains"
+
+      create_container [test] :
+        description [string] : Create a container and verify
+        on_test [script] :
+          create tests.objs.can.c as container
+          tell tests.objs.can.c to count
+          eval it = 0
+          assert "expected it to be 0"
+
+          create tests.objs.can.c.s as string
+          tell tests.objs.can.c to count
+          eval it = 1
+          assert "expected it to be 1"
+
+          tell tests.objs.can.c to delete_children
+          tell tests.objs.can.c to count
+          eval it = 0
+          assert "expected it to be 0"
+

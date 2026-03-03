@@ -1,0 +1,20 @@
+#
+# Move verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    move [can] :
+
+      c [container] :
+        a [string] : "a"
+      t [container] :
+
+      move_a [test] :
+        description [string] : Move an object and verify.
+        on_test [script] :
+          move tests.verbs.move.c.a to tests.verbs.move.t
+          exists? instance tests.verbs.move.t.a
+          assert "expected a to be in t"
+          exists? instance tests.verbs.move.c.a
+          refute "expected a not to be in c"

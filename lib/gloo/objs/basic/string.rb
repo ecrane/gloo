@@ -116,6 +116,9 @@ module Gloo
       # 
       # Does the string contain the given string?
       #
+      # This is an overload.
+      # Contains? for the Obj checks for the presense of children.
+      #
       def msg_contains?
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
@@ -125,8 +128,6 @@ module Gloo
           @engine.heap.it.set_to result
           return result
         else
-          # Error
-          @engine.log.error MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end

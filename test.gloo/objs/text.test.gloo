@@ -1,0 +1,23 @@
+#
+# Text tests
+#
+
+tests [can] :
+  objs [can] :
+    text [can] :
+
+      a [text] : BEGIN
+        one
+        two
+        three
+      END
+
+      b [string] :
+
+      verify_text [test] :
+        description [string] : Verify the content of the text
+        on_test [script] :
+          put ^^.a into ^^.b
+          check ^^.b for starts_with? ("        one")
+          assert "expected it to be true"
+
