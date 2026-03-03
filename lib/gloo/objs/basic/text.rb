@@ -3,10 +3,13 @@
 #
 # A [multiline] block of text.
 #
+require_relative 'string_msgs'
 
 module Gloo
   module Objs
     class Text < Gloo::Core::Obj
+
+      include StringMsgs
 
       KEYWORD = 'text'.freeze
       KEYWORD_SHORT = 'txt'.freeze
@@ -55,7 +58,10 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super
+        return super + %w[up down size starts_with? ends_with? contains? 
+          count_lines count_words count_chars
+          format_for_html encode64 decode64 escape unescape
+          gen_alphanumeric gen_uuid gen_hex gen_base64]
       end
 
     end

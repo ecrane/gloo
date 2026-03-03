@@ -9,7 +9,7 @@ tests [can] :
       a [text] : BEGIN
         one
         two
-        three
+        three 3 tree
       END
 
       b [string] :
@@ -21,3 +21,64 @@ tests [can] :
           check ^^.b for starts_with? ("        one")
           assert "expected it to be true"
 
+      blank [test] :
+        description [string] : Check to see if the text is blank
+        on_test [script] :
+          put '' into ^^.b
+          check ^^.b for blank?
+          assert "expected text to be blank?"
+
+          put 'abc' into ^^.b
+          check ^^.b for blank?
+          refute "expected text to not be blank?"
+
+      length [test] :
+        description [string] : Get the length of the string
+        on_test [script] :
+          put 'hello' into ^^.b
+          tell ^^.b to size
+          eval it = 5 
+          assert "expected length to be 5"
+
+      count_chars [test] :
+        description [string] : Get the number of characters
+        on_test [script] :
+          put 'hello world' into ^^.b
+          tell ^^.b to count_chars
+          eval it = 11
+          assert "expected text to have 11 characters"
+
+      count_words [test] :
+        description [string] : Get the number of words
+        on_test [script] :
+          tell ^^.a to count_words
+          eval it = 5
+          assert "expected text to have 5 words"
+
+      count_lines [test] :
+        description [string] : Get the number of lines 
+        on_test [script] :
+          tell ^^.a to count_lines
+          eval it = 3
+          assert "expected text to have 3 lines"
+
+      starts_with [test] :
+        description [string] : Check if the string starts with a value
+        on_test [script] :
+          put 'hello' into ^^.b
+          tell ^^.b to starts_with? ('he')
+          assert "expected it to be true that it starts with 'he'"
+
+      ends_with [test] :
+        description [string] : Check if the string ends with a value
+        on_test [script] :
+          put 'hello' into ^^.b
+          tell ^^.b to ends_with? ('lo')
+          assert "expected it to be true that it ends with 'lo'"
+
+      contains [test] :
+        description [string] : Check if the string contains a value
+        on_test [script] :
+          put 'hello world' into ^^.b
+          tell ^^.b to contains? ('lo w')
+          assert "expected it to be true that it contains 'lo w'"

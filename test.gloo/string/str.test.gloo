@@ -21,6 +21,17 @@ tests [can] :
         eval ^^.s = "hello world"
         assert "expected s to be 'hello world'"
 
+    blank [test] :
+      description [string] : Check to see if the string is blank
+      on_test [script] :
+        put '' into ^^.s
+        check ^^.s for blank?
+        assert "expected s to be blank?"
+
+        put 'abc' into ^^.s
+        check ^^.s for blank?
+        refute "expected s to not be blank?"
+
     uppercase [test] :
       description [string] : Uppercase the string
       on_test [script] :
@@ -45,6 +56,45 @@ tests [can] :
         eval it = 5 
         assert "expected length to be 5"
 
+    count_chars [test] :
+      description [string] : Get the number of characters
+      on_test [script] :
+        put 'hello' into ^^.s
+        tell ^^.s to count_chars
+        eval it = 5
+        assert "expected text to have 5 characters"
+
+    count_words [test] :
+      description [string] : Get the number of words
+      on_test [script] :
+        put 'hello' into ^^.s
+        tell ^^.s to count_words
+        eval it = 1
+        assert "expected text to have 1 word"
+
+        put '' into ^^.s
+        tell ^^.s to count_words
+        eval it = 0
+        assert "expected text to have no words"
+
+        put 'hello world!' into ^^.s
+        tell ^^.s to count_words
+        eval it = 2
+        assert "expected text to have 2 words"
+
+    count_lines [test] :
+      description [string] : Get the number of lines 
+      on_test [script] :
+        put '' into ^^.s
+        tell ^^.s to count_lines
+        eval it = 0
+        assert "expected text to have 0 lines"
+
+        put 'hello world!' into ^^.s
+        tell ^^.s to count_lines
+        eval it = 1
+        assert "expected text to have 1 line"
+
     starts_with [test] :
       description [string] : Check if the string starts with a value
       on_test [script] :
@@ -65,3 +115,4 @@ tests [can] :
         put 'hello world' into ^^.s
         tell ^^.s to contains? ('lo w')
         assert "expected it to be true that s contains 'lo w'"
+
