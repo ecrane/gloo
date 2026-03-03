@@ -1,0 +1,52 @@
+#
+# Root object tests
+#
+
+tests [can] :
+  objs [can] :
+    obj [can] :
+
+      o [any] :
+      a [can] :
+        b [string] : "b"
+        c [string] : "c"
+        d [string] : "d"
+
+      obj_contains [test] :
+        description [string] : Check to see if an object contains children
+        on_test [script] :
+          check tests.objs.obj.o for contains?
+          refute "the object does not contain children"
+
+          check tests.objs.obj.a for contains?
+          assert "the object contains children"
+
+      blank_object [test] :
+        description [string] : Check for a blank string
+        on_test [script] :
+          check tests.objs.obj.a.b for blank?
+          refute "the string should be blank"
+
+          check tests.objs.obj.o for blank?
+          assert "the object should be blank"
+
+      responds_to_blank [test] :
+        description [string] : Verify that all objects respond to blank? msessage
+        on_test [script] :
+          check tests.objs.obj.o for responds_to? ('blank?')
+          assert "expected any object to respond to blank?"
+
+      responds_to_contains [test] :
+        description [string] : Verify that all objects respond to contains? msessage
+        on_test [script] :
+          check tests.objs.obj.o for responds_to? ('contains?')
+          assert "expected any object to respond to contains?"
+
+      responds_to_up [test] :
+        description [string] : Verify that strings respond to up msessage
+        on_test [script] :
+          check tests.objs.obj.o for responds_to? ('up')
+          refute "expected any object to not respond to up"
+
+          check tests.objs.obj.a.b for responds_to? ('up')
+          assert "expected string to respond to up"

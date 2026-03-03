@@ -302,7 +302,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return %w[reload unload blank? contains?]
+        return %w[reload unload blank? contains? responds_to?]
       end
 
       #
@@ -383,6 +383,23 @@ module Gloo
         has_children = child_count.positive?
         @engine.heap.it.set_to has_children
         return has_children
+      end
+
+      # 
+      # Check to see if the object responds to a message.
+      # 
+      def msg_responds_to?
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+
+          result = self.can_receive_message?( data )
+          @engine.heap.it.set_to result
+          return result
+        else
+          @engine.heap.it.set_to false
+          return false
+        end
       end
 
 
