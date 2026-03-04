@@ -1,0 +1,35 @@
+#
+# Check verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    check [can] :
+
+      c [container] :
+        a [string] : "a"
+      t [container] :
+
+      check_contains [test] :
+        description [string] : Check an object for containment
+        on_test [script] :
+          check ^^.c for contains?
+          assert "expected c to contain a"
+
+          check ^^.t for contains?
+          refute "expected t to not contain a"
+
+          check ^^.c.a for contains?
+          refute "expected a to not be a container"
+
+      check_blank [test] :
+        description [string] : Check an object for blankness
+        on_test [script] :
+          check ^^.c for blank?
+          refute "expected c to not be blank"
+
+          check ^^.t for blank?
+          assert "expected t to be blank"
+
+          check ^^.c.a for blank?
+          refute "expected a to not be blank"

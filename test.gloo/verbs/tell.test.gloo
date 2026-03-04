@@ -1,0 +1,16 @@
+#
+# Tell verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    tell [can] :
+
+      s [string] : abc123d
+
+      tell [test] :
+        description [string] : Tell verb sets value to it
+        on_test [script] :
+          tell ^^.s to count_chars
+          eval it = 7
+          assert "expected it to be 7"

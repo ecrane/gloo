@@ -1,0 +1,16 @@
+#
+# Run verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    run [can] :
+
+      s [script] :
+        eval true
+
+      run [test] :
+        description [string] : Run a script.
+        on_test [script] :
+          run ^^.s
+          assert "expected it to be true"

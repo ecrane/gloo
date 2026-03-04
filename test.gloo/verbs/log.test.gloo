@@ -1,0 +1,14 @@
+#
+# Log verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    log [can] :
+
+      write_log [test] :
+        description [string] : Write to the log.
+        on_test [script] :
+          log 'debug' (debug)
+          eval it = 'debug'
+          assert "expected it to be 'debug'"

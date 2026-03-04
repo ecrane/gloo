@@ -1,0 +1,16 @@
+#
+# If verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    if [can] :
+
+      b [bool] : true
+
+      if_test [test] :
+        description [string] : If true then evaluate
+        on_test [script] :
+          eval false
+          if ^^.b then eval true
+          assert "expected b to be true"

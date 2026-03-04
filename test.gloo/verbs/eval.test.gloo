@@ -1,0 +1,19 @@
+#
+# Eval verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    eval [can] :
+
+      eval_expr [test] :
+        description [string] : Evaluate an expression.
+        on_test [script] :
+          eval 1 + 1 = 2
+          assert "expected 1 + 1 to equal 2"
+
+          eval true
+          assert "expected true to be true"
+
+          eval false
+          refute "expected false to be false"

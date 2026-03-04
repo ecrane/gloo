@@ -1,0 +1,22 @@
+#
+# Break verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    break [can] :
+
+      b [bool] : true
+
+      s [script] :
+        if ^.b  then break
+        
+        # Should not get here
+        put false into ^.b
+
+      break [test] :
+        description [string] : Break out of a script
+        on_test [script] :
+          tell ^^.s to run
+          eval ^^.b
+          assert "expected b to be true"

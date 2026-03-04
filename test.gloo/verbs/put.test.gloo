@@ -1,0 +1,19 @@
+#
+# Put verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    put [can] :
+
+      s [string] : abc
+
+      put_into [test] :
+        description [string] : Assign a value.
+        on_test [script] :
+          eval ^^.s = 'abc'
+          assert 'initial value is abc'
+
+          put 'xyz' into ^^.s
+          eval it = ^^.s
+          assert "expected it to be 'xyz'"
