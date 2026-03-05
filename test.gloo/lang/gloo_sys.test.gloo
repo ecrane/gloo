@@ -1,0 +1,91 @@
+#
+# Gloo System tests
+#
+
+tests [can] :
+  lang [can] :
+    gloo_sys [can] :
+
+      get_platform_info [test] :
+        description [string] : Get the platform info.
+        on_test [script] :
+          eval $.platform_cpu
+          eval it = ''
+          refute "expected cpu to not be empty"
+
+          eval $.platform_os
+          eval it = ''
+          refute "expected os to not be empty"
+
+          eval $.platform_version
+          eval it = ''
+          refute "expected version to not be empty"
+
+          eval $.platform_mac?
+          eval it = ''
+          refute "expected mac? to not be empty"
+
+      get_hostname [test] :
+        description [string] : Get the hostname.
+        on_test [script] :
+          eval $.hostname = ''
+          refute "expected hostname to not be empty"
+
+      get_working_dir [test] :
+        description [string] : Get the working directory.
+        on_test [script] :
+          eval $.working_dir
+          eval it = ''
+          refute "expected working_dir to not be empty"
+
+          eval $.working_dir = gloo.working_dir
+          assert "expected gloo. and $. to be the same"
+
+      get_app_dir [test] :
+        description [string] : Get the app directory.
+        on_test [script] :
+          eval $.app
+          eval it = ''
+          refute "expected app_dir to not be empty"
+
+      get_user_info [test] :
+        description [string] : Get the user directories.
+        on_test [script] :
+          eval $.user_home
+          eval it = ''
+          refute "expected user_home to not be empty"
+
+          eval $.user
+          eval it = ''
+          refute "expected user to not be empty"
+
+      get_gloo_dirs [test] :
+        description [string] : Get the gloo directories.
+        on_test [script] :
+          eval $.gloo_home
+          eval it = ''
+          refute "expected gloo_home to not be empty"
+
+          eval $.gloo_config
+          eval it = ''
+          refute "expected gloo_config to not be empty"
+
+          eval $.gloo_projects
+          eval it = ''
+          refute "expected gloo_projects to not be empty"
+
+          eval $.gloo_log
+          eval it = ''
+          refute "expected gloo_log to not be empty"
+
+      get_screen_dims [test] :
+        description [string] : Get the screen dimensions.
+        i [int] :
+        on_test [script] :
+          put $.screen_lines into ^.i
+          eval ^.i > 0
+          assert "expected screen_lines to be greater than 0"
+
+          put $.screen_cols into ^.i
+          eval ^.i > 0
+          assert "expected screen_cols to be greater than 0"

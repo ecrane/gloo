@@ -1,0 +1,79 @@
+#
+# Gloo System tests
+#
+
+tests [can] :
+  lang [can] :
+    ops [can] :
+
+      confirm_eq_ops [test] :
+        description [string] : Confirm equality operations.
+        on_test [script] :
+          eval 1 = 1
+          assert "expected 1 = 1"
+
+          eval 2 = 3
+          refute "expected 2 to not equal 3"
+
+          eval "hello" = "hello"
+          assert "expected 'hello' = 'hello'"
+
+          eval "hello" = "world"
+          refute "expected 'hello' to not equal 'world'"
+
+      confirm_not_eq_ops [test] :
+        description [string] : Confirm not equal operations.
+        on_test [script] :
+          eval 1 != 2
+          assert "expected 1 != 2"
+
+          eval 1 != 1
+          refute "expected 1 to not equal 1"
+
+          eval "hello" != "world"
+          assert "expected 'hello' != 'world'"
+
+          eval "hello" != "hello"
+          refute "expected 'hello' to not equal 'hello'"
+
+      confirm_gt_ops [test] :
+        description [string] : Confirm greater than operations.
+        on_test [script] :
+          eval 2 > 1
+          assert "expected 2 > 1"
+
+          eval 1 > 2
+          refute "expected 1 to not be greater than 2"
+
+          eval 2 > 2
+          refute "expected 2 to not be greater than 2"
+
+          eval 3 >= 2
+          assert "expected 3 >= 2"
+
+          eval 2 >= 3
+          refute "expected 2 to not be greater than or equal to 3"
+
+          eval 2 >= 2
+          assert "expected 2 >= 2" 
+
+      confirm_lt_ops [test] :
+        description [string] : Confirm less than operations.
+        on_test [script] :
+          eval 1 < 2
+          assert "expected 1 < 2"
+
+          eval 2 < 1
+          refute "expected 2 to not be less than 1"
+
+          eval 1 < 1
+          refute "expected 1 to not be less than 1"
+
+          eval 1 <= 2
+          assert "expected 1 <= 2"
+
+          eval 2 <= 1
+          refute "expected 2 to not be less than or equal to 1"
+
+          eval 1 <= 1
+          assert "expected 1 <= 1"
