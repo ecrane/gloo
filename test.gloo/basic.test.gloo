@@ -23,15 +23,21 @@ tests [can] :
         noop
         assert 'noop should be true'
 
-    # # 
-    # # Use this test to verify that errors cause the test to fail.
-    # # 
+    # 
+    # Use this test to verify that errors cause the test to fail.
+    # 
     # refute_true [test] :
     #   description [string] : Refute true
     #   on_test [script] :
     #     noop
     #     refute 'expected this to fail!'
     #     refute 'also this'
+
+    #     eval false
+    #     assert
+
+    #     eval true
+    #     refute
 
     write_log [test] :
       description [string] : Write a debug log message
