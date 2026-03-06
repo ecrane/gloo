@@ -23,6 +23,12 @@ tests [can] :
         noop
         assert 'noop should be true'
 
+    refute [test] :
+      description [string] : Refute an operation
+      on_test [script] :
+        eval false
+        refute 'false should be false'
+
     # 
     # Use this test to verify that errors cause the test to fail.
     # 
