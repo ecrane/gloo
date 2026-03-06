@@ -1,3 +1,18 @@
+5.2.0 - 2026.03.06
+ - Adds check to prevent loading lib or ext twice.
+ - Updates the load and reload to support loading and unloading tests.
+ - Removes ruby eval object (unused)
+ - Adds eval verb
+ - Adds directory iterator
+ - Adds support for single file load from common
+ - Extends exists? verb to check for instance of an object
+ - Fixes issue with boolean comparison
+ - Adds messages to string:  count_lines count_words count_chars
+ - Text now also responds to string messages
+ - Updates string 'contains?' message to 'substring?' so it doesn't conflict with obj.contains?
+ - Adds responds_to? message to all objects
+
+
 5.1.0 - 2026.02.15
  - Fixes issue with int * dec 
  - Some code cleanup
