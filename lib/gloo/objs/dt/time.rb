@@ -58,7 +58,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[now add sub]
+        return super + %w[now add sub hh mm ss am]
       end
 
       #
@@ -100,6 +100,38 @@ module Gloo
         dt = Chronic.parse( self.value )
         self.set_value( DtTools.sub( dt, modifier ) )
         @engine.heap.it.set_to self.value
+      end
+
+      #
+      # Get the hour.
+      #
+      def msg_hh
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to "#{dt.hour}".rjust(2, '0')
+      end
+
+      #
+      # Get the minute.
+      #
+      def msg_mm
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to "#{dt.min}".rjust(2, '0')
+      end
+
+      #
+      # Get the second.
+      #
+      def msg_ss
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to "#{dt.sec}".rjust(2, '0')
+      end
+
+      #
+      # Get the AM/PM.
+      #
+      def msg_am
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to dt.strftime( '%p' )
       end
     end
   end

@@ -1,0 +1,76 @@
+#
+# Boolean tests
+#
+
+tests [can] :
+  dt [can] :
+    time [can] :
+
+      t [time] : 
+      x [time] : 
+      future [time] : 
+
+      now [test] :
+        description [string] : Get the current time
+        on_test [script] :
+          check ^^.x for blank?
+          assert "expected new time to be blank"
+
+          tell ^^.x to now
+          check ^^.x for blank?
+          refute "expected time to not be blank"
+
+          tell ^^.t to now
+          eval ^^.t = ^^.x
+          assert "expected times to be equal"
+
+      add [test] :
+        description [string] : Add hours to a time
+        on_test [script] :
+          tell ^^.t to now
+          tell ^^.future to now          
+          tell ^^.future to add
+          eval ^^.future = ^^.t
+          refute "expected future time to be after current time"
+
+      subtract [test] :
+        description [string] : Subtract hours from a time
+        on_test [script] :
+          tell ^^.t to now
+          tell ^^.future to now          
+          tell ^^.future to sub
+          eval ^^.future = ^^.t
+          refute "expected past time to be before current time"
+
+      hh [test] :
+        description [string] : Get the hour portion of a time
+        on_test [script] :
+          tell ^^.t to now
+          tell ^^.t to hh
+          eval it = ^^.t
+          refute "expected hour to not be the same as the time"
+
+      mm [test] :
+        description [string] : Get the minute portion of a time
+        on_test [script] :
+          tell ^^.t to now
+          tell ^^.t to mm
+          eval it = ^^.t
+          refute "expected minute to not be the same as the time"
+
+      ss [test] :
+        description [string] : Get the second portion of a time
+        on_test [script] :
+          tell ^^.t to now
+          tell ^^.t to ss
+          eval it = ^^.t
+          refute "expected second to not be the same as the time"
+
+      am [test] :
+        description [string] : Get the am/pm portion of a time
+        on_test [script] :
+          tell ^^.t to now
+          tell ^^.t to am
+          eval it = ^^.t
+          refute "expected am/pm to not be the same as the time"
+

@@ -1,0 +1,76 @@
+#
+# Boolean tests
+#
+
+tests [can] :
+  dt [can] :
+    date [can] :
+
+      d [date] : 
+      x [date] : 
+      future [date] : 
+
+      now [test] :
+        description [string] : Get the current date
+        on_test [script] :
+          check ^^.x for blank?
+          assert "expected new date to be blank"
+
+          tell ^^.x to now
+          check ^^.x for blank?
+          refute "expected date to not be blank"
+
+          tell ^^.d to now
+          eval ^^.d = ^^.x
+          assert "expected dates to be equal"
+
+      add [test] :
+        description [string] : Add days to a date
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.future to now          
+          tell ^^.future to add
+          eval ^^.future = ^^.d
+          refute "expected future date to be after current date"
+
+      subtract [test] :
+        description [string] : Subtract days from a date
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.future to now          
+          tell ^^.future to sub
+          eval ^^.future = ^^.d
+          refute "expected past date to be before current date"
+
+      dd [test] :
+        description [string] : Get the day portion of a date
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.d to dd
+          eval it = ^^.d
+          refute "expected day to not be the same as the date"
+
+      mm [test] :
+        description [string] : Get the month portion of a date
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.d to mm
+          eval it = ^^.d
+          refute "expected month to not be the same as the date"
+
+      yy [test] :
+        description [string] : Get the year portion of a date
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.d to yy
+          eval it = ^^.d
+          refute "expected year to not be the same as the date"
+
+      yyyy [test] :
+        description [string] : Get the 4 digit year portion of a date
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.d to yyyy
+          eval ^^.d = it
+          refute "expected yyyy to not be the same as the date"
+

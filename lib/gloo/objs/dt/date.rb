@@ -58,7 +58,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[now add sub]
+        return super + %w[now add sub mm dd yy yyyy]
       end
 
       #
@@ -102,6 +102,37 @@ module Gloo
         @engine.heap.it.set_to self.value
       end
 
+      #
+      # Get the month.
+      #
+      def msg_mm
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to "#{dt.month}".rjust(2, '0')
+      end
+
+      #
+      # Get the day.
+      #
+      def msg_dd
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to "#{dt.day}".rjust(2, '0')
+      end
+
+      #
+      # Get the year.
+      #
+      def msg_yyyy
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to dt.year.to_s
+      end
+
+      #
+      # Get the year (2 digit).
+      #
+      def msg_yy
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to dt.year.to_s[-2..-1]
+      end
     end
   end
 end
