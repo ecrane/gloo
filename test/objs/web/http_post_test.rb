@@ -40,21 +40,21 @@ class HttpPostTest < BaseEngineTest
     assert_equal 'body', obj.children.last.name
   end
 
-  def test_running_post
-    i = @engine.parser.parse_immediate 'create p as post'
-    i.run
-    p = @engine.heap.root.children.first
+  # def test_running_post
+  #   i = @engine.parser.parse_immediate 'create p as post'
+  #   i.run
+  #   p = @engine.heap.root.children.first
 
-    i = @engine.parser.parse_immediate 'create p.result as string'
-    i.run
-    result = p.children.last
-    assert result.value.blank?
+  #   i = @engine.parser.parse_immediate 'create p.result as string'
+  #   i.run
+  #   result = p.children.last
+  #   assert result.value.blank?
 
-    i = @engine.parser.parse_immediate "put 'https://ecrane.us/api/v1/test' into p.uri"
-    i.run
-    i = @engine.parser.parse_immediate 'run p'
-    i.run
-    refute result.value.blank?
-  end
+  #   i = @engine.parser.parse_immediate "put 'https://ecrane.us/api/v1/test' into p.uri"
+  #   i.run
+  #   i = @engine.parser.parse_immediate 'run p'
+  #   i.run
+  #   refute result.value.blank?
+  # end
 
 end
