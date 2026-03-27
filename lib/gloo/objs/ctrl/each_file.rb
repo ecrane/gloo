@@ -49,7 +49,8 @@ module Gloo
         return unless folder
 
         unless Dir.exist?( folder )
-          @engine.err "Folder does not exist: #{folder}"
+          # This is not an error because the path might include a wildcard.
+          @engine.log.info "Folder does not exist: #{folder}"
         end
 
         Dir.glob( "#{folder}#{wildcard}" ).each do |f|
