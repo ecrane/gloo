@@ -74,3 +74,15 @@ tests [can] :
           eval ^^.d = it
           refute "expected yyyy to not be the same as the date"
 
+      format [test] :
+        description [string] : Format a date
+        on_test [script] :
+          put '2025.10.15' into ^^.d
+          tell ^^.d to format
+          eval it = '2025-10-15'
+          assert "expected formatted date to match"
+
+          tell ^^.d to format ('%m/%d')
+          eval it = '10/15'
+          assert "expected formatted date to match"
+
