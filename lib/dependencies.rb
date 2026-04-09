@@ -4,6 +4,7 @@
 
 # require 'gloo_lang/core/baseo'
 # require 'gloo_lang/core/obj'
+require 'logger'
 
 path = File.dirname( File.absolute_path( __FILE__ ) )
 
