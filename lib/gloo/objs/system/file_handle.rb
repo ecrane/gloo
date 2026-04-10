@@ -38,7 +38,7 @@ module Gloo
       #
       def self.messages
         basic = %w[read write delete get_name get_ext get_parent get_sha256]
-        checks = %w[exists? is_file? is_dir?]
+        checks = %w[exists? is_file? is_dir? mkdir]
         search = %w[find_match]
         show = %w[show page open]
         return super + basic + show + checks + search
@@ -133,6 +133,13 @@ module Gloo
       def msg_is_dir?
         result = File.directory? value
         @engine.heap.it.set_to result
+      end
+
+      #
+      # Create a directory.
+      #
+      def msg_mkdir
+        Dir.mkdir(value) unless Dir.exist?(value)
       end
 
       #
