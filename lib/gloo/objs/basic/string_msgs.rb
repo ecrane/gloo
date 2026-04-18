@@ -49,6 +49,51 @@ module Gloo
       end
 
       # 
+      # Substitute the given string with another string.
+      #
+      def msg_sub
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
+          from = expr.evaluate
+          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
+          to = expr.evaluate
+
+          result = value.sub(from, to)
+          @engine.heap.it.set_to result
+          set_value(result)
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+      end
+
+      # 
+      # Substitute the given string with another string.
+      # Find all occurrences and replace them.
+      #
+      def msg_gsub
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
+          from = expr.evaluate
+          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
+          to = expr.evaluate
+
+          result = value.gsub(from, to)
+          @engine.heap.it.set_to result
+          set_value(result)
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+      end
+
+      # 
       # Does the string contain the given string?
       #
       # This was formerly an overload of obj.contains?
