@@ -139,7 +139,8 @@ module Gloo
       # Create a directory.
       #
       def msg_mkdir
-        Dir.mkdir(value) unless Dir.exist?(value)
+        FileUtils.mkdir_p(value) unless Dir.exist?(value)
+        # Dir.mkdir(value) unless Dir.exist?(value)
       end
 
       #
