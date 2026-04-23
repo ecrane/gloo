@@ -1,3 +1,7 @@
+5.3.5 - 2026.04.23
+ - Adds string trim message.
+
+
 5.3.4 - 2026.04.22
  - mkdir now creates intermediate directories
 
