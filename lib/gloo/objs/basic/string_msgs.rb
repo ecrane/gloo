@@ -10,6 +10,17 @@ module Gloo
   module Objs
     module StringMsgs
 
+
+      # 
+      # Strip whitespace from the beginning and end of the string.
+      #
+      def msg_trim
+        result = value.strip
+        @engine.heap.it.set_to result
+        set_value(result)
+        return result
+      end
+
       # 
       # Does the string start with the given string?
       # 
