@@ -15,6 +15,8 @@ module Gloo
       # Strip whitespace from the beginning and end of the string.
       #
       def msg_trim
+        return '' unless value
+        
         result = value.strip
         @engine.heap.it.set_to result
         set_value(result)
@@ -63,6 +65,7 @@ module Gloo
       # Substitute the given string with another string.
       #
       def msg_sub
+        return '' unless value
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
           from = expr.evaluate
@@ -86,13 +89,15 @@ module Gloo
       # Find all occurrences and replace them.
       #
       def msg_gsub
+        return '' unless value
+
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
           from = expr.evaluate
           expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
           to = expr.evaluate
 
-          result = value.gsub(from, to)
+          result = value.gsub(from, to) 
           @engine.heap.it.set_to result
           set_value(result)
           return result
