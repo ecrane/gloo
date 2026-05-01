@@ -31,6 +31,7 @@ module Gloo
           Reline.pre_input_hook = proc { Reline.insert_text( default_value ) }
         end
         response = Reline.readline("#{prompt} ", true)
+        Reline.pre_input_hook = nil
 
         # I don't like this one because it appends a ':' to the prompt.
         # response = Ask.input prompt
