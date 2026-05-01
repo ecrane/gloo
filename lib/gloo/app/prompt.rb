@@ -24,10 +24,13 @@ module Gloo
       # Show the prompt and get input.
       # Use the default prompt if none is provided.
       #
-      def ask( prompt=nil )
+      def ask( prompt = nil, default_value = nil )
         prompt ||= default_prompt
 
-        response = Reline.readline( "#{prompt} ", true)
+        if default_value
+          Reline.pre_input_hook = proc { Reline.insert_text( default_value ) }
+        end
+        response = Reline.readline("#{prompt} ", true)
 
         # I don't like this one because it appends a ':' to the prompt.
         # response = Ask.input prompt
