@@ -1,3 +1,7 @@
+5.3.7 - 2026.05.01
+ - Clears out the default value for a prompt so it doesn't persist.
+
+
 5.3.6 - 2026.05.01
  - Adds default value for prompt (optional)
 
