@@ -1,3 +1,7 @@
+5.3.6 - 2026.05.01
+ - Adds default value for prompt (optional)
+
+
 5.3.5 - 2026.04.23
  - Adds string trim message.
 
