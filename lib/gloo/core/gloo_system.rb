@@ -111,6 +111,7 @@ module Gloo
         return true
       end
 
+
       # ---------------------------------------------------------------------
       #    Children
       # ---------------------------------------------------------------------
@@ -121,6 +122,7 @@ module Gloo
       def add_children_on_create?
         return false
       end
+
 
       # ---------------------------------------------------------------------
       #    Messages
@@ -187,6 +189,7 @@ module Gloo
         return @engine.settings.log_path
       end
 
+
       # ---------------------------------------------------------------------
       #    Special chars
       # ---------------------------------------------------------------------
@@ -195,6 +198,7 @@ module Gloo
       def msg_line
         return "\n"
       end
+
 
       # ---------------------------------------------------------------------
       #    Screen Messages
@@ -209,6 +213,7 @@ module Gloo
       def msg_screen_cols
         return Gloo::App::Settings.cols( @engine )
       end
+
 
       # ---------------------------------------------------------------------
       #    Platform Messages
@@ -249,6 +254,24 @@ module Gloo
         return OS.mac?
       end
 
+      # Is the platform WSL on Windows?
+      def msg_platform_wsl?
+        return self.class.wsl?
+      end
+
+      #
+      # Is the platform WSL on Windows?
+      #
+      def self.wsl?
+        return false unless OS.linux?
+
+        ENV.key?('WSL_DISTRO_NAME') ||
+          ENV.key?('WSL_INTEROP') ||
+          File.read('/proc/sys/kernel/osrelease').downcase.include?('microsoft')
+      rescue
+        return false
+      end
+
       #
       # Get the command to open a file on this platform.
       #
@@ -257,6 +280,7 @@ module Gloo
         return 'xdg-open' if OS.posix?
         
         return 'Start-Process' if OS.windows?
+        return 'explorer.exe' if self.wsl?
 
         return nil
       end

@@ -41,19 +41,22 @@ class HttpGetTest < BaseEngineTest
     assert_equal 'result', obj.children.last.name
   end
 
-  def test_running_get
-    i = @engine.parser.parse_immediate 'create g as get'
-    i.run
-    g = @engine.heap.root.children.first
-    assert_equal 3, g.child_count
-    result = g.children.last
-    assert result.value.blank?
+  # 
+  # TODO: re-enable this test when we have a way to mock HTTP requests
+  # 
+  # def test_running_get
+  #   i = @engine.parser.parse_immediate 'create g as get'
+  #   i.run
+  #   g = @engine.heap.root.children.first
+  #   assert_equal 3, g.child_count
+  #   result = g.children.last
+  #   assert result.value.blank?
 
-    i = @engine.parser.parse_immediate "put 'https://ecrane.us/api/v1/test' into g.uri"
-    i.run
-    i = @engine.parser.parse_immediate 'run g'
-    i.run
-    refute result.value.blank?
-  end
+  #   i = @engine.parser.parse_immediate "put 'https://ecrane.us/api/v1/test' into g.uri"
+  #   i.run
+  #   i = @engine.parser.parse_immediate 'run g'
+  #   i.run
+  #   refute result.value.blank?
+  # end
 
 end

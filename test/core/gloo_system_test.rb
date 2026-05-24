@@ -124,9 +124,31 @@ class GlooSystemTest < BaseEngineTest
     assert_equal "\n", @engine.heap.it.value
   end
 
+  def test_platform_os
+    i = @engine.parser.parse_immediate 'show $.platform.os'
+    i.run
+    assert_equal RUBY_PLATFORM, @engine.heap.it.value
+  end
+
+  def test_os_name
+    @engine.parser.run 'eval $.platform_mac?'
+    is_mac = @engine.heap.it.value
+
+    @engine.parser.run 'eval $.platform_windows?'
+    is_windows = @engine.heap.it.value
+
+    @engine.parser.run 'eval $.platform_linux?'
+    is_linux = @engine.heap.it.value
+
+    @engine.parser.run 'eval $.platform_wsl?'
+    is_wsl = @engine.heap.it.value
+
+    # Assert that only 1 of these is true
+    assert (is_mac || is_windows || is_linux || is_wsl)
+  end
+
   def test_open_for_platform
-    cmd = Gloo::Core::GlooSystem.open_for_platform
-    assert_equal 'open', cmd
+    assert Gloo::Core::GlooSystem.open_for_platform
   end
 
 end

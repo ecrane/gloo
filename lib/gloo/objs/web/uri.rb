@@ -149,15 +149,22 @@ module Gloo
       # 
       # Open the given URL with platform command.
       # 
+      # NOTE that this was using "cmd = Gloo::Core::GlooSystem.open_for_platform"
+      # but refactored because on windows the command is more complex.
+      # 
       def self.open_url( url, engine=nil )
-        cmd = Gloo::Core::GlooSystem.open_for_platform
-        cmd_with_param = "#{cmd} \"#{url}\""
-
-        if OS.mac?
-          `#{cmd_with_param}`
+        case 
+        when OS.windows?
+          system( "powershell", "-Command", "Start-Process", url )
+        when OS.mac?
+          `open "#{url}"`
+        when OS.linux?
+          if Gloo::Core::GlooSystem.wsl?
+            `explorer.exe "#{url}"`
+          else
+            `xdg-open "#{url}"`
+          end
         else
-          # This does not work in Linux or in WSL on Windows:
-          # exec cmd_with_param
           engine.log.warn 'Opening URL not supported on this platform.' if engine
         end
       end
