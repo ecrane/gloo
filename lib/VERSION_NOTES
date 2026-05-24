@@ -1,3 +1,7 @@
+5.3.8 - 2026.05.24
+ - Update to URI to enable opening on Windows and WSL.
+
+
 5.3.7 - 2026.05.01
  - Clears out the default value for a prompt so it doesn't persist.
 
