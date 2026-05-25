@@ -89,3 +89,18 @@ tests [can] :
           put $.screen_cols into ^.i
           eval ^.i > 0
           assert "expected screen_cols to be greater than 0"
+
+      get_platform_os [test] :
+        description [string] : Get the platform OS.
+        on_test [script] :
+          eval $.platform_mac? = true
+          assert "expected platform_mac to be true"
+
+          eval $.platform_windows? = false
+          assert "expected platform_windows to be false"
+
+          eval $.platform_linux? = false
+          assert "expected platform_linux to be false"
+
+          eval $.platform_wsl? = false
+          assert "expected platform_wsl to be false"
