@@ -37,7 +37,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        basic = %w[read write delete get_name get_ext get_parent get_sha256]
+        basic = %w[read write append delete get_name get_ext get_parent get_sha256]
         checks = %w[exists? is_file? is_dir? mkdir]
         search = %w[find_match]
         show = %w[show page open]
@@ -87,6 +87,23 @@ module Gloo
         else
           @engine.heap.it.set_to data
         end
+      end
+
+      #
+      # Append the given data to the file as a new line.
+      # Adds a leading newline if the file does not already end with one.
+      #
+      def msg_append
+        data = ''
+        return unless value
+
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+        end
+        existing = File.exist?( value ) ? File.read( value ) : ''
+        prefix = existing.empty? || existing.end_with?( "\n" ) ? '' : "\n"
+        File.open( value, 'a' ) { |f| f.puts "#{prefix}#{data}" }
       end
 
       #
