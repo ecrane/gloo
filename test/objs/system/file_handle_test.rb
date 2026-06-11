@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'tempfile'
 
 class FileHandleTest < BaseEngineTest
 
@@ -21,6 +22,7 @@ class FileHandleTest < BaseEngineTest
     assert msgs
     assert msgs.include?( 'read' )
     assert msgs.include?( 'write' )
+    assert msgs.include?( 'append' )
     assert msgs.include?( 'page' )
     assert msgs.include?( 'show' )
     assert msgs.include?( 'open' )
@@ -29,6 +31,43 @@ class FileHandleTest < BaseEngineTest
     assert msgs.include?( 'is_file?' )
     assert msgs.include?( 'is_dir?' )
     assert msgs.include?( 'get_sha256' )
+  end
+
+  def test_append_to_file_without_trailing_newline
+    tmp = Tempfile.new( [ 'gloo_test', '.txt' ] )
+    tmp.write( 'existing content' )
+    tmp.close
+
+    i = @engine.parser.parse_immediate "create f as file : '#{tmp.path}'"
+    i.run
+    i = @engine.parser.parse_immediate "tell f to append ('new line')"
+    i.run
+
+    result = File.read( tmp.path )
+    assert result.include?( "existing content" )
+    assert result.include?( "new line" )
+    # new line should be on its own line
+    assert_match( /existing content\nnew line/, result )
+  ensure
+    tmp.unlink
+  end
+
+  def test_append_to_file_with_trailing_newline
+    tmp = Tempfile.new( [ 'gloo_test', '.txt' ] )
+    tmp.write( "existing content\n" )
+    tmp.close
+
+    i = @engine.parser.parse_immediate "create f as file : '#{tmp.path}'"
+    i.run
+    i = @engine.parser.parse_immediate "tell f to append ('new line')"
+    i.run
+
+    result = File.read( tmp.path )
+    assert_match( /existing content\nnew line/, result )
+    # no blank line between items
+    refute_match( /existing content\n\nnew line/, result )
+  ensure
+    tmp.unlink
   end
 
   def test_adds_children_on_create
