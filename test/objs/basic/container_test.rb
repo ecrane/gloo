@@ -57,6 +57,16 @@ class ContainerTest < BaseEngineTest
     assert_equal 0, can.child_count
   end
 
+  def test_child_exists_msg
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.x as int'
+    @engine.parser.run "check c for child_exists ('x')"
+    assert @engine.heap.it.value
+
+    @engine.parser.run "check c for child_exists ('z')"
+    refute @engine.heap.it.value
+  end
+
   def test_that_it_is_a_container
     o = Gloo::Objs::Container.new @engine
     assert o.is_container?

@@ -21,10 +21,6 @@ class DecimalTest < BaseEngineTest
     o = Gloo::Objs::Decimal.new @engine
     o.set_value( 3 )
     assert_equal 3.0, o.value
-    # o.set_value( '177' )
-    # assert_equal 177.0, o.value
-    # o.set_value( ' 1.3 ' )
-    # assert_equal 1.3, o.value
     o.set_value( -13.987 )
     assert_equal( -13.987, o.value )
   end
@@ -57,23 +53,5 @@ class DecimalTest < BaseEngineTest
     @engine.parser.run 'put 100 * 0.75 into x'
     assert_equal 75.0, x.value
   end
-
-  # def test_inc_msg
-  #   o = Gloo::Objs::Decimal.new
-  #   o.set_value 0
-  #   assert_equal 0, o.value
-  #   assert_equal 1, o.msg_inc
-  #   assert_equal 1, o.value
-  #   assert_equal 1, @engine.heap.it.value
-  # end
-  #
-  # def test_dec_msg
-  #   o = Gloo::Objs::Integer.new
-  #   o.set_value 0
-  #   assert_equal 0, o.value
-  #   assert_equal( -1, o.msg_dec )
-  #   assert_equal( -1, o.value )
-  #   assert_equal( -1, @engine.heap.it.value )
-  # end
 
 end

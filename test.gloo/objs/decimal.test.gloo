@@ -1,0 +1,24 @@
+#
+# Decimal tests
+#
+
+tests [can] :
+  objs [can] :
+    decimal [can] :
+
+      a [decimal] :
+
+      set_value [test] :
+        description [string] : Set a decimal value
+        on_test [script] :
+          put 3.14 into ^^.a
+          eval ^^.a = 3.14
+          assert "expected a to be 3.14"
+
+      round_decimal [test] :
+        description [string] : Round a decimal value
+        on_test [script] :
+          put 3.7 into ^^.a
+          tell ^^.a to round
+          eval ^^.a = 4.0
+          assert "expected a to be rounded to 4.0"

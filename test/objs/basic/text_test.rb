@@ -27,4 +27,18 @@ class TextTest < BaseEngineTest
     assert_equal 3, o.line_count
   end
 
+  def test_up_msg
+    o = Gloo::Objs::Text.new @engine
+    o.set_value 'hello'
+    assert_equal 'HELLO', o.msg_up
+    assert_equal 'HELLO', @engine.heap.it.value
+  end
+
+  def test_trim_msg
+    o = Gloo::Objs::Text.new @engine
+    o.set_value "  hello  "
+    assert_equal 'hello', o.msg_trim
+    assert_equal 'hello', o.value
+  end
+
 end

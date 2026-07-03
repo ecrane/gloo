@@ -169,6 +169,50 @@ class StringTest < BaseEngineTest
     assert_equal orig_value, o.value
   end
 
+  def test_trim_msg
+    o = Gloo::Objs::String.new @engine
+    o.set_value '  hello  '
+    assert_equal 'hello', o.msg_trim
+    assert_equal 'hello', o.value
+    assert_equal 'hello', @engine.heap.it.value
+  end
+
+  def test_sub_msg
+    o = @engine.parser.parse_immediate 'create s as string : "hello world"'
+    o.run
+    s = @engine.heap.root.children.first
+    o = @engine.parser.parse_immediate "check s for sub ('world' 'gloo')"
+    o.run
+    assert_equal 'hello gloo', @engine.heap.it.value
+  end
+
+  def test_gsub_msg
+    o = @engine.parser.parse_immediate 'create s as string : "aabbaa"'
+    o.run
+    s = @engine.heap.root.children.first
+    o = @engine.parser.parse_immediate "check s for gsub ('a' 'x')"
+    o.run
+    assert_equal 'xxbbxx', @engine.heap.it.value
+  end
+
+  def test_count_chars_msg
+    o = Gloo::Objs::String.new @engine
+    o.set_value 'hello'
+    assert_equal 5, o.msg_count_chars
+  end
+
+  def test_count_words_msg
+    o = Gloo::Objs::String.new @engine
+    o.set_value 'one two three'
+    assert_equal 3, o.msg_count_words
+  end
+
+  def test_count_lines_msg
+    o = Gloo::Objs::String.new @engine
+    o.set_value "line one\nline two\nline three"
+    assert_equal 3, o.msg_count_lines
+  end
+
   def test_that_it_not_is_a_container
     o = Gloo::Objs::String.new @engine
     refute o.is_container?

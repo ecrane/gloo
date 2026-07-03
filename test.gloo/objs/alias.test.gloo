@@ -1,0 +1,24 @@
+#
+# Alias tests
+#
+
+tests [can] :
+  objs [can] :
+    alias [can] :
+
+      s [string] : hello
+      ln [alias] : tests.objs.alias.s
+
+      follow_alias [test] :
+        description [string] : Follow an alias to the target value
+        on_test [script] :
+          put 'hello' into ^^.s
+          eval ^^.ln = 'hello'
+          assert "expected alias to resolve to 'hello'"
+
+      put_via_alias [test] :
+        description [string] : Put a value via an alias
+        on_test [script] :
+          put 'world' into ^^.ln
+          eval ^^.s = 'world'
+          assert "expected s to be updated via alias"

@@ -1,0 +1,44 @@
+#
+# String tests
+#
+
+tests [can] :
+  objs [can] :
+    string [can] :
+
+      s [string] :
+
+      up_down [test] :
+        description [string] : Convert string case
+        on_test [script] :
+          put 'hello' into ^^.s
+          tell ^^.s to up
+          eval ^^.s = 'HELLO'
+          assert "expected string to be uppercase"
+          tell ^^.s to down
+          eval ^^.s = 'hello'
+          assert "expected string to be lowercase"
+
+      trim [test] :
+        description [string] : Trim whitespace from a string
+        on_test [script] :
+          put '  hello  ' into ^^.s
+          tell ^^.s to trim
+          eval it = 'hello'
+          assert "expected trimmed string to equal 'hello'"
+
+      sub [test] :
+        description [string] : Substitute in a string
+        on_test [script] :
+          put 'hello world' into ^^.s
+          tell ^^.s to sub ('world' 'gloo')
+          eval it = 'hello gloo'
+          assert "expected substituted string to equal 'hello gloo'"
+
+      count_chars [test] :
+        description [string] : Count the characters in a string
+        on_test [script] :
+          put 'hello' into ^^.s
+          tell ^^.s to count_chars
+          eval it = 5
+          assert "expected 5 characters"
