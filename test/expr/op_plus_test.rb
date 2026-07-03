@@ -22,4 +22,9 @@ class OpPlusTest < BaseEngineTest
     assert_equal 5.5, @engine.heap.it.value
   end
 
+  def test_concatenating_strings
+    @engine.parser.run 'show "hello" + " world"'
+    assert_equal 'hello world', @engine.heap.it.value
+  end
+
 end

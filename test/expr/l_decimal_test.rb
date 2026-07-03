@@ -2,13 +2,13 @@ require 'test_helper'
 
 class LDecimalTest < BaseTest
   
-  def test_literal_integer_construction
+  def test_literal_decimal_construction
     e = Gloo::Expr::LDecimal.new( nil )
     assert e
     assert_equal 0.0, e.value
   end
 
-  def test_literal_integer_construction_with_token
+  def test_literal_decimal_construction_with_token
     token = 31.7
     e = Gloo::Expr::LDecimal.new( token )
     assert e

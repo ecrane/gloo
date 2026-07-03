@@ -47,5 +47,16 @@ class OpEqTest < BaseEngineTest
     @engine.parser.run 'show 2.1 = 2.2'
     assert_equal false, @engine.heap.it.value
   end
-  
+
+  def test_comparing_booleans
+    @engine.parser.run 'show true = true'
+    assert_equal true, @engine.heap.it.value
+
+    @engine.parser.run 'show false = false'
+    assert_equal true, @engine.heap.it.value
+
+    @engine.parser.run 'show true = false'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

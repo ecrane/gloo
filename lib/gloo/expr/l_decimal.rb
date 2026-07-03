@@ -19,7 +19,7 @@ module Gloo
       end
 
       #
-      # Set the value, converting to an integer.
+      # Set the value, converting to a decimal.
       #
       def set_value( value )
         value = value.to_s if value.is_a? Numeric

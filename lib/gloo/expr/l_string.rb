@@ -9,7 +9,7 @@ module Gloo
     class LString < Gloo::Core::Literal
 
       #
-      # Set the value, triming opening and closing
+      # Set the value, trimming opening and closing
       # quotations if necessary.
       #
       def set_value( value )

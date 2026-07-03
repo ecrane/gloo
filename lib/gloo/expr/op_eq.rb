@@ -21,7 +21,6 @@ module Gloo
 
         return left == right.to_f if left.is_a? Numeric
 
-        # puts "left: #{left}, right: #{right}"
         if Gloo::Objs::Boolean.boolean?( left ) && Gloo::Objs::Boolean.boolean?( right )
           return left == right
         end
