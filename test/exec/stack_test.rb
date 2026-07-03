@@ -28,4 +28,15 @@ class StackTest < BaseEngineTest
     assert_equal 'run', o.out_data
   end
 
+  def test_clear_stack
+    o = Gloo::Exec::Stack.new( @engine, 'test' )
+    o.push Gloo::Verbs::Run.new( @engine, nil )
+    o.push Gloo::Verbs::Run.new( @engine, nil )
+    assert_equal 2, o.size
+
+    o.clear_stack
+    assert_equal 0, o.size
+    assert_equal '', o.out_data
+  end
+
 end

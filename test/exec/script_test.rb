@@ -32,4 +32,14 @@ class ScriptTest < BaseEngineTest
     assert_equal 7, @engine.heap.it.value
   end
 
+  def test_break_out
+    o = Gloo::Objs::Script.new @engine
+    o.set_value( [ 'show 1', 'show 2', 'show 3' ] )
+
+    s = Gloo::Exec::Script.new( @engine, o )
+    s.break_out
+    s.run
+    refute_equal 3, @engine.heap.it.value
+  end
+
 end

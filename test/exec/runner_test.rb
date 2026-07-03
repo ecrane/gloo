@@ -19,4 +19,10 @@ class RunnerTest < BaseEngineTest
     assert_equal 7, @engine.heap.it.value
   end
 
+  def test_running_bad_path
+    refute @engine.error?
+    Gloo::Exec::Runner.run( @engine, 'no.such.script' )
+    assert @engine.error?
+  end
+
 end

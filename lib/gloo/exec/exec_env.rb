@@ -63,7 +63,6 @@ module Gloo
       #
       def push_action( action )
         @actions.push action
-        # @here.push action.to
       end
 
       #
@@ -71,7 +70,6 @@ module Gloo
       #
       def pop_action
         @actions.pop
-        # @here.pop
       end
 
     end

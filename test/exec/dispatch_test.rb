@@ -23,4 +23,16 @@ class DispatchTest < BaseEngineTest
     assert_equal 'ABC', s.value
   end
 
+  def test_send_message_by_path
+    @engine.parser.run 'create s as string : hello'
+    Gloo::Exec::Dispatch.send_message( @engine, 'up', 's' )
+    assert_equal 'HELLO', @engine.heap.root.find_child( 's' ).value
+  end
+
+  def test_send_message_bad_path
+    refute @engine.error?
+    Gloo::Exec::Dispatch.send_message( @engine, 'up', 'no.such.obj' )
+    assert @engine.error?
+  end
+
 end
