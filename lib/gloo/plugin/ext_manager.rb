@@ -18,7 +18,7 @@ module Gloo
       def initialize( engine )
         @engine = engine
         @extensions = {}
-        @engine.log.debug 'extension manager intialized...'
+        @engine.log.debug 'extension manager initialized...'
       end
 
       # 

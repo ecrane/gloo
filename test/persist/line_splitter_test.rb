@@ -25,5 +25,12 @@ class LineSplitterTest < BaseEngineTest
     assert_equal 'xyz', v
   end
 
+  def test_untyped_detection
+    str = 'my_val : hello'
+    o = Gloo::Persist::LineSplitter.new( str, 0 )
+    n, t, v = o.split
+    assert_equal 'my_val', n
+    assert_equal 'untyped', t
+  end
 
 end

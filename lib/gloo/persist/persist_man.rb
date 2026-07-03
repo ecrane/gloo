@@ -1,7 +1,7 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
 #
-# The persistance manager.
+# The persistence manager.
 # Keeps a collection of object-file mappings, and then
 # uses mappings to know how/where to save updated objects.
 #
@@ -13,7 +13,7 @@ module Gloo
       attr_reader :maps, :mech
 
       #
-      # Contructor for the persistence manager.
+      # Constructor for the persistence manager.
       #
       def initialize( engine )
         @engine = engine
@@ -104,7 +104,7 @@ module Gloo
           @engine.event_manager.on_reload fs.obj
         end
 
-        # Acutal unloading is done in the engine.restart.
+        # Actual unloading is done in the engine.restart.
         @engine.restart
       end
 

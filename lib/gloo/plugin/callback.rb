@@ -16,7 +16,7 @@ module Gloo
       # Register a verb.
       # 
       def register_verb( verb_class )
-        @engine.log.debug "Registering verb: #{verb_class} from callbackup helper"
+        @engine.log.debug "Registering verb: #{verb_class} from callback helper"
         @engine.dictionary.register_verb_post_start( verb_class )
       end
 

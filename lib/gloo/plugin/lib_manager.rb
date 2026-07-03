@@ -19,7 +19,7 @@ module Gloo
       def initialize( engine )
         @engine = engine
         @libraries = {}
-        @engine.log.debug 'library manager intialized...'
+        @engine.log.debug 'library manager initialized...'
       end
 
       # 

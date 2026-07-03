@@ -2,9 +2,9 @@
 # Copyright:: Copyright (c) 2022 Eric Crane.  All rights reserved.
 #
 # Disc based mechanism for files.
-# Provides interaction between the persistance classes and the OS 
+# Provides interaction between the persistence classes and the OS
 # file and folder system.
-# This class might be overiden elsewhere to provide other mechanism.
+# This class might be overridden elsewhere to provide other mechanism.
 # For example, in gloo-web, there will be a db based mechanism.
 #
 
