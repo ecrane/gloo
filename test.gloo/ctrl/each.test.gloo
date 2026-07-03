@@ -1,0 +1,39 @@
+#
+# Each and repeat control object tests
+#
+
+tests [can] :
+  ctrl [can] :
+    each [can] :
+
+      count [int] : 0
+
+      wrd [each] :
+        word [string] :
+        IN [string] : one two three
+        do [script] :
+          eval ^^.count + 1
+          put it into ^^.count
+
+      rpt [repeat] :
+        times [int] : 3
+        index [int] : 0
+        do [script] :
+          eval ^^.count + 1
+          put it into ^^.count
+
+      each_word [test] :
+        description [string] : Count words with each word
+        on_test [script] :
+          put 0 into ^^.count
+          tell ^^.wrd to run
+          eval ^^.count = 3
+          assert "expected 3 words counted"
+
+      repeat_n_times [test] :
+        description [string] : Repeat a script n times
+        on_test [script] :
+          put 0 into ^^.count
+          tell ^^.rpt to run
+          eval ^^.count = 3
+          assert "expected repeat to run 3 times"

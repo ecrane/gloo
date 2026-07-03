@@ -63,12 +63,9 @@ module Gloo
       # Get the result, the return value or container of objects.
       # 
       def result
-        return_any = find_child RESULT
-
         # TODO: what does it look like to return objects?
         # if return_any is a container with children, return the container
-
-        return return_any ? return_any.value : nil
+        return find_child_value RESULT
       end
 
       #
@@ -128,7 +125,7 @@ module Gloo
 
       #
       # Send the object the invoke message.
-      # Invoke the functdion and return the result.
+      # Invoke the function and return the result.
       #
       def msg_invoke
         return invoke( nil )

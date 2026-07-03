@@ -33,8 +33,7 @@ module Gloo
       # Returns nil if there is none.
       #
       def times
-        o = find_child TIMES
-        return o ? o.value : 0
+        return find_child_value( TIMES ) || 0
       end
 
       #

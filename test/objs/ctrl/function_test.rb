@@ -40,4 +40,23 @@ class FunctionTest < BaseEngineTest
     assert_equal 'params', params.name
   end
 
+  def test_params_hash
+    o = @engine.parser.parse_immediate "create f as ƒ"
+    o.run
+    func = @engine.heap.root.children.first
+
+    h = func.params_hash
+    assert h
+    assert h.is_a?( Hash )
+  end
+
+  def test_result
+    o = @engine.parser.parse_immediate "create f as ƒ"
+    o.run
+    func = @engine.heap.root.children.first
+
+    result = func.result
+    assert_equal '', result
+  end
+
 end

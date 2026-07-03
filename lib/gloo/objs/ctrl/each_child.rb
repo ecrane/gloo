@@ -118,10 +118,8 @@ module Gloo
         o.children.each do |child|
           if group_mode
             group_value = group_by_value( child )
-            # puts "last group = #{last_group}, group_value = #{group_value}"
             if last_group != group_value
               last_group = group_value
-              # puts "New group: #{group_value}"
               if first_time
                 first_time = false
               else

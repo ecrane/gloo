@@ -40,4 +40,16 @@ class RepeatTest < BaseEngineTest
     assert_equal 'do', obj.children.last.name
   end
 
+  def test_times
+    i = @engine.parser.parse_immediate 'create r as repeat'
+    i.run
+    obj = @engine.heap.root.children.first
+
+    assert_equal 0, obj.times
+
+    i = @engine.parser.parse_immediate 'put 5 into r.times'
+    i.run
+    assert_equal 5, obj.times
+  end
+
 end
