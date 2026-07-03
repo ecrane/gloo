@@ -37,10 +37,7 @@ module Gloo
       # Returns nil if there is none.
       #
       def uri_value
-        uri = find_child URL
-        return nil unless uri
-
-        return uri.value
+        return find_child_value URL
       end
 
       #
@@ -50,7 +47,7 @@ module Gloo
       def body_as_json
         h = {}
 
-        body = find_child BODY
+        body = find_child_resolve_alias BODY
         body.children.each do |child|
           child_val = Gloo::Objs::Alias.resolve_alias( @engine, child )
           h[ child.name ] = child_val.value
@@ -63,8 +60,8 @@ module Gloo
       # Set the result of the API call.
       #
       def update_result( data )
-        r = find_child RESULT
-        return nil unless r
+        r = find_child_resolve_alias RESULT
+        return unless r
 
         r.set_value data
       end
@@ -142,26 +139,6 @@ module Gloo
         end
       end
 
-      # #
-      # # Post the content to the endpoint.
-      # #
-      # def self.post_json_1( url, body, use_ssl = true )
-      #   # Structure the request
-      #   uri = URI.parse( url )
-      #
-      #   request = Net::HTTP::Post.new( uri.path )
-      #   request.content_type = 'application/json'
-      #   request.body = body
-      #   n = Net::HTTP.new( uri.host, uri.port )
-      #   n.use_ssl = use_ssl
-      #
-      #   # Send the payload to the endpoint.
-      #   result = n.start { |http| http.request( request ) }
-      #   @engine.log.debug result.code
-      #   @engine.log.debug result.message
-      #   return result.body
-      # end
-
       # ---------------------------------------------------------------------
       #    Private functions
       # ---------------------------------------------------------------------
@@ -172,10 +149,7 @@ module Gloo
       # Should we skip SSL verification during the request?
       #
       def skip_ssl_verify?
-        skip = find_child SKIP_SSL_VERIFY
-        return false unless skip
-
-        return skip.value
+        return find_child_value( SKIP_SSL_VERIFY ) || false
       end
 
     end

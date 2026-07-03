@@ -106,7 +106,7 @@ module Gloo
         end
         parent = pn.resolve
 
-        h = convert_obj_to_hash( parent )
+        h = Json.convert_obj_to_hash( parent )
         json = JSON.parse( h.to_json )
         json = JSON.pretty_generate( json )
 

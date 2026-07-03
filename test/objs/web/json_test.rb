@@ -1,4 +1,3 @@
-
 require 'test_helper'
 
 class JsonTest < BaseEngineTest
@@ -52,13 +51,28 @@ class JsonTest < BaseEngineTest
     assert_equal 'Got it', value
   end
 
-  def test_get_value_in_json_not_fount
+  def test_get_value_in_json_not_found
     json = "{\"title\":\"BOO\",\"sub\":{\"msg\":\"Got it\"}}"
     value = Gloo::Objs::Json.get_value_in_json json, "substrate"
     refute value
 
     value = Gloo::Objs::Json.get_value_in_json json, "sub.nothere"
     refute value
+  end
+
+  def test_convert_obj_to_hash
+    i = @engine.parser.parse_immediate 'create c as can'
+    i.run
+    i = @engine.parser.parse_immediate 'create c.name as string : hello'
+    i.run
+    i = @engine.parser.parse_immediate 'create c.count as int : 3'
+    i.run
+
+    obj = @engine.heap.root.children.first
+    h = Gloo::Objs::Json.convert_obj_to_hash( obj )
+    assert h.is_a?( Hash )
+    assert_equal 'hello', h[ 'name' ]
+    assert_equal 3, h[ 'count' ]
   end
 
 end

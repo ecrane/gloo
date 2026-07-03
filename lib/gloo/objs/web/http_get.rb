@@ -1,7 +1,7 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
 #
-# An object that can post JSON to a URI.
+# An object that can make an HTTP GET request.
 #
 require 'net/http'
 require 'uri'
@@ -111,28 +111,22 @@ module Gloo
       # Returns nil if there is none.
       #
       def uri_value
-        uri = find_child URL
-        return nil unless uri
-
-        return uri.value
+        return find_child_value URL
       end
 
       #
       # Should we skip SSL verification during the request?
       #
       def skip_ssl_verify?
-        skip = find_child SKIP_SSL_VERIFY
-        return false unless skip
-
-        return skip.value
+        return find_child_value( SKIP_SSL_VERIFY ) || false
       end
 
       #
       # Set the result of the API call.
       #
       def update_result( data )
-        r = find_child RESULT
-        return nil unless r
+        r = find_child_resolve_alias RESULT
+        return unless r
 
         r.set_value data
       end
@@ -142,7 +136,7 @@ module Gloo
       #
       def full_url_value
         p = ''
-        params = find_child PARAMS
+        params = find_child_resolve_alias PARAMS
         params.children.each do |child|
           p << ( p.empty? ? '?' : '&' )
 

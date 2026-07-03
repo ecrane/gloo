@@ -62,7 +62,7 @@ module Gloo
       #
       def msg_get_cert_expires
         return unless value
-        o = value
+
         uri = URI( value )
         response = Net::HTTP.start( uri.host, uri.port, :use_ssl => true )
         cert = response.peer_cert
@@ -143,7 +143,7 @@ module Gloo
 
 
       # ---------------------------------------------------------------------
-      #    Helper functiont to open a URL
+      #    Helper function to open a URL
       # ---------------------------------------------------------------------
 
       # 

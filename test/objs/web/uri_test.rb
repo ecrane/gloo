@@ -1,4 +1,3 @@
-
 require 'test_helper'
 
 class UriTest < BaseEngineTest
@@ -14,6 +13,18 @@ class UriTest < BaseEngineTest
   def test_find_type
     assert @dic.find_obj( 'URI' )
     assert @dic.find_obj( 'URL' )
+  end
+
+  def test_messages
+    msgs = Gloo::Objs::Uri.messages
+    assert msgs
+    assert msgs.include?( 'open' )
+    assert msgs.include?( 'get_scheme' )
+    assert msgs.include?( 'get_host' )
+    assert msgs.include?( 'get_path' )
+    assert msgs.include?( 'get_query' )
+    assert msgs.include?( 'get_fragment' )
+    assert msgs.include?( 'get_cert_expires' )
   end
 
   def test_get_scheme
