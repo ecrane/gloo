@@ -1,0 +1,48 @@
+#
+# Datetime tests
+#
+
+tests [can] :
+  dt [can] :
+    datetime [can] :
+
+      d [dt] :
+
+      now [test] :
+        description [string] : Get the current datetime
+        on_test [script] :
+          check ^^.d for blank?
+          assert "expected new datetime to be blank"
+
+          tell ^^.d to now
+          check ^^.d for blank?
+          refute "expected datetime to not be blank after now"
+
+      is_today [test] :
+        description [string] : Check if datetime is today
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.d to is_today
+          assert "expected current datetime to be today"
+
+      is_past [test] :
+        description [string] : Check if datetime is in the past
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.d to is_past
+          refute "expected current datetime to not be in the past"
+
+          put 'yesterday' into ^^.d
+          tell ^^.d to is_past
+          assert "expected yesterday to be in the past"
+
+      is_future [test] :
+        description [string] : Check if datetime is in the future
+        on_test [script] :
+          tell ^^.d to now
+          tell ^^.d to is_future
+          refute "expected current datetime to not be in the future"
+
+          put 'tomorrow' into ^^.d
+          tell ^^.d to is_future
+          assert "expected tomorrow to be in the future"

@@ -66,4 +66,16 @@ class DateTest < BaseEngineTest
     assert dt.value.start_with?( d.value )
   end
 
+  def test_format
+    i = @engine.parser.parse_immediate 'create d as date'
+    i.run
+    d = @engine.heap.root.children.first
+    i = @engine.parser.parse_immediate "put '2025.10.15' into d"
+    i.run
+
+    i = @engine.parser.parse_immediate 'tell d to format'
+    i.run
+    assert_equal '2025-10-15', @engine.heap.it.value
+  end
+
 end

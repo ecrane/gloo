@@ -76,14 +76,14 @@ class DtTools
   # Is the date in the past?
   # 
   def self.is_past?( dt )
-      dt < Time.now.beginning_of_day
+    dt < Time.now.beginning_of_day
   end
 
-  # 
+  #
   # Is the date in the future?
-  # 
+  #
   def self.is_future?( dt )
-      dt > Time.now.end_of_day
+    dt > Time.now.end_of_day
   end
 
   # 
