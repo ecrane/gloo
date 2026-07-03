@@ -147,4 +147,38 @@ class FileHandleTest < BaseEngineTest
     assert_equal '/path/to', @engine.heap.it.value
   end
 
+  def test_write_and_read
+    tmp = Tempfile.new( [ 'gloo_test', '.txt' ] )
+    tmp.close
+
+    i = @engine.parser.parse_immediate "create f as file : '#{tmp.path}'"
+    i.run
+    i = @engine.parser.parse_immediate "tell f to write ('hello world')"
+    i.run
+
+    assert_equal 'hello world', File.read( tmp.path )
+
+    i = @engine.parser.parse_immediate 'tell f to read'
+    i.run
+    assert_equal 'hello world', @engine.heap.it.value
+  ensure
+    tmp.unlink
+  end
+
+  def test_exists_msg
+    tmp = Tempfile.new( [ 'gloo_test', '.txt' ] )
+    tmp.close
+
+    i = @engine.parser.parse_immediate "create f as file : '#{tmp.path}'"
+    i.run
+    i = @engine.parser.parse_immediate 'check f for exists?'
+    i.run
+    assert @engine.heap.it.value
+
+    tmp.unlink
+    i = @engine.parser.parse_immediate 'check f for exists?'
+    i.run
+    refute @engine.heap.it.value
+  end
+
 end

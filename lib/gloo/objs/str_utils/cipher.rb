@@ -37,8 +37,7 @@ module Gloo
       # Returns nil if there is none.
       #
       def key
-        o = find_child KEY
-        return o&.value
+        return find_child_value KEY
       end
 
       #
@@ -46,25 +45,23 @@ module Gloo
       # Returns nil if there is none.
       #
       def init_vector
-        o = find_child INIT_VECTOR
-        return o&.value
+        return find_child_value INIT_VECTOR
       end
 
       #
       # Get the data value of the object.
-      # This might be encrypted or decrypted based on 
+      # This might be encrypted or decrypted based on
       # what action was last taken.
       #
       def data
-        o = find_child DATA
-        return o&.value
+        return find_child_value DATA
       end
 
       #
       # Update the key value.
       #
       def update_key( new_val )
-        o = find_child KEY
+        o = find_child_resolve_alias KEY
         return unless o
 
         o.set_value new_val
@@ -74,7 +71,7 @@ module Gloo
       # Update the initialization vector value.
       #
       def update_init_vector( new_val )
-        o = find_child INIT_VECTOR
+        o = find_child_resolve_alias INIT_VECTOR
         return unless o
 
         o.set_value new_val
@@ -84,7 +81,7 @@ module Gloo
       # Update the data value of the object.
       #
       def update_data( new_val )
-        o = find_child DATA
+        o = find_child_resolve_alias DATA
         return unless o
 
         o.set_value new_val
@@ -137,7 +134,7 @@ module Gloo
         key = Base64.encode64 key
         update_key key
 
-        iv = update_init_vector cipher.random_iv
+        iv = cipher.random_iv
         iv = Base64.encode64 iv
         update_init_vector iv
       end

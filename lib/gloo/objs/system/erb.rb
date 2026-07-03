@@ -1,7 +1,7 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
 #
-# An object that evaluate a ruby statement.
+# An object that evaluates an ERB template.
 #
 require 'erb'
 
@@ -33,18 +33,15 @@ module Gloo
       # Get the ERB template.
       #
       def template_value
-        tmpl = find_child TEMPLATE
-        return nil unless tmpl
-
-        return tmpl.value
+        return find_child_value TEMPLATE
       end
 
       #
       # Set the result of the ERB template conversion.
       #
       def set_result( data )
-        r = find_child RESULT
-        return nil unless r
+        r = find_child_resolve_alias RESULT
+        return unless r
 
         r.set_value data
       end

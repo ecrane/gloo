@@ -23,7 +23,7 @@ class PasswordTest < BaseEngineTest
     assert o.add_children_on_create?
   end
 
-  def test_creating_with_chilren
+  def test_creating_with_children
     i = @engine.parser.parse_immediate 'create p as password'
     i.run
     assert_equal 1, @engine.heap.root.child_count

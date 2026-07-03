@@ -30,22 +30,19 @@ module Gloo
       end
 
       #
-      # Get the URI from the child object.
+      # Get the command from the child object.
       # Returns nil if there is none.
       #
       def cmd_value
-        cmd = find_child CMD
-        return nil unless cmd
-
-        return cmd.value
+        return find_child_value CMD
       end
 
       #
       # Set the result of the system call.
       #
       def set_result( data )
-        r = find_child RESULT
-        return nil unless r
+        r = find_child_resolve_alias RESULT
+        return unless r
 
         r.set_value data
       end
@@ -56,10 +53,7 @@ module Gloo
       # otherwise it will just get the result of the call.
       #
       def output?
-        o = find_child GET_OUTPUT
-        return false unless o
-
-        return o.value
+        return find_child_value GET_OUTPUT
       end
 
       # ---------------------------------------------------------------------

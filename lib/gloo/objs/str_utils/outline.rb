@@ -139,8 +139,6 @@ module Gloo
           add_topic id, name
         end
 
-        # show_items_r( @root[ :children ], 0 )
-
         # Generate the HTML from the outline structure
         html = render_outline
   

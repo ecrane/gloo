@@ -157,7 +157,6 @@ module Gloo
       #
       def msg_mkdir
         FileUtils.mkdir_p(value) unless Dir.exist?(value)
-        # Dir.mkdir(value) unless Dir.exist?(value)
       end
 
       #

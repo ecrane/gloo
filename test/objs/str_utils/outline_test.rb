@@ -26,4 +26,20 @@ class OutlineTest < BaseEngineTest
     assert o.add_children_on_create?
   end
 
+  def test_creating_with_children
+    i = @engine.parser.parse_immediate 'create o as outline'
+    i.run
+    assert_equal 1, @engine.heap.root.child_count
+
+    o = @engine.heap.root.children.first
+    assert o
+    assert_equal 4, o.child_count
+
+    names = o.children.map( &:name )
+    assert names.include?( 'object_source' )
+    assert names.include?( 'entity_path' )
+    assert names.include?( 'separator_char' )
+    assert names.include?( 'data' )
+  end
+
 end
