@@ -38,7 +38,6 @@ module Gloo
         arr = []
 
         container.children.each do |o|
-          # puts "#{o.class.typename} == #{type}"
           arr << o if o.class.typename == type
           arr += by_type( engine, type, o ) if o.child_count.positive?
         end

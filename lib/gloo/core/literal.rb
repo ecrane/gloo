@@ -12,7 +12,7 @@ module Gloo
       attr_reader :value
 
       #
-      # Create the expression from a list of tokens.
+      # Create the literal with the given value.
       #
       def initialize( value )
         set_value( value )

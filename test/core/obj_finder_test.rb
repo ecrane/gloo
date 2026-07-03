@@ -19,4 +19,23 @@ class ObjFinderTest < BaseEngineTest
     assert_equal 'y', arr.first.name
   end
 
+  def test_by_type
+    arr = Gloo::Core::ObjFinder.by_type( @engine, 'string' )
+    assert_equal [], arr
+
+    @engine.parser.run '` s as string'
+    arr = Gloo::Core::ObjFinder.by_type( @engine, 'string' )
+    assert_equal 1, arr.count
+
+    @engine.parser.run '` n as int'
+    arr = Gloo::Core::ObjFinder.by_type( @engine, 'string' )
+    assert_equal 1, arr.count
+    arr = Gloo::Core::ObjFinder.by_type( @engine, 'integer' )
+    assert_equal 1, arr.count
+
+    @engine.parser.run '` s2 as string'
+    arr = Gloo::Core::ObjFinder.by_type( @engine, 'string' )
+    assert_equal 2, arr.count
+  end
+
 end

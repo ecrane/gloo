@@ -313,4 +313,32 @@ class ObjTest < BaseEngineTest
     assert @engine.heap.it.value
   end
 
+  def test_find_child_resolve_alias
+    @engine.parser.run 'create s as string : hello'
+    @engine.parser.run 'create a as alias : s'
+    can = @engine.heap.root
+    a = can.find_child( 'a' )
+    resolved = can.find_child_resolve_alias( 'a' )
+    assert resolved
+    refute_same a, resolved
+    assert_equal 'hello', resolved.value
+  end
+
+  def test_find_child_value
+    @engine.parser.run 'create s as string : world'
+    can = @engine.heap.root
+    val = can.find_child_value( 's' )
+    assert_equal 'world', val
+    assert_nil can.find_child_value( 'nonexistent' )
+  end
+
+  def test_responds_to_message
+    @engine.parser.run 'create s as string : test'
+    @engine.parser.run "check s for responds_to? ('blank?')"
+    assert @engine.heap.it.value
+
+    @engine.parser.run "check s for responds_to? ('nosuchmsg')"
+    refute @engine.heap.it.value
+  end
+
 end

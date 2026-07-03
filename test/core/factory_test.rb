@@ -67,6 +67,33 @@ class FactoryTest < BaseEngineTest
     assert_equal 'script', o.type_display
   end
 
+  def test_create_text
+    @engine.start
+    o = @engine.factory.create_text( 'o', 'hello', nil )
+    assert o
+    assert_equal 'o', o.name
+    assert_equal 'hello', o.value
+    assert_equal 'text', o.type_display
+  end
+
+  def test_create_file
+    @engine.start
+    o = @engine.factory.create_file( 'o', 'path/to/file', nil )
+    assert o
+    assert_equal 'o', o.name
+    assert_equal 'path/to/file', o.value
+    assert_equal 'file', o.type_display
+  end
+
+  def test_create_alias
+    @engine.start
+    o = @engine.factory.create_alias( 'o', 'some.object', nil )
+    assert o
+    assert_equal 'o', o.name
+    assert_equal 'some.object', o.value
+    assert_equal 'alias', o.type_display
+  end
+
   # ---------------------------------------------------------------------
   #    Object Factory
   # ---------------------------------------------------------------------

@@ -51,4 +51,40 @@ class OpTest < BaseTest
     assert_same Gloo::Expr::OpPlus, o.class
   end
 
+  def test_create_op_eq
+    o = Gloo::Core::Op.create_op( '=' )
+    assert o
+    assert_same Gloo::Expr::OpEq, o.class
+  end
+
+  def test_create_op_ineq
+    o = Gloo::Core::Op.create_op( '!=' )
+    assert o
+    assert_same Gloo::Expr::OpIneq, o.class
+  end
+
+  def test_create_op_gt
+    o = Gloo::Core::Op.create_op( '>' )
+    assert o
+    assert_same Gloo::Expr::OpGt, o.class
+  end
+
+  def test_create_op_lt
+    o = Gloo::Core::Op.create_op( '<' )
+    assert o
+    assert_same Gloo::Expr::OpLt, o.class
+  end
+
+  def test_create_op_gteq
+    o = Gloo::Core::Op.create_op( '>=' )
+    assert o
+    assert_same Gloo::Expr::OpGteq, o.class
+  end
+
+  def test_create_op_lteq
+    o = Gloo::Core::Op.create_op( '<=' )
+    assert o
+    assert_same Gloo::Expr::OpLteq, o.class
+  end
+
 end

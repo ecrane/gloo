@@ -13,6 +13,7 @@ module Gloo
       IT = 'it'.freeze
       ERROR = 'error'.freeze
       CONTEXT = '@'.freeze
+      NAMED_COLORS = %w[red blue green white black yellow].freeze
 
       attr_reader :src, :elements
 
@@ -177,8 +178,9 @@ module Gloo
       # Is the reference to a color?
       #
       def named_color?
-        colors = %w[red blue green white black yellow]
-        return true if colors.include?( @src.downcase )
+        return true if NAMED_COLORS.include?( @src.downcase )
+
+        return false
       end
 
       #

@@ -52,7 +52,6 @@ module Gloo
       # Initialize verbs and objects in the dictionary.
       #
       def init
-        # @engine.log.debug 'initializing dictionaries'
         init_verbs
         init_objs
       end
@@ -192,7 +191,6 @@ module Gloo
       #
       def add_key( keyword )
         if @keywords.include?( keyword )
-          # @engine.err "duplicate keyword '#{keyword}'"
           return
         end
 
@@ -203,7 +201,6 @@ module Gloo
       # Init the list of objects.
       #
       def init_objs
-        # @engine.log.debug "initializing #{@obj_references.count} objects"
         @obj_references.each do |o|
           add_object o
         end
@@ -213,7 +210,6 @@ module Gloo
       # Init the list of verbs.
       #
       def init_verbs
-        # @engine.log.debug "initializing #{@verb_references.count} verbs"
         @verb_references.each do |v|
           add_verb v
         end
@@ -222,35 +218,33 @@ module Gloo
       # 
       # Add an object to the dictionary
       # 
-      def add_object o
+      def add_object( obj )
         # Make sure it hasn't already been registered
-        if ( @objs.key?(o.typename) || @objs.key?(o.short_typename) )
-          @engine.err "duplicate object type '#{o.typename}' or '#{o.short_typename}'"
+        if ( @objs.key?(obj.typename) || @objs.key?(obj.short_typename) )
+          @engine.err "duplicate object type '#{obj.typename}' or '#{obj.short_typename}'"
           return
         end
 
-        @objs[ o.typename ] = o
-        @objs[ o.short_typename ] = o
-        add_key o.typename
-        add_key o.short_typename if o.typename != o.short_typename
+        @objs[ obj.typename ] = obj
+        @objs[ obj.short_typename ] = obj
+        add_key obj.typename
+        add_key obj.short_typename if obj.typename != obj.short_typename
       end
 
-      # 
+      #
       # Add a verb to the dictionary
-      # 
-      def add_verb v
+      #
+      def add_verb( verb )
         # Make sure it hasn't already been registered
-        if ( verb?( v.keyword ) || verb?( v.keyword_shortcut ))
-          puts "duplicate verb keyword '#{v.keyword}' or '#{v.keyword_shortcut}'"
-          @engine.err "duplicate verb keyword '#{v.keyword}' or '#{v.keyword_shortcut}'"
+        if ( verb?( verb.keyword ) || verb?( verb.keyword_shortcut ) )
+          @engine.err "duplicate verb keyword '#{verb.keyword}' or '#{verb.keyword_shortcut}'"
           return
         end
 
-        @verbs[ v.keyword ] = v
-        @verbs[ v.keyword_shortcut ] = v
-        # v.send( :new ).run
-        add_key v.keyword
-        add_key v.keyword_shortcut if v.keyword != v.keyword_shortcut
+        @verbs[ verb.keyword ] = verb
+        @verbs[ verb.keyword_shortcut ] = verb
+        add_key verb.keyword
+        add_key verb.keyword_shortcut if verb.keyword != verb.keyword_shortcut
       end
 
     end
