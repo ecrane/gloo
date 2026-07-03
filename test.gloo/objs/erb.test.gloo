@@ -1,0 +1,35 @@
+#
+# ERB tests
+#
+
+tests [can] :
+  objs [can] :
+    erb [can] :
+
+      greeting [string] : <%= name %>!!
+
+      basic [erb] :
+        template [text] : <%= name %>
+        params [can] :
+          name [string] : world
+        result [text] :
+
+      aliased_template [erb] :
+        template [alias] : tests.objs.erb.greeting
+        params [can] :
+          name [string] : gloo
+        result [text] :
+
+      run_basic [test] :
+        description [string] : Render a template with a param
+        on_test [script] :
+          tell ^^.basic to run
+          eval ^^.basic.result = 'world'
+          assert "expected template to render with the param value"
+
+      run_with_aliased_template [test] :
+        description [string] : Render a template whose 'template' child is an alias to another object
+        on_test [script] :
+          tell ^^.aliased_template to run
+          eval ^^.aliased_template.result = 'gloo!!'
+          assert "expected alias to be resolved before rendering the template"

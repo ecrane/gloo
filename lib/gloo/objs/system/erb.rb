@@ -33,7 +33,9 @@ module Gloo
       # Get the ERB template.
       #
       def template_value
-        return find_child_value TEMPLATE
+        tmpl = find_child TEMPLATE
+        tmpl = Gloo::Objs::Alias.resolve_alias( @engine, tmpl )
+        return tmpl&.value
       end
 
       #
