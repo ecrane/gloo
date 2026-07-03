@@ -10,6 +10,11 @@ module Gloo
   module Utils
     class Words
 
+      # 
+      # Return the plural form of the given word.
+      # 
+      # @param word [String] the word to pluralize
+      # @return [String] the plural form of the word
       def self.pluralize( word )
         return word.pluralize
       end
