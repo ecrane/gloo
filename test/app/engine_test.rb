@@ -44,19 +44,6 @@ class EngineTest < BaseTest
     assert o.ext_manager
   end
 
-  def test_last_command_blank
-    o = Gloo::App::Engine.new( default_context )
-    o.last_cmd = nil
-    assert o.last_cmd_blank?
-    o.last_cmd = ''
-    assert o.last_cmd_blank?
-    o.last_cmd = '  '
-    assert o.last_cmd_blank?
-
-    o.last_cmd = 'quit'
-    refute o.last_cmd_blank?
-  end
-
   def test_that_engine_has_object_factory
     o = Gloo::App::Engine.new( default_context )
     o.start

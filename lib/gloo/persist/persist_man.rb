@@ -18,7 +18,7 @@ module Gloo
       def initialize( engine )
         @engine = engine
         @maps = []
-        @mech = @engine.platform.getFileMech( @engine )
+        @mech = @engine.platform.get_file_mech( @engine )
       end
 
       #

@@ -13,4 +13,14 @@ class ModeTest < BaseTest
     assert_equal Gloo::App::Mode::EMBED, default
   end
 
+  def test_all_mode_constants_defined
+    assert Gloo::App::Mode::EMBED
+    assert Gloo::App::Mode::APP
+    assert Gloo::App::Mode::CLI
+    assert Gloo::App::Mode::SCRIPT
+    assert Gloo::App::Mode::VERSION
+    assert Gloo::App::Mode::HELP
+    assert Gloo::App::Mode::TEST
+  end
+
 end

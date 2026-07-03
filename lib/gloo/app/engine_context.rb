@@ -13,7 +13,7 @@ module Gloo
       #
       # Create the context, supplying defaults where relevant.
       #
-      def initialize( params = [], platform=nil, log=nil, user_root=nil )
+      def initialize( params = [], platform = nil, log = nil, user_root = nil )
         @params = params
         @platform = platform ? platform : Gloo::App::Platform.new
         @log = log ? log : Gloo::App::Log

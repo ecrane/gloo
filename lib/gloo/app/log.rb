@@ -36,7 +36,7 @@ module Gloo
       #
       def initialize( engine, quiet = true )
         @engine = engine
-        @quite = quiet
+        @quiet = quiet
         @debug = engine.settings.debug
 
         create_loggers

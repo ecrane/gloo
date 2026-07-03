@@ -48,7 +48,6 @@ module Gloo
       #
       def self.full_version
         return "#{display_title}\n#{ruby_info}"
-        return str
       end
 
       # 

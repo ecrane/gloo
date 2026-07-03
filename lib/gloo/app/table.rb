@@ -20,7 +20,7 @@ module Gloo
       # 
       # Put a box around the given string.
       def box( str_value )
-        puts str_value
+        # puts str_value
         box = Terminal::Table.new( :headings => [], :rows => [ [ str_value ] ] )
         return box.to_s
       end

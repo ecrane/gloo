@@ -53,7 +53,7 @@ module Gloo
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           val = expr.evaluate
           color = val.to_sym
-          return @engine.platform.getColorizedString( str, color )
+          return @engine.platform.get_colorized_string( str, color )
         end
         return str
       end

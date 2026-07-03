@@ -23,4 +23,10 @@ class InfoTest < BaseTest
     assert t.start_with? 'Gloo'
   end
 
+  def test_ruby_info
+    t = Gloo::App::Info.ruby_info
+    assert t
+    assert t.include? RUBY_VERSION
+  end
+
 end

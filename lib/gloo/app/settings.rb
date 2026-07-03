@@ -110,11 +110,6 @@ module Gloo
       def init_root root
         if root
           @user_root = root
-        # if in_test_mode?
-        #   path = File.dirname( File.dirname( File.absolute_path( __FILE__ ) ) )
-        #   path = File.dirname( File.dirname( path ) )
-        #   path = File.join( path, 'test', 'gloo' )
-        #   @user_root = path
         else
           @user_root = File.join( Dir.home, 'gloo' )
         end

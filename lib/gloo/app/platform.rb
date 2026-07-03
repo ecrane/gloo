@@ -41,7 +41,7 @@ module Gloo
       # 
       # Get the file mechanism for this platform.
       # 
-      def getFileMech( engine )
+      def get_file_mech( engine )
         return Gloo::Persist::DiscMech.new( engine )
       end
 
@@ -53,7 +53,7 @@ module Gloo
       # 
       # Get colorized string.
       # 
-      def getColorizedString( str, color )
+      def get_colorized_string( str, color )
         colorized = ColorizedString[ str.to_s ].colorize( color )
         return colorized.to_s
       end

@@ -13,7 +13,7 @@ module Gloo
       #
       def initialize( engine, pn, obj )
         @engine = engine
-        @mech = @engine.platform.getFileMech( @engine )
+        @mech = @engine.platform.get_file_mech( @engine )
         @pn = pn
         @obj = obj
       end

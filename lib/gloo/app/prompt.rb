@@ -16,6 +16,7 @@ module Gloo
       #
       # Set up Prompt.
       #
+      # Set up Prompt with the given platform.
       def initialize platform
         @platform = platform
       end
