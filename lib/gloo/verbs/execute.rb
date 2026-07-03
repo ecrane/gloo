@@ -32,13 +32,7 @@ module Gloo
           exec cmd
         end
 
-        # pid = spawn cmd
-        # Process.wait pid
         @engine.log.debug "done executing cmd: #{cmd}"
-
-        # system expr.evaluate  #, chdir: Dir.pwd
-        # `#{expr.evaluate}`
-        # exec expr.evaluate
       end
 
       #

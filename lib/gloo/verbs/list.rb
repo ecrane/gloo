@@ -111,7 +111,7 @@ module Gloo
         end
 
         # Last chance: use the default
-        return 2
+        return '  '
       end
 
     end

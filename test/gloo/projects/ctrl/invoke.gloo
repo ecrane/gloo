@@ -1,0 +1,8 @@
+#
+# Simple function for invoke tests.
+#
+f [ƒ] :
+  params [can] :
+  on_invoke [script] :
+    put 7 into f.result
+  result [int] :

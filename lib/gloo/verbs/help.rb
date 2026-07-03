@@ -84,13 +84,6 @@ module Gloo
       end
 
       #
-      # Show all keywords: verbs and objects.
-      #
-      def show_keywords
-        @engine.dictionary.show_keywords
-      end
-
-      # 
       # Show default help.
       # No parameters were given.
       # 
@@ -111,8 +104,6 @@ module Gloo
       # Dispatch the help to the right place.
       #
       def dispatch( opts )
-      #   return if dispatch_help_page( opts )
-
         @engine.log.debug 'looking for help topic'
         cmd = DISPATCH[ opts.to_sym ]
         if cmd
@@ -121,13 +112,6 @@ module Gloo
         else
           report_help_error opts
         end
-      end
-
-      #
-      # Show application settings.
-      #
-      def show_settings
-        @engine.settings.show
       end
 
       #

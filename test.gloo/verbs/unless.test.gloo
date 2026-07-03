@@ -1,0 +1,22 @@
+#
+# Unless verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    unless [can] :
+
+      b [bool] : false
+
+      unless_false [test] :
+        description [string] : Unless false, do block runs.
+        on_test [script] :
+          unless ^^.b do eval true
+          assert "expected do block to run when condition is false"
+
+      unless_true [test] :
+        description [string] : Unless true, do block is skipped.
+        on_test [script] :
+          eval false
+          unless true do eval true
+          refute "expected do block to be skipped when condition is true"

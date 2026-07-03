@@ -18,7 +18,6 @@ module Gloo
         return unless @engine.persist_man.maps
         
         @engine.persist_man.maps.each do |map|
-          # puts "#{map.obj.name} - #{map.pn}"
           @engine.log.show "#{map.obj.name} - #{map.pn}"
         end
         @engine.heap.it.set_to @engine.persist_man.maps.count

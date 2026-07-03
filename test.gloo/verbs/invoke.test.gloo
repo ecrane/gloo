@@ -1,0 +1,20 @@
+#
+# Invoke verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    invoke [can] :
+
+      f [ƒ] :
+        params [can] :
+        on_invoke [script] :
+          put 42 into ^.result
+        result [int] :
+
+      invoke_test [test] :
+        description [string] : Invoke a function and check the result.
+        on_test [script] :
+          invoke tests.verbs.invoke.f
+          eval it = 42
+          assert "expected it to be 42"

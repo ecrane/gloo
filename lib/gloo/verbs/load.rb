@@ -1,7 +1,7 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
 #
-# Save an object to a file or other persistance mechcanism.
+# Load an object from a file or other persistence mechanism.
 #
 
 module Gloo

@@ -10,5 +10,14 @@ class LogVerbTest < BaseEngineTest
     assert_equal 'log', Gloo::Verbs::Log.keyword_shortcut
   end
 
+  def test_writing_to_log
+    @engine.parser.run 'log "hello from log"'
+    assert_equal 'hello from log', @engine.heap.it.value
+  end
+
+  def test_clearing_the_log
+    @engine.parser.run 'log clear'
+    refute @engine.error?
+  end
 
 end

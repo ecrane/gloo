@@ -1,0 +1,14 @@
+#
+# Create verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    create [can] :
+
+      create_str [test] :
+        description [string] : Create sets it to the initial value.
+        on_test [script] :
+          create cx as string : 'hello'
+          eval it = 'hello'
+          assert "expected it to equal the created value"
