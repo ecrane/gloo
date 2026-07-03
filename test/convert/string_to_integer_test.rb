@@ -10,6 +10,11 @@ class StringToIntegerTest < BaseEngineTest
     assert_equal 98765, o.convert( '98765' )
   end
 
+  def test_blank_string_returns_nil
+    o = Gloo::Convert::StringToInteger.new
+    assert_nil o.convert( '' )
+  end
+
   def test_with_engine
     v = @engine.parser.parse_immediate 'create x as int'
     v.run

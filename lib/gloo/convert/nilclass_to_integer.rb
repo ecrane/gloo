@@ -3,14 +3,12 @@
 #
 # Conversion tool:  Nil to Integer.
 #
-require 'chronic'
-
 module Gloo
   module Convert
     class NilClassToInteger
 
       #
-      # Convert a nil to a string.
+      # Convert a nil to an integer.
       #
       def convert( value )
         return 0

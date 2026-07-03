@@ -10,7 +10,7 @@ module Gloo
     class NilClassToTime
 
       #
-      # Convert a nil to a date.
+      # Convert a nil to a time.
       #
       def convert( value )
         return Chronic.parse( '' )

@@ -3,8 +3,6 @@
 #
 # Conversion tool:  Nil to String.
 #
-require 'chronic'
-
 module Gloo
   module Convert
     class NilClassToString

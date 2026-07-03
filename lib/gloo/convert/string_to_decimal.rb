@@ -9,7 +9,7 @@ module Gloo
     class StringToDecimal
 
       #
-      # Convert the given string value to an integer.
+      # Convert the given string value to a decimal.
       #
       def convert( value )
         return value.to_f
