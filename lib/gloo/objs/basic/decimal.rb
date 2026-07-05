@@ -50,7 +50,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[round]
+        return super + %w[round format]
       end
 
       #
@@ -69,6 +69,27 @@ module Gloo
         set_value i
         @engine.heap.it.set_to i
         return i
+      end
+
+      #
+      # Format the decimal.
+      # With no parameter, adds comma separators to the whole part
+      # (Ex: 1000.5 -> 1,000.5).
+      # With a parameter, uses it as a sprintf-style format string (Ex: '%.2f').
+      #
+      # @param format [String] The sprintf-style format to use.
+      #
+      def msg_format
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          fmt = expr.evaluate
+          formatted = format( fmt, value )
+        else
+          whole, frac = value.to_s.split( '.' )
+          grouped = whole.reverse.scan( /.{1,3}/ ).join( ',' ).reverse
+          formatted = frac ? "#{grouped}.#{frac}" : grouped
+        end
+        @engine.heap.it.set_to formatted
       end
 
     end

@@ -30,6 +30,7 @@ class DecimalTest < BaseEngineTest
     assert msgs
     assert msgs.include?( 'round' )
     assert msgs.include?( 'unload' )
+    assert msgs.include?( 'format' )
   end
 
   def test_rounding_down
@@ -52,6 +53,39 @@ class DecimalTest < BaseEngineTest
 
     @engine.parser.run 'put 100 * 0.75 into x'
     assert_equal 75.0, x.value
+  end
+
+  def test_format_msg_default
+    i = @engine.parser.parse_immediate 'create x as decimal'
+    i.run
+    i = @engine.parser.parse_immediate "put 1234567.891 into x"
+    i.run
+
+    i = @engine.parser.parse_immediate 'tell x to format'
+    i.run
+    assert_equal '1,234,567.891', @engine.heap.it.value
+  end
+
+  def test_format_msg_negative_default
+    i = @engine.parser.parse_immediate 'create x as decimal'
+    i.run
+    i = @engine.parser.parse_immediate "put -1234567.891 into x"
+    i.run
+
+    i = @engine.parser.parse_immediate 'tell x to format'
+    i.run
+    assert_equal '-1,234,567.891', @engine.heap.it.value
+  end
+
+  def test_format_msg_with_format_string
+    i = @engine.parser.parse_immediate 'create x as decimal'
+    i.run
+    i = @engine.parser.parse_immediate "put 3.14159 into x"
+    i.run
+
+    i = @engine.parser.parse_immediate "tell x to format ('%.2f')"
+    i.run
+    assert_equal '3.14', @engine.heap.it.value
   end
 
 end

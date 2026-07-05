@@ -54,3 +54,17 @@ tests [can] :
           tell ^^.b to randomize (10000)
           eval ^^.a = ^^.b
           refute "expected them to not be equal"
+
+      format_int [test] :
+        description [string] : Format an integer
+        f [int] : 
+        on_test [script] :
+          put 1234567 into ^.f
+          tell ^.f to format
+          eval it = '1,234,567'
+          assert "expected formatted integer to match"
+
+          put 42 into ^.f
+          tell ^.f to format ('%05d')
+          eval it = '00042'
+          assert "expected formatted integer to match"

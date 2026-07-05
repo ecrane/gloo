@@ -56,7 +56,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[inc dec randomize]
+        return super + %w[inc dec randomize format]
       end
 
       #
@@ -98,6 +98,24 @@ module Gloo
         set_value rand_value
         @engine.heap.it.set_to rand_value
         return rand_value
+      end
+
+      #
+      # Format the integer.
+      # With no parameter, adds comma separators (Ex: 1000 -> 1,000).
+      # With a parameter, uses it as a sprintf-style format string (Ex: '%05d').
+      #
+      # @param format [String] The sprintf-style format to use.
+      #
+      def msg_format
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          fmt = expr.evaluate
+          formatted = format( fmt, value )
+        else
+          formatted = value.to_s.reverse.scan( /.{1,3}/ ).join( ',' ).reverse
+        end
+        @engine.heap.it.set_to formatted
       end
 
     end

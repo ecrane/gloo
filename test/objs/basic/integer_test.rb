@@ -36,6 +36,7 @@ class IntegerTest < BaseEngineTest
     assert msgs.include?( 'dec' )
     assert msgs.include?( 'unload' )
     assert msgs.include?( 'randomize' )
+    assert msgs.include?( 'format' )
   end
 
   def test_inc_msg
@@ -86,6 +87,39 @@ class IntegerTest < BaseEngineTest
   def test_that_it_not_is_a_container
     o = Gloo::Objs::Integer.new @engine
     refute o.is_container?
+  end
+
+  def test_format_msg_default
+    i = @engine.parser.parse_immediate 'create i as int'
+    i.run
+    i = @engine.parser.parse_immediate "put 1234567 into i"
+    i.run
+
+    i = @engine.parser.parse_immediate 'tell i to format'
+    i.run
+    assert_equal '1,234,567', @engine.heap.it.value
+  end
+
+  def test_format_msg_negative_default
+    i = @engine.parser.parse_immediate 'create i as int'
+    i.run
+    i = @engine.parser.parse_immediate "put -1234567 into i"
+    i.run
+
+    i = @engine.parser.parse_immediate 'tell i to format'
+    i.run
+    assert_equal '-1,234,567', @engine.heap.it.value
+  end
+
+  def test_format_msg_with_format_string
+    i = @engine.parser.parse_immediate 'create i as int'
+    i.run
+    i = @engine.parser.parse_immediate "put 42 into i"
+    i.run
+
+    i = @engine.parser.parse_immediate "tell i to format ('%05d')"
+    i.run
+    assert_equal '00042', @engine.heap.it.value
   end
 
 end

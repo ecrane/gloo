@@ -22,3 +22,17 @@ tests [can] :
           tell ^^.a to round
           eval ^^.a = 4.0
           assert "expected a to be rounded to 4.0"
+
+      format_decimal [test] :
+        description [string] : Format a decimal
+        f [decimal] :
+        on_test [script] :
+          put 1234567.891 into ^.f
+          tell ^.f to format
+          eval it = '1,234,567.891'
+          assert "expected formatted decimal to match"
+
+          put 3.14159 into ^.f
+          tell ^.f to format ('%.2f')
+          eval it = '3.14'
+          assert "expected formatted decimal to match"
