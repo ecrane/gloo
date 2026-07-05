@@ -18,6 +18,7 @@ class TimeTest < BaseEngineTest
     msgs = Gloo::Objs::Time.messages
     assert msgs
     assert msgs.include?( 'now' )
+    assert msgs.include?( 'format' )
   end
 
   def test_adds_children_on_create
@@ -64,5 +65,24 @@ class TimeTest < BaseEngineTest
     assert t.value
 
     assert dt.value.end_with?( t.value )
+  end
+
+  def test_format_msg
+    o = Gloo::Objs::Time.new @engine
+    o.set_value( Time.new( 2025, 10, 15, 14, 30, 0 ) )
+
+    o.msg_format
+    assert_equal '14:30:00', @engine.heap.it.value
+  end
+
+  def test_format_msg_with_format_string
+    i = @engine.parser.parse_immediate 'create t as time'
+    i.run
+    t = @engine.heap.root.children.first
+    t.set_value( Time.new( 2025, 10, 15, 14, 30, 0 ) )
+
+    i = @engine.parser.parse_immediate "tell t to format ('%I:%M %p')"
+    i.run
+    assert_equal '02:30 PM', @engine.heap.it.value
   end
 end

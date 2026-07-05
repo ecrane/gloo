@@ -46,3 +46,16 @@ tests [can] :
           put 'tomorrow' into ^^.d
           tell ^^.d to is_future
           assert "expected tomorrow to be in the future"
+
+      format [test] :
+        description [string] : Format a datetime
+        f [dt] :
+        on_test [script] :
+          put '2025.10.15 2:30:00 PM' into ^.f
+          tell ^.f to format
+          eval it = '2025-10-15 14:30:00'
+          assert "expected formatted datetime to match"
+
+          tell ^.f to format ('%m/%d/%Y')
+          eval it = '10/15/2025'
+          assert "expected formatted datetime to match"

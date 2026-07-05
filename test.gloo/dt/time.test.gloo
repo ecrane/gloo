@@ -74,3 +74,16 @@ tests [can] :
           eval it = ^^.t
           refute "expected am/pm to not be the same as the time"
 
+      format [test] :
+        description [string] : Format a time
+        f [time] :
+        on_test [script] :
+          put '2:30:00 PM' into ^.f
+          tell ^.f to format
+          eval it = '14:30:00'
+          assert "expected formatted time to match"
+
+          tell ^.f to format ('%I:%M %p')
+          eval it = '02:30 PM'
+          assert "expected formatted time to match"
+

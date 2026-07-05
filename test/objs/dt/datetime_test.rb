@@ -19,6 +19,7 @@ class DatetimeTest < BaseEngineTest
     msgs = Gloo::Objs::Datetime.messages
     assert msgs
     assert msgs.include?( 'now' )
+    assert msgs.include?( 'format' )
   end
 
   def test_adds_children_on_create
@@ -162,6 +163,25 @@ class DatetimeTest < BaseEngineTest
     i = @engine.parser.parse_immediate 'tell dt to is_future'
     i.run
     assert @engine.heap.it.value
+  end
+
+  def test_format_msg
+    o = Gloo::Objs::Datetime.new @engine
+    o.set_value( DateTime.new( 2025, 10, 15, 14, 30, 0 ) )
+
+    o.msg_format
+    assert_equal '2025-10-15 14:30:00', @engine.heap.it.value
+  end
+
+  def test_format_msg_with_format_string
+    i = @engine.parser.parse_immediate 'create dt as dt'
+    i.run
+    dt = @engine.heap.root.children.first
+    dt.set_value( DateTime.new( 2025, 10, 15, 14, 30, 0 ) )
+
+    i = @engine.parser.parse_immediate "tell dt to format ('%m/%d/%Y')"
+    i.run
+    assert_equal '10/15/2025', @engine.heap.it.value
   end
 
 end

@@ -59,10 +59,10 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[now add sub is_today is_future 
+        return super + %w[now add sub is_today is_future
           is_past is_yesterday is_tomorrow is_this_week
           begin_day end_day begin_week end_week
-          begin_month end_month begin_year end_year]
+          begin_month end_month begin_year end_year format]
       end
 
       #
@@ -232,7 +232,23 @@ module Gloo
         self.set_value( DateTime.now )
         @engine.heap.it.set_to self.value
       end
-  
+
+      #
+      # Format the date and time.
+      #
+      # @param format [String] The format to use.
+      #
+      def msg_format
+        format = "%Y-%m-%d %H:%M:%S"
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+          format = data
+        end
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to dt.strftime( format )
+      end
+
     end
   end
 end

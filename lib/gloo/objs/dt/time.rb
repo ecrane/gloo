@@ -58,7 +58,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return super + %w[now add sub hh mm ss am]
+        return super + %w[now add sub hh mm ss am format]
       end
 
       #
@@ -132,6 +132,22 @@ module Gloo
       def msg_am
         dt = Chronic.parse( self.value )
         @engine.heap.it.set_to dt.strftime( '%p' )
+      end
+
+      #
+      # Format the time.
+      #
+      # @param format [String] The format to use.
+      #
+      def msg_format
+        format = "%H:%M:%S"
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+          format = data
+        end
+        dt = Chronic.parse( self.value )
+        @engine.heap.it.set_to dt.strftime( format )
       end
     end
   end
