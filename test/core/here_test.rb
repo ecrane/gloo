@@ -33,4 +33,17 @@ class HereTest < BaseEngineTest
     assert_equal 7, @engine.heap.it.value
   end
 
+  #
+  # Regression: a script defined directly under root referencing a
+  # root-level sibling via ^ used to blow the stack, since Obj#pn
+  # returned the literal string "root" when called on root itself,
+  # producing a leading-dot path that Pn#get_parent couldn't resolve.
+  #
+  def test_here_ref_in_script_at_root
+    @engine.parser.run 'create x as int : 3'
+    @engine.parser.run 'create s as script : "show ^.x + 2"'
+    @engine.parser.run 'run s'
+    assert_equal 5, @engine.heap.it.value
+  end
+
 end

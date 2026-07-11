@@ -28,7 +28,8 @@ module Gloo
         remainder = pn.elements[ 1..-1 ].join( '.' )
 
         here.length.times { target = target.parent }
-        pn.set_to "#{target.pn}.#{remainder}"
+        full_path = target.pn.empty? ? remainder : "#{target.pn}.#{remainder}"
+        pn.set_to full_path
       end
 
     end

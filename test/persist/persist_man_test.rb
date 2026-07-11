@@ -57,4 +57,21 @@ class PersistManTest < BaseEngineTest
     assert_equal fs.obj.pn, obj.pn
   end
 
+  #
+  # Regression: an unhandled Ruby exception while loading a file (or
+  # running its on_load script) used to crash the whole process, since
+  # nothing in the load chain rescued it.
+  #
+  def test_load_survives_a_file_storage_exception
+    original = Gloo::Persist::FileStorage.instance_method( :load )
+    Gloo::Persist::FileStorage.send( :define_method, :load ) { raise 'boom' }
+
+    begin
+      @engine.persist_man.load 'test'
+      assert_equal 0, @engine.heap.root.child_count
+    ensure
+      Gloo::Persist::FileStorage.send( :define_method, :load, original )
+    end
+  end
+
 end

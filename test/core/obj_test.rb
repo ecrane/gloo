@@ -187,6 +187,27 @@ class ObjTest < BaseEngineTest
     assert r.root?
   end
 
+  #
+  # root? used to call name.downcase unconditionally, which raised
+  # for any parentless object with a nil name (rather than the
+  # default '' from Baseo). Confirm it degrades gracefully instead.
+  #
+  def test_root_check_does_not_raise_for_nil_name
+    o = Gloo::Core::Obj.new @engine
+    o.name = nil
+    refute o.root?
+  end
+
+  #
+  # Regression: pn used to return the literal string "root" when
+  # called on root itself, which broke path resolution for anything
+  # built on top of it (eg. Here.expand_here). Paths are root-relative,
+  # so root has no path/name segment of its own.
+  #
+  def test_root_pn_is_empty
+    assert_equal '', @engine.heap.root.pn
+  end
+
   def test_object_can_be_created_by_default
     assert Gloo::Core::Obj.can_create?
   end

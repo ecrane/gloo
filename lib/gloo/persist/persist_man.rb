@@ -58,10 +58,14 @@ module Gloo
 
         pns.each do |pn|
           @engine.log.debug "Load file(s) at: #{pn}"
-          fs = Gloo::Persist::FileStorage.new( @engine, pn )
-          fs.load
-          @maps << fs
-          @engine.event_manager.on_load fs.obj
+          begin
+            fs = Gloo::Persist::FileStorage.new( @engine, pn )
+            fs.load
+            @maps << fs
+            @engine.event_manager.on_load fs.obj
+          rescue => ex
+            @engine.handle_exception( ex )
+          end
         end
       end
 

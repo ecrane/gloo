@@ -19,8 +19,13 @@ module Gloo
         engine.log.debug "running verb #{verb.type_display}"
         engine.heap.error.start_tracking
         engine.exec_env.verbs.push verb
-        verb&.run
-        engine.exec_env.verbs.pop
+        begin
+          verb&.run
+        rescue => ex
+          engine.handle_exception( ex )
+        ensure
+          engine.exec_env.verbs.pop
+        end
         engine.heap.error.clear_if_no_errors
       end
 

@@ -91,6 +91,25 @@ module Gloo
         end
       end
 
+      #
+      # Run the on_exception scripts in any open objects.
+      # For each on_exception script found, look for the exception_data
+      # container and set the exception message and backtrace.
+      #
+      def on_exception msg, backtrace
+        @engine.log.debug 'on_exception event'
+        arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_exception' )
+        arr.each do |o|
+          data = o.parent.find_child 'exception_data'
+          if data
+            data.find_child( 'message' ).set_value msg
+            data.find_child( 'backtrace' ).set_value backtrace
+          end
+
+          Gloo::Exec::Dispatch.message( @engine, 'run', o )
+        end
+      end
+
     end
   end
 end

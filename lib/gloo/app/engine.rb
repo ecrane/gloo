@@ -37,6 +37,8 @@ module Gloo
         @platform = context.platform
         @log.debug "platform (class: #{@platform.class.name}) in use ..."
 
+        @handling_exception = false
+        @handling_error = false
         @log.debug 'engine intialized...'
       end
 
@@ -141,7 +143,7 @@ module Gloo
           @lib_manager.load_lib TEST_LIB_NAME
           TestRunner.new( self, @args.files ).run
         rescue => ex
-          log_exception ex
+          handle_exception ex
         end
 
         @log.debug 'Tests complete.'
@@ -215,7 +217,7 @@ module Gloo
         begin
           @parser.run @last_cmd
         rescue => e
-          log_exception e
+          handle_exception e
         end
       end
 
@@ -296,32 +298,74 @@ module Gloo
 
       #
       # Report an error.
-      # Write it to the log and set the heap error value.
+      # Write it to the log and set the heap error value. Always logged;
+      # runs the on_error script (if any) unless we're already inside
+      # one, so a broken handler can't loop.
       #
       def err( msg, backtrace=nil )
         @log.error msg
         @heap.error.set_to msg
 
-        @event_manager.on_error( msg, backtrace)
+        return if @handling_error
+
+        @handling_error = true
+        begin
+          @event_manager.on_error( msg, backtrace )
+        ensure
+          @handling_error = false
+        end
       end
 
-      # 
+      #
       # Log an exception.
-      # This function does not log the full backtrace, but 
+      # This function does not log the full backtrace, but
       # does write part of it to the log.
-      # 
+      #
       def log_exception ex
-        # Get the stack trace, and if needed truncate to fit.
-        msg_lines = ex.backtrace
-        if msg_lines.count > 27
-          msg_lines = msg_lines[0..13] + [ '... truncated ...' ] + msg_lines[-13..-1]
-        end
-        backtrace = msg_lines.join( "\n" )
+        backtrace = format_backtrace( ex )
         @log.error backtrace
 
         err( ex.message, backtrace)
       end
-        
+
+      #
+      # Handle an unanticipated Ruby exception caught at one of the
+      # engine's rescue points. Always logged; runs the on_exception
+      # script (if any) unless we're already inside one, so a broken
+      # handler can't loop.
+      #
+      def handle_exception ex
+        backtrace = format_backtrace( ex )
+        @log.error ex.message
+        @log.error backtrace
+
+        return if @handling_exception
+
+        @handling_exception = true
+        begin
+          @event_manager.on_exception( ex.message, backtrace )
+        ensure
+          @handling_exception = false
+        end
+      end
+
+      # ---------------------------------------------------------------------
+      #    Private functions
+      # ---------------------------------------------------------------------
+
+      private
+
+      #
+      # Get the stack trace as a string, truncating the middle if it's long.
+      #
+      def format_backtrace ex
+        msg_lines = ex.backtrace
+        if msg_lines.count > 27
+          msg_lines = msg_lines[0..13] + [ '... truncated ...' ] + msg_lines[-13..-1]
+        end
+        return msg_lines.join( "\n" )
+      end
+
     end
   end
 end

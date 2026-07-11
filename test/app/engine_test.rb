@@ -101,4 +101,78 @@ class EngineTest < BaseTest
     refute o.running
   end
 
+  def test_err_sets_heap_error
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+
+    refute o.error?
+    o.err( 'boom' )
+
+    assert o.error?
+    assert_equal 'boom', o.heap.error.value
+  end
+
+  def test_err_fires_on_error
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.parser.run '` on_error as script : "put true into ^.fired"'
+    o.parser.run '` fired as bool : false'
+
+    o.err( 'boom' )
+
+    assert_equal true, o.heap.root.find_child( 'fired' ).value
+  end
+
+  def test_err_does_not_recurse_when_handler_is_broken
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.parser.run '` on_error as script : "tell definitely_not_a_real_object to run"'
+
+    # Would raise SystemStackError before the re-entrancy guard was added.
+    o.err( 'trigger 1' )
+    o.err( 'trigger 2' )
+    assert true
+  end
+
+  def test_handle_exception_fires_on_exception
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.parser.run '` on_exception as script : "put true into ^.fired"'
+    o.parser.run '` fired as bool : false'
+
+    begin
+      raise 'boom'
+    rescue => ex
+      o.handle_exception( ex )
+    end
+
+    assert_equal true, o.heap.root.find_child( 'fired' ).value
+  end
+
+  def test_handle_exception_does_not_recurse_when_handler_is_broken
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.parser.run '` on_exception as script : "throw \'nested boom\'"'
+
+    # Would raise SystemStackError before the re-entrancy guard was added.
+    o.parser.run 'throw "outer boom"'
+    o.parser.run 'throw "another"'
+    assert true
+  end
+
+  def test_handle_exception_does_not_trigger_on_error
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.parser.run '` on_error as script : "put true into ^.fired"'
+    o.parser.run '` fired as bool : false'
+
+    begin
+      raise 'boom'
+    rescue => ex
+      o.handle_exception( ex )
+    end
+
+    assert_equal false, o.heap.root.find_child( 'fired' ).value
+  end
+
 end

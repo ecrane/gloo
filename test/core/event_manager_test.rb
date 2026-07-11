@@ -53,4 +53,53 @@ class EventManagerTest < BaseEngineTest
     assert_equal 10, @engine.heap.it.value
   end
 
+  def test_on_error
+    @engine.parser.run '` on_error as script : "put true into ^.fired"'
+    @engine.parser.run '` fired as bool : false'
+    @engine.parser.run '` error_data as can'
+    @engine.parser.run '` error_data.message as string'
+    @engine.parser.run '` error_data.backtrace as string'
+
+    @engine.event_manager.on_error( 'boom', 'trace' )
+
+    root = @engine.heap.root
+    assert_equal true, root.find_child( 'fired' ).value
+    assert_equal 'boom', root.find_child( 'error_data' ).find_child( 'message' ).value
+    assert_equal 'trace', root.find_child( 'error_data' ).find_child( 'backtrace' ).value
+  end
+
+  def test_on_error_without_error_data_does_not_raise
+    @engine.parser.run '` on_error as script : "show 1 + 1"'
+    @engine.event_manager.on_error( 'boom', 'trace' )
+    assert_equal 2, @engine.heap.it.value
+  end
+
+  def test_on_exception
+    @engine.parser.run '` on_exception as script : "put true into ^.fired"'
+    @engine.parser.run '` fired as bool : false'
+    @engine.parser.run '` exception_data as can'
+    @engine.parser.run '` exception_data.message as string'
+    @engine.parser.run '` exception_data.backtrace as string'
+
+    @engine.event_manager.on_exception( 'boom', 'trace' )
+
+    root = @engine.heap.root
+    assert_equal true, root.find_child( 'fired' ).value
+    assert_equal 'boom', root.find_child( 'exception_data' ).find_child( 'message' ).value
+    assert_equal 'trace', root.find_child( 'exception_data' ).find_child( 'backtrace' ).value
+  end
+
+  def test_on_error_and_on_exception_are_independent
+    @engine.parser.run '` on_error as script : "put true into ^.error_fired"'
+    @engine.parser.run '` error_fired as bool : false'
+    @engine.parser.run '` on_exception as script : "put true into ^.exception_fired"'
+    @engine.parser.run '` exception_fired as bool : false'
+
+    @engine.event_manager.on_error( 'boom', 'trace' )
+
+    root = @engine.heap.root
+    assert_equal true, root.find_child( 'error_fired' ).value
+    assert_equal false, root.find_child( 'exception_fired' ).value
+  end
+
 end

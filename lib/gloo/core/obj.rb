@@ -55,7 +55,7 @@ module Gloo
       #
       def root?
         return false if @parent
-        return false unless name.downcase == 'root'
+        return false unless name&.downcase == 'root'
 
         return true
       end
@@ -69,8 +69,12 @@ module Gloo
 
       #
       # Get the path and name to this object.
+      # Paths are always relative to root, so root itself has no
+      # path/name segment of its own.
       #
       def pn
+        return '' if self.root?
+
         str = self.name
         p = self.parent
         while p && !p.root?

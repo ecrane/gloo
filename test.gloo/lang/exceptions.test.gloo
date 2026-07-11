@@ -1,0 +1,63 @@
+#
+# Exception handling tests (on_exception / throw)
+#
+
+tests [can] :
+  lang [can] :
+    exceptions [can] :
+
+      exc_fired [bool] : false
+      err_fired [bool] : false
+
+      on_exception [script] :
+        put true into ^.exc_fired
+
+      on_error [script] :
+        put true into ^.err_fired
+
+      exception_data [can] :
+        message [string] :
+        backtrace [string] :
+
+      error_data [can] :
+        message [string] :
+        backtrace [string] :
+
+      confirm_throw_fires_on_exception [test] :
+        description [string] : Confirm throw fires on_exception and populates exception_data, but does not fire on_error.
+        on_test [script] :
+          put false into ^^.exc_fired
+          put false into ^^.err_fired
+
+          throw "test message"
+
+          eval ^^.exc_fired = true
+          assert "expected on_exception to have fired"
+
+          eval ^^.err_fired = false
+          assert "expected on_error to NOT have fired for a thrown exception"
+
+          eval ^^.exception_data.message = "test message"
+          assert "expected exception_data.message to be populated"
+
+      confirm_execution_continues_after_throw [test] :
+        description [string] : Confirm execution continues with the next line after a throw.
+        on_test [script] :
+          throw "boom"
+          eval 2 + 2
+          eval it = 4
+          assert "expected execution to continue after throw"
+
+      confirm_on_error_still_works [test] :
+        description [string] : Confirm on_error still fires for a genuine gloo-level error, independent of on_exception.
+        on_test [script] :
+          put false into ^^.exc_fired
+          put false into ^^.err_fired
+
+          tell no_such_object_anywhere to run
+
+          eval ^^.err_fired = true
+          assert "expected on_error to have fired for a bad path"
+
+          eval ^^.exc_fired = false
+          assert "expected on_exception to NOT have fired for a gloo-level error"
