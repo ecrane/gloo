@@ -15,6 +15,9 @@ module Gloo
       # Perform the operation and return the result.
       #
       def perform( left, right )
+        cmp = DtTools.compare_dt( left, right )
+        return cmp == 0 unless cmp == :not_dt
+
         return left == right.to_s if left.is_a? String
 
         return left == right.to_i if left.is_a? Integer

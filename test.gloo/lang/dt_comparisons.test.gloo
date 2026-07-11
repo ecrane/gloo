@@ -1,0 +1,124 @@
+#
+# Date/time/datetime comparison operator tests
+#
+
+tests [can] :
+  lang [can] :
+    dt_comparisons [can] :
+
+      early_date [date] :
+      late_date [date] :
+      early_time [time] :
+      late_time [time] :
+      early_dt [datetime] :
+      late_dt [datetime] :
+
+      confirm_date_ops [test] :
+        description [string] : Confirm comparisons between two dates.
+        on_test [script] :
+          put '2025.01.01' into ^^.early_date
+          put '2025.06.01' into ^^.late_date
+
+          eval ^^.late_date > ^^.early_date
+          assert "expected late date to be greater than early date"
+
+          eval ^^.early_date < ^^.late_date
+          assert "expected early date to be less than late date"
+
+          eval ^^.early_date = ^^.early_date
+          assert "expected a date to equal itself"
+
+          eval ^^.early_date != ^^.late_date
+          assert "expected different dates to not be equal"
+
+          eval ^^.early_date >= ^^.early_date
+          assert "expected a date to be >= itself"
+
+          eval ^^.late_date <= ^^.early_date
+          refute "expected late date to not be <= early date"
+
+      confirm_time_ops [test] :
+        description [string] : Confirm comparisons between two times.
+        on_test [script] :
+          put '09:00:00 am' into ^^.early_time
+          put '05:00:00 pm' into ^^.late_time
+
+          eval ^^.late_time > ^^.early_time
+          assert "expected late time to be greater than early time"
+
+          eval ^^.early_time < ^^.late_time
+          assert "expected early time to be less than late time"
+
+          eval ^^.early_time = ^^.early_time
+          assert "expected a time to equal itself"
+
+          eval ^^.early_time != ^^.late_time
+          assert "expected different times to not be equal"
+
+      confirm_datetime_ops [test] :
+        description [string] : Confirm comparisons between two datetimes.
+        on_test [script] :
+          put '2025.01.01 09:00:00 am' into ^^.early_dt
+          put '2025.01.01 05:00:00 pm' into ^^.late_dt
+
+          eval ^^.late_dt > ^^.early_dt
+          assert "expected late datetime to be greater than early datetime"
+
+          eval ^^.early_dt < ^^.late_dt
+          assert "expected early datetime to be less than late datetime"
+
+          eval ^^.early_dt = ^^.early_dt
+          assert "expected a datetime to equal itself"
+
+          eval ^^.early_dt != ^^.late_dt
+          assert "expected different datetimes to not be equal"
+
+      confirm_date_vs_datetime [test] :
+        description [string] : Confirm a date coerces to midnight when compared to a datetime.
+        on_test [script] :
+          put '2025.06.01' into ^^.early_date
+          put '2025.06.01 12:00:00 am' into ^^.early_dt
+          put '2025.06.01 09:00:00 am' into ^^.late_dt
+
+          eval ^^.early_date = ^^.early_dt
+          assert "expected date to equal midnight of the same day"
+
+          eval ^^.late_dt > ^^.early_date
+          assert "expected later datetime to be greater than the date"
+
+      confirm_date_vs_time_is_false [test] :
+        description [string] : Confirm dates and times never compare as equal or ordered.
+        on_test [script] :
+          put '2025.06.01' into ^^.early_date
+          put '09:00:00 am' into ^^.early_time
+
+          eval ^^.early_date > ^^.early_time
+          refute "expected date > time to be false"
+
+          eval ^^.early_date = ^^.early_time
+          refute "expected date = time to be false"
+
+          eval ^^.early_date != ^^.early_time
+          refute "expected date != time to be false, since they can't be compared"
+
+      confirm_date_vs_loose_string [test] :
+        description [string] : Confirm a date can compare against a loosely formatted string.
+        on_test [script] :
+          put '2025.06.01' into ^^.late_date
+
+          eval ^^.late_date > "2025-01-01"
+          assert "expected date to be greater than a loosely parsed earlier date string"
+
+          eval ^^.late_date > "not a date"
+          refute "expected comparison against an unparseable string to be false"
+
+      confirm_date_vs_integer_is_false [test] :
+        description [string] : Confirm a date never compares as equal or ordered against an integer.
+        on_test [script] :
+          put '2025.06.01' into ^^.late_date
+
+          eval ^^.late_date > 5
+          refute "expected date > integer to be false"
+
+          eval ^^.late_date = 5
+          refute "expected date = integer to be false"
