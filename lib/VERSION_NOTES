@@ -1,3 +1,13 @@
+6.0 - 2026.07.12
+ - General code cleanup, additional tests added.
+ - ERB object's template can now be an alias.
+ - Clean up the unused Utils directory.
+ - Adds format message to integer and decimal objects.
+ - Adds format message for time and datetime objects.
+ - Adds comparison operators for dates and times.
+ - Adds throw verb and exception error handling with on_exception.
+
+
 5.3.9 - 2026.06.11
  - Adds append message to file object
 
