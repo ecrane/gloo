@@ -1,3 +1,7 @@
+6.0.1 - 2026.07.16
+ - Update dependencies to newer versions for better security.
+
+
 6.0 - 2026.07.12
  - General code cleanup, additional tests added.
  - ERB object's template can now be an alias.
