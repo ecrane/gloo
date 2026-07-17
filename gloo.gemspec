@@ -33,10 +33,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'minitest', '~> 5.1', '>= 5.14.2'
   spec.add_development_dependency "rake", '~> 13.0', '>= 13.0.1'
-  spec.add_development_dependency 'concurrent-ruby', '1.3.4'
+  spec.add_development_dependency 'concurrent-ruby', '~> 1.3.7'
 
   # Used by many objects
-  spec.add_dependency "activesupport", '~> 6.1', ">= 6.1.5" 
+  spec.add_dependency "activesupport", '~> 7.2.3.1'
 
   # Used by date and time tools
   spec.add_dependency 'chronic', '~> 0.10', '>= 0.10.2'
