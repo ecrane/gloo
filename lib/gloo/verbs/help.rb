@@ -37,6 +37,13 @@ module Gloo
       # Run the verb.
       #
       def run
+        # 
+        # Temporary.  Just tinkering
+        # 
+        dd = Gloo::Docs::DocData.new
+        dd.show_in_terminal
+        return
+
         opts = @tokens.second if @tokens
         opts = opts.strip.downcase if opts
 
