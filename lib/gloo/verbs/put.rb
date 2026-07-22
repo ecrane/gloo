@@ -89,6 +89,41 @@ module Gloo
         end
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Put a value into an object. ' \
+            'The value is the result of an expression.',
+          :syntax => [ 'put {expression} into {dst.path}' ],
+          :parameters => [
+            '{expression} — The expression that is evaluated.',
+            '{dst.path} — The path to the destination object.'
+          ],
+          :result => 'The destination object has the result of the ' \
+            'evaluated expression. It will also be set into it.',
+          :errors => [
+            "#{MISSING_EXPR_ERR} — The into keyword is missing, or no source expression is provided.",
+            "#{INTO_MISSING_ERR} — The destination is not specified.",
+            "#{TARGET_ERR}{dst.path} — The destination of the put cannot be resolved."
+          ],
+          :examples => <<~EXAMPLES.strip
+            > put 'one' into str
+            > put "two" into str
+            > put 123 into x
+            > put 3 + 5 into x
+            > put TRUE into flag
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

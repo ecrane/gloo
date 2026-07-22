@@ -40,7 +40,15 @@ module Gloo
         # 
         # Temporary.  Just tinkering
         # 
-        dd = Gloo::Docs::DocData.new
+        h = {
+          :name => 'run',
+          :shortcut => 'r',
+          :description => 'run a script or a runable object',
+          :syntax => [ 'run <script_or_object>' ],
+          :examples => 'run my.script',
+          :notes => 'This is a test'
+        }
+        dd = Gloo::Docs::DocData.new( Gloo::Verbs::Put.doc_data )
         dd.show_in_terminal
         return
 
