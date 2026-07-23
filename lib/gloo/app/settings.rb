@@ -34,7 +34,7 @@ module Gloo
       #
       def show
         puts "\n Application Settings:".blue
-        puts '   Startup with:  '.yellow + @start_with.white
+        puts '   Startup with:  '.yellow + @start_with.to_s.white
         puts '   Indent in Listing:  '.yellow + @list_indent.to_s.white
         puts '   List Levels:  '.yellow + @list_levels.to_s.white
         puts '   Debug?  '.yellow + @debug.to_s.white

@@ -13,6 +13,12 @@
 # action script; it isn't ported either — command nodes here always
 # dispatch to a named method on the Runner (or a subclass of it).
 #
+# One addition beyond the gloo-cli original: a :dynamic node's
+# generated children can carry a :child_method, so each one dispatches
+# to a handler with the source item itself as `obj` (e.g. "verb put"
+# dispatching to a detail-lookup method with "put" as the argument).
+# gloo-cli didn't need this since it resolved a Command Obj instead.
+#
 require 'readline'
 
 module Gloo
@@ -156,7 +162,9 @@ module Gloo
         if data[ :dynamic ]
           return Gloo::Shell::CommandNode.new(
             data[ :name ], description: data[ :description ], obj: data[ :obj ] ) do |ctx|
-            ctx.send( data[ :source ] ).map { |item| Gloo::Shell::CommandNode.new( item ) }
+            ctx.send( data[ :source ] ).map do |item|
+              Gloo::Shell::CommandNode.new( item, method: data[ :child_method ], obj: item )
+            end
           end
         elsif data[ :children ]
           return Gloo::Shell::CommandNode.new(

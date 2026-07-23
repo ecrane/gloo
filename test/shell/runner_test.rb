@@ -120,6 +120,22 @@ class ShellRunnerTest < BaseEngineTest
     assert_equal %w[put show], names
   end
 
+  def test_add_command_node_dynamic_with_child_method
+    r = Gloo::Shell::Runner.new( @engine )
+    def r.cmd_test_detail( obj, _context )
+      @seen_obj = obj
+    end
+
+    r.set_context( :verbs, %w[put show] )
+    r.add_command_node( {
+      name: 'verb', description: '', dynamic: true,
+      source: :verbs, child_method: 'cmd_test_detail'
+    } )
+
+    r.execute_once( %w[verb put] )
+    assert_equal 'put', r.instance_variable_get( :@seen_obj )
+  end
+
   def test_execute_command_dispatches_to_method
     r = Gloo::Shell::Runner.new( @engine )
     def r.cmd_test_action( _obj, _context )

@@ -2,12 +2,12 @@ require 'test_helper'
 
 class HelpVerbTest < BaseEngineTest
 
-  def test_help_verb
+  def test_help_verb_builds_a_help_shell
     @engine.start
     assert @engine.running
     v = Gloo::Verbs::Help.new( @engine, nil )
-    v.run
-    assert @engine.running
+    shell = v.send( :build_shell )
+    assert_kind_of Gloo::Docs::HelpShell, shell
   end
 
   def test_the_keyword

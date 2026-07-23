@@ -13,6 +13,8 @@ module Gloo
 
       DEFAULT_TMP_FILE = 'tmp.txt'.freeze
       RETURN = "\n".freeze
+      DEFAULT_LINES = 24
+      DEFAULT_COLS = 80
 
       attr_reader :prompt, :table
 
@@ -64,18 +66,26 @@ module Gloo
       # ---------------------------------------------------------------------
       #
       # Get the number of vertical lines on screen.
+      # Falls back to a default when stdout has no real screen behind it
+      # (piped/captured output, no controlling TTY, etc).
       #
       def lines
-        rows, columns = $stdout.winsize
+        rows, _columns = $stdout.winsize
         return rows
+      rescue StandardError
+        return DEFAULT_LINES
       end
 
       #
       # Get the number of horizontal columns on screen.
+      # Falls back to a default when stdout has no real screen behind it
+      # (piped/captured output, no controlling TTY, etc).
       #
       def cols
-        rows, columns = $stdout.winsize
+        _rows, columns = $stdout.winsize
         return columns
+      rescue StandardError
+        return DEFAULT_COLS
       end
 
       # ---------------------------------------------------------------------
