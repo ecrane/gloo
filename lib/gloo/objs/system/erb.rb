@@ -110,6 +110,45 @@ module Gloo
         set_result render.result_with_hash( param_hash )
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Use the ERB templating system to generate ' \
+            'content. For example, you can use the ERB object for ' \
+            'string interpolation.',
+          :children => [
+            'template (text) — The template that will be used when the ERB object is run.',
+            'params (container) — The collection of children values used when the template is rendered.',
+            'result (text) — The result of the template rendering.'
+          ],
+          :messages => [
+            'run — Render the result based on the template and the parameter values.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            e [can] :
+              erb [erb] :
+                template [text] : BEGIN
+                  Hello <%= first %> <%= last %>!
+                  END
+                params [container] :
+                  first [string] : Eric
+                  last [string] : Crane
+                result [text] :
+              on_load [script] :
+                run e.erb
+                show e.erb.result
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

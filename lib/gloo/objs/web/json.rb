@@ -202,6 +202,46 @@ module Gloo
         return data
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'JSON data in a text string.',
+          :messages => [
+            'get ({path}) — Get a value from the JSON data. Example: tell myjson to get (\'title\'). The parameter is the path in JSON to the value we want. The value is put into it.',
+            'set ({obj.path}) — Convert an object to an approximate JSON value. Example: tell myjson to set (my.object). The parameter is the path to the object used as the source. Note this is an approximate conversion — a gloo object can have both a simple value and be a container for child objects, which JSON can\'t represent the same way.',
+            'parse ({dst.path}) — Parse the JSON data and put values in the object specified by the parameter. Example: tell myjson to parse (path.to.dst).',
+            'pretty — Make the JSON format pretty.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Get values from within a JSON object.
+            #
+
+            json_get [can] :
+              on_load [script] :
+                tell json_get.payload to get ('msg')
+                show it
+                tell json_get.payload to get ('sub.data')
+                show it
+                tell json_get.payload to get ('sub.child.msg')
+                show it
+              payload [json] : BEGIN
+                { "msg":"The message from inside a JSON block",
+                  "sub":{"data":"in sub-object",
+                    "child":{"msg":"third level"}} }
+                END
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

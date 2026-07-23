@@ -115,6 +115,36 @@ module Gloo
         return false
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A boolean value. Value will be either true or false.',
+          :messages => [
+            'not — Set the boolean to the opposite of what it is now.',
+            'true — Set the boolean to true.',
+            'false — Set the boolean to false.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            b [can] :
+              flag [boolean] : true
+              on_load [script] :
+                show b.flag
+                put false into b.flag
+                show b.flag
+                tell b.flag to not
+                show b.flag
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

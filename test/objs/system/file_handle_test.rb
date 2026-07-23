@@ -11,6 +11,12 @@ class FileHandleTest < BaseEngineTest
     assert_equal 'dir', Gloo::Objs::FileHandle.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::FileHandle.doc_data
+    assert_equal Gloo::Objs::FileHandle.typename, data[:name]
+    assert_equal Gloo::Objs::FileHandle.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'file' )
     assert @dic.find_obj( 'FILE' )

@@ -10,6 +10,12 @@ class HttpPostTest < BaseEngineTest
     assert_equal 'post', Gloo::Objs::HttpPost.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::HttpPost.doc_data
+    assert_equal Gloo::Objs::HttpPost.typename, data[:name]
+    assert_equal Gloo::Objs::HttpPost.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'post' )
     assert @dic.find_obj( 'POST' )

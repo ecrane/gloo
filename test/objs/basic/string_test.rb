@@ -10,6 +10,12 @@ class StringTest < BaseEngineTest
     assert_equal 'str', Gloo::Objs::String.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::String.doc_data
+    assert_equal Gloo::Objs::String.typename, data[:name]
+    assert_equal Gloo::Objs::String.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'string' )
     assert @dic.find_obj( 'string' )

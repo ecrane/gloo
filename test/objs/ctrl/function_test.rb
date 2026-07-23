@@ -10,6 +10,12 @@ class FunctionTest < BaseEngineTest
     assert_equal 'ƒ', Gloo::Objs::Function.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Function.doc_data
+    assert_equal Gloo::Objs::Function.typename, data[:name]
+    assert_equal Gloo::Objs::Function.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'function' )
     assert @dic.find_obj( 'FUNCTION' )

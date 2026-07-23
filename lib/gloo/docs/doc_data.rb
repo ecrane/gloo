@@ -12,13 +12,16 @@ module Gloo
       DESCRIPTION = 'DESCRIPTION'.freeze
       SYNTAX = 'SYNTAX'.freeze
       PARAMETERS = 'PARAMETERS'.freeze
+      CHILDREN = 'CHILDREN'.freeze
+      MESSAGES = 'MESSAGES'.freeze
       RESULT = 'RESULT'.freeze
       ERRORS = 'ERRORS'.freeze
       EXAMPLE_CODE = 'EXAMPLE_CODE'.freeze
       TAB = '  '.freeze
-      
+
       attr_accessor :name, :shortcut, :description, :syntax,
-        :parameters, :result, :errors, :examples, :notes
+        :parameters, :children, :messages, :result, :errors,
+        :examples, :notes
 
       def initialize( value_hash )
         @name = value_hash[:name]
@@ -26,6 +29,8 @@ module Gloo
         @description = value_hash[:description]
         @syntax = value_hash[:syntax]
         @parameters = value_hash[:parameters]
+        @children = value_hash[:children]
+        @messages = value_hash[:messages]
         @result = value_hash[:result]
         @errors = value_hash[:errors]
         @examples = value_hash[:examples]
@@ -39,6 +44,8 @@ module Gloo
         show_description
         show_syntax
         show_parameters
+        show_children
+        show_messages
         show_result
         show_errors
         show_examples
@@ -88,6 +95,30 @@ module Gloo
         puts
         puts PARAMETERS
         @parameters.each do |line|
+          puts TAB + line
+        end
+      end
+
+      #
+      # Show the child lines, if there are any.
+      def show_children
+        return unless @children
+
+        puts
+        puts CHILDREN
+        @children.each do |line|
+          puts TAB + line
+        end
+      end
+
+      #
+      # Show the message lines, if there are any.
+      def show_messages
+        return unless @messages
+
+        puts
+        puts MESSAGES
+        @messages.each do |line|
           puts TAB + line
         end
       end

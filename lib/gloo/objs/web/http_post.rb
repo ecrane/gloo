@@ -152,6 +152,39 @@ module Gloo
         return find_child_value( SKIP_SSL_VERIFY ) || false
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Perform an HTTP Post.',
+          :children => [
+            "uri (string) — Example: 'https://web.site/'. The URI for the HTTP Post.",
+            'body (container) — Collection of parameters for the HTTP Post.',
+            'result (string) — The result of the request. Whatever was returned in the body of the HTTP POST.',
+            'skip_ssl_verify (boolean) — Optional. Skip the SSL verification as part of the request.'
+          ],
+          :messages => [
+            'run — Run the HTTP Post, sending the body data to the endpoint specified in the URI.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            post [post] :
+              txt [str] : Message from gloo!
+              uri [str] : https://my.service.com/my-long-token
+              body [can] :
+                text [alias] : post.txt
+                username [str] : me
+              on_load [script] : run post
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

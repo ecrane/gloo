@@ -50,6 +50,52 @@ module Gloo
           gen_alphanumeric gen_uuid gen_hex gen_base64]
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A string value. For string interpolation, ' \
+            'see the erb object type.',
+          :messages => [
+            'up — Convert the string to uppercase. This message changes the value of the string.',
+            'down — Convert the string to lowercase. This message changes the value of the string.',
+            'size — Get the size of the string. It will have the string size.',
+            'count_chars — Count the number of characters in the string. It will have the character count.',
+            'count_words — Count the number of words in the string. It will have the word count.',
+            'count_lines — Count the number of lines in the string. It will have the line count.',
+            'starts_with? ({str}) — Check if the string starts with the given string. A parameter is required: the string to look for at the beginning of this string. It will have a boolean.',
+            'ends_with? ({str}) — Check if the string ends with the given string. A parameter is required: the string to look for at the end of this string. It will have a boolean.',
+            'substring? ({str}) — Check if the string includes the given sub-string. A parameter is required: the string to look for in this string. It will have a boolean.',
+            'format_for_html — Format this string for HTML output. Tabs, spaces and returns are converted to HTML elements. The value of the string is changed.',
+            'encode64 — Base64 encode the string. This message changes the value of the string. It will have the encoded string.',
+            'decode64 — Decode the string from Base64. This message changes the value of the string. It will have the decoded string.',
+            'escape — Escape the string to make it URL safe. This message changes the value of the string. It will have the escaped string.',
+            'unescape — Unescape the string (from URL safe format). This message changes the value of the string. It will have the unescaped string.',
+            'gen_uuid — Set the value of the string to a newly generated, random UUID. This message changes the value of the string.',
+            'gen_alphanumeric ({len}) — Set the value of the string to a newly generated, random alphanumeric string. The {len} parameter is optional; the length is 10 if not specified. This message changes the value of the string.',
+            'gen_hex ({len}) — Set the value of the string to a newly generated, random hex string. The {len} parameter is optional; the length is 10 if not specified. This message changes the value of the string.',
+            'gen_base64 ({len}) — Set the value of the string to a newly generated, random base64 string. The {len} parameter is optional; the length is 12 if not specified. This message changes the value of the string.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            s [can] :
+              msg [string] : Hello World!
+              on_load [script] :
+                show s.msg
+                tell s.msg to up
+                show s.msg
+                tell s.msg to size
+                show it
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

@@ -10,6 +10,12 @@ class HttpGetTest < BaseEngineTest
     assert_equal 'get', Gloo::Objs::HttpGet.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::HttpGet.doc_data
+    assert_equal Gloo::Objs::HttpGet.typename, data[:name]
+    assert_equal Gloo::Objs::HttpGet.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'get' )
     assert @dic.find_obj( 'GET' )

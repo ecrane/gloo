@@ -194,6 +194,75 @@ module Gloo
         end
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Define a function that will be performed ' \
+            'somewhere else. When the function is invoked, the ' \
+            'parameter values are set, the on_invoke script is run, the ' \
+            'result is determined, the after_invoke script is run, and ' \
+            'the result is returned.',
+          :children => [
+            'on_invoke (script) — Script to run when the function is invoked.',
+            'after_invoke (optional script) — Script to run after the function has been invoked and before the value is returned. Can be used to clean up and reset the object state.',
+            'params (container) — The collection of parameters to the function. Parameter values are used as defaults if no value is passed in during invocation.',
+            'result (string) — The result of the function to return to the caller.'
+          ],
+          :messages => [
+            'invoke — Invoke the function, set it and return the result. The function result is put into it as well as being returned to the caller.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Function examples
+            #
+
+            functions [can] :
+
+              name [string] : Jasper
+
+              on_load [script] :
+                show 'running function examples' (white)
+
+                invoke functions.greet ^.name
+                show it
+
+                invoke functions.add 3 4
+                show it
+
+                show 'done' (white)
+
+              #
+              # Say hi to person (name)
+              #
+              greet [ƒ] :
+                on_invoke [script] :
+                  put 'Hi, ' + ^.params.name into ^.result
+                params [container] :
+                  name [string] : none
+                result [string] :
+
+              #
+              # Add 2 numbers
+              #
+              add [ƒ] :
+                on_invoke [script] :
+                  put ^.params.x and ^.params.y into ^.result
+                params [container] :
+                  x [int] :
+                  y [int] :
+                result [string] :
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

@@ -169,6 +169,46 @@ module Gloo
         end
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A URI or URL.',
+          :messages => [
+            'open — Open the URL in the default browser.',
+            'get_scheme — Get the URI scheme; example: http.',
+            'get_host — Get the URI host; example: google.com.',
+            'get_path — Get the URI resource path; example: /post.',
+            'get_query — Get the URI query parameters; example: id=121.',
+            'get_fragment — Get the URI fragment.',
+            'get_cert_expires — Get the web site\'s certificate expiration date.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            url [can] :
+              on_load [script] :
+                tell url.u to get_scheme
+                show "scheme: " + it
+
+                tell url.u to get_host
+                show "host: " + it
+
+                tell url.u to get_path
+                show "path: " + it
+
+                show "opening URL: " + url.u
+                tell url.u to open
+              u [uri] : https://my.url/path/1234
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

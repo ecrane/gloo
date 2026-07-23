@@ -80,10 +80,21 @@ class HelpShellTest < BaseEngineTest
     assert_includes names, 'container'
   end
 
-  def test_object_detail_has_no_doc_data_yet
+  def test_object_detail_for_a_documented_object
     shell = Gloo::Docs::HelpShell.new( @engine )
     out, = capture_io { shell.execute_once( %w[object container] ) }
-    assert_match( /No documentation available/, out )
+    assert_match( /container/, out )
+    assert_match( /DESCRIPTION/, out )
+  end
+
+  #
+  # Every dev/gloo object type has doc_data as of 2026.07.23 (see
+  # 'update object doc' story) - this guards against future additions
+  # forgetting to add it.
+  #
+  def test_all_object_types_have_doc_data
+    missing = @engine.dictionary.get_obj_types.reject { |o| o.respond_to?( :doc_data ) }
+    assert_empty missing.map( &:typename )
   end
 
   def test_unknown_command_at_the_root

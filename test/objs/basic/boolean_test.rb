@@ -10,6 +10,12 @@ class BooleanTest < BaseEngineTest
     assert_equal 'bool', Gloo::Objs::Boolean.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Boolean.doc_data
+    assert_equal Gloo::Objs::Boolean.typename, data[:name]
+    assert_equal Gloo::Objs::Boolean.short_typename, data[:shortcut]
+  end
+
   def test_is_boolean
     assert Gloo::Expr::LBoolean.boolean?( true )
     assert Gloo::Expr::LBoolean.boolean?( false )

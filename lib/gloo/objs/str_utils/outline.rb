@@ -249,7 +249,71 @@ module Gloo
           end
         end
       end
-    
+
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Convert strings with a path to a hierarchical outline.',
+          :children => [
+            'object_source (alias) — Points to the data source. Should be a container with objects, each of which has a name and optionally an id.',
+            'entity_path (string) — The path to the entity, used to generate links to entities that have IDs.',
+            "separator_char (string) — Optional. If not specified, the '/' character is used. The character used to separate the path elements.",
+            'data (string) — The generated outline: a hierarchical outline of OL and LI elements. For children with IDs, links to entities are included.'
+          ],
+          :messages => [
+            'generate — Generate the outline from the list of strings.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Convert flat elements to hierarchal outline.
+            #
+
+            outline [container] :
+
+              on_load [script] :
+                tell outline.util to generate
+                show outline.util.data
+
+              src_data [container] :
+                1 [container] :
+                  id [int] : 1
+                  name [string] : a/b/c
+                2 [container] :
+                  id [int] : 2
+                  name [string] : a/b/d
+                3 [container] :
+                  id [int] : 3
+                  name [string] : a/b/e
+                4 [container] :
+                  id [int] : 4
+                  name [string] : x
+                5 [container] :
+                  id [int] : 5
+                  name [string] : x/y
+                6 [container] :
+                  id [int] : 6
+                  name [string] : x/y/z
+                7 [container] :
+                  id [int] : 7
+                  name [string] : last
+
+              util [outline] :
+                object_source [alias] : outline.src_data
+                entity_path [string] : /entity/
+                separator_char [string] : /
+                data [string] :
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

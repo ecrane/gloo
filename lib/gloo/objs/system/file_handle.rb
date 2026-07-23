@@ -239,6 +239,60 @@ module Gloo
         return true
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Reference to a file or folder (directory) ' \
+            'on disk. The string value of the file object is the path ' \
+            'and name of the file.',
+          :messages => [
+            'read ({into.obj}) — Read the file and put the data in the specified object. If {into.obj} is not specified, the data will be in it.',
+            'write ({from.obj}) — Write the data in {from.obj} into the file.',
+            'delete — Delete the file.',
+            'get_name — Get the name of the file without path or extension. Put the name into it.',
+            'get_ext — Get the file extension. Put the extension into it.',
+            'get_parent — Get the file or folder path parent. Put the parent into it.',
+            'get_sha256 — Get the SHA256 hash of the contents of the file. Put the hash value into it.',
+            'show — Show the contents of the file.',
+            'page — Show the contents of the file, paginated.',
+            'open — Open the file with the default application for the type.',
+            'exists? — Check to see if the file exists. It will be true or false.',
+            'is_file? — Check to see if the file specified is a regular file. It will be true or false.',
+            'is_dir? — Check to see if the file specified is a directory. It will be true or false.',
+            'find_match — Look for the existence of a file matching the file\'s pattern. It will be true or false.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Get elements of a file name.
+            #
+            file_name [can] :
+
+              # The full file path, name and extension.
+              f [file] : /Users/me/dev/gloo/gloo.gemspec
+
+              on_load [script] :
+                show "Full file name:  " + ^.f
+
+                check ^.f for get_name
+                show "The file name alone: " and it
+
+                check ^.f for get_ext
+                show "The file extension: " and it
+
+                check ^.f for get_parent
+                show "The file path: " and it
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

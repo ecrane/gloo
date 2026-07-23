@@ -185,6 +185,65 @@ module Gloo
         return cipher.update( data ) + cipher.final
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Tool to encrypt and decrypt data.',
+          :children => [
+            'key (string) — The encryption key. Base64 encoded.',
+            'init_vector (string) — The initialization vector. Base64 encoded.',
+            'data (string) — The encrypted or decrypted data.'
+          ],
+          :messages => [
+            'generate_keys — Generate an encryption key and initialization vector. The keys are base64 encoded.',
+            'encrypt — Encrypt the data.',
+            'decrypt — Decrypt the data.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Encrypt and Decrypt a string.
+            #
+
+            encrypt [can] :
+
+              str [string] : Encrypt your data for better security!
+
+              cipher [cipher] :
+                key [string] :
+                init_vector [string] :
+                data [string] :
+
+              on_load [script] :
+                show
+                show 'Original string' (white)
+                show ^.str
+                show
+                show 'Generating Key' (white)
+                tell ^.cipher to generate_keys
+                show ^.cipher.key
+                show ^.cipher.init_vector
+                show
+                show 'Encrpting the string' (white)
+                put ^.str into ^.cipher.data
+                tell ^.cipher to encrypt
+                show ^.cipher.data
+                show
+                show 'Decrypting the string' (white)
+                tell ^.cipher to decrypt
+                show ^.cipher.data
+                show
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

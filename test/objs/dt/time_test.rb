@@ -10,6 +10,12 @@ class TimeTest < BaseEngineTest
     assert_equal 'time', Gloo::Objs::Time.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Time.doc_data
+    assert_equal Gloo::Objs::Time.typename, data[:name]
+    assert_equal Gloo::Objs::Time.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'Time' )
   end

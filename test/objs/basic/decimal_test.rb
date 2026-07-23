@@ -10,6 +10,12 @@ class DecimalTest < BaseEngineTest
     assert_equal 'num', Gloo::Objs::Decimal.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Decimal.doc_data
+    assert_equal Gloo::Objs::Decimal.typename, data[:name]
+    assert_equal Gloo::Objs::Decimal.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'Decimal' )
     assert @dic.find_obj( 'DEciMAl' )

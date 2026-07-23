@@ -10,6 +10,12 @@ class CipherTest < BaseEngineTest
     assert_equal 'crypt', Gloo::Objs::Cipher.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Cipher.doc_data
+    assert_equal Gloo::Objs::Cipher.typename, data[:name]
+    assert_equal Gloo::Objs::Cipher.short_typename, data[:shortcut]
+  end
+
   def test_messages
     msgs = Gloo::Objs::Cipher.messages
     assert msgs

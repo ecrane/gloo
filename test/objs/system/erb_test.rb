@@ -10,6 +10,12 @@ class ErbTest < BaseEngineTest
     assert_equal 'erb', Gloo::Objs::Erb.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Erb.doc_data
+    assert_equal Gloo::Objs::Erb.typename, data[:name]
+    assert_equal Gloo::Objs::Erb.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'erb' )
   end

@@ -10,6 +10,12 @@ class EachTest < BaseEngineTest
     assert_equal 'each', Gloo::Objs::Each.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Each.doc_data
+    assert_equal Gloo::Objs::Each.typename, data[:name]
+    assert_equal Gloo::Objs::Each.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'each' )
   end

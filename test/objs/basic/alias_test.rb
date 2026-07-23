@@ -10,6 +10,12 @@ class AliasTest < BaseEngineTest
     assert_equal 'ln', Gloo::Objs::Alias.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Alias.doc_data
+    assert_equal Gloo::Objs::Alias.typename, data[:name]
+    assert_equal Gloo::Objs::Alias.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'alias' )
     assert @dic.find_obj( 'ALIAS' )

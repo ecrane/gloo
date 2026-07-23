@@ -10,6 +10,12 @@ class GlooSystemTest < BaseEngineTest
     assert_equal '$', Gloo::Core::GlooSystem.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Core::GlooSystem.doc_data
+    assert_equal Gloo::Core::GlooSystem.typename, data[:name]
+    assert_equal Gloo::Core::GlooSystem.short_typename, data[:shortcut]
+  end
+
   def test_marked_as_cannot_be_created
     refute Gloo::Core::GlooSystem.can_create?
     assert Gloo::Objs::Script.can_create?

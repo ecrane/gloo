@@ -10,6 +10,12 @@ class DateTest < BaseEngineTest
     assert_equal 'date', Gloo::Objs::Date.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Date.doc_data
+    assert_equal Gloo::Objs::Date.typename, data[:name]
+    assert_equal Gloo::Objs::Date.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'DAte' )
   end

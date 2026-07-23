@@ -10,6 +10,12 @@ class ContainerTest < BaseEngineTest
     assert_equal 'can', Gloo::Objs::Container.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Container.doc_data
+    assert_equal Gloo::Objs::Container.typename, data[:name]
+    assert_equal Gloo::Objs::Container.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'container' )
     assert @dic.find_obj( 'CONTAINER' )

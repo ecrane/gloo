@@ -125,6 +125,35 @@ module Gloo
         set_result result
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Execute a system command.',
+          :children => [
+            "command (string) — Default: '#{DEFAULT_CMD}'. The command that will be sent to the system.",
+            'get_output (boolean) — Default: true. Should executing the command get the output and put it in the result object?',
+            'result (string) — The result of running the command. Only set if get_output is true.'
+          ],
+          :messages => [
+            'run — Run the system level command. Sets the result value to the output of the command if get_output is true.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            date [system] :
+              command [string] : date
+              get_output [bool] : true
+              result [string] :
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

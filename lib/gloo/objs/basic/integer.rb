@@ -118,6 +118,63 @@ module Gloo
         @engine.heap.it.set_to formatted
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'An integer (numeric) value.',
+          :messages => [
+            'inc — Increment the integer value by 1.',
+            'dec — Decrement the integer value by 1.',
+            'randomize ({max}) — Set the value of the integer to a random ' \
+              'number. By default the range is 0..99 inclusive. Use an ' \
+              'optional parameter to set the maximum of the range; the ' \
+              'range always starts at 0. To model a 6-sided die, set the ' \
+              'range to 6 and add 1 to the result.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Integer object.
+            #
+
+            i [can] :
+
+              #
+              # The integer value.
+              #
+              x [integer] : 0
+
+              #
+              # Do some basic tests with it
+              #
+              on_load [script] :
+                show i.x
+                tell i.x to inc
+                show i.x
+                put i.x * 10 into i.x
+                show i.x
+
+                # Show a random number
+                tell ^.x to randomize
+                show 'Random number (up to 100 by default): ' + ^.x
+
+                tell ^.x to randomize(6)
+                tell ^.x to inc
+                show '6-sided dice: ' + ^.x
+
+              # An uninitialized integer.
+              y [integer] :
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

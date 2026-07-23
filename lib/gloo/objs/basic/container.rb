@@ -75,6 +75,43 @@ module Gloo
         @engine.heap.it.set_to val
         return val
       end
+
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A container of other objects. A container is ' \
+            'similar to a folder in a file system. It can contain any ' \
+            'number of objects including other containers. The ' \
+            'container structure provides direct access to any object ' \
+            'within it through the object.object.object path-name structure.',
+          :children => [
+            'None by default — but any container can have any number of objects added to it, at runtime.'
+          ],
+          :messages => [
+            'count — Count the number of children objects in the container. The result is put in it.',
+            'delete_children — Delete all children objects from the container.',
+            'show_key_value_table — Show a table with key (name) and values for all children in the container.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            can [can] :
+              data [can] :
+                1 : one
+                2 : two
+                3 : three
+              on_load [script] :
+                tell can.data to show_key_value_table
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

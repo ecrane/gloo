@@ -10,6 +10,12 @@ class JsonTest < BaseEngineTest
     assert_equal 'json', Gloo::Objs::Json.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Json.doc_data
+    assert_equal Gloo::Objs::Json.typename, data[:name]
+    assert_equal Gloo::Objs::Json.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'json' )
     assert @dic.find_obj( 'JSON' )

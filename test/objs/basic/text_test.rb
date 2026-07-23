@@ -10,6 +10,12 @@ class TextTest < BaseEngineTest
     assert_equal 'txt', Gloo::Objs::Text.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Text.doc_data
+    assert_equal Gloo::Objs::Text.typename, data[:name]
+    assert_equal Gloo::Objs::Text.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'text' )
     assert @dic.find_obj( 'txt' )

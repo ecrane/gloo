@@ -149,6 +149,48 @@ module Gloo
         dt = Chronic.parse( self.value )
         @engine.heap.it.set_to dt.strftime( format )
       end
+
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A reference to a time, but without a date. ' \
+            "The default format is: #{DEFAULT_FORMAT}. Note that you " \
+            'can put a time into a datetime object. You can also put a ' \
+            'Chronic phrase into the time.',
+          :messages => [
+            'now — Set to the current system time.',
+            'add ({amount}) — Add the amount to the date. The amount will be in the form of "1 day" or "3 months".',
+            'sub ({amount}) — Subtract the amount from the date. The amount will be in the form of "1 day" or "2 weeks".',
+            'hh — Get the hour portion of the time. Put the hour into it.',
+            'mm — Get the minute portion of the time. Put the minute into it.',
+            'ss — Get the second portion of the time. Put the second into it.',
+            'am — Get the am/pm portion of the time. Put "am" or "pm" into it.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Show the current time.
+            #
+
+            time [can] :
+              t [time] :
+              on_load [script] :
+                tell time.t to now
+                show time.t
+              next [script] :
+                put '1 hour from now' into time.t
+                show time.t
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

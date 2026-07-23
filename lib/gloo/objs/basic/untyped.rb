@@ -36,6 +36,27 @@ module Gloo
         return super
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'An untyped object. If no type is specified ' \
+            'when an object is created it will be of this type.',
+          :examples => <<~EXAMPLES.strip
+            > create x
+            > put 1 into x
+            > put 'string' into x
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

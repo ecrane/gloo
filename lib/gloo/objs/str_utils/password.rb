@@ -159,6 +159,62 @@ module Gloo
         @engine.heap.it.set_to result
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A password object that can be generated, hashed, and compared.',
+          :children => [
+            'salt (string) — Optional salt to use when hashing and checking passwords.',
+            'password (string) — The password. generate puts a new random password here. Used in the hash and check messages.',
+            'hash (string) — The hashed value of the password. Created when the hash message is called, and compared when the check message is called.'
+          ],
+          :messages => [
+            'generate ({len}) — Generate a new password, put in the password child object. The {len} parameter is optional; the length is 7 if not specified.',
+            'hash — Hash the password in the child object. Put it in the hash child object.',
+            'check — Check the password in the child object. Is it the same as the hash?'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Password Hashing and checking.
+            #
+            password [can] :
+
+              pwd [password] :
+                salt [string] : MySalt
+                password [string] :
+                hash [string] :
+
+              on_load [script] :
+                show
+                show 'Generating a new password' (white)
+                tell ^.pwd to generate
+                show 'Password: ' + ^.pwd.password
+                show
+                show 'hashing the password' (white)
+                tell ^.pwd to hash
+                show ^.pwd.hash (red)
+                show
+                show 'checking with the correct password' (white)
+                tell ^.pwd to check
+                show 'Result of check: ' + it (green)
+                show
+                show 'checking with the wrong password' (white)
+                tell ^.pwd to generate(23)
+                tell ^.pwd to check
+                show 'Result of check: ' + it (red)
+                show
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

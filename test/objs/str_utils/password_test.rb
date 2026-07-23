@@ -10,6 +10,12 @@ class PasswordTest < BaseEngineTest
     assert_equal 'hash', Gloo::Objs::Password.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Password.doc_data
+    assert_equal Gloo::Objs::Password.typename, data[:name]
+    assert_equal Gloo::Objs::Password.short_typename, data[:shortcut]
+  end
+
   def test_messages
     msgs = Gloo::Objs::Password.messages
     assert msgs

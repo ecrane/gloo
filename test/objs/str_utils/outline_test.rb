@@ -10,6 +10,12 @@ class OutlineTest < BaseEngineTest
     assert_equal 'outline', Gloo::Objs::Outline.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Outline.doc_data
+    assert_equal Gloo::Objs::Outline.typename, data[:name]
+    assert_equal Gloo::Objs::Outline.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'outline' )
     assert @dic.find_obj( 'OUTLINE' )

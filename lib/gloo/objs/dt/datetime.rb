@@ -249,6 +249,55 @@ module Gloo
         @engine.heap.it.set_to dt.strftime( format )
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A reference to a date and time. The default ' \
+            "format is: #{DEFAULT_FORMAT}. Note that you can put a " \
+            'datetime into a date or time object. You can also put a ' \
+            'Chronic phrase into the datetime.',
+          :messages => [
+            'now — Set to the current system date and time.',
+            'add ({amount}) — Add the amount to the date. The amount will be in the form of "1 day" or "3 hours".',
+            'sub ({amount}) — Subtract the amount from the date. The amount will be in the form of "1 day" or "2 weeks".',
+            'is_today — Is the datetime today? It will be true or false.',
+            'is_past — Is the datetime in the past? It will be true or false.',
+            'is_future — Is the datetime in the future? It will be true or false.',
+            'is_yesterday — Is the datetime yesterday? It will be true or false.',
+            'is_tomorrow — Is the datetime tomorrow? It will be true or false.',
+            'is_this_week — Is the datetime during this week? It will be true or false.',
+            'begin_day — Set the datetime to the start of the day.',
+            'end_day — Set the datetime to the end of the day.',
+            'begin_week — Set the datetime to the start of the week.',
+            'end_week — Set the datetime to the end of the week.',
+            'begin_month — Set the datetime to the start of the month.',
+            'end_month — Set the datetime to the end of the month.',
+            'begin_year — Set the datetime to the start of the year.',
+            'end_year — Set the datetime to the end of the year.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Show the current date and time.
+            #
+
+            dt [can] :
+              d [datetime] :
+              on_load [script] :
+                tell dt.d to now
+                show dt.d
+              next [script] : put '1 week from now' into dt.d
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

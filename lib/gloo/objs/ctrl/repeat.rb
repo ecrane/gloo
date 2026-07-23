@@ -102,6 +102,47 @@ module Gloo
         end
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Run a script a given number of times.',
+          :children => [
+            'times (integer) — Default: 0. The number of times to run the script.',
+            'index (integer) — Default: 0. The current iteration when the repeat loop is running.',
+            'do (script) — The action to perform for each iteration of the loop.'
+          ],
+          :messages => [
+            'run — Run the script for the given number of times.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            repeat [can] :
+              s [string] :
+              on_load [script] :
+                put $.screen_cols / 2 into repeat.x.times
+                tell repeat.x to run
+                show repeat.s
+                tell repeat.y to run
+                show repeat.s
+              x [repeat] :
+                times [integer] : 30
+                index [integer] : 0
+                do [script] : put repeat.s + '-' into repeat.s
+              y [repeat] :
+                times [integer] : 10
+                index [integer] : 0
+                do [script] : show repeat.y.index
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

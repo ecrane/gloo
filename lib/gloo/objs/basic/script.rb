@@ -94,6 +94,37 @@ module Gloo
         s.run
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'An executable script — a set of commands to be run.',
+          :messages => [
+            'run — Run the script. The script can be run by telling the ' \
+              'object to run, or via the run verb.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            script [can] :
+              on_load [script] :
+                show "Showing multiple lines..."
+                show script.msg1
+                show script.msg2
+                show script.msg3
+                show "Done."
+              msg1 [string] : one
+              msg2 [string] : two
+              msg3 [string] : three
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

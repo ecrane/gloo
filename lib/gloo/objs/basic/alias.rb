@@ -73,6 +73,59 @@ module Gloo
         return ln.resolve
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A pointer to another object. Normal ' \
+            'path-name references will refer to the aliased object. To ' \
+            'refer to the alias itself, add an * at the end of the ' \
+            'path-name — needed, for example, to set the value of the ' \
+            'alias. The value of the alias is merely the path-name of ' \
+            'the referenced object. Well constructed aliases will ' \
+            'redirect to the referenced object through any number of ' \
+            'steps, and relative references will also work in an alias.',
+          :messages => [
+            'resolve — Check to see if the object referenced exists. Sets it to true or false.'
+          ],
+          :notes => 'The alias also reflects (forwards) the messages of the object it points to.',
+          :examples => <<~EXAMPLES.strip
+            #
+            # Alias object.
+            #
+
+            a [can] :
+              s [string] : a string
+              i [integer] : 13
+              ln [alias] : a.s
+
+              on_load [script] :
+                show a.ln
+                show a.ln*
+                put 'a.i' into a.ln*
+                put 7 into a.ln
+                show a.ln
+                run a.add
+
+              #
+              # Example of creating an object using an alias.
+              #
+              add [script] :
+                put 'x' into a.ln*
+                create a.ln* as string
+                put 'test' into x
+                show a.ln
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

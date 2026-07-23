@@ -92,6 +92,35 @@ module Gloo
         @engine.heap.it.set_to formatted
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'A decimal (numeric) value.',
+          :messages => [
+            'round ({precision}) — Round to the nearest whole value. If ' \
+              'an optional parameter is included, round to the precision specified.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            d [can] :
+              x [decimal] : 100
+              on_load [script] :
+                show d.x
+                put d.x / 3 into d.x
+                show d.x
+                tell d.x to round (1)
+                show d.x
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

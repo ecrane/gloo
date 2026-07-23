@@ -148,6 +148,41 @@ module Gloo
         return "#{uri_value}#{p}"
       end
 
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Perform an HTTP Get.',
+          :children => [
+            "uri (string) — Example: 'https://web.site/'. The URI for the HTTP Get request.",
+            'params (container) — Collection of parameters for the HTTP Get.',
+            'result (string) — The result of the request. Whatever was returned from the HTTP Get call.',
+            'skip_ssl_verify (boolean) — Optional. Skip the SSL verification as part of the request.'
+          ],
+          :messages => [
+            'run — Run the HTTP Get and update the result.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            g [http_get] :
+              uri [string] : http://api.sunrise-sunset.org/json
+              params [container] :
+                lat [string] : 36.7201600
+                lng [string] : -4.4203400
+                date [string] : today
+              result [string] :
+
+            > run g
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

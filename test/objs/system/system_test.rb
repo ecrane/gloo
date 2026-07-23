@@ -10,6 +10,12 @@ class SystemTest < BaseEngineTest
     assert_equal 'sys', Gloo::Objs::System.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::System.doc_data
+    assert_equal Gloo::Objs::System.typename, data[:name]
+    assert_equal Gloo::Objs::System.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'sys' )
     assert @dic.find_obj( 'SYSTEM' )

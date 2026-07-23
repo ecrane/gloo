@@ -10,6 +10,12 @@ class ScriptObjTest < BaseEngineTest
     assert_equal 'cmd', Gloo::Objs::Script.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Script.doc_data
+    assert_equal Gloo::Objs::Script.typename, data[:name]
+    assert_equal Gloo::Objs::Script.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     @dic = @engine.dictionary
 

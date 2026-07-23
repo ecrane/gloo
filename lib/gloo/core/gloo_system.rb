@@ -278,11 +278,62 @@ module Gloo
       def self.open_for_platform
         return 'open' if OS.mac?
         return 'xdg-open' if OS.posix?
-        
+
         return 'Start-Process' if OS.windows?
         return 'explorer.exe' if self.wsl?
 
         return nil
+      end
+
+      # ---------------------------------------------------------------------
+      #    Object Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the object's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'The gloo system objects are virtual objects — ' \
+            "accessed like other objects (via 'gloo' or the shortcut " \
+            '$), but their values are set by the system and cannot be ' \
+            'updated. They also do not show up in the object heap. Some ' \
+            'names include an underscore to separate words; a period ' \
+            'can be used instead, so gloo.working_dir and ' \
+            'gloo.working.dir are identical.',
+          :children => [
+            'app — Path of the running app (same as gloo_projects).',
+            'hostname — Get the system hostname.',
+            'user — Get the logged in user.',
+            'line — A carriage return (line feed) character.',
+            "user_home — Get the user's home directory.",
+            'working_dir — Get the working directory.',
+            'gloo_home — Get the gloo home directory.',
+            'gloo_config — Get the gloo configuration directory.',
+            'gloo_projects — Get the gloo projects directory.',
+            'gloo_log — Get the gloo logging directory.',
+            'screen_lines — Get the number of lines on screen.',
+            'screen_cols — Get the number of columns on screen.',
+            'platform_cpu — Get the platform CPU.',
+            'platform_os — Get the platform operating system.',
+            'platform_version — Get the platform version.',
+            'platform_windows? — Is the platform Windows?',
+            'platform_unix? — Is the platform Unix?',
+            'platform_linux? — Is the platform Linux?',
+            'platform_mac? — Is the platform Mac?'
+          ],
+          :examples => <<~EXAMPLES.strip
+            > show gloo.user
+            > show $.user
+
+            > show gloo.working_dir
+            > show gloo.working.dir
+            > show $.working_dir
+            > show $.working.dir
+          EXAMPLES
+        }
       end
 
     end

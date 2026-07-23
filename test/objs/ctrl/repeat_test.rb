@@ -10,6 +10,12 @@ class RepeatTest < BaseEngineTest
     assert_equal 'repeat', Gloo::Objs::Repeat.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Repeat.doc_data
+    assert_equal Gloo::Objs::Repeat.typename, data[:name]
+    assert_equal Gloo::Objs::Repeat.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'repeat' )
     assert @dic.find_obj( 'REPEAT' )

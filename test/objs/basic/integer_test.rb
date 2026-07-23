@@ -10,6 +10,12 @@ class IntegerTest < BaseEngineTest
     assert_equal 'int', Gloo::Objs::Integer.short_typename
   end
 
+  def test_doc_data
+    data = Gloo::Objs::Integer.doc_data
+    assert_equal Gloo::Objs::Integer.typename, data[:name]
+    assert_equal Gloo::Objs::Integer.short_typename, data[:shortcut]
+  end
+
   def test_find_type
     assert @dic.find_obj( 'integer' )
     assert @dic.find_obj( 'INTEGER' )
