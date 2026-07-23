@@ -18,4 +18,10 @@ class HelpVerbTest < BaseEngineTest
     assert_equal '?', Gloo::Verbs::Help.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Help.doc_data
+    assert_equal Gloo::Verbs::Help.keyword, data[:name]
+    assert_equal Gloo::Verbs::Help.keyword_shortcut, data[:shortcut]
+  end
+
 end

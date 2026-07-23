@@ -19,4 +19,10 @@ class QuitTest < BaseEngineTest
     assert_equal 'q', Gloo::Verbs::Quit.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Quit.doc_data
+    assert_equal Gloo::Verbs::Quit.keyword, data[:name]
+    assert_equal Gloo::Verbs::Quit.keyword_shortcut, data[:shortcut]
+  end
+
 end

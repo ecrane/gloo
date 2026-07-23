@@ -122,14 +122,64 @@ module Gloo
         end
       end
 
-      # 
+      #
       # Redirect to another script.
       # This stops execution of the current script.
-      # 
+      #
       def redirect_to_script
         @engine.exec_env.running_script.break_out
 
         Gloo::Exec::Dispatch.message( @engine, RUN_MESSAGE, @target_obj )
+      end
+
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Redirect from the current script (or page). ' \
+            'There are 3 ways to use this verb: redirect in a script; ' \
+            'redirect from one page to another, where the parameter is ' \
+            'a path to a page; or redirect (hard) to an external web ' \
+            'site, where the parameter is the URL.',
+          :syntax => [
+            'redirect {path.to.object}',
+            'redirect https://example.com/ (hard)'
+          ],
+          :parameters => [
+            '{path.to.object} — Reference to the script to run, or ' \
+              'reference to the page to redirect to. In the case of a ' \
+              'redirect (hard) this is the target website we will redirect to.'
+          ],
+          :result => 'No more commands are executed in the currently ' \
+            'running script. Execution transfers to the target script. ' \
+            'If the target is a page, the current page is replaced with ' \
+            'the target page.',
+          :errors => [
+            "#{MISSING_EXPR_ERR} — Redirect requires the target page or script to redirect to.",
+            "#{BAD_TARGET_ERR} — The target object does not exist or cannot receive the redirect.",
+            "#{APP_NOT_RUNING_ERR} — Page cannot redirect because the application is not running."
+          ],
+          :examples => <<~EXAMPLES.strip
+            # Redirect to a different script:
+            redirect [can] :
+              x [bool] : false
+              first_time [script] : show 'It is true (first time)'
+              second_time [script] : show 'It is true (second time)'
+              on_load [script] :
+                if ^.x then go ^.first_time
+                show 'skipping first time'
+                put true into ^.x
+                if ^.x then go ^.second_time
+                show 'skipping second time'
+          EXAMPLES
+        }
       end
 
     end

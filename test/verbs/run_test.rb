@@ -10,6 +10,12 @@ class RunTest < BaseEngineTest
     assert_equal 'r', Gloo::Verbs::Run.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Run.doc_data
+    assert_equal Gloo::Verbs::Run.keyword, data[:name]
+    assert_equal Gloo::Verbs::Run.keyword_shortcut, data[:shortcut]
+  end
+
   def test_running_script
     s = 'create s as script : "show 3 + 4"'
     @engine.parser.run s

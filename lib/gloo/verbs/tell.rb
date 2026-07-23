@@ -50,6 +50,38 @@ module Gloo
 
       private
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Send a message to an object. Ask the object ' \
+            'to perform an action.',
+          :syntax => [ 'tell {path.to.object} to {message}' ],
+          :parameters => [
+            '{path.to.object} — The object that we want to send a message to.',
+            '{message} — The message to send.'
+          ],
+          :result => 'The result depends on the message that is sent.',
+          :errors => [
+            "#{UNKNOWN_MSG_ERR} — No message was specified, or the `to` keyword is missing.",
+            'Object was not found — The target of the message was not found.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            > tell an.obj to unload
+            > tell the.script to run
+            > tell my.str to up
+            > tell the.container to count
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

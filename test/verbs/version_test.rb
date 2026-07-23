@@ -10,6 +10,12 @@ class VersionTest < BaseEngineTest
     assert_equal 'v', Gloo::Verbs::Version.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Version.doc_data
+    assert_equal Gloo::Verbs::Version.keyword, data[:name]
+    assert_equal Gloo::Verbs::Version.keyword_shortcut, data[:shortcut]
+  end
+
   def test_showing_version_info
     @engine.parser.run 'v'
     refute @engine.error?

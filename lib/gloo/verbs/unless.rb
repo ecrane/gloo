@@ -101,6 +101,56 @@ module Gloo
 
         i.run
       end
+
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => "Unless an expression is true, do something. " \
+            "This is the opposite of the if verb.",
+          :syntax => [
+            'unless {true} do {command}',
+            'unless {true} do {command} else {else command}'
+          ],
+          :parameters => [
+            '{true} — Does the expression evaluate to true?',
+            '{command} — Execute command if the expression is false.',
+            '{else command} — The else command is optional. Execute else command if the expression is true.'
+          ],
+          :result => 'Unchanged if the expression is true. If not true, ' \
+            'then the result will be based on the command specified ' \
+            'after the do keyword.',
+          :errors => [
+            "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb.",
+            'Other errors depend on the command that is run.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Unless statement example
+            #
+
+            unless [container] :
+
+              x [bool] : true
+              false_msg [string] : It is NOT true!
+
+              on_load [script] :
+                unless unless.x do show "first time: " + unless.false_msg
+                unless ^.x do show 'F' else show 'T'
+
+                put false into unless.x
+                unless unless.x do show "second time: " +  unless.false_msg
+                unless ^.x do show 'F' else show 'T'
+          EXAMPLES
+        }
+      end
     end
   end
 end

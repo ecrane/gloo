@@ -72,14 +72,66 @@ module Gloo
         return false
       end
 
-      # 
+      #
       # Check to see if an instance of an object exists.
-      # 
+      #
       def instance_exists?( pn )
         pn = Gloo::Core::Pn.new( @engine, pn )
         o = pn.resolve
         return false if o.nil?
         return true
+      end
+
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Check to see if a verb or object type has ' \
+            'been defined (or loaded). This verb can be used to check ' \
+            'if a core library or extension has been loaded.',
+          :syntax => [ 'exists? |any,object,verb,instance| {keyword}' ],
+          :parameters => [
+            "Kind of Keyword — Check for the presence of a keyword of a kind. " \
+              "any (default, optional) checks for either an object or a verb; " \
+              "object checks for an object matching the keyword or keyword " \
+              "shortcut; verb checks for a verb matching the keyword or " \
+              "keyword shortcut; instance checks to see if an object " \
+              "instance exists at the pathname represented by keyword. " \
+              "`exists? any markdown` is identical to `exists? markdown`.",
+            '{keyword} — The verb or object keyword or keyword shortcut. ' \
+              'Must be specified. For the instance option, the keyword is ' \
+              'the pathname to an object instance.'
+          ],
+          :result => 'If the object or verb has been defined, then true, ' \
+            'otherwise false. The result will be in it.',
+          :errors => [
+            "#{WRONG_NUM_ARGS_ERR} The kind of keyword is optional."
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # Example of exists? keyword.
+            #
+            exists [container] :
+
+            \ton_load [script] :
+            \t\texists? object markdown
+            \t\tshow it # false
+
+            \t\tload lib md
+            \t\texists? object markdown
+            \t\tshow it # true
+
+            \t\texists? instance exists.on_load
+            \t\tshow it # true
+          EXAMPLES
+        }
       end
 
     end

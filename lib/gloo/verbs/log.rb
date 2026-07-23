@@ -85,6 +85,49 @@ module Gloo
         return Gloo::App::Log::LEVELS[0]
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Write to the standard gloo log, or to the gloo error log.',
+          :syntax => [ 'log {target} ({level})' ],
+          :parameters => [
+            '{target} — The message that will be written to the log. ' \
+              'The target might be the path to an object, a literal or ' \
+              'an expression to be evaluated. Level options are: DEBUG, ' \
+              'INFO, WARN, ERROR. Level is an optional parameter — if ' \
+              'not specified, the message is written as DEBUG level.'
+          ],
+          :result => 'The message is written to the log at the ' \
+            'specified level. It will contain the log message.',
+          :notes => "Use `log clear` from the CLI to clear out both the " \
+            'standard log and the error log.',
+          :examples => <<~EXAMPLES.strip
+            #
+            # Show multiple messages in loggers
+            #
+
+            log [can] :
+              level [string] : info
+              msg [string] : info from var
+              on_load [script] :
+                log "debug implicit"
+                log "debug explicit" (debug)
+                log "info" (info)
+                log "warn" (warn)
+                log "error" (error)
+                log log.msg (log.level)
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

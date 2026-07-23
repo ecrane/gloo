@@ -10,6 +10,12 @@ class EvalTest < BaseEngineTest
     assert_equal 'noop', Gloo::Verbs::Eval.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Eval.doc_data
+    assert_equal Gloo::Verbs::Eval.keyword, data[:name]
+    assert_equal Gloo::Verbs::Eval.keyword_shortcut, data[:shortcut]
+  end
+
   def test_eval_str_concat
     v = @engine.parser.parse_immediate 'eval "hello" + "world"'
     v.run

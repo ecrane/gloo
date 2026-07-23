@@ -114,6 +114,38 @@ module Gloo
         return '  '
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'List out objects (and children) at the ' \
+            'current context. When a path is provided, it will be ' \
+            'listed instead of the current context. When using context, ' \
+            'the current context will be shown, but when context has ' \
+            'not been set, the root will be shown.',
+          :syntax => [ 'list {path.to.object}' ],
+          :parameters => [
+            '{path.to.object} — Optional path to object that will be listed. When no path is provided, the current context is used.'
+          ],
+          :result => 'Object and children are listed out in the CLI.',
+          :errors => [
+            "#{TARGET_MISSING_ERR}{path.to.object} — The object specified that is to be listed could not be found."
+          ],
+          :examples => <<~EXAMPLES.strip
+            > list
+            > list my.container
+            > list root
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

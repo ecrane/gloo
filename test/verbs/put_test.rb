@@ -10,6 +10,12 @@ class PutTest < BaseEngineTest
     assert_equal 'p', Gloo::Verbs::Put.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Put.doc_data
+    assert_equal Gloo::Verbs::Put.keyword, data[:name]
+    assert_equal Gloo::Verbs::Put.keyword_shortcut, data[:shortcut]
+  end
+
   def test_put_into_str
     o = @engine.parser.parse_immediate 'create s as string'
     o.run

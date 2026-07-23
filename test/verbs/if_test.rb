@@ -10,6 +10,12 @@ class IfTest < BaseEngineTest
     assert_equal 'if', Gloo::Verbs::If.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::If.doc_data
+    assert_equal Gloo::Verbs::If.keyword, data[:name]
+    assert_equal Gloo::Verbs::If.keyword_shortcut, data[:shortcut]
+  end
+
   def test_evals_true
     v = @engine.parser.parse_immediate 'if true then show 2 + 5'
     v.run

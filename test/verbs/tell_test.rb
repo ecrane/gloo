@@ -10,6 +10,12 @@ class TellTest < BaseEngineTest
     assert_equal '->', Gloo::Verbs::Tell.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Tell.doc_data
+    assert_equal Gloo::Verbs::Tell.keyword, data[:name]
+    assert_equal Gloo::Verbs::Tell.keyword_shortcut, data[:shortcut]
+  end
+
   def test_sending_message_with_tell
     o = @engine.parser.parse_immediate 'create s as string'
     o.run

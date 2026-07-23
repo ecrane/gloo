@@ -10,6 +10,12 @@ class ListTest < BaseEngineTest
     assert_equal '.', Gloo::Verbs::List.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::List.doc_data
+    assert_equal Gloo::Verbs::List.keyword, data[:name]
+    assert_equal Gloo::Verbs::List.keyword_shortcut, data[:shortcut]
+  end
+
   def test_determine_target
     assert @engine.running
     i = @engine.parser.parse_immediate 'list'

@@ -43,6 +43,28 @@ module Gloo
 
       private
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Show a list of all loaded files and their ' \
+            'associated objects.',
+          :syntax => [ 'files' ],
+          :result => 'The list of files and associated objects is shown ' \
+            'in output. It is set to the number of files that have been loaded.',
+          :examples => <<~EXAMPLES.strip
+            > files
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

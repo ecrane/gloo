@@ -58,6 +58,43 @@ module Gloo
         return str
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => "Show an object's value, a literal or the " \
+            'result of an evaluation.',
+          :syntax => [
+            'show {target}',
+            'show {target} ({color})'
+          ],
+          :parameters => [
+            '{target} — The object that we want to see. The target ' \
+              'might be the path to an object, a literal or an ' \
+              'expression to be evaluated before being shown.',
+            '{color} — Optional color for the text.'
+          ],
+          :result => "The object's value is shown, or the literal, or " \
+            'the result of the evaluated expression is shown. It will ' \
+            "contain the object's value.",
+          :examples => <<~EXAMPLES.strip
+            > show "me"
+            > show "hello " "world"
+            > show 132 * 23
+
+            > create x : "boo"
+            > show x
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

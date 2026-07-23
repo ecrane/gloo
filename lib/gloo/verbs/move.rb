@@ -84,6 +84,41 @@ module Gloo
         return o
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Move an object to a new parent.',
+          :syntax => [ 'move {path.to.object} to {new.parent}' ],
+          :parameters => [
+            '{path.to.object} — The object that we want to move.',
+            '{new.parent} — The new location for the object.'
+          ],
+          :result => 'The object will now be in the new location.',
+          :errors => [
+            "#{MISSING_SRC_ERR} The {path.to.object} is not specified.",
+            "#{MISSING_SRC_OBJ_ERR}{path.to.object} — The {path.to.object} cannot be resolved.",
+            "#{MISSING_DST_ERR} The {new.parent} is not specified.",
+            "#{MISSING_DST_OBJ_ERR}{new.parent} — The {new.parent} cannot be resolved."
+          ],
+          :examples => <<~EXAMPLES.strip
+            can [can] :
+              two [string] : def
+              data [can] :
+                one [string] : abc
+              on_load [script] :
+                move can.two to can.data
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

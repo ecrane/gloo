@@ -10,6 +10,12 @@ class UnloadTest < BaseEngineTest
     assert_equal 'u!', Gloo::Verbs::Unload.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Unload.doc_data
+    assert_equal Gloo::Verbs::Unload.keyword, data[:name]
+    assert_equal Gloo::Verbs::Unload.keyword_shortcut, data[:shortcut]
+  end
+
   def test_unloading_all_files
     @engine.parser.run 'load test'
     assert_equal 1, @engine.heap.root.child_count

@@ -35,6 +35,25 @@ module Gloo
         return KEYWORD_SHORT
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Stop running the gloo application. Cleanup and shutdown.',
+          :syntax => [ 'quit' ],
+          :examples => <<~EXAMPLES.strip
+            > quit
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

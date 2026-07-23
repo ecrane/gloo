@@ -70,6 +70,45 @@ module Gloo
         @engine.parser.run expr.evaluate
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Run a script or other object. This is the ' \
+            'same as sending a run message to the object.',
+          :syntax => [
+            'run {path.to.object}',
+            'run ~> {expression}'
+          ],
+          :parameters => [
+            '{path.to.object} — Reference to the object which will be ' \
+              'run. The object must be a runnable object such as a script.',
+            '{expression} — Evaluate the expression and run it.'
+          ],
+          :result => 'The result depends on the object that is run.',
+          :errors => [
+            "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb."
+          ],
+          :examples => <<~EXAMPLES.strip
+            > run my.script
+
+            > create s as script : "show 3 + 4"
+            > run s
+
+            # Run a script in an evaluated expression:
+            > create s as string : "show 3 + 4"
+            > run ~> s
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

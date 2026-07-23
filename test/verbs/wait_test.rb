@@ -10,4 +10,10 @@ class WaitTest < BaseEngineTest
     assert_equal 'w', Gloo::Verbs::Wait.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Wait.doc_data
+    assert_equal Gloo::Verbs::Wait.keyword, data[:name]
+    assert_equal Gloo::Verbs::Wait.keyword_shortcut, data[:shortcut]
+  end
+
 end

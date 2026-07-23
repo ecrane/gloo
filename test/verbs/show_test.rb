@@ -10,6 +10,12 @@ class ShowTest < BaseEngineTest
     assert_equal 'print', Gloo::Verbs::Show.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Show.doc_data
+    assert_equal Gloo::Verbs::Show.keyword, data[:name]
+    assert_equal Gloo::Verbs::Show.keyword_shortcut, data[:shortcut]
+  end
+
   def test_showing_a_string_literal
     v = @engine.parser.parse_immediate 'show "me"'
     v.run

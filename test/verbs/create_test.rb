@@ -10,6 +10,12 @@ class CreateTest < BaseEngineTest
     assert_equal '`', Gloo::Verbs::Create.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Create.doc_data
+    assert_equal Gloo::Verbs::Create.keyword, data[:name]
+    assert_equal Gloo::Verbs::Create.keyword_shortcut, data[:shortcut]
+  end
+
   def test_object_creation_default_type
     i = @engine.parser.parse_immediate '` x : 1'
     i.run

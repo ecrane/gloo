@@ -10,6 +10,12 @@ class ReloadTest < BaseEngineTest
     assert_equal 'r!', Gloo::Verbs::Reload.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Reload.doc_data
+    assert_equal Gloo::Verbs::Reload.keyword, data[:name]
+    assert_equal Gloo::Verbs::Reload.keyword_shortcut, data[:shortcut]
+  end
+
   def test_reloading_all_files
     @engine.parser.run 'load test'
     assert_equal 1, @engine.heap.root.child_count

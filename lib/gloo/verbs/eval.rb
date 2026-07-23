@@ -38,6 +38,33 @@ module Gloo
         end
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Evaluate an expression and put the result into it.',
+          :syntax => [ 'eval {expression}' ],
+          :parameters => [
+            '{expression} — The expression that will be evaluated. The expression is optional. If not provided, eval will result in true.'
+          ],
+          :result => 'The result of the expression evaluation is put ' \
+            'into it. No other action is performed.',
+          :examples => <<~EXAMPLES.strip
+            > eval "me"
+            > eval "hello " "world"
+            > eval 132 * 23
+            > eval path.to.num = 1
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

@@ -75,6 +75,68 @@ module Gloo
         return evaluated_params
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Invoke a function. Set it to the result of the function.',
+          :syntax => [ 'invoke {path.to.function} {params}' ],
+          :parameters => [
+            '{path.to.function} — The function we want to invoke.',
+            '{params} — The list of parameters to the function.'
+          ],
+          :result => 'The result of the function is put into it.',
+          :examples => <<~EXAMPLES.strip
+            #
+            # Function examples
+            #
+
+            functions [can] :
+
+              name [string] : Jasper
+
+              on_load [script] :
+                show 'running function examples' (white)
+
+                invoke functions.greet ^.name
+                show it
+
+                invoke functions.add 3 4
+                show it
+
+                show 'done' (white)
+
+              #
+              # Say hi to person (name)
+              #
+              greet [ƒ] :
+                on_invoke [script] :
+                  put 'Hi, ' + ^.params.name into ^.result
+                params [container] :
+                  name [string] : none
+                result [string] :
+
+              #
+              # Add 2 numbers
+              #
+              add [ƒ] :
+                on_invoke [script] :
+                  put ^.params.x and ^.params.y into ^.result
+                params [container] :
+                  x [int] :
+                  y [int] :
+                result [string] :
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

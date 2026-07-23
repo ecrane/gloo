@@ -37,6 +37,32 @@ module Gloo
         return KEYWORD_SHORT
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Wait for the given number of seconds.',
+          :syntax => [ 'wait {seconds}' ],
+          :parameters => [
+            '{seconds} — The number of seconds to wait. Optional. If no value is given, we will wait for 1 second.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            > wait
+            > wait 3
+
+            > create x as int : 10
+            > wait x
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

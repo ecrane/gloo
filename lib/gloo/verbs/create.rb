@@ -69,6 +69,48 @@ module Gloo
         @engine.heap.it.set_to value
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Create a new object of given type with given ' \
+            'value. Both type and value are optional when creating an object.',
+          :syntax => [ 'create {new.object.path} as {type} : {value}' ],
+          :parameters => [
+            '{new.object.path} — The path and name of the new object.',
+            '{type} — The type of the new object. Optional; if not provided the object will be untyped.',
+            "{value} — The initial value for the new object. Optional; if not provided the object will have the default value for the type."
+          ],
+          :result => "The new object will be created and added to the " \
+            "object heap. It will be set to the new object's initial value.",
+          :errors => [
+            "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created."
+          ],
+          :examples => <<~EXAMPLES.strip
+            # Basic examples of creating an object from the gloo shell:
+            > create x as integer : 1
+            > create s : "abc"
+            > create t
+
+            # Example of creating an object with an alias:
+            a [can] :
+              ln [alias] : x
+
+              on_load [script] :
+                create a.ln* as string
+                put 'test' into x
+                show a.ln
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

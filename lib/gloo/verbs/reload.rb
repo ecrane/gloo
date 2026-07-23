@@ -40,6 +40,33 @@ module Gloo
 
       private
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Re-load to original state. This will ' \
+            'essentially re-run gloo with the parameters given during ' \
+            'start-up. Use the files command to see the list of files ' \
+            'that will be re-loaded. Any changes made externally in the ' \
+            'stored files will take effect.',
+          :syntax => [ 'reload' ],
+          :result => 'Each open file will be first unloaded and then ' \
+            'loaded again. Note that re-load does not trigger the ' \
+            'on_load script to run. There is an on_reload message sent ' \
+            'to all open files.',
+          :examples => <<~EXAMPLES.strip
+            > reload
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

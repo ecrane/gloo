@@ -10,6 +10,12 @@ class ExecuteTest < BaseEngineTest
     assert_equal 'exec', Gloo::Verbs::Execute.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Execute.doc_data
+    assert_equal Gloo::Verbs::Execute.keyword, data[:name]
+    assert_equal Gloo::Verbs::Execute.keyword_shortcut, data[:shortcut]
+  end
+
   def test_without_expression
     @engine.parser.run 'execute'
     assert @engine.error?

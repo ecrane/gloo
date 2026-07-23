@@ -10,6 +10,12 @@ class MoveTest < BaseEngineTest
     assert_equal 'mv', Gloo::Verbs::Move.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Move.doc_data
+    assert_equal Gloo::Verbs::Move.keyword, data[:name]
+    assert_equal Gloo::Verbs::Move.keyword_shortcut, data[:shortcut]
+  end
+
   def test_moving_an_object
     o = @engine.parser.parse_immediate 'create s as string'
     o.run

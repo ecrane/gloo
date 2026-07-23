@@ -10,6 +10,12 @@ class UnlessTest < BaseEngineTest
     assert_equal 'if!', Gloo::Verbs::Unless.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Unless.doc_data
+    assert_equal Gloo::Verbs::Unless.keyword, data[:name]
+    assert_equal Gloo::Verbs::Unless.keyword_shortcut, data[:shortcut]
+  end
+
   def test_evals_false
     v = @engine.parser.parse_immediate 'unless false do show 2 + 5'
     v.run

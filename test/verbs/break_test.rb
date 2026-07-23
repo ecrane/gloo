@@ -10,6 +10,12 @@ class BreakTest < BaseEngineTest
     assert_equal 'stop', Gloo::Verbs::Break.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Break.doc_data
+    assert_equal Gloo::Verbs::Break.keyword, data[:name]
+    assert_equal Gloo::Verbs::Break.keyword_shortcut, data[:shortcut]
+  end
+
   def test_running_script
     s = 'load ctrl/break'
     @engine.parser.run s

@@ -11,6 +11,12 @@ class ExistsTest < BaseEngineTest
     assert_equal 'exist', Gloo::Verbs::Exists.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Exists.doc_data
+    assert_equal Gloo::Verbs::Exists.keyword, data[:name]
+    assert_equal Gloo::Verbs::Exists.keyword_shortcut, data[:shortcut]
+  end
+
   def test_exists_object
     @engine.parser.run 'exists? object string'
     assert @engine.heap.it.value

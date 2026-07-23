@@ -10,6 +10,12 @@ class LoadTest < BaseEngineTest
     assert_equal 'ld', Gloo::Verbs::Load.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Load.doc_data
+    assert_equal Gloo::Verbs::Load.keyword, data[:name]
+    assert_equal Gloo::Verbs::Load.keyword_shortcut, data[:shortcut]
+  end
+
   def test_file_load
     assert_equal 0, @engine.heap.root.child_count
     i = @engine.parser.parse_immediate 'load test'

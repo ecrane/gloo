@@ -40,17 +40,9 @@ module Gloo
         # 
         # Temporary.  Just tinkering
         # 
-        h = {
-          :name => 'run',
-          :shortcut => 'r',
-          :description => 'run a script or a runable object',
-          :syntax => [ 'run <script_or_object>' ],
-          :examples => 'run my.script',
-          :notes => 'This is a test'
-        }
-        dd = Gloo::Docs::DocData.new( Gloo::Verbs::Put.doc_data )
-        dd.show_in_terminal
-        return
+        # dd = Gloo::Docs::DocData.new( Gloo::Verbs::Put.doc_data )
+        # dd.show_in_terminal
+        # return
 
         opts = @tokens.second if @tokens
         opts = opts.strip.downcase if opts
@@ -74,6 +66,34 @@ module Gloo
       #
       def self.keyword_shortcut
         return KEYWORD_SHORT
+      end
+
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Show In-App help page.',
+          :syntax => [ 'help {optional help topic}' ],
+          :parameters => [
+            'optional help topic — o for objects, s for settings, v for verbs.'
+          ],
+          :result => 'Shows in-app help.',
+          :errors => [
+            "#{HELP_NOT_FOUND_ERR} {topic} — The help topic is not valid."
+          ],
+          :examples => <<~EXAMPLES.strip
+            > help
+            > ? o
+            > ? v
+          EXAMPLES
+        }
       end
 
       # ---------------------------------------------------------------------

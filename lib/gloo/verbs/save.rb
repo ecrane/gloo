@@ -34,6 +34,32 @@ module Gloo
         return KEYWORD_SHORT
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Save a previously loaded object to a .gloo ' \
+            'file. The path will be for the root level object that was ' \
+            'loaded earlier.',
+          :syntax => [ 'save {path.to.object}' ],
+          :parameters => [
+            '{path.to.object} — Name of the object file that is to be saved.'
+          ],
+          :result => 'The file is updated with the latest object state.',
+          :notes => 'The save verb is not currently fully functional.',
+          :examples => <<~EXAMPLES.strip
+            > save my_obj
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

@@ -58,16 +58,41 @@ module Gloo
         @engine.platform.show notes
       end
 
-      # 
+      #
       # Is the request to show version notes?
-      # 
+      #
       def vers_notes?
-        if ( @tokens.token_count > 1 ) && ( 
+        if ( @tokens.token_count > 1 ) && (
           ( @tokens.last == NOTES ) || ( @tokens.last == NOTES_SHORT ) )
           return true
         end
 
         return false
+      end
+
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Show the application version information. ' \
+            'This is the same as showing the version by running gloo ' \
+            'with the --version command line parameter.',
+          :syntax => [ 'version' ],
+          :examples => <<~EXAMPLES.strip
+            > version
+            > v
+            This is the same as running this from the command line:
+
+            > gloo --version
+          EXAMPLES
+        }
       end
 
     end

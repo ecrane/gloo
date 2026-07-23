@@ -101,6 +101,58 @@ module Gloo
 
         i.run
       end
+
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'If an expression is true then do something.',
+          :syntax => [
+            'if {true} then {do}',
+            'if {true} then {do} else {do else}'
+          ],
+          :parameters => [
+            '{true} — Does the expression evaluate to true?',
+            '{do} — Execute command if the expression is true.',
+            '{do else} — The else command is optional. Execute command if the expression is false.'
+          ],
+          :result => 'Unchanged if the expression is not true. If true, ' \
+            'then the result will be based on the command specified ' \
+            'after the then keyword.',
+          :errors => [
+            "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb.",
+            'Other errors depend on the command that is run.'
+          ],
+          :examples => <<~EXAMPLES.strip
+            #
+            # If statement example
+            #
+
+            if [container] :
+
+              x [bool] : false
+              true_msg [string] : It is true!
+
+              on_load [script] :
+                if if.x then show "first time: " + if.true_msg
+                if ^.x then show 'T' else show 'F'
+
+                put true into if.x
+                if if.x \\
+                  then show "second time: " + if.true_msg
+                if ^.x \\
+                  then show 'T' \\
+                  else show 'F'
+          EXAMPLES
+        }
+      end
     end
   end
 end

@@ -57,6 +57,46 @@ module Gloo
         @engine.log.debug "Context set to #{@engine.heap.context}"
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Get or set the current context. When no ' \
+            'parameter is provided, the context will be shown. When the ' \
+            "optional path parameter is provided, the context will be set " \
+            "to that path. Use 'context root' to set the context back to " \
+            'the root level. When context has been set, the pathname can ' \
+            'start from the context container by use of the @. prefix.',
+          :syntax => [ 'context {path.to.new.context}' ],
+          :parameters => [
+            '{path.to.new.context} — Optional. The path to the new context when setting the context.'
+          ],
+          :result => 'Context is optionally set. It will be set to the ' \
+            'new context path when we are changing context. Context is ' \
+            'shown in either case.',
+          :notes => 'Providing a context that does not exist will not ' \
+            'initially be a problem — you can set the context to an ' \
+            "object before it exists. However, use of a context that " \
+            "doesn't exist will be a problem.",
+          :examples => <<~EXAMPLES.strip
+            context [container] :
+              sub [container] :
+                msg [string] : Hello Gloo World!
+                on_load [script] :
+                    @ context.sub
+                    show @.msg
+                    @ root
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

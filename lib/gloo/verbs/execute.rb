@@ -49,6 +49,33 @@ module Gloo
         return KEYWORD_SHORT
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Execute a shell command. This verb is not ' \
+            'available in the Web app.',
+          :syntax => [ 'exec {expression}' ],
+          :parameters => [
+            '{expression} — Evaluate the expression and execute in the shell.'
+          ],
+          :result => 'There is no result within gloo, any output is in the terminal.',
+          :errors => [
+            "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb."
+          ],
+          :examples => <<~EXAMPLES.strip
+            > exec 'rake test'
+          EXAMPLES
+        }
+      end
+
     end
   end
 end
