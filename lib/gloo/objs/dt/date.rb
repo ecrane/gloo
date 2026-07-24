@@ -172,7 +172,8 @@ module Gloo
             'dd — Get the day portion of the date. Put the day number into it.',
             'mm — Get the month portion of the date. Put the month number into it.',
             'yy — Get the 2 digit year portion of the date. Put the 2 digit year into it.',
-            'yyyy — Get the 4 digit year portion of the date. Put the 4 digit year into it.'
+            'yyyy — Get the 4 digit year portion of the date. Put the 4 digit year into it.',
+            'format ({fmt}) — Format the date using a strftime-style format string. Default if none given: %Y-%m-%d. It will have the formatted string.'
           ],
           :examples => <<~EXAMPLES.strip
             #

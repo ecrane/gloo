@@ -137,7 +137,8 @@ module Gloo
               'number. By default the range is 0..99 inclusive. Use an ' \
               'optional parameter to set the maximum of the range; the ' \
               'range always starts at 0. To model a 6-sided die, set the ' \
-              'range to 6 and add 1 to the result.'
+              'range to 6 and add 1 to the result.',
+            'format ({fmt}) — With no parameter, adds comma separators (e.g. 1000 -> 1,000). With a parameter, uses it as a sprintf-style format string (e.g. \'%05d\'). It will have the formatted string.'
           ],
           :examples => <<~EXAMPLES.strip
             #

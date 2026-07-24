@@ -256,6 +256,7 @@ module Gloo
           :messages => [
             'read ({into.obj}) — Read the file and put the data in the specified object. If {into.obj} is not specified, the data will be in it.',
             'write ({from.obj}) — Write the data in {from.obj} into the file.',
+            'append ({data}) — Append the given data to the file as a new line. Adds a leading newline first if the file doesn\'t already end with one.',
             'delete — Delete the file.',
             'get_name — Get the name of the file without path or extension. Put the name into it.',
             'get_ext — Get the file extension. Put the extension into it.',
@@ -267,7 +268,8 @@ module Gloo
             'exists? — Check to see if the file exists. It will be true or false.',
             'is_file? — Check to see if the file specified is a regular file. It will be true or false.',
             'is_dir? — Check to see if the file specified is a directory. It will be true or false.',
-            'find_match — Look for the existence of a file matching the file\'s pattern. It will be true or false.'
+            'find_match — Look for the existence of a file matching the file\'s pattern. It will be true or false.',
+            'mkdir — Create the file\'s path as a directory, if it doesn\'t already exist.'
           ],
           :examples => <<~EXAMPLES.strip
             #

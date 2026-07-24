@@ -281,7 +281,8 @@ module Gloo
             'begin_month — Set the datetime to the start of the month.',
             'end_month — Set the datetime to the end of the month.',
             'begin_year — Set the datetime to the start of the year.',
-            'end_year — Set the datetime to the end of the year.'
+            'end_year — Set the datetime to the end of the year.',
+            'format ({fmt}) — Format the date and time using a strftime-style format string. Default if none given: %Y-%m-%d %H:%M:%S. It will have the formatted string.'
           ],
           :examples => <<~EXAMPLES.strip
             #

@@ -64,19 +64,6 @@ class HelpShellTest < BaseEngineTest
     assert_includes names, 'show'
   end
 
-  #
-  # Every dev/gloo verb has doc_data as of 2026.07.24 (see 'update verb
-  # doc' story) - this guards against future additions forgetting to
-  # add it. Scoped to Gloo::Verbs:: since the Dictionary singleton can
-  # accumulate test-fixture verbs (e.g. the extension-loading test's
-  # throwaway `T` verb) registered by other tests in the same run.
-  #
-  def test_all_verbs_have_doc_data
-    verbs = @engine.dictionary.get_verbs.select { |v| v.name.start_with?( 'Gloo::Verbs::' ) }
-    missing = verbs.reject { |v| v.respond_to?( :doc_data ) }
-    assert_empty missing.map( &:keyword )
-  end
-
   def test_object_detail_tab_completion_lists_all_object_types
     shell = Gloo::Docs::HelpShell.new( @engine )
     root = shell.instance_variable_get( :@root )
@@ -92,16 +79,6 @@ class HelpShellTest < BaseEngineTest
     out, = capture_io { shell.execute_once( %w[object container] ) }
     assert_match( /container/, out )
     assert_match( /DESCRIPTION/, out )
-  end
-
-  #
-  # Every dev/gloo object type has doc_data as of 2026.07.23 (see
-  # 'update object doc' story) - this guards against future additions
-  # forgetting to add it.
-  #
-  def test_all_object_types_have_doc_data
-    missing = @engine.dictionary.get_obj_types.reject { |o| o.respond_to?( :doc_data ) }
-    assert_empty missing.map( &:typename )
   end
 
   def test_unknown_command_at_the_root

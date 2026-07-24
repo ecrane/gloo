@@ -106,7 +106,8 @@ module Gloo
           :description => 'A decimal (numeric) value.',
           :messages => [
             'round ({precision}) — Round to the nearest whole value. If ' \
-              'an optional parameter is included, round to the precision specified.'
+              'an optional parameter is included, round to the precision specified.',
+            'format ({fmt}) — With no parameter, adds comma separators to the whole part (e.g. 1000.5 -> 1,000.5). With a parameter, uses it as a sprintf-style format string (e.g. \'%.2f\'). It will have the formatted string.'
           ],
           :examples => <<~EXAMPLES.strip
             d [can] :

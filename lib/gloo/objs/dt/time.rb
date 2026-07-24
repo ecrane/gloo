@@ -172,7 +172,8 @@ module Gloo
             'hh — Get the hour portion of the time. Put the hour into it.',
             'mm — Get the minute portion of the time. Put the minute into it.',
             'ss — Get the second portion of the time. Put the second into it.',
-            'am — Get the am/pm portion of the time. Put "am" or "pm" into it.'
+            'am — Get the am/pm portion of the time. Put "am" or "pm" into it.',
+            'format ({fmt}) — Format the time using a strftime-style format string. Default if none given: %H:%M:%S. It will have the formatted string.'
           ],
           :examples => <<~EXAMPLES.strip
             #

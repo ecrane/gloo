@@ -98,7 +98,8 @@ module Gloo
           :messages => [
             'count — Count the number of children objects in the container. The result is put in it.',
             'delete_children — Delete all children objects from the container.',
-            'show_key_value_table — Show a table with key (name) and values for all children in the container.'
+            'show_key_value_table — Show a table with key (name) and values for all children in the container.',
+            'child_exists ({name}) — Check to see if there is a child with the given name. A parameter is required. It will have a boolean.'
           ],
           :examples => <<~EXAMPLES.strip
             can [can] :
