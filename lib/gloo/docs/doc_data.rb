@@ -17,6 +17,7 @@ module Gloo
       RESULT = 'RESULT'.freeze
       ERRORS = 'ERRORS'.freeze
       EXAMPLE_CODE = 'EXAMPLE_CODE'.freeze
+      NOTES = 'NOTES'.freeze
       TAB = '  '.freeze
 
       attr_accessor :name, :shortcut, :description, :syntax,
@@ -49,6 +50,7 @@ module Gloo
         show_result
         show_errors
         show_examples
+        show_notes
         puts
       end
 
@@ -153,6 +155,16 @@ module Gloo
         puts
         puts EXAMPLE_CODE
         puts @examples
+      end
+
+      #
+      # Show the notes, if there are any.
+      def show_notes
+        return unless @notes
+
+        puts
+        puts NOTES
+        puts @notes
       end
 
     end

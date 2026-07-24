@@ -108,7 +108,8 @@ module Gloo
           :result => 'The message is written to the log at the ' \
             'specified level. It will contain the log message.',
           :notes => "Use `log clear` from the CLI to clear out both the " \
-            'standard log and the error log.',
+            "standard log and the error log.\n\n" \
+            "> log clear",
           :examples => <<~EXAMPLES.strip
             #
             # Show multiple messages in loggers

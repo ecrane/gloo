@@ -10,6 +10,17 @@ module Gloo
   module Objs
     module StringMsgs
 
+      #
+      # Get the list of message names this mixin implements, derived
+      # from its own msg_* methods so String/Text don't have to
+      # hand-duplicate the list (and can't drift out of sync with it).
+      #
+      def self.messages
+        return instance_methods( false )
+          .select { |m| m.to_s.start_with?( 'msg_' ) }
+          .map { |m| m.to_s.sub( /\Amsg_/, '' ) }
+      end
+
 
       # 
       # Strip whitespace from the beginning and end of the string.

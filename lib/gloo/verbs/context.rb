@@ -84,7 +84,14 @@ module Gloo
           :notes => 'Providing a context that does not exist will not ' \
             'initially be a problem — you can set the context to an ' \
             "object before it exists. However, use of a context that " \
-            "doesn't exist will be a problem.",
+            "doesn't exist will be a problem.\n\n" \
+            "CLI Example:\n" \
+            "> context\n" \
+            "  Context: root\n\n" \
+            "> context my.object.path\n" \
+            "  Context: my.object.path\n\n" \
+            "> context root\n" \
+            "  Context: root",
           :examples => <<~EXAMPLES.strip
             context [container] :
               sub [container] :

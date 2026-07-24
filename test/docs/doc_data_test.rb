@@ -36,6 +36,23 @@ class DocDataTest < BaseTest
     refute_match( /MESSAGES/, out )
   end
 
+  def test_notes_are_shown_when_present
+    dd = Gloo::Docs::DocData.new(
+      :name => 'context',
+      :notes => 'A secondary CLI example, or any other freeform aside.' )
+
+    out, = capture_io { dd.show_in_terminal }
+    assert_match( /NOTES/, out )
+    assert_match( /A secondary CLI example/, out )
+  end
+
+  def test_notes_are_not_shown_when_absent
+    dd = Gloo::Docs::DocData.new( :name => 'string' )
+
+    out, = capture_io { dd.show_in_terminal }
+    refute_match( /NOTES/, out )
+  end
+
   def test_object_shaped_data_only_shows_relevant_sections
     dd = Gloo::Docs::DocData.new(
       :name => 'string',

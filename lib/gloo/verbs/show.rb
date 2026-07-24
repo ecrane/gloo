@@ -84,7 +84,7 @@ module Gloo
           :result => "The object's value is shown, or the literal, or " \
             'the result of the evaluated expression is shown. It will ' \
             "contain the object's value.",
-          :examples => <<~EXAMPLES.strip
+          :examples => <<~EXAMPLES.strip,
             > show "me"
             > show "hello " "world"
             > show 132 * 23
@@ -92,6 +92,23 @@ module Gloo
             > create x : "boo"
             > show x
           EXAMPLES
+          :notes => <<~NOTES.strip
+            Example with Color:
+
+            #
+            # Show multiple messages in color
+            #
+
+            colors [can] :
+              var [string] : red
+              on_load [script] :
+                show "red" (colors.var)
+                show "blue" (blue)
+                show "green" (green)
+                show "white" (white)
+                show "black" (black)
+                show "yellow" (yellow)
+          NOTES
         }
       end
 
