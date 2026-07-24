@@ -121,7 +121,8 @@ module Gloo
             'are run within the loaded objects.',
           :errors => [
             "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb.",
-            'File not Found — If the file specified cannot be found or cannot be loaded, an error condition will result.'
+            "#{UNKNOWN_OPT_ERR} — The reference type given isn't file, ext, or lib.",
+            "#{WRONG_NUM_ARGS_ERR} — load expects 2 or 3 arguments (the verb, an optional reference type, and the file/ext/lib name)."
           ],
           :examples => <<~EXAMPLES.strip
             > load my/project/file

@@ -84,13 +84,22 @@ module Gloo
           :description => 'Show the application version information. ' \
             'This is the same as showing the version by running gloo ' \
             'with the --version command line parameter.',
-          :syntax => [ 'version' ],
+          :syntax => [
+            'version',
+            'version notes'
+          ],
+          :parameters => [
+            'notes ({n}) — Optional. Show the version notes (release notes) instead of just the version number.'
+          ],
           :examples => <<~EXAMPLES.strip
             > version
             > v
             This is the same as running this from the command line:
 
             > gloo --version
+
+            > version notes
+            > v n
           EXAMPLES
         }
       end

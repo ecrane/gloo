@@ -10,6 +10,12 @@ class ThrowTest < BaseEngineTest
     assert_equal 'throw', Gloo::Verbs::Throw.keyword_shortcut
   end
 
+  def test_doc_data
+    data = Gloo::Verbs::Throw.doc_data
+    assert_equal Gloo::Verbs::Throw.keyword, data[:name]
+    assert_equal Gloo::Verbs::Throw.keyword_shortcut, data[:shortcut]
+  end
+
   def test_throw_fires_on_exception_with_the_given_message
     @engine.parser.run '` on_exception as script : "put true into ^.fired"'
     @engine.parser.run '` fired as bool : false'

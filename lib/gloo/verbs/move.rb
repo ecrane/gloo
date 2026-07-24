@@ -13,7 +13,7 @@ module Gloo
       TO = 'to'.freeze
       MISSING_SRC_ERR = 'Object to move was not specified!'.freeze
       MISSING_SRC_OBJ_ERR = 'Could not find object to move: '.freeze
-      MISSING_DST_ERR = "Move' must include 'to' parent object!".freeze
+      MISSING_DST_ERR = "'Move' must include 'to' parent object!".freeze
       MISSING_DST_OBJ_ERR = 'Could not resolve target: '.freeze
 
       #

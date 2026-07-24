@@ -50,6 +50,35 @@ module Gloo
         return expr.evaluate
       end
 
+      # ---------------------------------------------------------------------
+      #    Verb Documentation
+      # ---------------------------------------------------------------------
+
+      #
+      # Get the verb's documentation data.
+      #
+      def self.doc_data
+        {
+          :name => KEYWORD,
+          :shortcut => KEYWORD_SHORT,
+          :description => 'Deliberately raise a Ruby exception, to ' \
+            'exercise the on_exception handling pipeline (e.g. for ' \
+            'testing). Execution continues normally after the throw — ' \
+            'it is not a fatal halt.',
+          :syntax => [ 'throw {optional message}' ],
+          :parameters => [
+            "{message} — Optional. An expression evaluated and used as the thrown message. If not provided, a default message (\"#{DEFAULT_MSG}\") is used."
+          ],
+          :result => "Fires the app's on_exception handler, if one is " \
+            'defined, with exception_data.message set to the thrown ' \
+            'message. Does not fire on_error.',
+          :examples => <<~EXAMPLES.strip
+            > throw
+            > throw "custom message"
+          EXAMPLES
+        }
+      end
+
     end
   end
 end

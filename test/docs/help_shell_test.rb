@@ -64,10 +64,17 @@ class HelpShellTest < BaseEngineTest
     assert_includes names, 'show'
   end
 
-  def test_verb_detail_for_verb_with_no_doc_data
-    shell = Gloo::Docs::HelpShell.new( @engine )
-    out, = capture_io { shell.execute_once( %w[verb throw] ) }
-    assert_match( /No documentation available/, out )
+  #
+  # Every dev/gloo verb has doc_data as of 2026.07.24 (see 'update verb
+  # doc' story) - this guards against future additions forgetting to
+  # add it. Scoped to Gloo::Verbs:: since the Dictionary singleton can
+  # accumulate test-fixture verbs (e.g. the extension-loading test's
+  # throwaway `T` verb) registered by other tests in the same run.
+  #
+  def test_all_verbs_have_doc_data
+    verbs = @engine.dictionary.get_verbs.select { |v| v.name.start_with?( 'Gloo::Verbs::' ) }
+    missing = verbs.reject { |v| v.respond_to?( :doc_data ) }
+    assert_empty missing.map( &:keyword )
   end
 
   def test_object_detail_tab_completion_lists_all_object_types
