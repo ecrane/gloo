@@ -53,6 +53,28 @@ class DocDataTest < BaseTest
     refute_match( /NOTES/, out )
   end
 
+  def test_render_returns_a_string_without_printing
+    dd = Gloo::Docs::DocData.new(
+      :name => 'string',
+      :description => 'A string value.' )
+
+    out, = capture_io do
+      rendered = dd.render
+      assert_kind_of String, rendered
+      assert_match( /DESCRIPTION/, rendered )
+    end
+    assert_empty out
+  end
+
+  def test_show_in_terminal_prints_the_rendered_string
+    dd = Gloo::Docs::DocData.new(
+      :name => 'string',
+      :description => 'A string value.' )
+
+    out, = capture_io { dd.show_in_terminal }
+    assert_equal dd.render, out
+  end
+
   def test_object_shaped_data_only_shows_relevant_sections
     dd = Gloo::Docs::DocData.new(
       :name => 'string',

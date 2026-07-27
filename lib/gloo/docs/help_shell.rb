@@ -103,7 +103,7 @@ module Gloo
         verb_class = @engine.dictionary.find_verb( obj )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless verb_class.respond_to?( :doc_data )
 
-        Gloo::Docs::DocData.new( verb_class.doc_data ).show_in_terminal
+        @engine.platform.page( Gloo::Docs::DocData.new( verb_class.doc_data ).render )
       end
 
       #
@@ -113,7 +113,7 @@ module Gloo
         obj_class = @engine.dictionary.find_obj( obj )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless obj_class.respond_to?( :doc_data )
 
-        Gloo::Docs::DocData.new( obj_class.doc_data ).show_in_terminal
+        @engine.platform.page( Gloo::Docs::DocData.new( obj_class.doc_data ).render )
       end
 
       # ---------------------------------------------------------------------

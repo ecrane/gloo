@@ -39,132 +39,125 @@ module Gloo
       end
 
       #
+      # Render the documentation as a single string.
+      def render
+        buf = +''
+        show_name buf
+        show_description buf
+        show_syntax buf
+        show_parameters buf
+        show_children buf
+        show_messages buf
+        show_result buf
+        show_errors buf
+        show_examples buf
+        show_notes buf
+        buf << "\n"
+        return buf
+      end
+
+      #
       # Show the documentation in the terminal.
       def show_in_terminal
-        show_name
-        show_description
-        show_syntax
-        show_parameters
-        show_children
-        show_messages
-        show_result
-        show_errors
-        show_examples
-        show_notes
-        puts
+        puts render
       end
 
       private
 
       #
-      # Show the name and shortcut, if there is a name.
-      def show_name
+      # Append the name and shortcut, if there is a name.
+      def show_name( buf )
         return unless @name
 
-        puts
-        puts NAME
-        puts @name.white
-        puts @shortcut.white if @shortcut
+        buf << "\n#{NAME}\n#{@name.white}\n"
+        buf << "#{@shortcut.white}\n" if @shortcut
       end
 
       #
-      # Show the description, if there is one.
-      def show_description
+      # Append the description, if there is one.
+      def show_description( buf )
         return unless @description
 
-        puts
-        puts DESCRIPTION
-        puts @description.white
+        buf << "\n#{DESCRIPTION}\n#{@description.white}\n"
       end
 
       #
-      # Show the syntax lines, if there are any.
-      def show_syntax
+      # Append the syntax lines, if there are any.
+      def show_syntax( buf )
         return unless @syntax
 
-        puts
-        puts SYNTAX
+        buf << "\n#{SYNTAX}\n"
         @syntax.each do |line|
-          puts TAB + line.white
+          buf << "#{TAB}#{line.white}\n"
         end
       end
 
       #
-      # Show the parameter lines, if there are any.
-      def show_parameters
+      # Append the parameter lines, if there are any.
+      def show_parameters( buf )
         return unless @parameters
 
-        puts
-        puts PARAMETERS
+        buf << "\n#{PARAMETERS}\n"
         @parameters.each do |line|
-          puts TAB + line
+          buf << "#{TAB}#{line}\n"
         end
       end
 
       #
-      # Show the child lines, if there are any.
-      def show_children
+      # Append the child lines, if there are any.
+      def show_children( buf )
         return unless @children
 
-        puts
-        puts CHILDREN
+        buf << "\n#{CHILDREN}\n"
         @children.each do |line|
-          puts TAB + line
+          buf << "#{TAB}#{line}\n"
         end
       end
 
       #
-      # Show the message lines, if there are any.
-      def show_messages
+      # Append the message lines, if there are any.
+      def show_messages( buf )
         return unless @messages
 
-        puts
-        puts MESSAGES
+        buf << "\n#{MESSAGES}\n"
         @messages.each do |line|
-          puts TAB + line
+          buf << "#{TAB}#{line}\n"
         end
       end
 
       #
-      # Show the result, if there is one.
-      def show_result
+      # Append the result, if there is one.
+      def show_result( buf )
         return unless @result
 
-        puts
-        puts RESULT
-        puts @result
+        buf << "\n#{RESULT}\n#{@result}\n"
       end
 
       #
-      # Show the error lines, if there are any.
-      def show_errors
+      # Append the error lines, if there are any.
+      def show_errors( buf )
         return unless @errors
 
-        puts
-        puts ERRORS
+        buf << "\n#{ERRORS}\n"
         @errors.each do |line|
-          puts TAB + line
+          buf << "#{TAB}#{line}\n"
         end
       end
 
       #
-      # Show the example code, if there is any.
-      def show_examples
+      # Append the example code, if there is any.
+      def show_examples( buf )
         return unless @examples
 
-        puts
-        puts EXAMPLE_CODE
-        puts @examples
+        buf << "\n#{EXAMPLE_CODE}\n#{@examples}\n"
       end
 
       #
-      # Show the notes, if there are any.
-      def show_notes
+      # Append the notes, if there are any.
+      def show_notes( buf )
         return unless @notes
 
-        puts
-        puts NOTES
-        puts @notes
+        buf << "\n#{NOTES}\n#{@notes}\n"
       end
 
     end
