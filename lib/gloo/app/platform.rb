@@ -15,6 +15,7 @@ module Gloo
       RETURN = "\n".freeze
       DEFAULT_LINES = 24
       DEFAULT_COLS = 80
+      PAGER_CMD = 'less -R -F -X'.freeze
 
       attr_reader :prompt, :table
 
@@ -31,6 +32,22 @@ module Gloo
       #
       def show( msg )
         puts msg
+      end
+
+      #
+      # Show a message in a pager (less), for long content.
+      # Falls back to a plain puts when there is no real terminal
+      # to page in (piped output, captured test output, etc) or
+      # when less isn't available on the system.
+      #
+      def page( msg )
+        return show( msg ) unless $stdout.tty?
+
+        IO.popen( PAGER_CMD, 'w' ) { |less| less.puts msg }
+      rescue Errno::ENOENT
+        show( msg )
+      rescue Errno::EPIPE
+        # The user quit the pager early. Nothing more to do.
       end
 
       #

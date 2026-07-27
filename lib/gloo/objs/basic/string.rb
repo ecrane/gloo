@@ -81,7 +81,8 @@ module Gloo
             'gen_base64 ({len}) — Set the value of the string to a newly generated, random base64 string. The {len} parameter is optional; the length is 12 if not specified. This message changes the value of the string.',
             'trim — Strip whitespace from the beginning and end of the string. This message changes the value of the string. It will have the trimmed string.',
             'sub ({from}, {to}) — Substitute the first occurrence of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
-            'gsub ({from}, {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.'
+            'gsub ({from}, {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
+            'page — Show the value in a pager (less), for viewing long content a screen at a time.'
           ],
           :examples => <<~EXAMPLES.strip
             s [can] :

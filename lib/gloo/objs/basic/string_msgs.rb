@@ -335,6 +335,15 @@ module Gloo
         return s
       end
 
+      #
+      # Show the value in a pager, for long content.
+      #
+      def msg_page
+        return unless value
+
+        @engine.platform.page( value )
+      end
+
     end
   end
 end

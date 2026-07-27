@@ -149,6 +149,15 @@ class StringTest < BaseEngineTest
     assert_equal 'test', @engine.heap.it.value
   end
 
+  def test_page_msg
+    o = Gloo::Objs::String.new @engine
+    o.set_value 'test'
+    out, _err = capture_io do
+      o.msg_page
+    end
+    assert_match 'test', out
+  end
+
   def test_string_encoding_base64
     orig_value = 'Many hands make light work.'
     o = Gloo::Objs::String.new @engine
