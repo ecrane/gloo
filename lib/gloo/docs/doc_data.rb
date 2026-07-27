@@ -42,16 +42,16 @@ module Gloo
       # Render the documentation as a single string.
       def render
         buf = +''
-        show_name buf
-        show_description buf
-        show_syntax buf
-        show_parameters buf
-        show_children buf
-        show_messages buf
-        show_result buf
-        show_errors buf
-        show_examples buf
-        show_notes buf
+        add_name buf
+        add_description buf
+        add_syntax buf
+        add_parameters buf
+        add_children buf
+        add_messages buf
+        add_result buf
+        add_errors buf
+        add_examples buf
+        add_notes buf
         buf << "\n"
         return buf
       end
@@ -66,7 +66,7 @@ module Gloo
 
       #
       # Append the name and shortcut, if there is a name.
-      def show_name( buf )
+      def add_name( buf )
         return unless @name
 
         buf << "\n#{NAME}\n#{@name.white}\n"
@@ -75,7 +75,7 @@ module Gloo
 
       #
       # Append the description, if there is one.
-      def show_description( buf )
+      def add_description( buf )
         return unless @description
 
         buf << "\n#{DESCRIPTION}\n#{@description.white}\n"
@@ -83,7 +83,7 @@ module Gloo
 
       #
       # Append the syntax lines, if there are any.
-      def show_syntax( buf )
+      def add_syntax( buf )
         return unless @syntax
 
         buf << "\n#{SYNTAX}\n"
@@ -94,7 +94,7 @@ module Gloo
 
       #
       # Append the parameter lines, if there are any.
-      def show_parameters( buf )
+      def add_parameters( buf )
         return unless @parameters
 
         buf << "\n#{PARAMETERS}\n"
@@ -105,7 +105,7 @@ module Gloo
 
       #
       # Append the child lines, if there are any.
-      def show_children( buf )
+      def add_children( buf )
         return unless @children
 
         buf << "\n#{CHILDREN}\n"
@@ -116,7 +116,7 @@ module Gloo
 
       #
       # Append the message lines, if there are any.
-      def show_messages( buf )
+      def add_messages( buf )
         return unless @messages
 
         buf << "\n#{MESSAGES}\n"
@@ -127,7 +127,7 @@ module Gloo
 
       #
       # Append the result, if there is one.
-      def show_result( buf )
+      def add_result( buf )
         return unless @result
 
         buf << "\n#{RESULT}\n#{@result}\n"
@@ -135,7 +135,7 @@ module Gloo
 
       #
       # Append the error lines, if there are any.
-      def show_errors( buf )
+      def add_errors( buf )
         return unless @errors
 
         buf << "\n#{ERRORS}\n"
@@ -146,7 +146,7 @@ module Gloo
 
       #
       # Append the example code, if there is any.
-      def show_examples( buf )
+      def add_examples( buf )
         return unless @examples
 
         buf << "\n#{EXAMPLE_CODE}\n#{@examples}\n"
@@ -154,7 +154,7 @@ module Gloo
 
       #
       # Append the notes, if there are any.
-      def show_notes( buf )
+      def add_notes( buf )
         return unless @notes
 
         buf << "\n#{NOTES}\n#{@notes}\n"
