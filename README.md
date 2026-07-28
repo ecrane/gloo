@@ -21,4 +21,4 @@ Run gloo:
 
 See documentation here:
 
- - [Gettin Started with Gloo](docs/getting_started.md)
+ - [Getting Started with Gloo](docs/getting_started.md)
