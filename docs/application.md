@@ -124,21 +124,29 @@ tail -f ~/gloo/logs/error.log
 
 #### Inline Reference
 
-Gloo has a built-in `help` verb (shortcut `?`) that shows in-app help:
+Gloo has a built-in `help` verb (shortcut `?`) that enters an interactive help shell:
 
 ```gloo
-help {optional help topic}
+help
 ```
 
-- `optional help topic`
-    - `o` — objects
-    - `s` — settings
-    - `v` — verbs
+From the `help>` prompt, look up verbs, object types, settings, extensions, and libraries, or get detailed help for a specific verb or object:
+
+- `verbs` — list all verbs
+- `objects` — list all object types
+- `settings` — show application settings
+- `extensions` — list loaded extensions
+- `libraries` — list loaded libraries
+- `verb {name}` — detailed help for one verb (tab-completable)
+- `object {name}` — detailed help for one object type (tab-completable)
+- `quit` — leave the help shell
 
 ```gloo
 > help
-> ? o
-> ? v
+help> verbs
+help> verb put
+help> object container
+help> quit
 ```
 
 #### Gloo Doc Server
