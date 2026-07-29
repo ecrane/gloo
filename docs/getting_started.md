@@ -8,13 +8,13 @@
 
 Gloo requires Ruby to run.
 
-If you don't have Ruby installed, you can download it from here: [http://www.ruby-lang.org/en/downloads/](http://www.ruby-lang.org/en/downloads/)
+If you don't have Ruby installed, you can download it from here: http://www.ruby-lang.org/en/downloads/
 
 If you do not have MySQL or Postgres installed, find and follow the online instructions to install them.
 
 ### Installation
 
-Gloo is distributed as a [Ruby gem](https://rubygems.org/gems/gloo). Once you have Ruby installed, you can install Gloo by running the following command:
+Gloo is distributed as a Ruby gem (https://rubygems.org/gems/gloo). Once you have Ruby installed, you can install Gloo by running the following command:
 
 ```shell
 > gem install gloo
@@ -22,7 +22,7 @@ Gloo is distributed as a [Ruby gem](https://rubygems.org/gems/gloo). Once you ha
 
 ### Configuration
 
-See [Application Configuration](configuration.md) for details on how to configure Gloo.
+See Application Configuration for details on how to configure Gloo.
 
 ### Running Gloo
 
@@ -106,4 +106,4 @@ Interaction with objects is done by sending messages to them.
 
 ### Source Code
 
-Gloo source code is in [GitHub](https://github.com/ecrane/gloo), although the repository is currently private. It might be made public in the future if there is interest or need.
+Gloo source code is in GitHub (https://github.com/ecrane/gloo), although the repository is currently private. It might be made public in the future if there is interest or need.

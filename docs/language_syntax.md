@@ -27,7 +27,7 @@ colors [can] :
     show "green" (green)
 ```
 
-See also: [Show](show.md).
+See also: Show.
 
 ---
 
@@ -63,7 +63,7 @@ But, as mentioned, the next command will clear out the last error. If you need t
 > put error into err
 ```
 
-See also: [Pathname](#pathname).
+See also: Pathname.
 
 ---
 
@@ -135,7 +135,7 @@ error_data [can] :
   backtrace [string] :
 ```
 
-See also: [Load](load.md), [Reload](reload.md), [Unload](unload.md), [Save](save.md), [Quit](quit.md).
+See also: Load, Reload, Unload, Save, Quit.
 
 ---
 
@@ -197,7 +197,7 @@ gloo.platform_linux?    # Is the platform Linux?
 gloo.platform_mac?      # Is the platform Mac?
 ```
 
-See also: [Pathname](#pathname). The file-system subset of these objects is also referenced in [Application > The Gloo Home Directory](application.md#the-gloo-home-directory).
+See also: Pathname. The file-system subset of these objects is also referenced in Application > The Gloo Home Directory.
 
 ---
 
@@ -229,7 +229,7 @@ A single use of `^` means: refer to an object at the same level as the running s
 
 Use of two `^^` here references means to go up a level, and so forth.
 
-See also: [Pathname](#pathname).
+See also: Pathname.
 
 ---
 
@@ -253,13 +253,13 @@ example [can] :
 
 Running this script will show `7` twice. The first time will be the result of the addition. The second time will be showing the result object.
 
-See also: [Pathname](#pathname).
+See also: Pathname.
 
 ---
 
 ### Operators
 
-Operators have their own dedicated page — see [Operators](operators.md).
+Operators have their own dedicated page — see the Operators page.
 
 ---
 
@@ -289,10 +289,10 @@ Full pathnames can be used when context has been set.
 
 The following are also exceptional pathname cases:
 
-- [Here](#here)
-- [It](#it)
-- [Errors](#errors)
-- [Gloo System Objects](#gloo-system-objects)
+- Here
+- It
+- Errors
+- Gloo System Objects
 
 Here is an example of objects and a pathname reference to an object within the hierarchy:
 
@@ -306,4 +306,4 @@ a [can] :
 on_load [script] : show a.b.c
 ```
 
-See also: [Context](context.md), [Object Naming](language_objects.md#object-naming).
+See also: Context, Object Naming.

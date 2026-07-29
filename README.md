@@ -21,4 +21,13 @@ Run gloo:
 
 See documentation here:
 
- - [Getting Started with Gloo](docs/getting_started.md)
+ - [Getting Started](docs/getting_started.md)
+ - [Application](docs/application.md)
+ - [Language, Objects](docs/language_objects.md)
+ - [Language, Syntax](docs/language_syntax.md)
+ - [Language, Scripting](docs/language_scripting.md)
+ - [Iterators](docs/iterators.md)
+ - [Operators](docs/operators.md)
+ - [Objects](docs/objects.md)
+ - [Verbs](docs/verbs.md)
+ - [Plugins](docs/plugins.md)

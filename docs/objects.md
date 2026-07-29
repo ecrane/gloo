@@ -2,7 +2,7 @@
 
 Everything in gloo is an object. Strings, numbers, containers, scripts, functions, dates — even the folder-like structures that hold your code — are all objects, and they're all accessed and manipulated the same way: by sending them messages.
 
-Gloo ships with a large set of built-in object types, and core libraries and extensions can add more. This page doesn't try to cover them all — it walks through three common ones to get a feel for how objects work. For the complete list of object types, and every message each one supports, use the in-app help: enter `help` (or `?`), then `objects` to list them all, or `object {name}` for detail on one (see [Application, Help](application.md#help)).
+Gloo ships with a large set of built-in object types, and core libraries and extensions can add more. This page doesn't try to cover them all — it walks through three common ones to get a feel for how objects work. For the complete list of object types, and every message each one supports, use the in-app help: enter `help` (or `?`), then `objects` to list them all, or `object {name}` for detail on one (see Application, Help).
 
 ### String
 

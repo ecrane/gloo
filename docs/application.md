@@ -2,7 +2,7 @@
 
 ### The Gloo Home Directory
 
-Gloo keeps its configuration, projects, and logs under a per-user home directory. This is exposed at runtime through a set of [gloo system objects](https://github.com/ecrane/gloo) (`gloo.gloo_home`, and friends):
+Gloo keeps its configuration, projects, and logs under a per-user home directory. This is exposed at runtime through a set of gloo system objects (see Language, Syntax) (`gloo.gloo_home`, and friends):
 
 - `gloo.gloo_home` — the gloo home directory
 - `gloo.gloo_config` — the configuration directory (see Configuration, below)
@@ -33,7 +33,7 @@ When specifying a file there are a couple ways to reference the gloo file to ope
 - By Project
     - Use the path within the project folder.
     - Do not include the `.gloo` or other file extension.
-    - The location of the project folder is part of the [configuration](configuration.md).
+    - The location of the project folder is part of the configuration.
     - For example:
         ```
         gloo my_project/file.gloo

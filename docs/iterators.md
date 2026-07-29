@@ -6,11 +6,11 @@ Perform an action for each item in a collection.
 
 There are several variations on this object type. They are:
 
-- each [child](#each-child) object in a container
-- each [directory](#each-directory) in a folder
-- each [file](#each-file) in a folder
-- each [line](#each-line) in a block of text (string)
-- each [word](#each-word) in a string
+- each child object in a container
+- each directory in a folder
+- each file in a folder
+- each line in a block of text (string)
+- each word in a string
 
 The general pattern is that there are three children:
 
@@ -24,7 +24,7 @@ Messages:
 
 See examples in the specific variations, below.
 
-See also: [Object Base](base.md).
+See also: Object Base.
 
 ---
 
@@ -34,11 +34,11 @@ Iterate for each child in a container.
 
 Children:
 
-- `child` ([alias](alias.md))
+- `child` (alias)
     - Alias to the child instance.
-- `in` ([container](container.md))
+- `in` (container)
     - The collection of objects we will iterate over.
-- `do` ([script](script.md))
+- `do` (script)
     - The action we want to perform for each child in the container.
 
 #### Group By
@@ -49,11 +49,11 @@ Whenever the `group_by` value changes, the `on_group_start` and `on_group_end` s
 
 The group by feature adds the following children:
 
-- `group_by` ([string](string.md))
+- `group_by` (string)
     - The name of the child object we want to group by. This will be a property of the object instance of the `child` container.
-- `on_group_start` ([script](script.md))
+- `on_group_start` (script)
     - The action we want to perform when the `group_by` value changes. This script will be run before the `do` script for the first instance of the child with the new `group_by` value.
-- `on_group_end` ([script](script.md))
+- `on_group_end` (script)
     - The action we want to perform when the `group_by` value changes. This script will be run after the `do` script for the last instance of the `group_by` value.
 
 Messages:
@@ -84,7 +84,7 @@ each_child [can] :
     tell each_child.for to run
 ```
 
-See also: [Object Base](base.md), [Each](#each), [Each File](#each-file), [Each Line](#each-line), [Each Word](#each-word).
+See also: Object Base, Each, Each File, Each Line, Each Word.
 
 ---
 
@@ -94,11 +94,11 @@ Iterate for each directory in a folder (directory).
 
 Children:
 
-- `dir` ([file](file.md) — a directory)
+- `dir` (file — a directory)
     - The directory instance.
-- `in` ([file](file.md) — a directory)
+- `in` (file — a directory)
     - The folder (directory) we will look in for directories.
-- `do` ([script](script.md))
+- `do` (script)
     - The action we want to perform for each directory in the folder.
 
 Messages:
@@ -123,7 +123,7 @@ each_dir [can] :
     tell each_dir.for to run
 ```
 
-See also: [Each](#each), [Each File](#each-file).
+See also: Each, Each File.
 
 ---
 
@@ -133,13 +133,13 @@ Iterate for each file in a folder (directory).
 
 Children:
 
-- `file` ([file](file.md))
+- `file` (file)
     - The file instance.
-- `in` ([file](file.md))
+- `in` (file)
     - The folder (directory) we will look in for files.
-- `do` ([script](script.md))
+- `do` (script)
     - The action we want to perform for each file in the folder.
-- `ext` ([string](string.md))
+- `ext` (string)
     - Optional file extension. Limit to files of this kind.
 
 Messages:
@@ -165,7 +165,7 @@ each_file [can] :
     tell each_file.for to run
 ```
 
-See also: [Object Base](base.md), [Each](#each), [Each Line](#each-line), [Each Word](#each-word), [Each Child](#each-child), [Each Directory](#each-directory).
+See also: Object Base, Each, Each Line, Each Word, Each Child, Each Directory.
 
 ---
 
@@ -175,11 +175,11 @@ Iterate for each line in a text block (string).
 
 Children:
 
-- `line` ([string](string.md))
+- `line` (string)
     - The single line of text.
-- `in` ([text](text.md))
+- `in` (text)
     - The block of text or string.
-- `do` ([script](script.md))
+- `do` (script)
     - The action we want to perform for each line in the text.
 
 Messages:
@@ -212,7 +212,7 @@ each_line [can] :
     tell each_line.for to run
 ```
 
-See also: [Object Base](base.md), [Each](#each), [Each Word](#each-word), [Each Child](#each-child), [Each File](#each-file).
+See also: Object Base, Each, Each Word, Each Child, Each File.
 
 ---
 
@@ -222,11 +222,11 @@ Iterate for each word in a string.
 
 Children:
 
-- `word` ([string](string.md))
+- `word` (string)
     - The word (string).
-- `in` ([string](string.md))
+- `in` (string)
     - The source string.
-- `do` ([script](script.md))
+- `do` (script)
     - The action we want to perform for each word in the string.
 
 Messages:
@@ -251,7 +251,7 @@ each_word [can] :
     tell each_word.for to run
 ```
 
-See also: [Object Base](base.md), [Each](#each), [Each Child](#each-child), [Each File](#each-file), [Each Line](#each-line).
+See also: Object Base, Each, Each Child, Each File, Each Line.
 
 ---
 
@@ -261,13 +261,13 @@ Run a script a given number of times.
 
 Children:
 
-- `times` ([integer](integer.md))
+- `times` (integer)
     - Default: `0`
     - The number of times to run the script.
-- `index` ([integer](integer.md))
+- `index` (integer)
     - Default: `0`
     - The current iteration when the repeat loop is running.
-- `do` ([script](script.md))
+- `do` (script)
     - The action we want to perform for iteration of the loop.
 
 Messages:
@@ -293,4 +293,4 @@ repeat [can] :
     do [script] : show repeat.y.index
 ```
 
-See also: [Object Base](base.md).
+See also: Object Base.

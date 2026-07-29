@@ -30,7 +30,7 @@ naming [container] :
   1 [string] : One
 ```
 
-See also: [Pathname](pathname.md).
+See also: Pathname.
 
 ---
 
@@ -92,13 +92,13 @@ The following rules apply to literal values:
       show ^.b
 ```
 
-See also: [Put](put.md), [Show](show.md), [String](string.md), [Boolean](boolean.md), [Integer](integer.md), [Decimal](decimal.md), [Value Conversion](#value-conversion).
+See also: Put, Show, String, Boolean, Integer, Decimal, Value Conversion.
 
 ---
 
 ### Value Conversion
 
-When [putting](put.md) an object or [literal value](#literals) into another object, gloo will attempt to convert the value to the target type.
+When putting an object or literal value into another object, gloo will attempt to convert the value to the target type.
 
 Here are some of the value conversions that gloo will attempt:
 
@@ -177,4 +177,4 @@ Here are some of the value conversions that gloo will attempt:
       show ^.dt
 ```
 
-See also: [Literals](#literals).
+See also: Literals.

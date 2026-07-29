@@ -53,4 +53,4 @@ And some examples of comparison operator usage:
 > put x != y into my_bool
 ```
 
-See also: [Put](put.md), [Show](show.md).
+See also: Put, Show.

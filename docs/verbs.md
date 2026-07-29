@@ -2,9 +2,9 @@
 
 Verbs are the commands that make up a gloo script — `put`, `show`, `run`, `tell`, and 24 others. Every statement in gloo starts with a verb.
 
-Verbs aren't just for scripts, though. They're also the interactive language of the gloo application itself: run `gloo` in CLI mode (see [Application, Running Gloo](application.md#running-gloo)) and you can type these same verbs directly at the prompt, one at a time, in a REPL.
+Verbs aren't just for scripts, though. They're also the interactive language of the gloo application itself: run `gloo` in CLI mode (see Application, Running Gloo) and you can type these same verbs directly at the prompt, one at a time, in a REPL.
 
-This page walks through three of the most commonly used verbs to get a feel for how they work together. For the complete list of verbs, their full syntax, and every error they can raise, use the in-app help: enter `help` (or `?`), then `verbs` to list them all, or `verb {name}` for detail on one (see [Application, Help](application.md#help)).
+This page walks through three of the most commonly used verbs to get a feel for how they work together. For the complete list of verbs, their full syntax, and every error they can raise, use the in-app help: enter `help` (or `?`), then `verbs` to list them all, or `verb {name}` for detail on one (see Application, Help).
 
 ### Run
 
@@ -23,7 +23,7 @@ run {path.to.object}
 
 ### Tell
 
-`tell` sends a message to an object, asking it to do something. Where `run` executes a runnable object, `tell` is the general-purpose way to invoke any message an object supports (`up`, `count`, `inc`, `randomize` — see [Objects](objects.md)).
+`tell` sends a message to an object, asking it to do something. Where `run` executes a runnable object, `tell` is the general-purpose way to invoke any message an object supports (`up`, `count`, `inc`, `randomize` — see Objects).
 
 ```gloo
 tell {path.to.object} to {message}
@@ -51,7 +51,7 @@ put {expression} into {dst.path}
 > put TRUE into flag
 ```
 
-`it` also picks up the result of the evaluation, same as with other verbs — see [It](language_syntax.md#it).
+`it` also picks up the result of the evaluation, same as with other verbs — see It.
 
 ---
 
