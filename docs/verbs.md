@@ -55,4 +55,4 @@ put {expression} into {dst.path}
 
 ---
 
-`run`, `tell`, and `put` cover a lot of ground on their own, but there are 25 more verbs — `show`, `if`, `create`, `each`, `check`, and so on — all documented in-app. Enter `help` (or `?`), then `verbs` to browse them.
+`run`, `tell`, and `put` cover a lot of ground on their own, but there are 25 more verbs — `show`, `if`, `create`, `each`, `check`, and so on — all documented in-app. Enter `help` (or `?`), then `verbs` to browse them. (This page itself is also viewable in-app: `help> doc verbs`.)

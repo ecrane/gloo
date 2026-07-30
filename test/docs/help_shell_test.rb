@@ -81,6 +81,38 @@ class HelpShellTest < BaseEngineTest
     assert_match( /DESCRIPTION/, out )
   end
 
+  def test_docs_lists_doc_pages
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'docs' ] ) }
+    assert_match( /getting_started/, out )
+    assert_match( /operators/, out )
+  end
+
+  def test_doc_detail_tab_completion_lists_all_doc_pages
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    root = shell.instance_variable_get( :@root )
+    ctx = shell.instance_variable_get( :@context )
+    result = shell.traverse( root, [ 'doc' ] )
+    names = result[ :node ].children( ctx ).map( &:name )
+    assert_includes names, 'getting_started'
+    assert_includes names, 'iterators'
+  end
+
+  def test_doc_detail_for_a_documented_page
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( %w[doc getting_started] ) }
+    assert_match( /Getting Started/, out )
+  end
+
+  def test_doc_detail_for_an_unknown_page
+    # Not reachable via execute_once/traverse - dynamic child nodes only
+    # ever exist for real page names - so this exercises the guard clause
+    # directly, same as it would matter if a page were deleted mid-session.
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.send( :cmd_show_doc_detail, 'nope', nil ) }
+    assert_match( /No documentation available yet for 'nope'/, out )
+  end
+
   def test_unknown_command_at_the_root
     shell = Gloo::Docs::HelpShell.new( @engine )
     out, = capture_io { shell.execute_once( [ 'nope' ] ) }

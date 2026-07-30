@@ -68,4 +68,4 @@ i [can] :
 
 ---
 
-These three barely scratch the surface — decimals, booleans, dates, files, functions, and many more object types are all documented in-app. Enter `help` (or `?`), then `objects` to browse them.
+These three barely scratch the surface — decimals, booleans, dates, files, functions, and many more object types are all documented in-app. Enter `help` (or `?`), then `objects` to browse them. (This page itself is also viewable in-app: `help> doc objects`.)

@@ -15,6 +15,9 @@ module Gloo
 
       VERB_NAMES = :verb_names
       OBJECT_NAMES = :object_names
+      DOC_NAMES = :doc_names
+
+      DOCS_DIR = File.expand_path( '../../../docs', __dir__ ).freeze
 
       #
       # Initialize the help shell for the given engine.
@@ -92,6 +95,18 @@ module Gloo
         @engine.log.show "#{data}\n"
       end
 
+      #
+      # List all narrative doc pages (dev/gloo/docs/*.md).
+      #
+      def cmd_show_docs( _obj, _context )
+        data = "\n"
+        data << " Docs\n".blue
+        doc_page_names.each do |name|
+          data << "   #{name.white}\n"
+        end
+        @engine.log.show "#{data}\n"
+      end
+
       # ---------------------------------------------------------------------
       #    Detail commands - verb {name}, object {name}
       # ---------------------------------------------------------------------
@@ -116,6 +131,16 @@ module Gloo
         @engine.platform.page( Gloo::Docs::DocData.new( obj_class.doc_data ).render )
       end
 
+      #
+      # Show one narrative doc page (dev/gloo/docs/{name}.md).
+      #
+      def cmd_show_doc_detail( obj, _context )
+        path = File.join( DOCS_DIR, "#{obj}.md" )
+        return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless File.exist?( path )
+
+        @engine.platform.page( render_markdown( File.read( path ) ) )
+      end
+
       # ---------------------------------------------------------------------
       #    Private
       # ---------------------------------------------------------------------
@@ -123,11 +148,42 @@ module Gloo
       private
 
       #
-      # Snapshot the verb and object type names for tab-completion.
+      # Snapshot the verb, object type, and doc page names for tab-completion.
       #
       def populate_context
         set_context( VERB_NAMES, @engine.dictionary.get_verbs.map( &:keyword ).sort )
         set_context( OBJECT_NAMES, @engine.dictionary.get_obj_types.map( &:typename ).sort )
+        set_context( DOC_NAMES, doc_page_names )
+      end
+
+      #
+      # List the narrative doc page names (dev/gloo/docs/*.md, without extension).
+      #
+      def doc_page_names
+        return Dir.glob( File.join( DOCS_DIR, '*.md' ) ).map { |f| File.basename( f, '.md' ) }.sort
+      end
+
+      #
+      # Lightly format markdown for terminal display: color headings and
+      # code fences. Not a full markdown renderer - just enough that the
+      # raw `#`/```` ``` ```` syntax doesn't have to be read literally.
+      #
+      def render_markdown( text )
+        in_code = false
+        lines = text.split( "\n" ).map do |line|
+          if line.start_with?( '```' )
+            in_code = !in_code
+            next line.light_black
+          end
+          next line.light_black if in_code
+          next line.sub( /^#\s*/, '' ).blue.bold if line.start_with?( '# ' )
+          next line.sub( /^##\s*/, '' ).cyan.bold if line.start_with?( '## ' )
+          next line.cyan if line.start_with?( '### ' ) || line.start_with?( '#### ' )
+          next line.light_black if line == '---'
+
+          line
+        end
+        return lines.join( "\n" )
       end
 
       #
@@ -145,11 +201,16 @@ module Gloo
         add_command_node(
           name: 'libraries', description: 'List loaded libraries', method: 'cmd_show_libraries' )
         add_command_node(
+          name: 'docs', description: 'List all narrative doc pages', method: 'cmd_show_docs' )
+        add_command_node(
           name: 'verb', description: 'Show detailed help for a verb',
           dynamic: true, source: VERB_NAMES, child_method: 'cmd_show_verb_detail' )
         add_command_node(
           name: 'object', description: 'Show detailed help for an object type',
           dynamic: true, source: OBJECT_NAMES, child_method: 'cmd_show_object_detail' )
+        add_command_node(
+          name: 'doc', description: 'Show one narrative doc page',
+          dynamic: true, source: DOC_NAMES, child_method: 'cmd_show_doc_detail' )
       end
 
     end

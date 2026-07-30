@@ -130,15 +130,17 @@ Gloo has a built-in `help` verb (shortcut `?`) that enters an interactive help s
 help
 ```
 
-From the `help>` prompt, look up verbs, object types, settings, extensions, and libraries, or get detailed help for a specific verb or object:
+From the `help>` prompt, look up verbs, object types, settings, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, or doc page:
 
 - `verbs` — list all verbs
 - `objects` — list all object types
 - `settings` — show application settings
 - `extensions` — list loaded extensions
 - `libraries` — list loaded libraries
+- `docs` — list all narrative doc pages (this page and its siblings)
 - `verb {name}` — detailed help for one verb (tab-completable)
 - `object {name}` — detailed help for one object type (tab-completable)
+- `doc {name}` — show one narrative doc page (tab-completable)
 - `quit` — leave the help shell
 
 ```gloo
@@ -146,9 +148,11 @@ From the `help>` prompt, look up verbs, object types, settings, extensions, and 
 help> verbs
 help> verb put
 help> object container
+help> docs
+help> doc getting_started
 help> quit
 ```
 
-#### Gloo Doc Server
+#### Narrative Docs in the Shell
 
-A planned `gloo --doc` mode will start a local doc server, aggregating this narrative reference with each installed core library's own documentation — a full local replacement for the old hosted doc site. Not yet implemented.
+This page and its nine siblings (`docs/*.md` in the interpreter's source) are the same files shown by `help> doc {name}` — there's no separate doc server or web mode. A `gloo --doc` local web server was considered and put off in favor of this: one system, no separate build/serve step.

@@ -12,8 +12,8 @@ module Gloo
       KEYWORD_SHORT = '?'.freeze
 
       BANNER = "Entering the gloo help shell. Type 'quit' to exit.\n" \
-        "Try: verbs, objects, settings, extensions, libraries, " \
-        "verb {name}, object {name}\n".freeze
+        "Try: verbs, objects, settings, extensions, libraries, docs, " \
+        "verb {name}, object {name}, doc {name}\n".freeze
 
       #
       # Run the verb.
@@ -50,18 +50,21 @@ module Gloo
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
           :description => 'Enter the interactive help shell. From there, ' \
-            'look up verbs, object types, settings, extensions and ' \
-            'libraries, or get detailed help for a specific verb or object.',
+            'look up verbs, object types, settings, extensions, libraries, ' \
+            'and narrative doc pages, or get detailed help for a specific ' \
+            'verb, object, or doc page.',
           :syntax => [ 'help' ],
           :result => "Enters the help shell, prompt \"help> \". Commands: " \
-            'verbs, objects, settings, extensions, libraries (lists), ' \
-            'verb {name}, object {name} (detail for one, tab-completable). ' \
-            "Type 'quit' to leave the shell.",
+            'verbs, objects, settings, extensions, libraries, docs (lists), ' \
+            'verb {name}, object {name}, doc {name} (detail for one, ' \
+            "tab-completable). Type 'quit' to leave the shell.",
           :examples => <<~EXAMPLES.strip
             > help
             help> verbs
             help> verb put
             help> object container
+            help> docs
+            help> doc getting_started
             help> quit
           EXAMPLES
         }
