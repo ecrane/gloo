@@ -27,6 +27,14 @@ gloo/
 └── test.gloo/       Gloo-language integration tests
 ```
 
+## Documentation
+
+This project is the authoritative source for gloo language documentation — not the `vaults/gloo` Obsidian vault, whose old `doc/` folder was renamed to `doc_deprecated/` and retired.
+
+- **Narrative reference** — `docs/*.md`, ten flat files: `getting_started.md`, `application.md`, `language_objects.md`, `language_syntax.md`, `language_scripting.md`, `operators.md`, `iterators.md`, `objects.md`, `verbs.md`, `plugins.md`. Linked from the root `README.md`. Convention: no markdown link syntax between pages (plain-text pointers instead, e.g. "see Put" not `[Put](put.md)`) since these are read both on GitHub and in a terminal; `---` separates sections that came from different source material.
+- **Verb/object reference** — each verb (`lib/gloo/verbs/*.rb`) and object type (`lib/gloo/objs/**/*.rb`) class defines `self.doc_data` (name, shortcut, description, syntax, parameters, result, errors, examples, notes — see `lib/gloo/docs/doc_data.rb`), rendered by the in-app interactive help shell (`help`/`?`, see `lib/gloo/docs/help_shell.rb`). When adding or changing a verb or object type, add/update its `doc_data` too.
+- Core-lib gems (`gloo_core_libraries`) follow the same `doc_data` pattern for their own verbs/objects; a narrative `doc/` folder per gem is planned but not yet built.
+
 ## Test Suites
 
 ### Ruby unit tests — `test/`
