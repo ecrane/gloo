@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'tmpdir'
 
 class HelpShellTest < BaseEngineTest
 
@@ -45,6 +46,27 @@ class HelpShellTest < BaseEngineTest
     capture_io { shell.execute_once( [ 'extensions' ] ) }
     capture_io { shell.execute_once( [ 'libraries' ] ) }
     refute @engine.error?
+  end
+
+  def test_extensions_explains_how_to_load_one
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'extensions' ] ) }
+    assert_match( /load ext \{name\}/, out )
+    assert_match( /Only loaded extensions are listed below/, out )
+  end
+
+  def test_extensions_shows_none_loaded_when_empty
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'extensions' ] ) }
+    assert_match( /\(none loaded\)/, out )
+  end
+
+  def test_extensions_lists_a_loaded_extension
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    @engine.ext_manager.loaded_extensions['fake'] = 'fake_ext'
+    out, = capture_io { shell.execute_once( [ 'extensions' ] ) }
+    assert_match( /fake/, out )
+    refute_match( /\(none loaded\)/, out )
   end
 
   def test_libraries_explains_how_to_load_one
@@ -131,6 +153,48 @@ class HelpShellTest < BaseEngineTest
     # directly, same as it would matter if a page were deleted mid-session.
     shell = Gloo::Docs::HelpShell.new( @engine )
     out, = capture_io { shell.send( :cmd_show_doc_detail, 'nope', nil ) }
+    assert_match( /No documentation available yet for 'nope'/, out )
+  end
+
+  def test_library_detail_tab_completion_lists_only_loaded_libraries
+    @engine.lib_manager.loaded_libraries['fake'] = 'gloo-fake'
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    root = shell.instance_variable_get( :@root )
+    ctx = shell.instance_variable_get( :@context )
+    result = shell.traverse( root, [ 'library' ] )
+    names = result[ :node ].children( ctx ).map( &:name )
+    assert_includes names, 'fake'
+  end
+
+  def test_library_detail_shows_the_readme
+    Dir.mktmpdir do |dir|
+      File.write( File.join( dir, 'README.md' ), "# Fake Lib\n\nHello from the fake library.\n" )
+      fake_spec = Struct.new( :gem_dir ).new( dir )
+
+      @engine.lib_manager.loaded_libraries['fake'] = 'gloo-fake'
+      shell = Gloo::Docs::HelpShell.new( @engine )
+      out = nil
+      Gem::Specification.stub :find_by_name, fake_spec do
+        out, = capture_io { shell.execute_once( %w[library fake] ) }
+      end
+      assert_match( /Fake Lib/, out )
+      assert_match( /Hello from the fake library/, out )
+    end
+  end
+
+  def test_library_detail_for_a_library_with_no_readme
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    @engine.lib_manager.loaded_libraries['fake'] = 'gloo-not-a-real-gem'
+    out, = capture_io { shell.send( :cmd_show_library_detail, 'fake', nil ) }
+    assert_match( /No README found for library 'fake'/, out )
+  end
+
+  def test_library_detail_for_an_unloaded_library
+    # Not reachable via execute_once/traverse - dynamic child nodes only
+    # ever exist for loaded libraries - so this exercises the guard clause
+    # directly, same as it would matter if a library were unloaded mid-session.
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.send( :cmd_show_library_detail, 'nope', nil ) }
     assert_match( /No documentation available yet for 'nope'/, out )
   end
 

@@ -130,17 +130,18 @@ Gloo has a built-in `help` verb (shortcut `?`) that enters an interactive help s
 help
 ```
 
-From the `help>` prompt, look up verbs, object types, settings, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, or doc page:
+From the `help>` prompt, look up verbs, object types, settings, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, doc page, or loaded library:
 
 - `verbs` — list all verbs
 - `objects` — list all object types
 - `settings` — show application settings
-- `extensions` — list loaded extensions
+- `extensions` — list loaded extensions (only loaded extensions are shown; use `load ext {name}` first)
 - `libraries` — list loaded libraries (only loaded libraries are shown; use `load lib {name}` first)
 - `docs` — list all narrative doc pages (this page and its siblings)
 - `verb {name}` — detailed help for one verb (tab-completable)
 - `object {name}` — detailed help for one object type (tab-completable)
 - `doc {name}` — show one narrative doc page (tab-completable)
+- `library {name}` — show a loaded library's README, from the root of its gem (tab-completable, loaded libraries only)
 - `quit` — leave the help shell
 
 ```gloo
@@ -150,6 +151,7 @@ help> verb put
 help> object container
 help> docs
 help> doc getting_started
+help> library db
 help> quit
 ```
 

@@ -17,8 +17,11 @@ module Gloo
       VERB_NAMES = :verb_names
       OBJECT_NAMES = :object_names
       DOC_NAMES = :doc_names
+      LIBRARY_NAMES = :library_names
 
       DOCS_DIR = File.expand_path( '../../../docs', __dir__ ).freeze
+      README_GLOB = 'README*'.freeze
+      NO_README_YET = 'No README found for library'.freeze
 
       #
       # Initialize the help shell for the given engine.
@@ -78,8 +81,16 @@ module Gloo
       def cmd_show_extensions( _obj, _context )
         data = "\n"
         data << " Extensions\n".blue
-        @engine.ext_manager.loaded_extensions.sort.each do |name, _ext|
-          data << "   #{name.white} \n"
+        data << "   Use `load ext {name}` to load a User Extension, \n" \
+          "   then `object {name}` / `verb {name}` here to see what it adds. \n" \
+          "   Only loaded extensions are listed below.\n\n".light_black
+        loaded = @engine.ext_manager.loaded_extensions
+        if loaded.empty?
+          data << "   (none loaded)\n".light_black
+        else
+          loaded.sort.each do |name, _ext|
+            data << "   #{name.white} \n"
+          end
         end
         @engine.log.show "#{data}\n"
       end
@@ -117,7 +128,8 @@ module Gloo
       end
 
       # ---------------------------------------------------------------------
-      #    Detail commands - verb {name}, object {name}
+      #    Detail commands - verb {name}, object {name}, doc {name},
+      #    library {name}
       # ---------------------------------------------------------------------
 
       #
@@ -150,6 +162,21 @@ module Gloo
         page_markdown( File.read( path ) )
       end
 
+      #
+      # Show the README for one loaded core library (from the root of
+      # its installed gem). Only loaded libraries are tab-completable
+      # here - see cmd_show_libraries.
+      #
+      def cmd_show_library_detail( obj, _context )
+        gem_name = @engine.lib_manager.loaded_libraries[ obj ]
+        return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless gem_name
+
+        readme_path = find_readme( gem_name )
+        return @engine.log.show "#{NO_README_YET} '#{obj}' (#{gem_name})." unless readme_path
+
+        page_markdown( File.read( readme_path ) )
+      end
+
       # ---------------------------------------------------------------------
       #    Private
       # ---------------------------------------------------------------------
@@ -167,12 +194,24 @@ module Gloo
       end
 
       #
-      # Snapshot the verb, object type, and doc page names for tab-completion.
+      # Snapshot the verb, object type, doc page, and loaded library
+      # names for tab-completion.
       #
       def populate_context
         set_context( VERB_NAMES, @engine.dictionary.get_verbs.map( &:keyword ).sort )
         set_context( OBJECT_NAMES, @engine.dictionary.get_obj_types.map( &:typename ).sort )
         set_context( DOC_NAMES, doc_page_names )
+        set_context( LIBRARY_NAMES, @engine.lib_manager.loaded_libraries.keys.sort )
+      end
+
+      #
+      # Find the README file at the root of an installed gem, if any.
+      #
+      def find_readme( gem_name )
+        spec = Gem::Specification.find_by_name( gem_name )
+        return Dir.glob( File.join( spec.gem_dir, README_GLOB ) ).first
+      rescue Gem::MissingSpecError
+        return nil
       end
 
       #
@@ -207,6 +246,9 @@ module Gloo
         add_command_node(
           name: 'doc', description: 'Show one narrative doc page',
           dynamic: true, source: DOC_NAMES, child_method: 'cmd_show_doc_detail' )
+        add_command_node(
+          name: 'library', description: "Show a loaded library's README",
+          dynamic: true, source: LIBRARY_NAMES, child_method: 'cmd_show_library_detail' )
       end
 
     end

@@ -13,7 +13,7 @@ module Gloo
 
       BANNER = "Entering the gloo help shell. Type 'quit' to exit.\n" \
         "Try: verbs, objects, settings, extensions, libraries, docs, " \
-        "verb {name}, object {name}, doc {name}\n".freeze
+        "verb {name}, object {name}, doc {name}, library {name}\n".freeze
 
       #
       # Run the verb.
@@ -52,12 +52,13 @@ module Gloo
           :description => 'Enter the interactive help shell. From there, ' \
             'look up verbs, object types, settings, extensions, libraries, ' \
             'and narrative doc pages, or get detailed help for a specific ' \
-            'verb, object, or doc page.',
+            'verb, object, doc page, or loaded library.',
           :syntax => [ 'help' ],
           :result => "Enters the help shell, prompt \"help> \". Commands: " \
             'verbs, objects, settings, extensions, libraries, docs (lists), ' \
-            'verb {name}, object {name}, doc {name} (detail for one, ' \
-            "tab-completable). Type 'quit' to leave the shell.",
+            'verb {name}, object {name}, doc {name}, library {name} ' \
+            '(detail for one, tab-completable — library {name} shows the ' \
+            "README for a loaded core library). Type 'quit' to leave the shell.",
           :examples => <<~EXAMPLES.strip
             > help
             help> verbs
@@ -65,6 +66,7 @@ module Gloo
             help> object container
             help> docs
             help> doc getting_started
+            help> library db
             help> quit
           EXAMPLES
         }
