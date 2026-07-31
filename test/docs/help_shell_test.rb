@@ -47,6 +47,27 @@ class HelpShellTest < BaseEngineTest
     refute @engine.error?
   end
 
+  def test_libraries_explains_how_to_load_one
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'libraries' ] ) }
+    assert_match( /load lib \{name\}/, out )
+    assert_match( /Only loaded libraries are listed below/, out )
+  end
+
+  def test_libraries_shows_none_loaded_when_empty
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'libraries' ] ) }
+    assert_match( /\(none loaded\)/, out )
+  end
+
+  def test_libraries_lists_a_loaded_library
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    @engine.lib_manager.loaded_libraries['fake'] = 'gloo-fake'
+    out, = capture_io { shell.execute_once( [ 'libraries' ] ) }
+    assert_match( /fake/, out )
+    refute_match( /\(none loaded\)/, out )
+  end
+
   def test_verb_detail_for_a_documented_verb
     shell = Gloo::Docs::HelpShell.new( @engine )
     out, = capture_io { shell.execute_once( %w[verb put] ) }

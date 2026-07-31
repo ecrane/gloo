@@ -27,7 +27,7 @@ module Gloo
           next line.sub( /^#\s*/, '' ).blue.bold if line.start_with?( '# ' )
           next line.sub( /^##\s*/, '' ).cyan.bold if line.start_with?( '## ' )
           next line.cyan if line.start_with?( '### ' ) || line.start_with?( '#### ' )
-          next line.light_black if line == '---'
+          next line.light_black if line =~ /\A-{3,}\z/
 
           line
         end

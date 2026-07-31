@@ -136,7 +136,7 @@ From the `help>` prompt, look up verbs, object types, settings, extensions, libr
 - `objects` — list all object types
 - `settings` — show application settings
 - `extensions` — list loaded extensions
-- `libraries` — list loaded libraries
+- `libraries` — list loaded libraries (only loaded libraries are shown; use `load lib {name}` first)
 - `docs` — list all narrative doc pages (this page and its siblings)
 - `verb {name}` — detailed help for one verb (tab-completable)
 - `object {name}` — detailed help for one object type (tab-completable)

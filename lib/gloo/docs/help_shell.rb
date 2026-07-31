@@ -90,8 +90,16 @@ module Gloo
       def cmd_show_libraries( _obj, _context )
         data = "\n"
         data << " Libraries\n".blue
-        @engine.lib_manager.loaded_libraries.sort.each do |name, _lib|
-          data << "   #{name.white} \n"
+        data << "   Use `load lib {name}` to load a core library, \n" \
+          "   then `object {name}` / `verb {name}` here to see what it adds. \n" \
+          "   Only loaded libraries are listed below.\n\n".light_black
+        loaded = @engine.lib_manager.loaded_libraries
+        if loaded.empty?
+          data << "   (none loaded)\n".light_black
+        else
+          loaded.sort.each do |name, _lib|
+            data << "   #{name.white} \n"
+          end
         end
         @engine.log.show "#{data}\n"
       end
@@ -119,8 +127,7 @@ module Gloo
         verb_class = @engine.dictionary.find_verb( obj )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless verb_class.respond_to?( :doc_data )
 
-        md = Gloo::Docs::DocData.new( verb_class.doc_data ).render
-        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( md ) )
+        page_markdown( Gloo::Docs::DocData.new( verb_class.doc_data ).render )
       end
 
       #
@@ -130,8 +137,7 @@ module Gloo
         obj_class = @engine.dictionary.find_obj( obj )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless obj_class.respond_to?( :doc_data )
 
-        md = Gloo::Docs::DocData.new( obj_class.doc_data ).render
-        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( md ) )
+        page_markdown( Gloo::Docs::DocData.new( obj_class.doc_data ).render )
       end
 
       #
@@ -141,7 +147,7 @@ module Gloo
         path = File.join( DOCS_DIR, "#{obj}.md" )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless File.exist?( path )
 
-        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( File.read( path ) ) )
+        page_markdown( File.read( path ) )
       end
 
       # ---------------------------------------------------------------------
@@ -149,6 +155,16 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
+
+      #
+      # Colorize markdown and page it, bracketed with a '---' rule above
+      # and below so the content stands out from surrounding CLI output.
+      #
+      def page_markdown( md )
+        rule = '-' * @engine.platform.cols
+        bracketed = "#{rule}\n#{md.strip}\n#{rule}\n"
+        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( bracketed ) )
+      end
 
       #
       # Snapshot the verb, object type, and doc page names for tab-completion.
