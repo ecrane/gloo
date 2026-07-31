@@ -1,6 +1,6 @@
 # Language, Objects
 
-### Object Naming
+## Object Naming
 
 Object names are single words (no spaces) and conform to the following:
 
@@ -34,13 +34,13 @@ See also: Pathname.
 
 ---
 
-### Keywords
+## Keywords
 
 _TBD — not yet written._
 
 ---
 
-### Literals
+## Literals
 
 Literals are values inline in a script command.
 
@@ -96,7 +96,7 @@ See also: Put, Show, String, Boolean, Integer, Decimal, Value Conversion.
 
 ---
 
-### Value Conversion
+## Value Conversion
 
 When putting an object or literal value into another object, gloo will attempt to convert the value to the target type.
 

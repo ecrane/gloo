@@ -5,6 +5,7 @@
 # Built on Gloo::Shell::Runner (see lib/gloo/shell/).
 #
 require_relative '../shell/runner'
+require_relative 'markdown_renderer'
 
 module Gloo
   module Docs
@@ -118,7 +119,8 @@ module Gloo
         verb_class = @engine.dictionary.find_verb( obj )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless verb_class.respond_to?( :doc_data )
 
-        @engine.platform.page( Gloo::Docs::DocData.new( verb_class.doc_data ).render )
+        md = Gloo::Docs::DocData.new( verb_class.doc_data ).render
+        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( md ) )
       end
 
       #
@@ -128,7 +130,8 @@ module Gloo
         obj_class = @engine.dictionary.find_obj( obj )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless obj_class.respond_to?( :doc_data )
 
-        @engine.platform.page( Gloo::Docs::DocData.new( obj_class.doc_data ).render )
+        md = Gloo::Docs::DocData.new( obj_class.doc_data ).render
+        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( md ) )
       end
 
       #
@@ -138,7 +141,7 @@ module Gloo
         path = File.join( DOCS_DIR, "#{obj}.md" )
         return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless File.exist?( path )
 
-        @engine.platform.page( render_markdown( File.read( path ) ) )
+        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( File.read( path ) ) )
       end
 
       # ---------------------------------------------------------------------
@@ -161,29 +164,6 @@ module Gloo
       #
       def doc_page_names
         return Dir.glob( File.join( DOCS_DIR, '*.md' ) ).map { |f| File.basename( f, '.md' ) }.sort
-      end
-
-      #
-      # Lightly format markdown for terminal display: color headings and
-      # code fences. Not a full markdown renderer - just enough that the
-      # raw `#`/```` ``` ```` syntax doesn't have to be read literally.
-      #
-      def render_markdown( text )
-        in_code = false
-        lines = text.split( "\n" ).map do |line|
-          if line.start_with?( '```' )
-            in_code = !in_code
-            next line.light_black
-          end
-          next line.light_black if in_code
-          next line.sub( /^#\s*/, '' ).blue.bold if line.start_with?( '# ' )
-          next line.sub( /^##\s*/, '' ).cyan.bold if line.start_with?( '## ' )
-          next line.cyan if line.start_with?( '### ' ) || line.start_with?( '#### ' )
-          next line.light_black if line == '---'
-
-          line
-        end
-        return lines.join( "\n" )
       end
 
       #

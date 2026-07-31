@@ -1,6 +1,6 @@
 # Gloo Application
 
-### The Gloo Home Directory
+## The Gloo Home Directory
 
 Gloo keeps its configuration, projects, and logs under a per-user home directory. This is exposed at runtime through a set of gloo system objects (see Language, Syntax) (`gloo.gloo_home`, and friends):
 
@@ -13,7 +13,7 @@ Gloo keeps its configuration, projects, and logs under a per-user home directory
 > show gloo.gloo_home
 ```
 
-### Running Gloo
+## Running Gloo
 
 ```
 gloo [global option] [file]
@@ -39,7 +39,7 @@ When specifying a file there are a couple ways to reference the gloo file to ope
         gloo my_project/file.gloo
         ```
 
-### Modes
+## Modes
 
 ```
 --cli        - Run in CLI mode
@@ -59,7 +59,7 @@ When specifying a file there are a couple ways to reference the gloo file to ope
 
 ---
 
-### Configuration
+## Configuration
 
 When gloo runs, it looks for a configuration file which it expects to find in `~/.gloo/config/`. If there is no `gloo.yml` file in that directory, one will be created and default values added.
 
@@ -101,7 +101,7 @@ gloo:
 
 ---
 
-### Logging
+## Logging
 
 Gloo writes to the `gloo.log` and `error.log` files as well as to the console.
 
@@ -120,9 +120,9 @@ tail -f ~/gloo/logs/error.log
 
 ---
 
-### Help
+## Help
 
-#### Inline Reference
+### Inline Reference
 
 Gloo has a built-in `help` verb (shortcut `?`) that enters an interactive help shell:
 
@@ -153,6 +153,6 @@ help> doc getting_started
 help> quit
 ```
 
-#### Narrative Docs in the Shell
+### Narrative Docs in the Shell
 
 This page and its nine siblings (`docs/*.md` in the interpreter's source) are the same files shown by `help> doc {name}` — there's no separate doc server or web mode. A `gloo --doc` local web server was considered and put off in favor of this: one system, no separate build/serve step.

@@ -1,6 +1,6 @@
 # Plugins
 
-### Core Libraries
+## Core Libraries
 
 Core Libraries extend gloo functionality, primarily by adding object types and potentially verbs.
 
@@ -8,7 +8,7 @@ Be sure to load a core library (or extension) prior to loading a gloo file that 
 
 Use the Load Verb to use an extension.
 
-#### Available Core Libraries
+### Available Core Libraries
 
 - **CLI** — Use the `gloo-cli` gem when building CLI applications.
     - Library Objects: Prompt, Colorize, Confirm, Select, Menu, Menu Item
@@ -24,7 +24,7 @@ Use the Load Verb to use an extension.
 
 ---
 
-### User Extensions
+## User Extensions
 
 A User Extension is a mechanism that can be used to add verbs and objects that are not built into gloo.
 

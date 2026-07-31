@@ -1,6 +1,6 @@
 # Iterators
 
-### Each
+## Each
 
 Perform an action for each item in a collection.
 
@@ -28,7 +28,7 @@ See also: Object Base.
 
 ---
 
-### Each Child
+## Each Child
 
 Iterate for each child in a container.
 
@@ -41,7 +41,7 @@ Children:
 - `do` (script)
     - The action we want to perform for each child in the container.
 
-#### Group By
+### Group By
 
 Group the results by a child property. This is an optional feature. It can be used when we want to do something specific every time a value in the child object changes.
 
@@ -88,7 +88,7 @@ See also: Object Base, Each, Each File, Each Line, Each Word.
 
 ---
 
-### Each Directory
+## Each Directory
 
 Iterate for each directory in a folder (directory).
 
@@ -127,7 +127,7 @@ See also: Each, Each File.
 
 ---
 
-### Each File
+## Each File
 
 Iterate for each file in a folder (directory).
 
@@ -169,7 +169,7 @@ See also: Object Base, Each, Each Line, Each Word, Each Child, Each Directory.
 
 ---
 
-### Each Line
+## Each Line
 
 Iterate for each line in a text block (string).
 
@@ -216,7 +216,7 @@ See also: Object Base, Each, Each Word, Each Child, Each File.
 
 ---
 
-### Each Word
+## Each Word
 
 Iterate for each word in a string.
 
@@ -255,7 +255,7 @@ See also: Object Base, Each, Each Child, Each File, Each Line.
 
 ---
 
-### Repeat
+## Repeat
 
 Run a script a given number of times.
 

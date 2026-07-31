@@ -1,6 +1,6 @@
 # Language, Scripting
 
-### Gloo Script Files
+## Gloo Script Files
 
 Gloo scripts are stored in regular text files with the `.gloo` extension.
 
@@ -22,7 +22,7 @@ hello [can] :
 
 ---
 
-### Gloo Constants
+## Gloo Constants
 
 There is no gloo language construct for constants. They are simply objects. But by convention, constants are named in all caps. They might be in a container or at the root object level.
 
@@ -40,7 +40,7 @@ constants [can] :
 
 ---
 
-### Line Continuation
+## Line Continuation
 
 In gloo scripting, a line continuation is done by ending a line with a backslash (`\`). Logical lines can be split across multiple physical lines of text in scripts. A line break is otherwise an indication of a new statement.
 

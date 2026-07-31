@@ -51,7 +51,7 @@ class HelpShellTest < BaseEngineTest
     shell = Gloo::Docs::HelpShell.new( @engine )
     out, = capture_io { shell.execute_once( %w[verb put] ) }
     assert_match( /put/, out )
-    assert_match( /DESCRIPTION/, out )
+    assert_match( /Description/, out )
   end
 
   def test_verb_detail_tab_completion_lists_all_verbs
@@ -78,7 +78,7 @@ class HelpShellTest < BaseEngineTest
     shell = Gloo::Docs::HelpShell.new( @engine )
     out, = capture_io { shell.execute_once( %w[object container] ) }
     assert_match( /container/, out )
-    assert_match( /DESCRIPTION/, out )
+    assert_match( /Description/, out )
   end
 
   def test_docs_lists_doc_pages

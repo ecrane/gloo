@@ -2,7 +2,7 @@
 
 Gloo operators can be used to do basic math and to compare values.
 
-### Math Operators
+## Math Operators
 
 These are the gloo math operators:
 
@@ -13,7 +13,7 @@ These are the gloo math operators:
 /   division
 ```
 
-### Comparison Operators
+## Comparison Operators
 
 Strings, integers, and decimal numbers can be compared.
 
@@ -28,7 +28,7 @@ These are the gloo comparison operators:
 <=  less than or equal to
 ```
 
-### Example
+## Example
 
 Here are some examples of math operator usage:
 

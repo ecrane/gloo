@@ -1,6 +1,6 @@
 # Language, Syntax
 
-### Color
+## Color
 
 The following colors can be used by the `show` verb to display colored text:
 
@@ -31,7 +31,7 @@ See also: Show.
 
 ---
 
-### Errors
+## Errors
 
 Gloo has a special `error` variable that's not part of the normal object heap. The error will be empty most of the time, but if a command results in an error, this variable will hold the error message until the next command is executed. The error is a string and can be accessed by simply referring to the path-name `error`.
 
@@ -67,7 +67,7 @@ See also: Pathname.
 
 ---
 
-### Events
+## Events
 
 Scripts can be written to be triggered by events. The current list is as follows, but it is expected that the list of events will grow.
 
@@ -139,7 +139,7 @@ See also: Load, Reload, Unload, Save, Quit.
 
 ---
 
-### Gloo System Objects
+## Gloo System Objects
 
 The gloo system objects are virtual objects. That is, they can be accessed like other objects, but the values are set by the system. The values cannot be updated. The other difference is that the virtual objects do not show up in the object heap.
 
@@ -201,7 +201,7 @@ See also: Pathname. The file-system subset of these objects is also referenced i
 
 ---
 
-### Here
+## Here
 
 Gloo scripts can use relative referencing to access objects without specifying the full path. This relative referencing is referred to as the "here" operator, which is a single caret (`^`) character.
 
@@ -233,7 +233,7 @@ See also: Pathname.
 
 ---
 
-### It
+## It
 
 `it` is a special virtual object. `it` contains the value of the last expression or command run. Not all commands result in a change to the value of `it`.
 
@@ -257,17 +257,17 @@ See also: Pathname.
 
 ---
 
-### Operators
+## Operators
 
 Operators have their own dedicated page — see the Operators page.
 
 ---
 
-### Pathname
+## Pathname
 
 All gloo object data and scripts are stored in a heap of objects, or just "the heap." The heap is hierarchical, with some objects having children objects. To reference an object, we use a "pathname." The pathname starts with the root level object, then has a period, `.`, then the child object name, and so forth. `a.b.c` refers to the `c` object in the `b` container, which is in the `a` container.
 
-#### Root & Context
+### Root & Context
 
 The word "root" is not needed when referring to objects. In some special cases, "root" can be used to point to the first level of the object heap. One such use would be with the "context" verb.
 
@@ -285,7 +285,7 @@ context [container] :
 
 Full pathnames can be used when context has been set.
 
-#### Exceptional Cases
+### Exceptional Cases
 
 The following are also exceptional pathname cases:
 

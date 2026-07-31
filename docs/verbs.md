@@ -6,7 +6,7 @@ Verbs aren't just for scripts, though. They're also the interactive language of 
 
 This page walks through three of the most commonly used verbs to get a feel for how they work together. For the complete list of verbs, their full syntax, and every error they can raise, use the in-app help: enter `help` (or `?`), then `verbs` to list them all, or `verb {name}` for detail on one (see Application, Help).
 
-### Run
+## Run
 
 `run` runs a script or other runnable object — the same as sending it a `run` message.
 
@@ -21,7 +21,7 @@ run {path.to.object}
 > run s
 ```
 
-### Tell
+## Tell
 
 `tell` sends a message to an object, asking it to do something. Where `run` executes a runnable object, `tell` is the general-purpose way to invoke any message an object supports (`up`, `count`, `inc`, `randomize` — see Objects).
 
@@ -36,7 +36,7 @@ tell {path.to.object} to {message}
 > tell the.container to count
 ```
 
-### Put
+## Put
 
 `put` evaluates an expression and stores the result in an object.
 

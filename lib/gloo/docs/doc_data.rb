@@ -3,22 +3,26 @@
 #
 # Documentation data for a primitive: a verb or an object.
 #
+# Renders as plain markdown - no color/ANSI here. Color is applied
+# separately, at display time, by Gloo::Docs::MarkdownRenderer, so
+# this stays reusable wherever the raw markdown is useful (paging,
+# export, tests).
+#
 
 module Gloo
   module Docs
     class DocData
 
-      NAME = 'NAME & SHORTCUT'.freeze
-      DESCRIPTION = 'DESCRIPTION'.freeze
-      SYNTAX = 'SYNTAX'.freeze
-      PARAMETERS = 'PARAMETERS'.freeze
-      CHILDREN = 'CHILDREN'.freeze
-      MESSAGES = 'MESSAGES'.freeze
-      RESULT = 'RESULT'.freeze
-      ERRORS = 'ERRORS'.freeze
-      EXAMPLE_CODE = 'EXAMPLE_CODE'.freeze
-      NOTES = 'NOTES'.freeze
-      TAB = '  '.freeze
+      DESCRIPTION = '## Description'.freeze
+      SYNTAX = '## Syntax'.freeze
+      PARAMETERS = '## Parameters'.freeze
+      CHILDREN = '## Children'.freeze
+      MESSAGES = '## Messages'.freeze
+      RESULT = '## Result'.freeze
+      ERRORS = '## Errors'.freeze
+      EXAMPLES = '## Examples'.freeze
+      NOTES = '## Notes'.freeze
+      FENCE = '```gloo'.freeze
 
       attr_accessor :name, :shortcut, :description, :syntax,
         :parameters, :children, :messages, :result, :errors,
@@ -39,7 +43,7 @@ module Gloo
       end
 
       #
-      # Render the documentation as a single string.
+      # Render the documentation as a markdown string.
       def render
         buf = +''
         add_name buf
@@ -69,8 +73,8 @@ module Gloo
       def add_name( buf )
         return unless @name
 
-        buf << "\n#{NAME}\n#{@name.white}\n"
-        buf << "#{@shortcut.white}\n" if @shortcut
+        buf << "\n# #{@name}\n"
+        buf << "#{@shortcut}\n" if @shortcut
       end
 
       #
@@ -78,7 +82,7 @@ module Gloo
       def add_description( buf )
         return unless @description
 
-        buf << "\n#{DESCRIPTION}\n#{@description.white}\n"
+        buf << "\n#{DESCRIPTION}\n#{@description}\n"
       end
 
       #
@@ -86,10 +90,9 @@ module Gloo
       def add_syntax( buf )
         return unless @syntax
 
-        buf << "\n#{SYNTAX}\n"
-        @syntax.each do |line|
-          buf << "#{TAB}#{line.white}\n"
-        end
+        buf << "\n#{SYNTAX}\n#{FENCE}\n"
+        @syntax.each { |line| buf << "#{line}\n" }
+        buf << "```\n"
       end
 
       #
@@ -98,9 +101,7 @@ module Gloo
         return unless @parameters
 
         buf << "\n#{PARAMETERS}\n"
-        @parameters.each do |line|
-          buf << "#{TAB}#{line}\n"
-        end
+        @parameters.each { |line| buf << "- #{line}\n" }
       end
 
       #
@@ -109,9 +110,7 @@ module Gloo
         return unless @children
 
         buf << "\n#{CHILDREN}\n"
-        @children.each do |line|
-          buf << "#{TAB}#{line}\n"
-        end
+        @children.each { |line| buf << "- #{line}\n" }
       end
 
       #
@@ -120,9 +119,7 @@ module Gloo
         return unless @messages
 
         buf << "\n#{MESSAGES}\n"
-        @messages.each do |line|
-          buf << "#{TAB}#{line}\n"
-        end
+        @messages.each { |line| buf << "- #{line}\n" }
       end
 
       #
@@ -139,9 +136,7 @@ module Gloo
         return unless @errors
 
         buf << "\n#{ERRORS}\n"
-        @errors.each do |line|
-          buf << "#{TAB}#{line}\n"
-        end
+        @errors.each { |line| buf << "- #{line}\n" }
       end
 
       #
@@ -149,7 +144,7 @@ module Gloo
       def add_examples( buf )
         return unless @examples
 
-        buf << "\n#{EXAMPLE_CODE}\n#{@examples}\n"
+        buf << "\n#{EXAMPLES}\n#{FENCE}\n#{@examples}\n```\n"
       end
 
       #
