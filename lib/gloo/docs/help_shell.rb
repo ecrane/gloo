@@ -18,6 +18,7 @@ module Gloo
       OBJECT_NAMES = :object_names
       DOC_NAMES = :doc_names
       LIBRARY_NAMES = :library_names
+      EXTENSION_NAMES = :extension_names
 
       DOCS_DIR = File.expand_path( '../../../docs', __dir__ ).freeze
       README_GLOB = 'README*'.freeze
@@ -82,7 +83,7 @@ module Gloo
         data = "\n"
         data << " Extensions\n".blue
         data << "   Use `load ext {name}` to load a User Extension, \n" \
-          "   then `object {name}` / `verb {name}` here to see what it adds. \n" \
+          "   then `object {name}` / `verb {name}` / `extension {name}` here to see what it adds. \n" \
           "   Only loaded extensions are listed below.\n\n".light_black
         loaded = @engine.ext_manager.loaded_extensions
         if loaded.empty?
@@ -177,6 +178,21 @@ module Gloo
         page_markdown( File.read( readme_path ) )
       end
 
+      #
+      # Show the README for one loaded user extension (from the root of
+      # its extension folder, e.g. ~/gloo/extensions/{name}). Only loaded
+      # extensions are tab-completable here - see cmd_show_extensions.
+      #
+      def cmd_show_extension_detail( obj, _context )
+        start_file = @engine.ext_manager.loaded_extensions[ obj ]
+        return @engine.log.show "#{NO_DOC_YET} '#{obj}'." unless start_file
+
+        readme_path = find_extension_readme( start_file )
+        return @engine.log.show "#{NO_README_YET} '#{obj}'." unless readme_path
+
+        page_markdown( File.read( readme_path ) )
+      end
+
       # ---------------------------------------------------------------------
       #    Private
       # ---------------------------------------------------------------------
@@ -202,6 +218,7 @@ module Gloo
         set_context( OBJECT_NAMES, @engine.dictionary.get_obj_types.map( &:typename ).sort )
         set_context( DOC_NAMES, doc_page_names )
         set_context( LIBRARY_NAMES, @engine.lib_manager.loaded_libraries.keys.sort )
+        set_context( EXTENSION_NAMES, @engine.ext_manager.loaded_extensions.keys.sort )
       end
 
       #
@@ -212,6 +229,15 @@ module Gloo
         return Dir.glob( File.join( spec.gem_dir, README_GLOB ) ).first
       rescue Gem::MissingSpecError
         return nil
+      end
+
+      #
+      # Find the README file at the root of an extension's folder, given
+      # the full path to its {name}_ext.rb start file.
+      #
+      def find_extension_readme( start_file )
+        root = File.dirname( start_file )
+        return Dir.glob( File.join( root, README_GLOB ) ).first
       end
 
       #
@@ -249,6 +275,9 @@ module Gloo
         add_command_node(
           name: 'library', description: "Show a loaded library's README",
           dynamic: true, source: LIBRARY_NAMES, child_method: 'cmd_show_library_detail' )
+        add_command_node(
+          name: 'extension', description: "Show a loaded extension's README",
+          dynamic: true, source: EXTENSION_NAMES, child_method: 'cmd_show_extension_detail' )
       end
 
     end
