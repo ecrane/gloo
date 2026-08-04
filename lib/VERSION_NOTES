@@ -1,3 +1,13 @@
+6.1.0 - 2026.08.04
+ - Adds narrative documentation: 10 pages in `docs/`, covering getting started, application, language objects/syntax/scripting, operators, iterators, objects, verbs, and plugins
+ - Adds an in-app interactive help shell (`help`/`?`) to look up verbs, objects, settings, libraries, extensions, and doc pages, with tab completion
+ - Adds `doc_data` to every verb and object type, in the interpreter and its core library gems, rendered by the help shell
+ - Fixes gemspecs so docs and READMEs are actually packaged with the gem and its core libraries
+ - Adds a table of contents and reading order to the README's documentation list
+ - Fixes the rubygems.org "Documentation" link
+ - Adds page message to string and text
+
+
 6.0.1 - 2026.07.16
  - Update dependencies to newer versions for better security.
 
