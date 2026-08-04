@@ -1,5 +1,3 @@
-@/Users/ecrane/dev/gloo_meta/CLAUDE.md
-
 # Gloo — Core Interpreter
 
 This is the main gloo language implementation, packaged as a Ruby gem.

@@ -26,7 +26,7 @@ MySQL and Postgres are only needed if you plan to use the `gloo-mysql` or `gloo-
 Gloo is distributed as a Ruby gem (https://rubygems.org/gems/gloo). Once you have Ruby installed, you can install Gloo by running the following command:
 
 ```shell
-> gem install gloo
+ gem install gloo
 ```
 
 ## Configuration
@@ -38,7 +38,7 @@ See Application Configuration for details on how to configure Gloo.
 To start Gloo, run the following command:
 
 ```shell
-> gloo
+ gloo
 ```
 
 This will start the Gloo application. This is just enough to get going — for the full set of global options and the two ways to point gloo at a file (by path or by project), see Application, Running Gloo.
@@ -48,7 +48,7 @@ This will start the Gloo application. This is just enough to get going — for t
 Once Gloo is running you can interact with the gloo interpreter. Type the following command to see the "Hello World" message:
 
 ```gloo
-> show "Hello World"
+ show "Hello World"
 ```
 
 ---

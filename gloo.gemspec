@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Gloo scripting language.  A scripting language built on ruby.}
   spec.description   = %q{A scripting languge to keep it all together.}
-  spec.homepage      = "http://github.com/ecrane/gloo"
+  spec.homepage      = "https://github.com/ecrane/gloo"
   spec.license       = 'MIT'
 
   spec.metadata['documentation_uri'] = 'https://github.com/ecrane/gloo'

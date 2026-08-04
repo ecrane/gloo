@@ -1,20 +1,36 @@
 # Gloo
 
-Gloo is a scripting language built on ruby.
+## About This Project
+
+gloo is a personal passion project — a custom interpreted programming language
+built in Ruby that I've been designing and building over several years. It's
+under active, ongoing development, so expect the design (especially around
+GUI support) to keep evolving.
+
+This is shared publicly for visibility, not as a maintained open-source
+project. I'm not actively seeking contributions right now, but feel free to
+open an issue if something's broken or you're curious about the design —
+just know response times may be slow.
 
 
 ## Installation
 
-Install gloo like this:
+The gloo gem is published on [RubyGems](https://rubygems.org/gems/gloo) and
+can be installed with:
 
-    $ gem install gloo
-
+```
+gem install gloo
+```
 
 ## Usage
 
 Run gloo:
 
-    $ gloo
+```
+gloo
+```
+
+See documentation below, or the in-app help for usage.
 
 
 ## Documentation
@@ -31,3 +47,9 @@ Read in order for a guided tour of the language, top to bottom, or jump straight
 8. [Operators](docs/operators.md) — math and comparison operators
 9. [Iterators](docs/iterators.md) — each, repeat
 10. [Plugins](docs/plugins.md) — core libraries and user extensions
+
+
+## License
+
+This project is licensed under the [MIT License](LICENSE.txt) — see
+`LICENSE.txt` for details.
