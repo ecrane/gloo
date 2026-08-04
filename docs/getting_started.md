@@ -51,8 +51,6 @@ Once Gloo is running you can interact with the gloo interpreter. Type the follow
  show "Hello World"
 ```
 
----
-
 ## History
 
 ### CLI, On Ruby
@@ -87,8 +85,6 @@ The following technologies influenced the thinking behind gloo and its predecess
 
 But each of those could be an essay in and of themselves. Maybe some day they will be.
 
----
-
 ## Concepts
 
 ### Outline Based Language
@@ -110,8 +106,6 @@ In gloo, everything is an object. The object types are built into the language. 
 Objects can have simple values and can also contain other objects.
 
 Interaction with objects is done by sending messages to them.
-
----
 
 ## Source Code
 

@@ -40,8 +40,6 @@ colors [can] :
 
 See also: Show.
 
----
-
 ## Errors
 
 Gloo has a special `error` variable that's not part of the normal object heap. The error will be empty most of the time, but if a command results in an error, this variable will hold the error message until the next command is executed. The error is a string and can be accessed by simply referring to the path-name `error`.
@@ -75,8 +73,6 @@ But, as mentioned, the next command will clear out the last error. If you need t
 ```
 
 See also: Pathname.
-
----
 
 ## Events
 
@@ -148,8 +144,6 @@ error_data [can] :
 
 See also: Load, Reload, Unload, Save, Quit.
 
----
-
 ## Gloo System Objects
 
 The gloo system objects are virtual objects. That is, they can be accessed like other objects, but the values are set by the system. The values cannot be updated. The other difference is that the virtual objects do not show up in the object heap.
@@ -211,8 +205,6 @@ gloo.platform_wsl?      # Is the platform WSL (Windows Subsystem for Linux)?
 
 See also: Pathname. The file-system subset of these objects is also referenced in Application > The Gloo Home Directory.
 
----
-
 ## Here
 
 Gloo scripts can use relative referencing to access objects without specifying the full path. This relative referencing is referred to as the "here" operator, which is a single caret (`^`) character.
@@ -243,8 +235,6 @@ Use of two `^^` here references means to go up a level, and so forth.
 
 See also: Pathname.
 
----
-
 ## It
 
 `it` is a special virtual object. `it` contains the value of the last expression or command run. Not all commands result in a change to the value of `it`.
@@ -267,13 +257,9 @@ Running this script will show `7` twice. The first time will be the result of th
 
 See also: Pathname.
 
----
-
 ## Operators
 
 Operators have their own dedicated page — see the Operators page.
-
----
 
 ## Pathname
 

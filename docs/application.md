@@ -66,8 +66,6 @@ When specifying a file there are a couple ways to reference the gloo file to ope
 --version    - Show application version
 ```
 
----
-
 ## Configuration
 
 When gloo runs, it looks for a configuration file which it expects to find in `~/gloo/config/`. If there is no `gloo.yml` file in that directory, one will be created and default values added.
@@ -108,8 +106,6 @@ gloo:
   debug: false
 ```
 
----
-
 ## Logging
 
 Gloo writes to the `gloo.log` and `error.log` files as well as to the console.
@@ -126,8 +122,6 @@ Example tail command to watch the gloo log:
 tail -f ~/gloo/logs/gloo.log
 tail -f ~/gloo/logs/error.log
 ```
-
----
 
 ## Help
 

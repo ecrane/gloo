@@ -36,8 +36,6 @@ See examples in the specific variations, below.
 
 See also: Object Base.
 
----
-
 ## Each Child
 
 Iterate for each child in a container.
@@ -96,8 +94,6 @@ each_child [can] :
 
 See also: Object Base, Each, Each File, Each Line, Each Word.
 
----
-
 ## Each Directory
 
 Iterate for each directory in a folder (directory).
@@ -134,8 +130,6 @@ each_dir [can] :
 ```
 
 See also: Each, Each File.
-
----
 
 ## Each File
 
@@ -176,8 +170,6 @@ each_file [can] :
 ```
 
 See also: Object Base, Each, Each Line, Each Word, Each Child, Each Directory.
-
----
 
 ## Each Line
 
@@ -224,8 +216,6 @@ each_line [can] :
 
 See also: Object Base, Each, Each Word, Each Child, Each File.
 
----
-
 ## Each Word
 
 Iterate for each word in a string.
@@ -262,8 +252,6 @@ each_word [can] :
 ```
 
 See also: Object Base, Each, Each Child, Each File, Each Line.
-
----
 
 ## Repeat
 

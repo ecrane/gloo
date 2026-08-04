@@ -26,8 +26,6 @@ hello [can] :
   on_load [script] : show 'hello world'
 ```
 
----
-
 ## Gloo Constants
 
 There is no gloo language construct for constants. They are simply objects. But by convention, constants are named in all caps. They might be in a container or at the root object level.
@@ -43,8 +41,6 @@ constants [can] :
   on_load [script] :
     show ^.MSG
 ```
-
----
 
 ## Line Continuation
 

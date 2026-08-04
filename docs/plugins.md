@@ -32,8 +32,6 @@ Use the Load Verb to use an extension.
 - **YAML** — Use the `gloo-yaml` gem for YAML file read/write support.
     - Library Objects: YAML
 
----
-
 ## User Extensions
 
 A User Extension is a mechanism that can be used to add verbs and objects that are not built into gloo.
