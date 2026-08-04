@@ -43,7 +43,16 @@ See also: Pathname.
 
 ## Keywords
 
-_TBD — not yet written._
+Gloo doesn't reserve words the way many languages do. A verb keyword like `put` or an object type name like `string` can also be used as an object name — there's no parser conflict, because verbs are only looked up as the first word of a statement, and object type names are only looked up where a type is expected (inside the `[ ]` on a declaration). Everywhere else, the word is just a pathname segment (see Object Naming, above).
+
+That said, gloo's own vocabulary — words that already mean something built-in — comes from two sources:
+
+- Verb keywords, and their shortcuts (see Verbs) — `put`, `show`, `run`, `tell`, and the rest.
+- Object type names, and their shortcuts (see Objects) — `string`, `container`, `integer`, and the rest.
+
+Both lists grow as core libraries and extensions load — `load lib {name}` and `load ext {name}` can add new verbs and object types at runtime, so the full set isn't fixed. Use the in-app help (see Application, Help) for the live list of whatever's currently loaded: enter `help` (or `?`), then `verbs` or `objects`.
+
+See also: Verbs, Objects.
 
 ---
 

@@ -1,6 +1,6 @@
 # Verbs
 
-Verbs are the commands that make up a gloo script — `put`, `show`, `run`, `tell`, and 24 others. Every statement in gloo starts with a verb.
+Verbs are the commands that make up a gloo script — `put`, `show`, `run`, `tell`, and 25 others. Every statement in gloo starts with a verb.
 
 Verbs aren't just for scripts, though. They're also the interactive language of the gloo application itself: run `gloo` in CLI mode (see Application, Running Gloo) and you can type these same verbs directly at the prompt, one at a time, in a REPL.
 
@@ -61,4 +61,4 @@ put {expression} into {dst.path}
 
 ---
 
-`run`, `tell`, and `put` cover a lot of ground on their own, but there are 25 more verbs — `show`, `if`, `create`, `each`, `check`, and so on — all documented in-app. Enter `help` (or `?`), then `verbs` to browse them. (This page itself is also viewable in-app: `help> doc verbs`.)
+`run`, `tell`, and `put` cover a lot of ground on their own, but there are 26 more verbs — `show`, `if`, `create`, `each`, `check`, and so on — all documented in-app. Enter `help` (or `?`), then `verbs` to browse them. (This page itself is also viewable in-app: `help> doc verbs`.)

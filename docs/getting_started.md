@@ -14,14 +14,12 @@
 ## Prerequisites
 
 - Ruby
-- MySQL
-- Postgres
 
-Gloo requires Ruby to run.
+Gloo requires Ruby to run. Nothing else is required for the core interpreter.
 
 If you don't have Ruby installed, you can download it from here: http://www.ruby-lang.org/en/downloads/
 
-If you do not have MySQL or Postgres installed, find and follow the online instructions to install them.
+MySQL and Postgres are only needed if you plan to use the `gloo-mysql` or `gloo-pg` core library gems to connect to those databases from a gloo script — see Plugins. Install them only if and when you load one of those libraries.
 
 ## Installation
 
@@ -43,7 +41,7 @@ To start Gloo, run the following command:
 > gloo
 ```
 
-This will start the Gloo application.
+This will start the Gloo application. This is just enough to get going — for the full set of global options and the two ways to point gloo at a file (by path or by project), see Application, Running Gloo.
 
 ## Hello World
 

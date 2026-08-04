@@ -70,7 +70,7 @@ When specifying a file there are a couple ways to reference the gloo file to ope
 
 ## Configuration
 
-When gloo runs, it looks for a configuration file which it expects to find in `~/.gloo/config/`. If there is no `gloo.yml` file in that directory, one will be created and default values added.
+When gloo runs, it looks for a configuration file which it expects to find in `~/gloo/config/`. If there is no `gloo.yml` file in that directory, one will be created and default values added.
 
 ```yaml
 #
@@ -139,7 +139,7 @@ Gloo has a built-in `help` verb (shortcut `?`) that enters an interactive help s
 help
 ```
 
-From the `help>` prompt, look up verbs, object types, settings, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, doc page, or loaded library:
+From the `help>` prompt, look up verbs, object types, settings, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, doc page, loaded library, or loaded extension:
 
 - `verbs` — list all verbs
 - `objects` — list all object types
@@ -151,6 +151,7 @@ From the `help>` prompt, look up verbs, object types, settings, extensions, libr
 - `object {name}` — detailed help for one object type (tab-completable)
 - `doc {name}` — show one narrative doc page (tab-completable)
 - `library {name}` — show a loaded library's README, from the root of its gem (tab-completable, loaded libraries only)
+- `extension {name}` — show a loaded extension's README, from the root of its extension folder (tab-completable, loaded extensions only)
 - `quit` — leave the help shell
 
 ```gloo

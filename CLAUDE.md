@@ -19,7 +19,7 @@ gloo/
 │   │   ├── str_utils/
 │   │   ├── system/  ruby, file_handle, system
 │   │   └── web/     http_get, http_post, json, uri, erb
-│   ├── verbs/       One file per verb (28 total)
+│   ├── verbs/       One file per verb (29 total)
 │   ├── persist/     File loading/saving
 │   ├── convert/     Type conversion
 │   └── plugin/      Plugin system

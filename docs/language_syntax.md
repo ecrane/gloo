@@ -206,6 +206,7 @@ gloo.platform_windows?  # Is the platform Windows?
 gloo.platform_unix?     # Is the platform Unix?
 gloo.platform_linux?    # Is the platform Linux?
 gloo.platform_mac?      # Is the platform Mac?
+gloo.platform_wsl?      # Is the platform WSL (Windows Subsystem for Linux)?
 ```
 
 See also: Pathname. The file-system subset of these objects is also referenced in Application > The Gloo Home Directory.

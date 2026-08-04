@@ -26,7 +26,7 @@ Strings, integers, and decimal numbers can be compared.
 These are the gloo comparison operators:
 
 ```
-=   equal (== is identical)
+=   equal (== also works, as an alternate spelling — not a separate identity check)
 !=  not equal
 >   greater than
 <   less than
