@@ -19,15 +19,15 @@ Run gloo:
 
 ## Documentation
 
-See documentation here:
+Read in order for a guided tour of the language, top to bottom, or jump straight to any page — pages toward the bottom are reference material and read fine out of sequence.
 
- - [Getting Started](docs/getting_started.md)
- - [Application](docs/application.md)
- - [Language, Objects](docs/language_objects.md)
- - [Language, Syntax](docs/language_syntax.md)
- - [Language, Scripting](docs/language_scripting.md)
- - [Iterators](docs/iterators.md)
- - [Operators](docs/operators.md)
- - [Objects](docs/objects.md)
- - [Verbs](docs/verbs.md)
- - [Plugins](docs/plugins.md)
+1. [Getting Started](docs/getting_started.md) — prerequisites, installation, hello world, history and concepts
+2. [Application](docs/application.md) — running gloo, modes, configuration, logging, the in-app help shell
+3. [Language, Objects](docs/language_objects.md) — object naming, keywords, literals, value conversion
+4. [Language, Syntax](docs/language_syntax.md) — color, errors, events, system objects, here/it, pathnames
+5. [Language, Scripting](docs/language_scripting.md) — script files, constants, line continuation
+6. [Objects](docs/objects.md) — a tour of built-in object types (string, container, integer)
+7. [Verbs](docs/verbs.md) — a tour of verbs (run, tell, put)
+8. [Operators](docs/operators.md) — math and comparison operators
+9. [Iterators](docs/iterators.md) — each, repeat
+10. [Plugins](docs/plugins.md) — core libraries and user extensions
