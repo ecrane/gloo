@@ -1,5 +1,14 @@
 # Gloo Application
 
+**Contents**
+
+- The Gloo Home Directory
+- Running Gloo
+- Modes
+- Configuration
+- Logging
+- Help
+
 ## The Gloo Home Directory
 
 Gloo keeps its configuration, projects, and logs under a per-user home directory. This is exposed at runtime through a set of gloo system objects (see Language, Syntax) (`gloo.gloo_home`, and friends):

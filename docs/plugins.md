@@ -1,5 +1,10 @@
 # Plugins
 
+**Contents**
+
+- Core Libraries
+- User Extensions
+
 ## Core Libraries
 
 Core Libraries extend gloo functionality, primarily by adding object types and potentially verbs.

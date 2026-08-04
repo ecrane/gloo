@@ -4,6 +4,12 @@ Verbs are the commands that make up a gloo script — `put`, `show`, `run`, `tel
 
 Verbs aren't just for scripts, though. They're also the interactive language of the gloo application itself: run `gloo` in CLI mode (see Application, Running Gloo) and you can type these same verbs directly at the prompt, one at a time, in a REPL.
 
+**Contents**
+
+- Run
+- Tell
+- Put
+
 This page walks through three of the most commonly used verbs to get a feel for how they work together. For the complete list of verbs, their full syntax, and every error they can raise, use the in-app help: enter `help` (or `?`), then `verbs` to list them all, or `verb {name}` for detail on one (see Application, Help).
 
 ## Run

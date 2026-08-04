@@ -1,5 +1,16 @@
 # Language, Syntax
 
+**Contents**
+
+- Color
+- Errors
+- Events
+- Gloo System Objects
+- Here
+- It
+- Operators
+- Pathname
+
 ## Color
 
 The following colors can be used by the `show` verb to display colored text:

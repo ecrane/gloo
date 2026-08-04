@@ -1,5 +1,11 @@
 # Language, Scripting
 
+**Contents**
+
+- Gloo Script Files
+- Gloo Constants
+- Line Continuation
+
 ## Gloo Script Files
 
 Gloo scripts are stored in regular text files with the `.gloo` extension.

@@ -4,6 +4,12 @@ Everything in gloo is an object. Strings, numbers, containers, scripts, function
 
 Gloo ships with a large set of built-in object types, and core libraries and extensions can add more. This page doesn't try to cover them all — it walks through three common ones to get a feel for how objects work. For the complete list of object types, and every message each one supports, use the in-app help: enter `help` (or `?`), then `objects` to list them all, or `object {name}` for detail on one (see Application, Help).
 
+**Contents**
+
+- String
+- Container
+- Integer
+
 ## String
 
 A string holds text. Beyond just storing a value, a string object responds to messages that transform or inspect it:

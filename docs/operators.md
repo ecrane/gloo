@@ -2,6 +2,12 @@
 
 Gloo operators can be used to do basic math and to compare values.
 
+**Contents**
+
+- Math Operators
+- Comparison Operators
+- Example
+
 ## Math Operators
 
 These are the gloo math operators:

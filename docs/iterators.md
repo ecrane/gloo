@@ -1,5 +1,15 @@
 # Iterators
 
+**Contents**
+
+- Each
+- Each Child
+- Each Directory
+- Each File
+- Each Line
+- Each Word
+- Repeat
+
 ## Each
 
 Perform an action for each item in a collection.
