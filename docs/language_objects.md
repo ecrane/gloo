@@ -129,7 +129,7 @@ Here are some of the value conversions that gloo will attempt:
     - decimal with integer value
     - `put 1 into d` => 1.0
 - string to boolean
-    - if the string is ~ 'true' then the boolean is true, otherwise false
+    - if the string is (trimmed, case-insensitive) 'true' or 't' then the boolean is true; 'false' or 'f' is false; anything else is false
     - `put 'true' into bool` => true
 - boolean to string
     - simple to-string conversion: 'true' or 'false'

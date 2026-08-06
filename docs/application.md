@@ -64,6 +64,7 @@ When specifying a file there are a couple ways to reference the gloo file to ope
              - If a file is provided as a parameter this option does not need to be specified.
 --test       - Run in Test mode
 --version    - Show application version
+--help       - Show the help screen
 ```
 
 ## Configuration
@@ -86,12 +87,12 @@ gloo:
   # Run this script when starting up gloo.
   # (Only if a script file is not specified.)
   #
-  start_with: start
+  start_with:
 
   #
   # Indentation (spaces) when showing an object outline.
   #
-  list_indent: 3
+  list_indent: 2
 
   #
   # Show listing the object tree,
@@ -161,4 +162,4 @@ help> quit
 
 ### Narrative Docs in the Shell
 
-This page and its nine siblings (`docs/*.md` in the interpreter's source) are the same files shown by `help> doc {name}` — there's no separate doc server or web mode. A `gloo --doc` local web server was considered and put off in favor of this: one system, no separate build/serve step.
+This page and its ten siblings (`docs/*.md` in the interpreter's source) are the same files shown by `help> doc {name}` — there's no separate doc server or web mode. A `gloo --doc` local web server was considered and put off in favor of this: one system, no separate build/serve step.

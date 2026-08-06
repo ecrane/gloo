@@ -24,6 +24,8 @@ black
 yellow
 ```
 
+These are the common ones, but any color name from the `colorize` gem works too (e.g. `cyan`, `magenta`, or a `light_` variant of any of the above).
+
 The color names are considered as virtual objects but may also be referenced in variables. See the example below.
 
 ```gloo
@@ -54,14 +56,14 @@ To run a command that generates an error:
 
 ```
 > put 3 into
-'put' must include 'into' target
+Target (into) missing!
 ```
 
 Then, showing the error:
 
 ```
 > show error
-'put' must include 'into' target
+Target (into) missing!
 ```
 
 But, as mentioned, the next command will clear out the last error. If you need to keep track of the result of a command, you should put the error into another object.

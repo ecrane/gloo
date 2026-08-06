@@ -55,9 +55,7 @@ Once Gloo is running you can interact with the gloo interpreter. Type the follow
 
 ### CLI, On Ruby
 
-Gloo is a scripting language and a CLI runtime engine. It was built primarily to run on the Mac and has hooks into several Mac technologies. It runs, at least nominally, on Windows and Linux as well.
-
-Gloo was built in Ruby as a gem. More than that, it has hooks into ruby, can run ruby code, and shares a lot the way ruby works.
+Gloo is a scripting language and a CLI runtime engine. It was built and tested primarily on the Mac. It runs, at least nominally, on Windows and Linux as well.
 
 ### The Name "Gloo" and a Bit of History
 
@@ -109,4 +107,4 @@ Interaction with objects is done by sending messages to them.
 
 ## Source Code
 
-Gloo source code is in GitHub (https://github.com/ecrane/gloo), although the repository is currently private. It might be made public in the future if there is interest or need.
+Gloo source code is in GitHub (https://github.com/ecrane/gloo). It's shared publicly for visibility rather than as a maintained open-source project.
