@@ -12,7 +12,7 @@ module Gloo
       KEYWORD_SHORT = '?'.freeze
 
       BANNER = "Entering the gloo help shell. Type 'quit' to exit.\n" \
-        "Try: verbs, objects, settings, extensions, libraries, docs, " \
+        "Try: verbs, objects, settings, theme, extensions, libraries, docs, " \
         "verb {name}, object {name}, doc {name}, library {name}, extension {name}\n".freeze
 
       #
@@ -50,12 +50,14 @@ module Gloo
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
           :description => 'Enter the interactive help shell. From there, ' \
-            'look up verbs, object types, settings, extensions, libraries, ' \
-            'and narrative doc pages, or get detailed help for a specific ' \
-            'verb, object, doc page, loaded library, or loaded extension.',
+            'look up verbs, object types, settings, the current color ' \
+            'theme, extensions, libraries, and narrative doc pages, or ' \
+            'get detailed help for a specific verb, object, doc page, ' \
+            'loaded library, or loaded extension.',
           :syntax => [ 'help' ],
           :result => "Enters the help shell, prompt \"help> \". Commands: " \
-            'verbs, objects, settings, extensions, libraries, docs (lists), ' \
+            'verbs, objects, settings, theme, extensions, libraries, docs ' \
+            '(lists — theme also shows a color preview of both palettes), ' \
             'verb {name}, object {name}, doc {name}, library {name}, ' \
             'extension {name} (detail for one, tab-completable — library ' \
             '{name} / extension {name} show the README for a loaded core ' \
@@ -65,6 +67,7 @@ module Gloo
             help> verbs
             help> verb put
             help> object container
+            help> theme
             help> docs
             help> doc getting_started
             help> library db

@@ -41,11 +41,12 @@ module Gloo
       # List all verbs.
       #
       def cmd_show_verbs( _obj, _context )
+        theme = @engine.theme
         data = "\n"
-        data << " Verbs (shortcut, name)\n".blue
+        data << theme.heading( " Verbs (shortcut, name)\n" )
         @engine.dictionary.get_verbs.sort_by( &:keyword ).each do |v|
-          cut = v.keyword_shortcut.ljust( 5, ' ' ).yellow
-          name = v.keyword.ljust( 20, ' ' ).white
+          cut = theme.accent( v.keyword_shortcut.ljust( 5, ' ' ) )
+          name = theme.emphasis( v.keyword.ljust( 20, ' ' ) )
           data << "   #{cut}  #{name} \n"
         end
         @engine.log.show "#{data}\n"
@@ -55,14 +56,15 @@ module Gloo
       # List all object types.
       #
       def cmd_show_objects( _obj, _context )
+        theme = @engine.theme
         data = "\n"
-        data << " Objects \n".blue
+        data << theme.heading( " Objects \n" )
         @engine.dictionary.get_obj_types.sort_by( &:typename ).each do |o|
           if o.short_typename != o.typename
-            short = "(#{o.short_typename})".yellow
-            name = "#{o.typename.white}  #{short}"
+            short = theme.accent( "(#{o.short_typename})" )
+            name = "#{theme.emphasis( o.typename )}  #{short}"
           else
-            name = o.typename.white
+            name = theme.emphasis( o.typename )
           end
           data << "   #{name.ljust( 30, ' ' )}\n"
         end
@@ -77,20 +79,43 @@ module Gloo
       end
 
       #
+      # Show the current theme, how to change it, and a color preview
+      # of both palettes - handy for checking how they actually render
+      # in whatever terminal you're sitting in.
+      #
+      def cmd_show_theme( _obj, _context )
+        theme = @engine.theme
+        settings = @engine.settings
+        config_file = File.join( settings.config_path, 'gloo.yml' )
+
+        data = "\n"
+        data << theme.heading( " Theme\n" )
+        data << "   Current theme:  #{theme.emphasis( settings.theme )}\n\n"
+        data << theme.muted( "   Change it in #{config_file}:\n" )
+        data << theme.muted( "     theme: dark   (or: light)\n\n" )
+        data << theme_preview( ' Dark palette', Gloo::App::Theme.new( 'dark' ) )
+        data << "\n"
+        data << theme_preview( ' Light palette', Gloo::App::Theme.new( 'light' ) )
+        @engine.log.show "#{data}\n"
+      end
+
+      #
       # List loaded extensions.
       #
       def cmd_show_extensions( _obj, _context )
+        theme = @engine.theme
         data = "\n"
-        data << " Extensions\n".blue
-        data << "   Use `load ext {name}` to load a User Extension, \n" \
+        data << theme.heading( " Extensions\n" )
+        data << theme.muted(
+          "   Use `load ext {name}` to load a User Extension, \n" \
           "   then `object {name}` / `verb {name}` / `extension {name}` here to see what it adds. \n" \
-          "   Only loaded extensions are listed below.\n\n".light_black
+          "   Only loaded extensions are listed below.\n\n" )
         loaded = @engine.ext_manager.loaded_extensions
         if loaded.empty?
-          data << "   (none loaded)\n".light_black
+          data << theme.muted( "   (none loaded)\n" )
         else
           loaded.sort.each do |name, _ext|
-            data << "   #{name.white} \n"
+            data << "   #{theme.emphasis( name )} \n"
           end
         end
         @engine.log.show "#{data}\n"
@@ -100,17 +125,19 @@ module Gloo
       # List loaded libraries.
       #
       def cmd_show_libraries( _obj, _context )
+        theme = @engine.theme
         data = "\n"
-        data << " Libraries\n".blue
-        data << "   Use `load lib {name}` to load a core library, \n" \
+        data << theme.heading( " Libraries\n" )
+        data << theme.muted(
+          "   Use `load lib {name}` to load a core library, \n" \
           "   then `object {name}` / `verb {name}` here to see what it adds. \n" \
-          "   Only loaded libraries are listed below.\n\n".light_black
+          "   Only loaded libraries are listed below.\n\n" )
         loaded = @engine.lib_manager.loaded_libraries
         if loaded.empty?
-          data << "   (none loaded)\n".light_black
+          data << theme.muted( "   (none loaded)\n" )
         else
           loaded.sort.each do |name, _lib|
-            data << "   #{name.white} \n"
+            data << "   #{theme.emphasis( name )} \n"
           end
         end
         @engine.log.show "#{data}\n"
@@ -120,10 +147,11 @@ module Gloo
       # List all narrative doc pages (dev/gloo/docs/*.md).
       #
       def cmd_show_docs( _obj, _context )
+        theme = @engine.theme
         data = "\n"
-        data << " Docs\n".blue
+        data << theme.heading( " Docs\n" )
         doc_page_names.each do |name|
-          data << "   #{name.white}\n"
+          data << "   #{theme.emphasis( name )}\n"
         end
         @engine.log.show "#{data}\n"
       end
@@ -200,13 +228,29 @@ module Gloo
       private
 
       #
+      # Build a labeled preview block for one theme's palette: one line
+      # per role, colored in that role's own color, labeled with the
+      # role's name. Padding is applied to the plain label before it's
+      # colorized, so the ANSI codes don't throw off the alignment.
+      #
+      def theme_preview( title, theme )
+        lines = "#{theme.heading( title )}\n"
+        Gloo::App::Theme::ROLES.each do |role|
+          label = role.to_s.ljust( 12 )
+          lines << theme.send( role, "   #{label}#{role}" )
+          lines << "\n"
+        end
+        return lines
+      end
+
+      #
       # Colorize markdown and page it, bracketed with a '---' rule above
       # and below so the content stands out from surrounding CLI output.
       #
       def page_markdown( md )
         rule = '-' * @engine.platform.cols
         bracketed = "#{rule}\n#{md.strip}\n#{rule}\n"
-        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( bracketed ) )
+        @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( bracketed, @engine.theme ) )
       end
 
       #
@@ -257,6 +301,9 @@ module Gloo
           name: 'objects', description: 'List all object types', method: 'cmd_show_objects' )
         add_command_node(
           name: 'settings', description: 'Show application settings', method: 'cmd_show_settings' )
+        add_command_node(
+          name: 'theme', description: 'Show the current theme and preview both palettes',
+          method: 'cmd_show_theme' )
         add_command_node(
           name: 'extensions', description: 'List loaded extensions', method: 'cmd_show_extensions' )
         add_command_node(

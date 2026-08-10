@@ -10,10 +10,13 @@ module Gloo
   module App
     class Settings
 
+      DEFAULT_THEME = 'dark'.freeze
+      THEMES = %w[dark light].freeze
+
       attr_reader :user_root, :log_path,
         :config_path, :project_path, :ext_path,
         :start_with, :list_indent, :list_levels, :tmp_path,
-        :debug_path, :debug
+        :debug_path, :debug, :theme
 
       #
       # Load setting from the yml file.
@@ -33,26 +36,29 @@ module Gloo
       # Can be seen in app with 'help settings'
       #
       def show
-        puts "\n Application Settings:".blue
-        puts '   Startup with:  '.yellow + @start_with.to_s.white
-        puts '   Indent in Listing:  '.yellow + @list_indent.to_s.white
-        puts '   List Levels:  '.yellow + @list_levels.to_s.white
-        puts '   Debug?  '.yellow + @debug.to_s.white
-        puts '   Screen Lines:  '.yellow + Gloo::App::Settings.lines( @engine ).to_s.white
-        puts '   Page Size:  '.yellow + Gloo::App::Settings.page_size( @engine ).to_s.white
+        theme = @engine.theme
+        puts theme.heading( "\n Application Settings:" )
+        puts theme.accent( '   Startup with:  ' ) + theme.emphasis( @start_with.to_s )
+        puts theme.accent( '   Indent in Listing:  ' ) + theme.emphasis( @list_indent.to_s )
+        puts theme.accent( '   List Levels:  ' ) + theme.emphasis( @list_levels.to_s )
+        puts theme.accent( '   Debug?  ' ) + theme.emphasis( @debug.to_s )
+        puts theme.accent( '   Theme:  ' ) + theme.emphasis( @theme )
+        puts theme.accent( '   Screen Lines:  ' ) + theme.emphasis( Gloo::App::Settings.lines( @engine ).to_s )
+        puts theme.accent( '   Page Size:  ' ) + theme.emphasis( Gloo::App::Settings.page_size( @engine ).to_s )
         self.show_paths
       end
-      
+
       #
       # Show path settings
       #
       def show_paths
-        puts "\n Application Paths:".blue
-        puts '   User Root Path is here:  '.yellow + @user_root.white
-        puts '   Projects Path:  '.yellow + @project_path.white
-        puts '   Extensions Path:  '.yellow + @ext_path.white
-        puts '   Tmp Path:  '.yellow + @tmp_path.white
-        puts '   Debug Path:  '.yellow + @debug_path.white
+        theme = @engine.theme
+        puts theme.heading( "\n Application Paths:" )
+        puts theme.accent( '   User Root Path is here:  ' ) + theme.emphasis( @user_root )
+        puts theme.accent( '   Projects Path:  ' ) + theme.emphasis( @project_path )
+        puts theme.accent( '   Extensions Path:  ' ) + theme.emphasis( @ext_path )
+        puts theme.accent( '   Tmp Path:  ' ) + theme.emphasis( @tmp_path )
+        puts theme.accent( '   Debug Path:  ' ) + theme.emphasis( @debug_path )
         puts "\n"
       end
 
@@ -154,6 +160,9 @@ module Gloo
         @list_levels = settings[ 'gloo' ][ 'list_levels' ]
 
         @debug = settings[ 'gloo' ][ 'debug' ]
+
+        @theme = settings[ 'gloo' ][ 'theme' ]&.strip&.downcase
+        @theme = DEFAULT_THEME unless THEMES.include?( @theme )
       end
 
       #
@@ -184,6 +193,7 @@ module Gloo
             list_indent: 2
             list_levels: 3
             debug: false
+            theme: #{DEFAULT_THEME}
         TEXT
         return str
       end

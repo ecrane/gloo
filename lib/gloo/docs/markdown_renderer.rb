@@ -16,18 +16,18 @@ module Gloo
 
       #
       # Colorize the given markdown text for terminal display.
-      def self.colorize( text )
+      def self.colorize( text, theme )
         in_code = false
         lines = text.split( "\n" ).map do |line|
           if line.start_with?( '```' )
             in_code = !in_code
-            next line.light_black
+            next theme.muted( line )
           end
-          next line.light_black if in_code
-          next line.sub( /^#\s*/, '' ).blue.bold if line.start_with?( '# ' )
-          next line.sub( /^##\s*/, '' ).cyan.bold if line.start_with?( '## ' )
-          next line.cyan if line.start_with?( '### ' ) || line.start_with?( '#### ' )
-          next line.light_black if line =~ /\A-{3,}\z/
+          next theme.muted( line ) if in_code
+          next theme.heading( line.sub( /^#\s*/, '' ) ) if line.start_with?( '# ' )
+          next theme.subheading( line.sub( /^##\s*/, '' ) ) if line.start_with?( '## ' )
+          next theme.subheading( line ) if line.start_with?( '### ' ) || line.start_with?( '#### ' )
+          next theme.muted( line ) if line =~ /\A-{3,}\z/
 
           line
         end

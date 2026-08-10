@@ -105,6 +105,23 @@ gloo:
   # Show debug statements in the log?
   #
   debug: false
+
+  #
+  # Color theme for console output: dark or light.
+  # Match this to your terminal's background.
+  #
+  theme: dark
+```
+
+## Color Theme
+
+Gloo colors its console output (prompts, `help settings`, warnings/errors, listings, the help shell) to be readable against a terminal background. There's no auto-detection — set `theme: dark` or `theme: light` in `gloo.yml` to match your terminal, and it applies everywhere at once. Defaults to `dark` if unset or set to anything else.
+
+To see the current theme and preview both palettes side by side (handy for comparing across terminals before you switch), use the `theme` help topic:
+
+```gloo
+> help
+help> theme
 ```
 
 ## Logging
@@ -134,11 +151,12 @@ Gloo has a built-in `help` verb (shortcut `?`) that enters an interactive help s
 help
 ```
 
-From the `help>` prompt, look up verbs, object types, settings, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, doc page, loaded library, or loaded extension:
+From the `help>` prompt, look up verbs, object types, settings, the color theme, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, doc page, loaded library, or loaded extension:
 
 - `verbs` — list all verbs
 - `objects` — list all object types
 - `settings` — show application settings
+- `theme` — show the current color theme, how to change it, and a preview of both palettes
 - `extensions` — list loaded extensions (only loaded extensions are shown; use `load ext {name}` first)
 - `libraries` — list loaded libraries (only loaded libraries are shown; use `load lib {name}` first)
 - `docs` — list all narrative doc pages (this page and its siblings)
@@ -154,6 +172,7 @@ From the `help>` prompt, look up verbs, object types, settings, extensions, libr
 help> verbs
 help> verb put
 help> object container
+help> theme
 help> docs
 help> doc getting_started
 help> library db

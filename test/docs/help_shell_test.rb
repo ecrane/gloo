@@ -41,6 +41,30 @@ class HelpShellTest < BaseEngineTest
     assert_match( /Application Settings/, out )
   end
 
+  def test_theme_shows_current_theme
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'theme' ] ) }
+    assert_match( /Current theme:/, out )
+    assert_match( /dark/, out )
+  end
+
+  def test_theme_shows_how_to_change_it
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'theme' ] ) }
+    assert_match( /gloo\.yml/, out )
+    assert_match( /theme: dark/, out )
+  end
+
+  def test_theme_previews_both_palettes
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    out, = capture_io { shell.execute_once( [ 'theme' ] ) }
+    assert_match( /Dark palette/, out )
+    assert_match( /Light palette/, out )
+    Gloo::App::Theme::ROLES.each do |role|
+      assert_match( /#{role}/, out )
+    end
+  end
+
   def test_extensions_and_libraries_run_without_error
     shell = Gloo::Docs::HelpShell.new( @engine )
     capture_io { shell.execute_once( [ 'extensions' ] ) }

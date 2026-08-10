@@ -18,6 +18,7 @@ module Gloo
       PAGER_CMD = 'less -R -F -X'.freeze
 
       attr_reader :prompt, :table
+      attr_accessor :theme
 
       #
       # Set up Platform.
@@ -25,6 +26,10 @@ module Gloo
       def initialize
         @prompt = Gloo::App::Prompt.new( self )
         @table = Gloo::App::Table.new( self )
+
+        # Default theme, in case this platform is ever used
+        # standalone, without an Engine to set the real one.
+        @theme = Gloo::App::Theme.new
       end
 
       #

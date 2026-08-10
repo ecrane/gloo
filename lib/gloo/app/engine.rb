@@ -31,15 +31,30 @@ module Gloo
         @args = Args.new( self, context.params )
         @settings = Settings.new( self, context.user_root )
 
+        # Platform (and its theme) needs to be ready before Log is
+        # constructed - Log reads engine.theme, which reads through
+        # to platform.theme, in its own initialize.
+        @platform = context.platform
+        @platform.theme = Gloo::App::Theme.new( @settings.theme )
+
         @log = context.log.new( self, @args.quiet? )
         @log.debug "log (class: #{@log.class.name}) in use ..."
-
-        @platform = context.platform
         @log.debug "platform (class: #{@platform.class.name}) in use ..."
 
         @handling_exception = false
         @handling_error = false
         @log.debug 'engine intialized...'
+      end
+
+      #
+      # Get the active theme. Platform is the single source of
+      # truth for it (Prompt/Table only hold a @platform reference,
+      # not an @engine one) - this just reads through to that,
+      # rather than keeping a second ivar that could drift out of
+      # sync if something reassigns platform.theme directly.
+      #
+      def theme
+        return @platform.theme
       end
 
       #

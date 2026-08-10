@@ -73,16 +73,17 @@ module Gloo
       # Show object in standard format.
       #
       def show_obj( obj, indent = '  ' )
+        theme = @engine.theme
         if obj.multiline_value? && obj.value_is_array?
-          str = "#{indent}#{obj.name}".white
-          str << " [#{obj.type_display}] : ".yellow
+          str = theme.emphasis( "#{indent}#{obj.name}" )
+          str << theme.accent( " [#{obj.type_display}] : " )
           @engine.log.show str
           obj.value.each do |line|
             @engine.log.show "#{indent}  #{line}"
           end
         else
-          str = "#{indent}#{obj.name}".white
-          str << " [#{obj.type_display}] : ".yellow
+          str = theme.emphasis( "#{indent}#{obj.name}" )
+          str << theme.accent( " [#{obj.type_display}] : " )
           str << "#{obj.value}"
           @engine.log.show str
         end

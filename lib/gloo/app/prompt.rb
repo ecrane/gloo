@@ -87,7 +87,8 @@ module Gloo
         dt = DateTime.now
         d = dt.strftime( '%Y.%m.%d' )
         t = dt.strftime( '%I:%M:%S' )
-        return "#{'gloo'.blue} #{d.yellow} #{t.white} >"
+        theme = @platform.theme
+        return "#{theme.heading( 'gloo' )} #{theme.accent( d )} #{theme.emphasis( t )} >"
       end
 
     end

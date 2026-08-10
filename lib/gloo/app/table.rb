@@ -3,7 +3,6 @@
 #
 # CLI input.
 #
-require 'colorize'
 require 'terminal-table'
 
 module Gloo
@@ -28,14 +27,19 @@ module Gloo
       #
       # Show the given table data.
       #
+      # Deliberately left uncolored: box-drawing borders and text read
+      # fine against the terminal's own default colors, and forcing a
+      # fixed foreground/background (as this used to do) fought
+      # whatever theme the terminal was actually running.
+      #
       def show( headers, data, title = nil )
         unless title.blank?
-          table = Terminal::Table.new( 
+          table = Terminal::Table.new(
             :title => title, :headings => headers, :rows => data )
         else
           table = Terminal::Table.new( :headings => headers, :rows => data )
         end
-        puts table.to_s.colorize( color: :white, background: :black )
+        puts table.to_s
       end
 
       

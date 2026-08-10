@@ -38,6 +38,7 @@ module Gloo
         @engine = engine
         @quiet = quiet
         @debug = engine.settings.debug
+        @theme = engine.theme
 
         create_loggers
 
@@ -160,7 +161,7 @@ module Gloo
       def warn( msg )
         @logger.warn msg
         @error.warn msg
-        puts msg.yellow unless @quiet
+        puts @theme.warn( msg ) unless @quiet
       end
 
       #
@@ -175,11 +176,11 @@ module Gloo
         if ex
           @error.error ex.message
           @error.error ex.backtrace
-          puts msg.red unless @quiet
-          puts ex.message.red unless @quiet
+          puts @theme.error( msg ) unless @quiet
+          puts @theme.error( ex.message ) unless @quiet
           puts ex.backtrace unless @quiet
         else
-          puts msg.red unless @quiet
+          puts @theme.error( msg ) unless @quiet
         end
       end
 
