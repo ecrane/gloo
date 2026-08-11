@@ -9,6 +9,15 @@ module Gloo
   module Core
     class Tokens
 
+      # Keywords that open an inline function call, eg. invoke( ... )
+      # or ~>( ... ). Kept here since Tokens is where they get
+      # recognized as a single bounded token; Parser#split_params
+      # reuses this same list to avoid mistaking a trailing call for
+      # its unrelated trailing-optional-param convention.
+      CALL_OPENERS = %w[invoke ~>].freeze
+
+      QUOTE_CHARS = [ '"', "'" ].freeze
+
       attr_reader :cmd, :tokens
 
       # ---------------------------------------------------------------------
@@ -142,8 +151,19 @@ module Gloo
       #
       # Create a list of token from the given string.
       #
+      # An inline call (invoke( ... ) / ~>( ... )) is checked for
+      # first since it needs to be quote-aware in its own right (a
+      # call's args can include a quoted string) - see
+      # find_call_range. Falls through to the original quote-then-
+      # plain-split handling, unchanged, when there's no call.
+      #
       def tokenize( str )
-        if str.index( '"' )
+        range = find_call_range( str )
+        if range
+          tokenize( str[ 0...range.first ] ) if range.first.positive?
+          @tokens << str[ range ]
+          tokenize( str[ range.last + 1..-1 ] ) if range.last + 1 < str.length
+        elsif str.index( '"' )
           i = str.index( '"' )
           j = str.index( '"', i + 1 )
           j ||= str.length
@@ -162,6 +182,66 @@ module Gloo
         else
           str.strip.split( ' ' ).each { |t| @tokens << t }
         end
+      end
+
+      #
+      # Find the char range of the first top-level (not inside a
+      # quoted string) invoke(...)/~>(...) call in str. Returns nil
+      # if there isn't one, or it's never properly closed.
+      #
+      def find_call_range( str )
+        i = 0
+        while i < str.length
+          ch = str[ i ]
+
+          if QUOTE_CHARS.include?( ch )
+            close = str.index( ch, i + 1 )
+            return nil unless close
+
+            i = close + 1
+            next
+          end
+
+          CALL_OPENERS.each do |kw|
+            opener = "#{kw}("
+            next unless str[ i, opener.length ] == opener
+            next unless i.zero? || str[ i - 1 ] =~ /\s/
+
+            close = find_matching_close_paren( str, i + opener.length - 1 )
+            return ( i..close ) if close
+          end
+
+          i += 1
+        end
+        return nil
+      end
+
+      #
+      # Given the index of an open paren, find the index of its
+      # balancing close paren - skipping over quoted substrings so
+      # a stray paren character inside a quoted arg doesn't throw
+      # off the depth count. Returns nil if it's never closed.
+      #
+      def find_matching_close_paren( str, open_index )
+        depth = 0
+        i = open_index
+        while i < str.length
+          ch = str[ i ]
+          if QUOTE_CHARS.include?( ch )
+            close = str.index( ch, i + 1 )
+            return nil unless close
+
+            i = close + 1
+            next
+          elsif ch == '('
+            depth += 1
+          elsif ch == ')'
+            depth -= 1
+            return i if depth.zero?
+          end
+          i += 1
+        end
+        return nil
       end
 
     end

@@ -65,4 +65,25 @@ class FunctionTest < BaseEngineTest
     assert_equal '', result
   end
 
+  def test_invoke_sets_it_on_success
+    @engine.parser.run 'load ctrl/invoke'
+    func = @engine.heap.root.find_child 'f'
+
+    result = func.invoke( [] )
+    assert_equal 7, result
+    assert_equal 7, @engine.heap.it.value
+    refute @engine.error?
+  end
+
+  def test_invoke_does_not_set_it_on_failure
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.heap.it.set_to 'unchanged'
+    func = @engine.heap.root.find_child 'failing'
+
+    result = func.invoke( [] )
+    assert_nil result
+    assert @engine.error?
+    assert_equal 'unchanged', @engine.heap.it.value
+  end
+
 end

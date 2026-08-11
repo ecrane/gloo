@@ -161,23 +161,36 @@ module Gloo
       #    Messages
       # ---------------------------------------------------------------------
 
-      # 
+      #
       # Invoke the function, run the script and return the result.
-      # 
+      #
+      # If on_invoke itself hits an error, it is left alone rather
+      # than being clobbered with an unreliable result - callers can
+      # tell this happened because the engine is left in an error
+      # state (@engine.heap.error), same as any other failed verb.
+      #
       def invoke args
         @engine.log.debug "Invoking function: #{name}"
 
         set_params args if args
-        run_on_invoke
 
-        if @engine.running_app&.obj&.embedded_renderer 
+        @engine.heap.error.start_tracking
+        run_on_invoke
+        failed = @engine.heap.error.error_count.positive?
+
+        if failed
+          run_after_invoke
+          return nil
+        end
+
+        if @engine.running_app&.obj&.embedded_renderer
           return_value = @engine.running_app.obj.embedded_renderer.render result, params_hash
         else
           return_value = result
         end
         @engine.heap.it.set_to return_value
         run_after_invoke
-        
+
         return return_value
       end
 

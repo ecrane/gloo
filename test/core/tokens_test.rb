@@ -184,4 +184,44 @@ class TokensTest < BaseTest
     assert_equal 'show 2 + 5', str
   end
 
+  def test_tokenize_with_inline_invoke_call
+    o = Gloo::Core::Tokens.new( 'show invoke( functions.add 3 4 )' )
+    assert_equal 2, o.token_count
+    assert_equal 'show', o.first
+    assert_equal 'invoke( functions.add 3 4 )', o.second
+  end
+
+  def test_tokenize_with_inline_shortcut_call
+    o = Gloo::Core::Tokens.new( 'show ~>( functions.add 3 4 )' )
+    assert_equal 2, o.token_count
+    assert_equal '~>( functions.add 3 4 )', o.second
+  end
+
+  def test_tokenize_with_inline_call_mid_expression
+    o = Gloo::Core::Tokens.new( 'put invoke( functions.add 3 4 ) into x' )
+    assert_equal 4, o.token_count
+    assert_equal 'put', o.first
+    assert_equal 'invoke( functions.add 3 4 )', o.at( 1 )
+    assert_equal 'into', o.at( 2 )
+    assert_equal 'x', o.at( 3 )
+  end
+
+  def test_tokenize_with_inline_call_containing_quoted_arg
+    o = Gloo::Core::Tokens.new( 'show invoke( functions.greet "Bob Smith" )' )
+    assert_equal 2, o.token_count
+    assert_equal 'invoke( functions.greet "Bob Smith" )', o.second
+  end
+
+  def test_tokenize_does_not_treat_a_word_ending_in_invoke_as_a_call
+    o = Gloo::Core::Tokens.new( 'show reinvoke( x )' )
+    assert_equal 4, o.token_count
+    assert_equal 'reinvoke(', o.at( 1 )
+  end
+
+  def test_tokenize_with_unclosed_call_falls_back_to_plain_tokens
+    o = Gloo::Core::Tokens.new( 'show invoke( functions.add 3 4' )
+    assert_equal 5, o.token_count
+    assert_equal 'invoke(', o.at( 1 )
+  end
+
 end

@@ -47,6 +47,7 @@ module Gloo
         end
 
         return @left.value if @left.is_a? Gloo::Core::Literal
+        return @left.value if @left.is_a? Gloo::Expr::Call
         return resolve_ref @left if @left.is_a? Gloo::Core::Pn
 
         return @left
@@ -75,6 +76,7 @@ module Gloo
       #
       def evaluate_sym( sym )
         return sym.value if sym.is_a? Gloo::Core::Literal
+        return sym.value if sym.is_a? Gloo::Expr::Call
         return resolve_ref sym if sym.is_a? Gloo::Core::Pn
 
         return sym
@@ -109,6 +111,7 @@ module Gloo
         return LInteger.new( token ) if LInteger.integer?( token )
         return LString.new( token ) if LString.string?( token )
         return LDecimal.new( token ) if LDecimal.decimal?( token )
+        return Gloo::Expr::Call.new( @engine, token ) if Gloo::Expr::Call.call?( token )
 
         # last chance: an Object reference
         return Gloo::Core::Pn.new( @engine, token )

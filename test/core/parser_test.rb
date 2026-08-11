@@ -44,4 +44,34 @@ class ParserTest < BaseEngineTest
     assert_equal 'p', params
   end
 
+  def test_splitting_params_leaves_inline_invoke_call_alone
+    cmd, params = @engine.parser.split_params 'show invoke( functions.add 3 4 )'
+    assert_equal 'show invoke( functions.add 3 4 )', cmd
+    refute params
+  end
+
+  def test_splitting_params_leaves_inline_shortcut_call_alone
+    cmd, params = @engine.parser.split_params 'show ~>( functions.add 3 4 )'
+    assert_equal 'show ~>( functions.add 3 4 )', cmd
+    refute params
+  end
+
+  def test_splitting_params_still_works_with_trailing_call_and_color
+    cmd, params = @engine.parser.split_params 'show invoke( functions.add 3 4 ) (blue)'
+    assert_equal 'show invoke( functions.add 3 4 )', cmd
+    assert_equal 'blue', params
+  end
+
+  def test_splitting_params_with_unbalanced_parens_leaves_cmd_alone
+    cmd, params = @engine.parser.split_params 'test))'
+    assert_equal 'test))', cmd
+    refute params
+  end
+
+  def test_splitting_params_matches_the_outer_pair_with_nested_parens
+    cmd, params = @engine.parser.split_params 'show f( (a) )'
+    assert_equal 'show f', cmd
+    assert_equal '(a) ', params
+  end
+
 end

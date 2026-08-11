@@ -18,3 +18,76 @@ tests [can] :
           invoke tests.verbs.invoke.f
           eval it = 42
           assert "expected it to be 42"
+
+      add [ƒ] :
+        on_invoke [script] :
+          put ^.params.x + ^.params.y into ^.result
+        params [can] :
+          x [int] :
+          y [int] :
+        result [int] :
+
+      total [int] :
+
+      inline_invoke_in_show_test [test] :
+        description [string] : Inline invoke( ... ) works inside show.
+        on_test [script] :
+          show invoke( tests.verbs.invoke.add 3 4 )
+          eval it = 7
+          assert "expected it to be 7"
+
+      inline_shortcut_in_show_test [test] :
+        description [string] : Inline ~>( ... ) works inside show, same as invoke( ... ).
+        on_test [script] :
+          show ~>( tests.verbs.invoke.add 3 4 )
+          eval it = 7
+          assert "expected it to be 7"
+
+      inline_invoke_with_operator_test [test] :
+        description [string] : Inline invoke( ... ) composes with an operator.
+        on_test [script] :
+          show "Total: " + invoke( tests.verbs.invoke.add 3 4 )
+          eval it = "Total: 7"
+          assert "expected it to be 'Total: 7'"
+
+      inline_invoke_in_put_test [test] :
+        description [string] : Inline invoke( ... ) works inside put ... into.
+        on_test [script] :
+          put 0 into ^^.total
+          put invoke( tests.verbs.invoke.add 3 4 ) into ^^.total
+          eval ^^.total = 7
+          assert "expected total to be 7"
+
+      inline_invoke_in_if_test [test] :
+        description [string] : Inline invoke( ... ) works inside if.
+        on_test [script] :
+          eval false
+          if invoke( tests.verbs.invoke.add 3 4 ) = 7 then eval true
+          assert "expected the if branch to have run"
+
+      err_fired [bool] : false
+
+      on_error [script] :
+        put true into ^.err_fired
+
+      inline_invoke_error_test [test] :
+        description [string] : Inline invoke( ... ) reports an error for an unresolved target, same as the standalone verb.
+        on_test [script] :
+          put false into ^^.err_fired
+          show invoke( tests.verbs.invoke.no_such_function )
+          eval ^^.err_fired = true
+          assert "expected on_error to have fired for an unresolved inline call target"
+
+      greet [ƒ] :
+        on_invoke [script] :
+          put 'Hi, ' + ^.params.name into ^.result
+        params [can] :
+          name [string] :
+        result [string] :
+
+      inline_invoke_with_quoted_arg_test [test] :
+        description [string] : A quoted string arg inside invoke( ... ) is passed through as one arg, not split on its internal space.
+        on_test [script] :
+          show invoke( tests.verbs.invoke.greet "Bob Smith" )
+          eval it = "Hi, Bob Smith"
+          assert "expected it to be 'Hi, Bob Smith'"

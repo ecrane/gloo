@@ -59,4 +59,41 @@ class ExpressionTest < BaseEngineTest
     assert_equal 15, result
   end
 
+  def test_inline_invoke_call_as_whole_expression
+    @engine.parser.run 'load ctrl/invoke'
+    o = Gloo::Core::Tokens.new( 'invoke( add 3 4 )' )
+    e = Gloo::Expr::Expression.new( @engine, o.tokens )
+    assert_equal 7, e.evaluate
+  end
+
+  def test_inline_shortcut_call_as_whole_expression
+    @engine.parser.run 'load ctrl/invoke'
+    o = Gloo::Core::Tokens.new( '~>( add 3 4 )' )
+    e = Gloo::Expr::Expression.new( @engine, o.tokens )
+    assert_equal 7, e.evaluate
+  end
+
+  def test_inline_invoke_call_combined_with_operator
+    @engine.parser.run 'load ctrl/invoke'
+    o = Gloo::Core::Tokens.new( '"Total: " + invoke( add 3 4 )' )
+    e = Gloo::Expr::Expression.new( @engine, o.tokens )
+    assert_equal 'Total: 7', e.evaluate
+  end
+
+  def test_inline_invoke_call_with_quoted_arg
+    @engine.parser.run 'load ctrl/invoke'
+    o = Gloo::Core::Tokens.new( 'invoke( greet "Bob Smith" )' )
+    e = Gloo::Expr::Expression.new( @engine, o.tokens )
+    assert_equal 'Hi, Bob Smith', e.evaluate
+  end
+
+  def test_inline_invoke_call_error_propagates
+    @engine.parser.run 'load ctrl/invoke'
+    o = Gloo::Core::Tokens.new( 'invoke( no.such.function )' )
+    e = Gloo::Expr::Expression.new( @engine, o.tokens )
+    result = e.evaluate
+    assert_nil result
+    assert @engine.error?
+  end
+
 end

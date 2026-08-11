@@ -6,3 +6,38 @@ f [ƒ] :
   on_invoke [script] :
     put 7 into f.result
   result [int] :
+
+#
+# Function with declared params, for param-count-mismatch tests.
+#
+add [ƒ] :
+  on_invoke [script] :
+    put ^.params.x + ^.params.y into ^.result
+  params [can] :
+    x [int] :
+    y [int] :
+  result [int] :
+
+#
+# Not a function - target for the "not a function" error test.
+#
+not_a_function [string] : hello
+
+#
+# Function with a string param, for quoted-arg inline call tests.
+#
+greet [ƒ] :
+  on_invoke [script] :
+    put 'Hi, ' + ^.params.name into ^.result
+  params [can] :
+    name [string] :
+  result [string] :
+
+#
+# Function whose on_invoke script fails, for invocation-failure tests.
+#
+failing [ƒ] :
+  params [can] :
+  on_invoke [script] :
+    put 1 into no.such.object
+  result [int] :

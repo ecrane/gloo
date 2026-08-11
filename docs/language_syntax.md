@@ -5,6 +5,7 @@
 - Color
 - Errors
 - Events
+- Function Calls
 - Gloo System Objects
 - Here
 - It
@@ -145,6 +146,30 @@ error_data [can] :
 ```
 
 See also: Load, Reload, Unload, Save, Quit.
+
+## Function Calls
+
+The `invoke` verb (shortcut `~>`) calls a function object (`[ƒ]`) as a standalone command, space-separated params:
+
+```gloo
+invoke functions.add 3 4
+show it
+```
+
+`invoke( ... )` and `~>( ... )` are the inline forms of the same thing — usable anywhere an expression is evaluated (`show`, `put ... into`, `if`, `unless`, `eval`, and more), not just as a standalone command:
+
+```gloo
+show invoke( functions.add 3 4 )
+put ~>( functions.add 3 4 ) into total
+show "Total: " + invoke( functions.add 3 4 )
+if invoke( checks.is_ready ) then show 'ready'
+```
+
+`invoke(...)` and `~>(...)` are exactly equivalent — just the full keyword and its shortcut, same as the standalone verb. Params stay space-separated inside the parens; each one is evaluated as a single token (a literal or object reference), same as the standalone verb — not a multi-token sub-expression, so `invoke( f 3+4 )` won't parse `3+4` as one param.
+
+The parens must immediately follow the keyword with no space (`invoke(`, not `invoke (`) — that's what tells gloo it's a function call rather than `show`'s unrelated trailing `(color)` syntax, which always has a space before the paren.
+
+See also: Color.
 
 ## Gloo System Objects
 
