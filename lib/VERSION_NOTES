@@ -1,3 +1,9 @@
+6.2.0 - 2026.08.18
+ - Adds light | dark mode option for terminal output.
+ - Adds inline function invocation.
+ - Adds split messages for strings and text objects.
+
+
 6.1.0 - 2026.08.04
  - Adds narrative documentation: 10 pages in `docs/`, covering getting started, application, language objects/syntax/scripting, operators, iterators, objects, verbs, and plugins
  - Adds an in-app interactive help shell (`help`/`?`) to look up verbs, objects, settings, libraries, extensions, and doc pages, with tab completion
