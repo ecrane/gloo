@@ -59,6 +59,7 @@ class StringTest < BaseEngineTest
     assert msgs.include?( 'split' )
     assert msgs.include?( 'splitl' )
     assert msgs.include?( 'splitr' )
+    assert msgs.include?( 'split_list' )
   end
 
   def test_size_msg
@@ -260,6 +261,124 @@ class StringTest < BaseEngineTest
     o.run
     assert_equal 'two three', @engine.heap.it.value
     assert_equal 'one two three', s.value
+  end
+
+  def test_split_list_msg_creates_children
+    o = @engine.parser.parse_immediate 'create s as string : "one,two,three"'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst as can'
+    o.run
+
+    o = @engine.parser.parse_immediate "tell s to split_list (',' dst)"
+    o.run
+
+    assert_equal 3, @engine.heap.it.value
+    dst = @engine.heap.root.find_child( 'dst' )
+    assert_equal 3, dst.child_count
+    assert_equal 'one', dst.children[ 0 ].value
+    assert_equal 'two', dst.children[ 1 ].value
+    assert_equal 'three', dst.children[ 2 ].value
+    assert_equal 'untyped', dst.children[ 0 ].type_display
+    assert_equal 'one,two,three', @engine.heap.root.find_child( 's' ).value
+  end
+
+  def test_split_list_msg_reuses_existing_children_by_position
+    o = @engine.parser.parse_immediate 'create s as string : "a,b"'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst as can'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst.first as string : x'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst.second as string : y'
+    o.run
+
+    o = @engine.parser.parse_immediate "tell s to split_list (',' dst)"
+    o.run
+
+    dst = @engine.heap.root.find_child( 'dst' )
+    assert_equal 2, dst.child_count
+    assert_equal 'first', dst.children[ 0 ].name
+    assert_equal 'a', dst.children[ 0 ].value
+    assert_equal 'second', dst.children[ 1 ].name
+    assert_equal 'b', dst.children[ 1 ].value
+  end
+
+  def test_split_list_msg_creates_extra_children_for_extra_parts
+    o = @engine.parser.parse_immediate 'create s as string : "a,b,c"'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst as can'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst.first as string : x'
+    o.run
+
+    o = @engine.parser.parse_immediate "tell s to split_list (',' dst)"
+    o.run
+
+    dst = @engine.heap.root.find_child( 'dst' )
+    assert_equal 3, dst.child_count
+    assert_equal 'a', dst.children[ 0 ].value
+    assert_equal 'b', dst.children[ 1 ].value
+    assert_equal 'c', dst.children[ 2 ].value
+    assert_equal 3, @engine.heap.it.value
+  end
+
+  def test_split_list_msg_leaves_extra_existing_children_alone
+    o = @engine.parser.parse_immediate 'create s as string : "a"'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst as can'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst.first as string : x'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst.second as string : y'
+    o.run
+
+    o = @engine.parser.parse_immediate "tell s to split_list (',' dst)"
+    o.run
+
+    dst = @engine.heap.root.find_child( 'dst' )
+    assert_equal 2, dst.child_count
+    assert_equal 'a', dst.children[ 0 ].value
+    assert_equal 'y', dst.children[ 1 ].value
+    assert_equal 1, @engine.heap.it.value
+  end
+
+  def test_split_list_msg_via_alias
+    o = @engine.parser.parse_immediate 'create s as string : "a,b"'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst as can'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst_alias as alias : dst'
+    o.run
+
+    o = @engine.parser.parse_immediate "tell s to split_list (',' dst_alias)"
+    o.run
+
+    dst = @engine.heap.root.find_child( 'dst' )
+    assert_equal 2, dst.child_count
+    assert_equal 'a', dst.children[ 0 ].value
+    assert_equal 'b', dst.children[ 1 ].value
+  end
+
+  def test_split_list_msg_missing_target_path
+    o = @engine.parser.parse_immediate 'create s as string : "a,b"'
+    o.run
+
+    o = @engine.parser.parse_immediate "tell s to split_list (',' no.such.dst)"
+    o.run
+
+    refute @engine.heap.it.value
+  end
+
+  def test_split_list_msg_target_not_a_container
+    o = @engine.parser.parse_immediate 'create s as string : "a,b"'
+    o.run
+    o = @engine.parser.parse_immediate 'create dst as string : x'
+    o.run
+
+    o = @engine.parser.parse_immediate "tell s to split_list (',' dst)"
+    o.run
+
+    refute @engine.heap.it.value
   end
 
   def test_count_chars_msg

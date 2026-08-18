@@ -7,6 +7,7 @@ tests [can] :
     string [can] :
 
       s [string] :
+      dst [can] :
 
       up_down [test] :
         description [string] : Convert string case
@@ -79,3 +80,19 @@ tests [can] :
           tell ^^.s to split (8 100)
           eval it = 'three'
           assert "expected split (8 100) to clamp to 'three'"
+
+      split_list [test] :
+        description [string] : Split a string into children of a target container
+        on_test [script] :
+          put 'one,two,three' into ^^.s
+          tell ^^.s to split_list (',' ^^.dst)
+          eval it = 3
+          assert "expected split_list to put the part count into it"
+          eval ^^.dst.1 = 'one'
+          assert "expected dst.1 to equal 'one'"
+          eval ^^.dst.2 = 'two'
+          assert "expected dst.2 to equal 'two'"
+          eval ^^.dst.3 = 'three'
+          assert "expected dst.3 to equal 'three'"
+          eval ^^.s = 'one,two,three'
+          assert "expected split_list to leave the string unchanged"

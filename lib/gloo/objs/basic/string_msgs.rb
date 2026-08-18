@@ -49,11 +49,12 @@ module Gloo
           'gen_hex ({len}) — Set the value of the string to a newly generated, random hex string. The {len} parameter is optional; the length is 10 if not specified. This message changes the value of the string.',
           'gen_base64 ({len}) — Set the value of the string to a newly generated, random base64 string. The {len} parameter is optional; the length is 12 if not specified. This message changes the value of the string.',
           'trim — Strip whitespace from the beginning and end of the string. This message changes the value of the string. It will have the trimmed string.',
-          'sub ({from}, {to}) — Substitute the first occurrence of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
-          'gsub ({from}, {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
-          'split ({from}, {to}) — Get the substring from index {from} up to (not including) index {to}. Indexes are 0-based; out-of-range indexes are clamped to the start or end of the string. Both parameters are required. Does not change the value of the string. It will have the substring.',
+          'sub ({from} {to}) — Substitute the first occurrence of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
+          'gsub ({from} {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
+          'split ({from} {to}) — Get the substring from index {from} up to (not including) index {to}. Indexes are 0-based; out-of-range indexes are clamped to the start or end of the string. Both parameters are required. Does not change the value of the string. It will have the substring.',
           'splitl ({index}) — Get the substring to the left of index {index} (same as split (0, {index})). A parameter is required. Does not change the value of the string. It will have the substring.',
           'splitr ({index}) — Get the substring from index {index} to the end of the string (same as split ({index}, size)). A parameter is required. Does not change the value of the string. It will have the substring.',
+          'split_list ({delim} {dst.path}) — Split the string by {delim} and put the parts into children of the container at {dst.path} (or an alias that points to one), one part per child, in order. Existing children are matched by position and have their values set; extra parts get new (untyped) children, numbered from 1; extra existing children are left alone. Both parameters are required. Does not change the value of the string. It will have the number of parts.',
           'page — Show the value in a pager (less), for viewing long content a screen at a time.'
         ]
       end
@@ -224,6 +225,45 @@ module Gloo
           @engine.heap.it.set_to false
           return false
         end
+      end
+
+      #
+      # Split the string by the given delimiter and put the parts into
+      # children of the target container, one part per child, in order.
+      # The target is a path to a container, or to an alias that points
+      # to one. Existing children are matched by position (not name) and
+      # have their values set; if there are more parts than children,
+      # new (untyped) children are created for the extras, numbered
+      # from 1. Existing children beyond the part count are left alone.
+      # The string's own value is unchanged; the number of parts is put
+      # into 'it'.
+      #
+      def msg_split_list
+        return unless value
+
+        if @params&.token_count.to_i < 2
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+
+        expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
+        delim = expr.evaluate
+
+        target = split_list_target( @params.tokens.last )
+        return false unless target
+
+        parts = value.split( delim )
+        existing = target.children
+        parts.each_with_index do |part, index|
+          child = existing[ index ]
+          child ||= target.find_add_child( ( index + 1 ).to_s, 'untyped' )
+          child.set_value part
+        end
+
+        count = parts.count
+        @engine.heap.it.set_to count
+        return count
       end
 
       #
@@ -451,6 +491,31 @@ module Gloo
       end
 
       private
+
+      #
+      # Resolve the target container path for split_list. The path may
+      # point directly at a container, or at an alias that points to
+      # one. Returns nil (and logs an error, setting 'it' to false)
+      # if the path doesn't exist or doesn't resolve to a container.
+      #
+      def split_list_target( token )
+        pn = Gloo::Core::Pn.new( @engine, token )
+        unless pn&.exists?
+          @engine.log.error 'Target container path does not exist!'
+          @engine.heap.it.set_to false
+          return nil
+        end
+
+        target = pn.resolve
+        target = Gloo::Objs::Alias.resolve_alias( @engine, target )
+        unless target&.is_container?
+          @engine.log.error 'Target for split_list must be a container!'
+          @engine.heap.it.set_to false
+          return nil
+        end
+
+        return target
+      end
 
       #
       # Get the substring from index {from} up to (not including) index {to}.
