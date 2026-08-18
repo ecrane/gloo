@@ -42,3 +42,40 @@ tests [can] :
           tell ^^.s to count_chars
           eval it = 5
           assert "expected 5 characters"
+
+      split [test] :
+        description [string] : Get a substring between two indexes
+        on_test [script] :
+          put 'one two three' into ^^.s
+          tell ^^.s to split (4 7)
+          eval it = 'two'
+          assert "expected split (4 7) to equal 'two'"
+          eval ^^.s = 'one two three'
+          assert "expected split to leave the string unchanged"
+
+      splitl [test] :
+        description [string] : Get the substring to the left of an index
+        on_test [script] :
+          put 'one two three' into ^^.s
+          tell ^^.s to splitl (7)
+          eval it = 'one two'
+          assert "expected splitl (7) to equal 'one two'"
+
+      splitr [test] :
+        description [string] : Get the substring from an index to the end
+        on_test [script] :
+          put 'one two three' into ^^.s
+          tell ^^.s to splitr (4)
+          eval it = 'two three'
+          assert "expected splitr (4) to equal 'two three'"
+
+      split_out_of_range [test] :
+        description [string] : Out-of-range split indexes clamp to the string's bounds
+        on_test [script] :
+          put 'one two three' into ^^.s
+          tell ^^.s to split (-5 4)
+          eval it = 'one '
+          assert "expected split (-5 4) to clamp to 'one '"
+          tell ^^.s to split (8 100)
+          eval it = 'three'
+          assert "expected split (8 100) to clamp to 'three'"

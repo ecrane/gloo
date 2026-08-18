@@ -97,6 +97,9 @@ module Gloo
             'trim — Strip whitespace from the beginning and end of the string. This message changes the value of the string. It will have the trimmed string.',
             'sub ({from}, {to}) — Substitute the first occurrence of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
             'gsub ({from}, {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
+            'split ({from}, {to}) — Get the substring from index {from} up to (not including) index {to}. Indexes are 0-based; out-of-range indexes are clamped to the start or end of the string. Both parameters are required. Does not change the value of the string. It will have the substring.',
+            'splitl ({index}) — Get the substring to the left of index {index} (same as split (0, {index})). A parameter is required. Does not change the value of the string. It will have the substring.',
+            'splitr ({index}) — Get the substring from index {index} to the end of the string (same as split ({index}, size)). A parameter is required. Does not change the value of the string. It will have the substring.',
             'page — Show the value in a pager (less), for viewing long content a screen at a time.'
           ],
           :examples => <<~EXAMPLES.strip

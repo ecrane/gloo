@@ -120,7 +120,76 @@ module Gloo
         end
       end
 
-      # 
+      #
+      # Get the substring from index {from} up to (not including) index {to}.
+      # Indexes are 0-based. Out-of-range indexes are clamped to the
+      # beginning or end of the string. Does not change the string's value.
+      #
+      def msg_split
+        return '' unless value
+
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
+          from = expr.evaluate.to_i
+          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
+          to = expr.evaluate.to_i
+
+          result = clamped_substring( from, to )
+          @engine.heap.it.set_to result
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+      end
+
+      #
+      # Get the substring to the left of (not including) index {index}.
+      # Same as split( 0, index ). Does not change the string's value.
+      #
+      def msg_splitl
+        return '' unless value
+
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          index = expr.evaluate.to_i
+
+          result = clamped_substring( 0, index )
+          @engine.heap.it.set_to result
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+      end
+
+      #
+      # Get the substring from index {index} to the end of the string.
+      # Same as split( index, size ). Does not change the string's value.
+      #
+      def msg_splitr
+        return '' unless value
+
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          index = expr.evaluate.to_i
+
+          result = clamped_substring( index, value.length )
+          @engine.heap.it.set_to result
+          return result
+        else
+          # Error
+          @engine.log.error MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+      end
+
+      #
       # Does the string contain the given string?
       #
       # This was formerly an overload of obj.contains?
@@ -342,6 +411,25 @@ module Gloo
         return unless value
 
         @engine.platform.page( value )
+      end
+
+      private
+
+      #
+      # Get the substring from index {from} up to (not including) index {to}.
+      # Out-of-range indexes are clamped to the string's own bounds (0 and
+      # its length), rather than raising an error. A degenerate range
+      # (from at or past to) returns an empty string.
+      #
+      def clamped_substring( from, to )
+        len = value.length
+        from = 0 if from.negative?
+        from = len if from > len
+        to = 0 if to.negative?
+        to = len if to > len
+        return '' if from >= to
+
+        return value[ from...to ]
       end
 
     end

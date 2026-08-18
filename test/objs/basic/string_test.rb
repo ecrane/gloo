@@ -55,6 +55,10 @@ class StringTest < BaseEngineTest
 
     assert msgs.include?( 'encode64' )
     assert msgs.include?( 'decode64' )
+
+    assert msgs.include?( 'split' )
+    assert msgs.include?( 'splitl' )
+    assert msgs.include?( 'splitr' )
   end
 
   def test_size_msg
@@ -208,6 +212,54 @@ class StringTest < BaseEngineTest
     o = @engine.parser.parse_immediate "check s for gsub ('a' 'x')"
     o.run
     assert_equal 'xxbbxx', @engine.heap.it.value
+  end
+
+  def test_split_msg
+    o = @engine.parser.parse_immediate 'create s as string : "one two three"'
+    o.run
+    s = @engine.heap.root.children.first
+    o = @engine.parser.parse_immediate "check s for split (4 7)"
+    o.run
+    assert_equal 'two', @engine.heap.it.value
+    assert_equal 'one two three', s.value
+  end
+
+  def test_split_msg_clamps_out_of_range_indexes
+    o = @engine.parser.parse_immediate 'create s as string : "one two three"'
+    o.run
+    s = @engine.heap.root.children.first
+
+    o = @engine.parser.parse_immediate "check s for split (-5 4)"
+    o.run
+    assert_equal 'one ', @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for split (8 100)"
+    o.run
+    assert_equal 'three', @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for split (9 4)"
+    o.run
+    assert_equal '', @engine.heap.it.value
+  end
+
+  def test_splitl_msg
+    o = @engine.parser.parse_immediate 'create s as string : "one two three"'
+    o.run
+    s = @engine.heap.root.children.first
+    o = @engine.parser.parse_immediate "check s for splitl (7)"
+    o.run
+    assert_equal 'one two', @engine.heap.it.value
+    assert_equal 'one two three', s.value
+  end
+
+  def test_splitr_msg
+    o = @engine.parser.parse_immediate 'create s as string : "one two three"'
+    o.run
+    s = @engine.heap.root.children.first
+    o = @engine.parser.parse_immediate "check s for splitr (4)"
+    o.run
+    assert_equal 'two three', @engine.heap.it.value
+    assert_equal 'one two three', s.value
   end
 
   def test_count_chars_msg
