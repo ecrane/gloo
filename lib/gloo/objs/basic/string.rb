@@ -59,34 +59,11 @@ module Gloo
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
           :description => 'A string value. For string interpolation, ' \
-            'see the erb object type.',
-          :messages => [
-            'up — Convert the string to uppercase. This message changes the value of the string.',
-            'down — Convert the string to lowercase. This message changes the value of the string.',
-            'size — Get the size of the string. It will have the string size.',
-            'count_chars — Count the number of characters in the string. It will have the character count.',
-            'count_words — Count the number of words in the string. It will have the word count.',
-            'count_lines — Count the number of lines in the string. It will have the line count.',
-            'starts_with? ({str}) — Check if the string starts with the given string. A parameter is required: the string to look for at the beginning of this string. It will have a boolean.',
-            'ends_with? ({str}) — Check if the string ends with the given string. A parameter is required: the string to look for at the end of this string. It will have a boolean.',
-            'substring? ({str}) — Check if the string includes the given sub-string. A parameter is required: the string to look for in this string. It will have a boolean.',
-            'format_for_html — Format this string for HTML output. Tabs, spaces and returns are converted to HTML elements. The value of the string is changed.',
-            'encode64 — Base64 encode the string. This message changes the value of the string. It will have the encoded string.',
-            'decode64 — Decode the string from Base64. This message changes the value of the string. It will have the decoded string.',
-            'escape — Escape the string to make it URL safe. This message changes the value of the string. It will have the escaped string.',
-            'unescape — Unescape the string (from URL safe format). This message changes the value of the string. It will have the unescaped string.',
-            'gen_uuid — Set the value of the string to a newly generated, random UUID. This message changes the value of the string.',
-            'gen_alphanumeric ({len}) — Set the value of the string to a newly generated, random alphanumeric string. The {len} parameter is optional; the length is 10 if not specified. This message changes the value of the string.',
-            'gen_hex ({len}) — Set the value of the string to a newly generated, random hex string. The {len} parameter is optional; the length is 10 if not specified. This message changes the value of the string.',
-            'gen_base64 ({len}) — Set the value of the string to a newly generated, random base64 string. The {len} parameter is optional; the length is 12 if not specified. This message changes the value of the string.',
-            'trim — Strip whitespace from the beginning and end of the string. This message changes the value of the string. It will have the trimmed string.',
-            'sub ({from}, {to}) — Substitute the first occurrence of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
-            'gsub ({from}, {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
-            'split ({from}, {to}) — Get the substring from index {from} up to (not including) index {to}. Indexes are 0-based; out-of-range indexes are clamped to the start or end of the string. Both parameters are required. Does not change the value of the string. It will have the substring.',
-            'splitl ({index}) — Get the substring to the left of index {index} (same as split (0, {index})). A parameter is required. Does not change the value of the string. It will have the substring.',
-            'splitr ({index}) — Get the substring from index {index} to the end of the string (same as split ({index}, size)). A parameter is required. Does not change the value of the string. It will have the substring.',
-            'page — Show the value in a pager (less), for viewing long content a screen at a time.'
-          ],
+            'see the erb object type. Shares the same messages as the ' \
+            'text object type; the two differ mainly by convention — ' \
+            'string for a single word or line, text for longer, ' \
+            'multi-line blocks.',
+          :messages => StringMsgs.message_docs,
           :examples => <<~EXAMPLES.strip
             s [can] :
               msg [string] : Hello World!
