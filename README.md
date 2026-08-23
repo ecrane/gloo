@@ -50,6 +50,12 @@ Read in order for a guided tour of the language, top to bottom, or jump straight
 11. [A Trivial Web App](docs/web_app.md) — a two-page "Hello World" built with the `gloo-web` core library
 
 
+## Related Projects
+
+ - [gloo sample code](https://github.com/ecrane/gloo_sample_code)
+ - [gloo core libraries](https://github.com/ecrane/gloo_core_libraries)
+
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE.txt) — see
