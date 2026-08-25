@@ -192,8 +192,16 @@ module Gloo
 
       #
       # Get the setting for the start_with file and open it.
+      # In App mode, the configured start_with setting is ignored -
+      # we always look for a start.gloo at the root of the app
+      # (project_path was already overridden to the app path).
       #
       def open_start_file
+        if @mode == Mode::APP
+          @persist_man.load( 'start' )
+          return
+        end
+
         name = @settings.start_with
         @persist_man.load( name ) if name
       end
