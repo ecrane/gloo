@@ -1,0 +1,37 @@
+#
+# Show verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    show [can] :
+
+      msg [string] : hello
+
+      show_literal [test] :
+        description [string] : Show a literal sets it to that literal.
+        on_test [script] :
+          show 'hello'
+          eval it = 'hello'
+          assert "expected it to be 'hello'"
+
+      show_object [test] :
+        description [string] : Show an object sets it to the object's value.
+        on_test [script] :
+          show ^^.msg
+          eval it = 'hello'
+          assert "expected it to be the value of msg"
+
+      show_expression [test] :
+        description [string] : Show evaluates an expression before showing it.
+        on_test [script] :
+          show 3 + 4
+          eval it = 7
+          assert "expected it to be 7"
+
+      show_concat [test] :
+        description [string] : Show evaluates a string concatenation.
+        on_test [script] :
+          show 'a' + 'b'
+          eval it = 'ab'
+          assert "expected it to be 'ab'"

@@ -1,0 +1,34 @@
+#
+# List verb tests
+#
+# 'list' only writes to the console, so these tests check its error
+# behaviour rather than its output.
+#
+
+tests [can] :
+  verbs [can] :
+    list [can] :
+
+      data [can] :
+        a [string] : A
+        b [string] : B
+
+      err_fired [bool] : false
+      on_error [script] :
+        put true into ^.err_fired
+
+      list_real_container [test] :
+        description [string] : listing a real container does not fire on_error.
+        on_test [script] :
+          put false into ^^.err_fired
+          list tests.verbs.list.data
+          eval ^^.err_fired = false
+          assert "listing a real container should not fire on_error"
+
+      list_missing_target [test] :
+        description [string] : listing a missing target fires on_error.
+        on_test [script] :
+          put false into ^^.err_fired
+          list tests.verbs.list.no_such_thing
+          eval ^^.err_fired = true
+          assert "listing a missing target should fire on_error"

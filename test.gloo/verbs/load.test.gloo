@@ -1,0 +1,32 @@
+#
+# Load verb tests
+#
+# Uses 'load lib' because it is self-contained (no fixture files) and
+# its effect is observable through 'exists?'.
+#
+
+tests [can] :
+  verbs [can] :
+    load [can] :
+
+      err_fired [bool] : false
+      on_error [script] :
+        put true into ^.err_fired
+
+      load_lib_registers_type [test] :
+        description [string] : load lib registers that library's object types.
+        on_test [script] :
+          exists? object markdown
+          refute "markdown type should not be registered before load"
+
+          load lib md
+          exists? object markdown
+          assert "expected the markdown type to be registered after 'load lib md'"
+
+      load_no_args_errors [test] :
+        description [string] : load with no arguments fires on_error.
+        on_test [script] :
+          put false into ^^.err_fired
+          load
+          eval ^^.err_fired = true
+          assert "expected 'load' with no arguments to fire on_error"

@@ -1,0 +1,19 @@
+#
+# Context verb tests
+#
+
+tests [can] :
+  verbs [can] :
+    context [can] :
+
+      set_context [test] :
+        description [string] : context {path} sets the context and puts the path in it.
+        on_test [script] :
+          context tests.verbs.context
+          eval it = 'tests.verbs.context'
+          assert "expected it to be the new context path"
+
+          # restore, so later tests run at root
+          context root
+          eval it = 'root'
+          assert "expected context to be restored to root"

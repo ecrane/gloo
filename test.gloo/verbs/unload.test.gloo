@@ -1,0 +1,21 @@
+#
+# Unload verb / message tests
+#
+# The bare 'unload' verb unloads every loaded file (covered by the
+# unit tests). Per-object unload is the 'unload' message, tested here.
+#
+
+tests [can] :
+  verbs [can] :
+    unload [can] :
+
+      unload_removes_object [test] :
+        description [string] : sending 'unload' to an object removes it from the tree.
+        on_test [script] :
+          create tests.verbs.unload.temp as string : 'x'
+          exists? instance tests.verbs.unload.temp
+          assert "temp should exist after create"
+
+          tell tests.verbs.unload.temp to unload
+          exists? instance tests.verbs.unload.temp
+          refute "temp should be gone after unload"
