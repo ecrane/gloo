@@ -72,10 +72,38 @@ module Gloo
           :result => "Fires the app's on_exception handler, if one is " \
             'defined, with exception_data.message set to the thrown ' \
             'message. Does not fire on_error.',
-          :examples => <<~EXAMPLES.strip
+          :examples => <<~EXAMPLES.strip,
             > throw
             > throw "custom message"
+
+            #
+            # Execution continues with the line after the throw.
+            #
+            demo [container] :
+              on_exception [script] :
+                show 'caught: ' + ^.exception_data.message
+              exception_data [can] :
+                message [string] :
+                backtrace [string] :
+              on_load [script] :
+                throw "boom"
+                show 'still running'
           EXAMPLES
+          :notes => <<~NOTES.strip
+            on_error and on_exception are independent channels: a checked
+            gloo error (bad path, missing object) fires on_error only; a
+            Ruby exception (from throw, or a real bug caught by gloo's
+            safety net) fires on_exception only. Neither triggers the
+            other, and in both cases the failing line is abandoned and
+            execution continues with the next line.
+
+            gloo logs every caught exception, so a throw during a script
+            run also prints the message and a truncated backtrace to the
+            console — that is the logging working, not a crash.
+
+            See gloo_sample_code/lang/exceptions.gloo for a runnable
+            walk-through.
+          NOTES
         }
       end
 

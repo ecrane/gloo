@@ -88,7 +88,10 @@ The following events are application and file-level events:
 - `on_quit` — event triggered when gloo is quitting
 - `on_save` — when an object is saved, this event is triggered
 - `on_reload` — event triggered when an object receives message to reload
-- `on_error` — event triggered when there is an error in the application
+- `on_error` — event triggered when gloo hits a checked error condition (a bad path, a missing object, a verb used wrongly)
+- `on_exception` — event triggered when gloo's safety net catches an unanticipated Ruby exception (rare in normal code; use the `throw` verb to exercise it)
+
+`on_error` and `on_exception` are independent channels — a checked gloo error fires `on_error` only, an unhandled Ruby exception fires `on_exception` only, and neither triggers the other. In both cases the line that failed is abandoned and execution continues with the next line; a handler is a place to log or react, not a way to retry. Each handler reads its details from a sibling data container (`error_data` / `exception_data`) that the engine populates before running the script; the handler script and its data container can sit at the root of a file or be nested together inside a container.
 
 Some objects also have events that are triggered as part of their lifecycle. Here are some examples:
 
@@ -143,9 +146,22 @@ on_error [script] :
 error_data [can] :
   message [string] :
   backtrace [string] :
+
+
+#
+# Global Exception Handler.
+# Same shape as on_error, with a sibling exception_data container.
+# 'throw' deliberately raises a Ruby exception to exercise this.
+#
+on_exception [script] :
+  tell audit_exception.write to run
+
+exception_data [can] :
+  message [string] :
+  backtrace [string] :
 ```
 
-See also: Load, Reload, Unload, Save, Quit.
+See also: Load, Reload, Unload, Save, Quit, and the `throw` verb reference.
 
 ## Function Calls
 
