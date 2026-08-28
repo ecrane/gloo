@@ -88,10 +88,15 @@ module Gloo
             '{type} — The type of the new object. Optional; if not provided the object will be untyped.',
             "{value} — The initial value for the new object. Optional; if not provided the object will have the default value for the type."
           ],
-          :result => "The new object will be created and added to the " \
-            "object heap. It will be set to the new object's initial value.",
+          :result => "If nothing exists at the path, a new object is " \
+            "created with the given (or type-default) value and added " \
+            "to the object tree, and it is set to that value. If an " \
+            "object already exists at the path it is left unchanged — " \
+            "the type and value given here are ignored — and it is set " \
+            "to the existing object's current value.",
           :errors => [
-            "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created."
+            "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created.",
+            'Could not create object. Bad path: {name} — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist.'
           ],
           :examples => <<~EXAMPLES.strip
             # Basic examples of creating an object from the gloo shell:
