@@ -42,6 +42,14 @@ tell {path.to.object} to {message}
 > tell the.container to count
 ```
 
+`check` is the same verb under another name — it sends a message exactly the way `tell` does. The two spellings exist so code reads like natural communication: use `tell` to trigger an action (`up`, `run`, `unload`), and `check` to investigate state with a yes/no question (`blank?`, `contains?`, `starts_with?`). The answer to a `check` lands in `it`, so it pairs naturally with `if` / `unless`.
+
+```gloo
+> tell my.str to up
+> check my.str for starts_with? ("HELLO")
+> if it then show 'it does'
+```
+
 ## Put
 
 `put` evaluates an expression and stores the result in an object.

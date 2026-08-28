@@ -60,9 +60,13 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'Send a message to an object to check for an ' \
-            'object condition. This is the same as the tell verb, but ' \
-            'gives better syntactical naming.',
+          :description => 'Send a message to an object to investigate ' \
+            'its state — typically a yes/no question such as blank?, ' \
+            'contains? or starts_with?. Mechanically identical to the ' \
+            'tell verb; by convention check is used to investigate ' \
+            'state while tell is used to trigger an action. Using the ' \
+            'verb that matches intent makes the code read like ' \
+            'natural communication.',
           :syntax => [ 'check {path.to.object} for {condition_message}' ],
           :parameters => [
             '{path.to.object} — The object that we want to send a condition_message to.',
@@ -74,7 +78,7 @@ module Gloo
             "#{UNKNOWN_MSG_ERR} — No message was specified, or the 'for' keyword is missing.",
             'Object was not found — The target of the message was not found.'
           ],
-          :examples => <<~EXAMPLES.strip
+          :examples => <<~EXAMPLES.strip,
             #
             # Base object checks.
             #
@@ -95,6 +99,14 @@ module Gloo
                 check obj.msg for blank?
                 show it
           EXAMPLES
+          :notes => <<~NOTES.strip
+            check and tell send the same message the same way — the two
+            spellings exist for readability. Use check for state questions
+            (blank?, contains?, responds_to?, starts_with?) and tell for
+            action messages (up, inc, run, unload). The answer to a check
+            lands in it, so it pairs naturally with if / unless:
+            'check my.str for blank?' then 'if it then ...'.
+          NOTES
         }
       end
 

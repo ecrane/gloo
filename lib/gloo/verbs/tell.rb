@@ -61,8 +61,12 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'Send a message to an object. Ask the object ' \
-            'to perform an action.',
+          :description => 'Send a message to an object, asking it to ' \
+            'perform an action. Mechanically identical to the check ' \
+            'verb; by convention tell is used to trigger an action ' \
+            'or change state, while check is used to investigate ' \
+            'state. Using the verb that matches intent makes the ' \
+            'code read like natural communication.',
           :syntax => [ 'tell {path.to.object} to {message}' ],
           :parameters => [
             '{path.to.object} — The object that we want to send a message to.',
@@ -73,12 +77,20 @@ module Gloo
             "#{UNKNOWN_MSG_ERR} — No message was specified, or the `to` keyword is missing.",
             'Object was not found — The target of the message was not found.'
           ],
-          :examples => <<~EXAMPLES.strip
+          :examples => <<~EXAMPLES.strip,
             > tell an.obj to unload
             > tell the.script to run
             > tell my.str to up
             > tell the.container to count
           EXAMPLES
+          :notes => <<~NOTES.strip
+            tell and check send the same message the same way — the two
+            spellings exist for readability. Use tell for action messages
+            (up, inc, run, unload, randomize) and check for state questions
+            (blank?, contains?, starts_with?). Either verb will accept
+            either kind of message, but mixing them reads wrong:
+            'tell my.str for blank?' works but should be a check.
+          NOTES
         }
       end
 

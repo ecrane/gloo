@@ -27,6 +27,8 @@ s [can] :
 
 Sending `up` to the string converts it to uppercase, in place. Sending `size` puts the character count into `it`. There are messages for lowercasing, counting words and lines, checking prefixes/suffixes, encoding, and generating random strings (UUIDs, hex, alphanumeric) — see the in-app help for the full list.
 
+For yes/no messages that inspect state (`blank?`, `starts_with?`, `ends_with?`), the `check` verb reads better than `tell` — `check s.msg for starts_with? ("Hello")` — but it does the same thing (see Verbs, Tell).
+
 ## Container
 
 A container holds other objects — it's the closest thing gloo has to a folder, a hash, or a struct. Any object nested inside a container is reachable through a dotted pathname:
