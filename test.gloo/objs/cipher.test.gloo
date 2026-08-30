@@ -1,0 +1,45 @@
+#
+# Cipher object tests
+#
+
+tests [can] :
+  objs [can] :
+    cipher [can] :
+
+      plaintext [string] : attack at dawn
+
+      round_trip [test] :
+        description [string] : encrypt then decrypt returns the original text.
+        on_test [script] :
+          create tests.objs.cipher.c as cipher
+
+          tell tests.objs.cipher.c to generate_keys
+          check tests.objs.cipher.c.key for blank?
+          refute "expected generate_keys to set a key"
+
+          put ^^.plaintext into tests.objs.cipher.c.data
+          tell tests.objs.cipher.c to encrypt
+          eval tests.objs.cipher.c.data = ^^.plaintext
+          refute "expected the data to be encrypted (not the plaintext)"
+
+          tell tests.objs.cipher.c to decrypt
+          eval tests.objs.cipher.c.data = ^^.plaintext
+          assert "expected decrypt to restore the original text"
+
+      shared_keys [test] :
+        description [string] : a second cipher with the same key + init_vector can decrypt.
+        on_test [script] :
+          create tests.objs.cipher.a as cipher
+          create tests.objs.cipher.b as cipher
+
+          tell tests.objs.cipher.a to generate_keys
+          put ^^.plaintext into tests.objs.cipher.a.data
+          tell tests.objs.cipher.a to encrypt
+
+          put tests.objs.cipher.a.key into tests.objs.cipher.b.key
+          put tests.objs.cipher.a.init_vector into tests.objs.cipher.b.init_vector
+          put tests.objs.cipher.a.data into tests.objs.cipher.b.data
+
+          tell tests.objs.cipher.b to decrypt
+          eval tests.objs.cipher.b.data = ^^.plaintext
+          assert "expected the second cipher to decrypt with the shared key"
