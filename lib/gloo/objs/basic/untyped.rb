@@ -47,12 +47,24 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'An untyped object. If no type is specified ' \
-            'when an object is created it will be of this type.',
+          :description => 'An object with no type. A type declares ' \
+            'which messages an object can receive; an untyped object ' \
+            'receives only the base object messages (blank?, ' \
+            'contains?, responds_to?, reload, unload) but can hold a ' \
+            'value of any kind. If no type is specified when an object ' \
+            'is created, it is untyped. Prefer untyped when you only ' \
+            'need to hold, compare, or show a value and do not need ' \
+            'type-specific behaviour.',
           :examples => <<~EXAMPLES.strip
             > create x
             > put 1 into x
             > put 'string' into x
+
+            #
+            # Declared with a bare colon, or with [any]:
+            #
+            slot :
+            flag [any] :
           EXAMPLES
         }
       end

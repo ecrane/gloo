@@ -1,0 +1,43 @@
+#
+# URI object tests
+#
+
+tests [can] :
+  objs [can] :
+    uri [can] :
+
+      link [uri] : https://example.com:8443/docs/guide?page=3&sort=asc#install
+      bare [uri] : https://example.com
+
+      parts_of_a_url [test] :
+        description [string] : the get_ messages pull each piece of the URL into it.
+        on_test [script] :
+          tell ^^.link to get_scheme
+          eval it = 'https'
+          assert "expected scheme https"
+
+          tell ^^.link to get_host
+          eval it = 'example.com'
+          assert "expected host example.com (no port)"
+
+          tell ^^.link to get_path
+          eval it = '/docs/guide'
+          assert "expected path /docs/guide"
+
+          tell ^^.link to get_query
+          eval it = 'page=3&sort=asc'
+          assert "expected the query string"
+
+          tell ^^.link to get_fragment
+          eval it = 'install'
+          assert "expected fragment install"
+
+      missing_pieces [test] :
+        description [string] : a bare URL has an empty path.
+        on_test [script] :
+          tell ^^.bare to get_path
+          put it into tests.objs.uri.result
+          check tests.objs.uri.result for blank?
+          assert "expected the path of a bare URL to be blank"
+
+      result [string] :

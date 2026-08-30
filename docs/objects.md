@@ -4,6 +4,8 @@ Everything in gloo is an object. Strings, numbers, containers, scripts, function
 
 Gloo ships with a large set of built-in object types, and core libraries and extensions can add more. This page doesn't try to cover them all — it walks through three common ones to get a feel for how objects work. For the complete list of object types, and every message each one supports, use the in-app help: enter `help` (or `?`), then `objects` to list them all, or `object {name}` for detail on one (see Application, Help).
 
+An object's **type declares which messages it can receive** — `up` and `trim` for a `string`, `inc` for an `integer`, `run` for a `script`. An object doesn't have to have a type: with none it is `untyped` (short `any`), declared with a bare colon (`slot :`), with `[any]`, or by `create` with no `as`. An untyped object still takes the messages every object understands (`blank?`, `contains?`, `responds_to?`, `reload`, `unload`) — just not the type-specific ones. Untyped is the right choice when you only need to hold, compare, or show a value: a generic result slot, a config value passed straight through, or a field whose kind of value changes over its life.
+
 **Contents**
 
 - String

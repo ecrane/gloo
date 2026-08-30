@@ -1,12 +1,12 @@
 #
-# Script tests
+# Untyped object tests
 #
 
 tests [can] :
   objs [can] :
     untyped [can] :
 
-      a [any] : 
+      a [any] :
 
       test_untyped [test] :
         description [string] : Test untyped with different values
@@ -22,4 +22,22 @@ tests [can] :
           put true into ^^.a
           eval ^^.a = true
           assert "expected it to be true"
+
+      base_messages_work [test] :
+        description [string] : an untyped object still receives the base object messages
+        on_test [script] :
+          put "" into ^^.a
+          check ^^.a for blank?
+          assert "expected an empty untyped object to be blank"
+
+          put "x" into ^^.a
+          check ^^.a for blank?
+          refute "expected a non-empty untyped object to not be blank"
+
+      type_messages_do_not [test] :
+        description [string] : an untyped object does not receive type-specific messages
+        on_test [script] :
+          put "hello" into ^^.a
+          check ^^.a for responds_to? ( "up" )
+          refute "expected an untyped object to not respond to 'up'"
 

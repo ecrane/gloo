@@ -20,6 +20,12 @@ tests [can] :
           name [string] : gloo
         result [text] :
 
+      with_logic [erb] :
+        template [text] : <%= n == "yes" ? "ACTIVE" : "closed" %>
+        params [can] :
+          n [string] : no
+        result [text] :
+
       run_basic [test] :
         description [string] : Render a template with a param
         on_test [script] :
@@ -33,3 +39,15 @@ tests [can] :
           tell ^^.aliased_template to run
           eval ^^.aliased_template.result = 'gloo!!'
           assert "expected alias to be resolved before rendering the template"
+
+      run_with_logic [test] :
+        description [string] : A <% %> tag runs Ruby; the param drives which branch renders
+        on_test [script] :
+          tell ^^.with_logic to run
+          eval ^^.with_logic.result = 'closed'
+          assert "expected the 'no' param to render the closed branch"
+
+          put 'yes' into ^^.with_logic.params.n
+          tell ^^.with_logic to run
+          eval ^^.with_logic.result = 'ACTIVE'
+          assert "expected the 'yes' param to render the ACTIVE branch"
