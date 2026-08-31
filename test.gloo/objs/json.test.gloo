@@ -1,0 +1,70 @@
+#
+# JSON object tests
+#
+
+tests [can] :
+  objs [can] :
+    json [can] :
+
+      payload [json] : BEGIN
+        { "title":"Brute Force",
+          "meta":{ "author":"ESR", "year":"2003" } }
+        END
+
+      compact [json] : {"a":"1","b":{"c":"2"}}
+
+      source [can] :
+        name [string] : gloo
+        kind [string] : language
+
+      built [json] :
+      out [can] :
+      found [string] :
+
+      get_a_value [test] :
+        description [string] : get pulls a value out by dotted path.
+        on_test [script] :
+          tell ^^.payload to get ( 'title' )
+          eval it = 'Brute Force'
+          assert "expected the top-level title"
+
+          tell ^^.payload to get ( 'meta.author' )
+          eval it = 'ESR'
+          assert "expected the nested author"
+
+      get_missing_is_blank [test] :
+        description [string] : get for a path that isn't there returns blank.
+        on_test [script] :
+          tell ^^.payload to get ( 'nope' )
+          put it into tests.objs.json.found
+          check tests.objs.json.found for blank?
+          assert "expected a missing path to return blank"
+
+      parse_into_objects [test] :
+        description [string] : parse builds an object tree from the JSON.
+        on_test [script] :
+          tell ^^.payload to parse ( tests.objs.json.out )
+
+          eval tests.objs.json.out.title = 'Brute Force'
+          assert "expected parse to set the title"
+
+          eval tests.objs.json.out.meta.author = 'ESR'
+          assert "expected parse to build the nested meta container"
+
+      set_from_objects_round_trip [test] :
+        description [string] : set serialises an object tree; get reads it back.
+        on_test [script] :
+          # a path inside ( ) params must be absolute, not a ^ ref
+          tell ^^.built to set ( tests.objs.json.source )
+
+          tell ^^.built to get ( 'name' )
+          eval it = 'gloo'
+          assert "expected set then get to round-trip a value"
+
+      pretty_keeps_it_valid [test] :
+        description [string] : pretty reformats the text without breaking it.
+        on_test [script] :
+          tell ^^.compact to pretty
+          tell ^^.compact to get ( 'b.c' )
+          eval it = '2'
+          assert "expected the value to still be reachable after pretty"
