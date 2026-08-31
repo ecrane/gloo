@@ -12,6 +12,14 @@ module Gloo
       END_BLOCK = 'END'.freeze
       SPACE_CNT = 2
 
+      # A 'load lib {name}' (or 'load ext {name}') statement at the top
+      # of a file, before the first object declaration. It makes a core
+      # library's object types available to the declarations that
+      # follow. Same syntax as the load verb, but the loader runs it
+      # before building the object tree instead of a script running it
+      # afterward.
+      LIB_DIRECTIVE = /\A(?:load|ld)\s+(?:lib|ext)\s+\S+\s*\z/i.freeze
+
       attr_reader :obj
 
       #
@@ -27,6 +35,7 @@ module Gloo
         @exiting_multiline = false
         @in_block = false
         @block_value = ''
+        @body_started = false
         @debug = false
       end
 
@@ -51,11 +60,28 @@ module Gloo
         f.each_line do |line|
           next if skip_line? line
 
+          if !@body_started && line =~ LIB_DIRECTIVE
+            run_lib_directive line
+            next
+          end
+          @body_started = true
+
           handle_one_line line
         end
       end
 
-      # 
+      #
+      # Run a top-of-file 'load lib {name}' directive. It goes through
+      # the same load verb a script would use, so libraries are loaded
+      # and their object types registered before the declarations that
+      # depend on them are parsed.
+      #
+      def run_lib_directive( line )
+        @engine.log.debug "Loading file directive: #{line.strip}"
+        @engine.parser.run line.strip
+      end
+
+      #
       # Join continuation lines.
       #
       def join_continuations( data )

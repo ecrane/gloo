@@ -1,0 +1,4 @@
+load lib yaml
+
+uses_lib [can] :
+  cfg [yaml] :

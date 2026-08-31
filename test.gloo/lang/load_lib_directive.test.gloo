@@ -1,0 +1,33 @@
+#
+# Top-of-file 'load lib' directive test
+#
+# The line below runs before this file's object tree is built, so a
+# core-library type is available to declarations in the same file.
+#
+load lib yaml
+
+tests [can] :
+  lang [can] :
+    load_lib_directive [can] :
+
+      # this declaration only parses because 'load lib yaml' above
+      # registered the type before the loader got here
+      cfg [yaml] :
+
+      library_type_is_available [test] :
+        description [string] : a load lib directive at the top of the file registers the library's types.
+        on_test [script] :
+          exists? object yaml
+          assert "expected the yaml type to be registered by the directive"
+
+          exists? object yml
+          assert "expected the yaml short name to be registered too"
+
+      typed_object_was_created [test] :
+        description [string] : an object of the library's type declared in the same file exists.
+        on_test [script] :
+          exists? instance tests.lang.load_lib_directive.cfg
+          assert "expected the [yaml] object to have been created during load"
+
+          check tests.lang.load_lib_directive.cfg for responds_to? ( 'load' )
+          assert "expected it to be a real yaml object that responds to load"

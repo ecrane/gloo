@@ -21,10 +21,14 @@ class DocCoverageTest < BaseEngineTest
 
   #
   # Every dev/gloo object type has doc_data as of 2026.07.23 (see
-  # 'update object doc' story).
+  # 'update object doc' story). Scoped to Gloo::Objs:: since the
+  # Dictionary singleton can accumulate core-library types loaded by
+  # other tests in the same run (e.g. the file-loader 'load lib'
+  # directive test).
   #
   def test_all_object_types_have_doc_data
-    missing = @engine.dictionary.get_obj_types.reject { |o| o.respond_to?( :doc_data ) }
+    types = @engine.dictionary.get_obj_types.select { |o| o.name.to_s.start_with?( 'Gloo::Objs::' ) }
+    missing = types.reject { |o| o.respond_to?( :doc_data ) }
     assert_empty missing.map( &:typename )
   end
 

@@ -9,10 +9,6 @@
 
 Core Libraries extend gloo functionality, primarily by adding object types and potentially verbs.
 
-Be sure to load a core library (or extension) prior to loading a gloo file that includes object types defined in the library.
-
-Use the Load Verb to use an extension.
-
 A core library ships as its own gem (`gloo-<name>`). `load lib <name>` requires the gem, installing it first via `gem install` if it isn't already present — so the explicit `gem install` step below is optional, but doing it yourself ahead of time is recommended so the install doesn't happen mid-script. Once loaded, a library's objects and verbs show up in the `help`/`?` shell exactly like built-ins:
 
 ```gloo
@@ -20,6 +16,18 @@ A core library ships as its own gem (`gloo-<name>`). `load lib <name>` requires 
 > load lib yaml
 help> object yaml
 ```
+
+A library's object types must be registered before any file that declares one is parsed. To use a library type in a script file, put the `load lib` at the **top of the file**, before the first object:
+
+```gloo
+load lib yaml
+
+settings [can] :
+  file [yaml] : ~/.myapp/settings.yml
+  ...
+```
+
+The loader runs these top-of-file `load lib` / `load ext` lines before it builds the object tree, so declarations below them can use the library's types. Only `load lib` and `load ext` are recognized this way, and only above the first object — a `load lib` in a script still runs when that script runs, as before.
 
 ### Available Core Libraries
 

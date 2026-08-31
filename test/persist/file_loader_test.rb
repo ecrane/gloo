@@ -73,4 +73,30 @@ class FileLoaderTest < BaseEngineTest
     assert_equal 'loaded', b.value
   end
 
+  def test_lib_directive_pattern
+    re = Gloo::Persist::FileLoader::LIB_DIRECTIVE
+    assert re =~ 'load lib yaml'
+    assert re =~ "ld ext foo\n"
+    assert re =~ 'load  lib  yaml'
+    refute re =~ 'load some_file'
+    refute re =~ '  load lib yaml'
+    refute re =~ 's [string] : load lib yaml'
+  end
+
+  def test_load_lib_directive_at_top_of_file_registers_the_type
+    refute @engine.dictionary.find_obj( 'yaml' ), 'yaml type should not be registered yet'
+
+    @engine.persist_man.load 'sub/uses_lib'
+
+    assert @engine.dictionary.find_obj( 'yaml' ),
+           'the load lib directive should have registered the yaml type'
+
+    obj = @engine.heap.root.children.first
+    assert_equal 'uses_lib', obj.name
+    cfg = obj.children.first
+    assert_equal 'cfg', cfg.name
+    assert_equal 'yaml', cfg.class.typename,
+                 'the [yaml] object should have been created with its real type'
+  end
+
 end
