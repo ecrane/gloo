@@ -1,0 +1,54 @@
+#
+# Function object tests
+#
+# The 'invoke' verb and inline invoke( ... ) are covered in
+# verbs/invoke.test.gloo.  These tests cover the function object
+# itself: the 'invoke' message, param defaults, and the
+# after_invoke event.
+#
+
+tests [can] :
+  objs [can] :
+    function [can] :
+
+      after_ran [bool] : false
+
+      greet [ƒ] :
+        params [can] :
+          name [string] : Default Person
+        on_invoke [script] :
+          put 'Hi, ' + ^.params.name into ^.result
+        after_invoke [script] :
+          put true into tests.objs.function.after_ran
+        result [string] :
+
+      boom [ƒ] :
+        params [can] :
+        on_invoke [script] :
+          put no_such_object into ^.result
+        after_invoke [script] :
+          put true into tests.objs.function.after_ran
+        result [string] :
+
+      invoke_message_uses_param_defaults [test] :
+        description [string] : the invoke message with no args runs on_invoke against the param defaults.
+        on_test [script] :
+          tell ^^.greet to invoke
+          eval ^^.greet.result = 'Hi, Default Person'
+          assert "expected on_invoke to run with the default param value"
+
+      after_invoke_runs_on_success [test] :
+        description [string] : after_invoke runs once the function has been invoked.
+        on_test [script] :
+          put false into ^^.after_ran
+          tell ^^.greet to invoke
+          eval ^^.after_ran = true
+          assert "expected after_invoke to run after a successful invoke"
+
+      after_invoke_runs_on_failure [test] :
+        description [string] : after_invoke still runs when on_invoke hits an error.
+        on_test [script] :
+          put false into ^^.after_ran
+          tell ^^.boom to invoke
+          eval ^^.after_ran = true
+          assert "expected after_invoke to run even after on_invoke failed"
