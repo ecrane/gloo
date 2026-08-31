@@ -1,0 +1,39 @@
+#
+# Line continuation tests
+#
+# A trailing \ continues a statement on the next line.
+#
+
+tests [can] :
+  lang [can] :
+    continuation [can] :
+
+      one [string] : Hello
+      two [string] : World
+      joined [string] :
+      split [string] :
+      flag [bool] : false
+
+      split_statement_matches_single_line [test] :
+        description [string] : a statement broken with \ produces the same result as one line.
+        on_test [script] :
+          put ^^.one and ' ' and ^^.two into ^^.joined
+
+          put ^^.one and \
+            ' ' and \
+            ^^.two into ^^.split
+
+          eval ^^.split = ^^.joined
+          assert "expected the continued statement to match the single-line one"
+
+          eval ^^.split = 'Hello World'
+          assert "expected the joined value"
+
+      continuation_in_an_if [test] :
+        description [string] : \ works inside an if statement.
+        on_test [script] :
+          put false into ^^.flag
+          if ^^.one = 'Hello' \
+            then put true into ^^.flag
+          eval ^^.flag = true
+          assert "expected the continued if to run its then branch"

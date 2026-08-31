@@ -1,0 +1,44 @@
+#
+# Object naming tests
+#
+
+tests [can] :
+  lang [can] :
+    naming [can] :
+
+      dup [string] : first
+      dup [string] : second
+
+      Alpha [string] : mixed case
+
+      1 [string] : numeric name
+
+      string [string] : a type keyword as a name
+      put [string] : a verb keyword as a name
+
+      first_of_a_duplicate_name_wins [test] :
+        description [string] : when two siblings share a name, the path always reaches the first.
+        on_test [script] :
+          eval ^^.dup = 'first'
+          assert "expected the first 'dup' to be the one reached"
+
+      path_lookup_is_case_insensitive [test] :
+        description [string] : a pathname segment matches a name regardless of case.
+        on_test [script] :
+          eval tests.lang.naming.alpha = 'mixed case'
+          assert "expected lower-case lookup to find 'Alpha'"
+
+          eval tests.lang.naming.ALPHA = 'mixed case'
+          assert "expected upper-case lookup to find 'Alpha'"
+
+      numeric_and_keyword_names [test] :
+        description [string] : digits and reserved-looking words are valid object names.
+        on_test [script] :
+          eval tests.lang.naming.1 = 'numeric name'
+          assert "expected a numeric name to work"
+
+          eval ^^.string = 'a type keyword as a name'
+          assert "expected a type keyword to be usable as a name"
+
+          eval ^^.put = 'a verb keyword as a name'
+          assert "expected a verb keyword to be usable as a name"

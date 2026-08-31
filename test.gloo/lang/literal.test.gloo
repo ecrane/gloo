@@ -1,0 +1,61 @@
+#
+# Literal value tests
+#
+
+tests [can] :
+  lang [can] :
+    literal [can] :
+
+      s [string] :
+      i [integer] :
+      d [decimal] :
+      b [boolean] :
+
+      string_quote_styles [test] :
+        description [string] : single and double quotes both make a string; the other quote can appear inside.
+        on_test [script] :
+          put 'single quoted' into ^^.s
+          eval ^^.s = 'single quoted'
+          assert "expected single quotes to work"
+
+          put "double quoted" into ^^.s
+          eval ^^.s = 'double quoted'
+          assert "expected double quotes to work"
+
+          put "you're fine" into ^^.s
+          eval ^^.s = "you're fine"
+          assert "expected an apostrophe inside double quotes to be literal"
+
+      number_literals [test] :
+        description [string] : integer and decimal literals, including negatives.
+        on_test [script] :
+          put -5 into ^^.i
+          eval ^^.i = -5
+          assert "expected a negative integer literal"
+
+          put 3.14159 into ^^.d
+          eval ^^.d = 3.14159
+          assert "expected a decimal literal"
+
+          put -2.5 into ^^.d
+          eval ^^.d = -2.5
+          assert "expected a negative decimal literal"
+
+      boolean_literals_are_case_insensitive [test] :
+        description [string] : TRUE, true, False, FALSE all parse.
+        on_test [script] :
+          put TRUE into ^^.b
+          eval ^^.b = true
+          assert "expected TRUE to parse"
+
+          put true into ^^.b
+          eval ^^.b = true
+          assert "expected true to parse"
+
+          put False into ^^.b
+          eval ^^.b = false
+          assert "expected False to parse"
+
+          put FALSE into ^^.b
+          eval ^^.b = false
+          assert "expected FALSE to parse"

@@ -1,0 +1,41 @@
+#
+# 'it' tests
+#
+# 'it' holds the result of the last statement that produced one.
+#
+
+tests [can] :
+  lang [can] :
+    it [can] :
+
+      n [int] : 5
+      r [string] :
+
+      set_by_the_previous_statement [test] :
+        description [string] : show, eval, tell and put all leave their result in it.
+        on_test [script] :
+          show 3 + 4
+          eval it = 7
+          assert "expected show to leave the evaluated value in it"
+
+          eval 10 * 2
+          eval it = 20
+          assert "expected eval to leave its result in it"
+
+          put 'hello' into ^^.r
+          eval it = 'hello'
+          assert "expected put to leave the stored value in it"
+
+          put 5 into ^^.n
+          tell ^^.n to inc
+          eval it = 6
+          assert "expected tell to leave the message result in it"
+
+      persists_across_statements_that_produce_nothing [test] :
+        description [string] : statements like a bare show or list leave it untouched.
+        on_test [script] :
+          eval 42
+          show
+          list ^^.n
+          eval it = 42
+          assert "expected it to survive statements that don't produce a result"

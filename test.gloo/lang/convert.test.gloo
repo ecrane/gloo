@@ -1,0 +1,70 @@
+#
+# Value conversion tests
+#
+# 'put' converts the value to the target object's type.
+#
+
+tests [can] :
+  lang [can] :
+    convert [can] :
+
+      i [integer] : 0
+      d [decimal] : 0
+      s [string] : x
+      b [boolean] : false
+
+      string_to_number [test] :
+        description [string] : a string is converted to the leading number for an int or decimal target.
+        on_test [script] :
+          put '3 third time' into ^^.i
+          eval ^^.i = 3
+          assert "expected the leading integer to be parsed"
+
+          put '3.12 more' into ^^.d
+          eval ^^.d = 3.12
+          assert "expected the leading decimal to be parsed"
+
+          put 'notanumber' into ^^.i
+          eval ^^.i = 0
+          assert "expected a non-numeric string to convert to 0"
+
+      number_to_number [test] :
+        description [string] : int and decimal convert to each other; decimal to int truncates.
+        on_test [script] :
+          put 5 into ^^.d
+          eval ^^.d = 5.0
+          assert "expected the integer to widen to a decimal"
+
+          put 9.99 into ^^.i
+          eval ^^.i = 9
+          assert "expected the decimal to truncate toward zero"
+
+      anything_to_string [test] :
+        description [string] : a number or boolean put into a string becomes its text form.
+        on_test [script] :
+          put 123 into ^^.s
+          eval ^^.s = '123'
+          assert "expected the number to become a string"
+
+          put true into ^^.s
+          eval ^^.s = 'true'
+          assert "expected the boolean to become a string"
+
+      to_boolean [test] :
+        description [string] : strings (case-insensitive) and numbers convert to a boolean.
+        on_test [script] :
+          put 'false' into ^^.b
+          eval ^^.b = false
+          assert "expected 'false' to convert to false"
+
+          put 'TRUE' into ^^.b
+          eval ^^.b = true
+          assert "expected 'TRUE' to convert to true, case-insensitively"
+
+          put 0 into ^^.b
+          eval ^^.b = false
+          assert "expected 0 to convert to false"
+
+          put 42 into ^^.b
+          eval ^^.b = true
+          assert "expected a non-zero number to convert to true"

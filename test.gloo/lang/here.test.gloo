@@ -1,0 +1,41 @@
+#
+# Here / parent reference tests
+#
+# From inside a script, ^ is the script's containing object, ^^ its
+# parent, ^^^ its grandparent, and so on.
+#
+
+tests [can] :
+  lang [can] :
+    here [can] :
+
+      s [string] : level 0
+
+      r1 [string] :
+      r2 [string] :
+      r3 [string] :
+
+      a [can] :
+        s [string] : level 1
+        b [can] :
+          s [string] : level 2
+          c [can] :
+            s [string] : level 3
+            capture [script] :
+              put ^.s into tests.lang.here.r1
+              put ^^.s into tests.lang.here.r2
+              put ^^^.s into tests.lang.here.r3
+
+      caret_walks_up_the_tree [test] :
+        description [string] : ^, ^^, ^^^ resolve relative to the running script's location.
+        on_test [script] :
+          tell tests.lang.here.a.b.c.capture to run
+
+          eval ^^.r1 = 'level 3'
+          assert "expected ^ to be the script's own container"
+
+          eval ^^.r2 = 'level 2'
+          assert "expected ^^ to be the parent container"
+
+          eval ^^.r3 = 'level 1'
+          assert "expected ^^^ to be the grandparent container"
