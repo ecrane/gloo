@@ -1,0 +1,77 @@
+#
+# File object tests
+#
+# The file object's value is a path.  These tests write a scratch
+# file under /tmp, exercise it, and delete it at the end.
+#
+
+tests [can] :
+  objs [can] :
+    file [can] :
+
+      f [file] : /tmp/gloo_file_test.txt
+      names [file] : /Users/me/project/report.csv
+
+      first [string] : first line
+      second [string] : second line
+      back [string] :
+
+      write_read_round_trip [test] :
+        description [string] : write puts an object's value in the file; read gets it back.
+        on_test [script] :
+          tell ^^.f to write ( ^^.first )
+
+          check ^^.f for exists?
+          assert "expected the file to exist after write"
+
+          check ^^.f for is_file?
+          assert "expected exists to be a regular file"
+
+          check ^^.f for is_dir?
+          refute "expected the file not to be a directory"
+
+          tell ^^.f to read ( ^^.back )
+          eval ^^.back = 'first line'
+          assert "expected read to return what was written"
+
+          tell ^^.f to delete
+
+      append_adds_a_line [test] :
+        description [string] : append adds a new line to the file.
+        on_test [script] :
+          tell ^^.f to write ( ^^.first )
+          tell ^^.f to append ( ^^.second )
+
+          tell ^^.f to read ( ^^.back )
+          check ^^.back for substring? ( "first line" )
+          assert "expected the original line to still be there"
+          check ^^.back for substring? ( "second line" )
+          assert "expected the appended line to be there"
+
+          tell ^^.f to delete
+
+      path_parts [test] :
+        description [string] : get_name, get_ext and get_parent read the path, not the disk.
+        on_test [script] :
+          tell ^^.names to get_name
+          eval it = 'report'
+          assert "expected the base name without extension"
+
+          tell ^^.names to get_ext
+          eval it = '.csv'
+          assert "expected the extension"
+
+          tell ^^.names to get_parent
+          eval it = '/Users/me/project'
+          assert "expected the parent directory"
+
+      delete_removes_the_file [test] :
+        description [string] : delete removes the file from disk.
+        on_test [script] :
+          tell ^^.f to write ( ^^.first )
+          check ^^.f for exists?
+          assert "sanity: file exists before delete"
+
+          tell ^^.f to delete
+          check ^^.f for exists?
+          refute "expected the file to be gone after delete"
