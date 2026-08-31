@@ -1,0 +1,48 @@
+#
+# Repeat object tests
+#
+
+tests [can] :
+  objs [can] :
+    repeat [can] :
+
+      count [int] : 0
+      seen [string] :
+
+      loop [repeat] :
+        times [integer] : 4
+        index [integer] : 0
+        do [script] :
+          put tests.objs.repeat.count + 1 into tests.objs.repeat.count
+          put tests.objs.repeat.seen + tests.objs.repeat.loop.index into tests.objs.repeat.seen
+
+      zero [repeat] :
+        times [integer] : 0
+        index [integer] : 0
+        do [script] :
+          put tests.objs.repeat.count + 100 into tests.objs.repeat.count
+
+      runs_the_do_script_n_times [test] :
+        description [string] : run executes 'do' once per 'times', and 'index' walks 0..times-1.
+        on_test [script] :
+          put 0 into ^^.count
+          put '' into ^^.seen
+
+          tell ^^.loop to run
+
+          eval ^^.count = 4
+          assert "expected the do script to run 4 times"
+
+          eval ^^.seen = '0123'
+          assert "expected index to be 0,1,2,3 across the iterations"
+
+          eval ^^.loop.index = 3
+          assert "expected index to be left at times-1 after the run"
+
+      zero_times_does_nothing [test] :
+        description [string] : run with times = 0 never executes 'do'.
+        on_test [script] :
+          put 0 into ^^.count
+          tell ^^.zero to run
+          eval ^^.count = 0
+          assert "expected the do script not to run when times is 0"
