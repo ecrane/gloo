@@ -1,0 +1,72 @@
+#
+# Outline object tests
+#
+# 'generate' turns a flat list of path-structured names into a nested
+# <ul>/<li> outline.  Each source item is a container whose first
+# child is the id and whose second child is the name.
+#
+
+tests [can] :
+  objs [can] :
+    outline [can] :
+
+      src [container] :
+        1 [container] :
+          id [int] : 1
+          name [string] : a/b/c
+        2 [container] :
+          id [int] : 2
+          name [string] : a/b/d
+        3 [container] :
+          id [int] : 3
+          name [string] : top
+
+      dotted [container] :
+        1 [container] :
+          id [int] : 9
+          name [string] : x.y.z
+
+      linked [outline] :
+        object_source [alias] : tests.objs.outline.src
+        entity_path [string] : /entity/
+        separator_char [string] : /
+        data [string] :
+
+      plain [outline] :
+        object_source [alias] : tests.objs.outline.dotted
+        separator_char [string] : .
+        data [string] :
+
+      builds_nested_html_with_links [test] :
+        description [string] : generate nests shared path segments and links leaves that have an id.
+        on_test [script] :
+          tell ^^.linked to generate
+
+          check ^^.linked.data for starts_with? ( "<ul>" )
+          assert "expected the outline to start with <ul>"
+
+          check ^^.linked.data for substring? ( "<li>a</li>" )
+          assert "expected a shared 'a' segment as a plain node"
+
+          check ^^.linked.data for substring? ( "<li>b</li>" )
+          assert "expected a shared 'b' segment as a plain node"
+
+          check ^^.linked.data for substring? ( "<a href='/entity/1'>c</a>" )
+          assert "expected leaf 'c' to be linked with its id and entity_path"
+
+          check ^^.linked.data for substring? ( "<a href='/entity/3'>top</a>" )
+          assert "expected the top-level 'top' item to be linked"
+
+      custom_separator_and_no_links [test] :
+        description [string] : separator_char sets the split char; with no entity_path leaves are plain.
+        on_test [script] :
+          tell ^^.plain to generate
+
+          check ^^.plain.data for substring? ( "<li>x</li>" )
+          assert "expected '.' to split x.y.z so 'x' is its own node"
+
+          check ^^.plain.data for substring? ( "<li>z</li>" )
+          assert "expected leaf 'z' rendered plain (no entity_path)"
+
+          check ^^.plain.data for substring? ( "href" )
+          refute "expected no links when entity_path is not set"
