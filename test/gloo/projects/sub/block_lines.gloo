@@ -1,0 +1,7 @@
+block_lines [can] :
+  body [text] : BEGIN
+first line
+# not a comment here
+
+last line
+END

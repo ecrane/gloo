@@ -99,4 +99,14 @@ class FileLoaderTest < BaseEngineTest
                  'the [yaml] object should have been created with its real type'
   end
 
+  def test_begin_end_block_keeps_hash_and_blank_lines
+    @engine.persist_man.load 'sub/block_lines'
+
+    body = @engine.heap.root.children.first.children.first
+    assert_equal 'body', body.name
+    assert_includes body.value, '# not a comment here'
+    assert_equal 4, body.value.split( "\n" ).length,
+                 'the blank line inside the block should be kept'
+  end
+
 end

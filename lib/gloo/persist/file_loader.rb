@@ -58,7 +58,9 @@ module Gloo
         f = join_continuations( f )
 
         f.each_line do |line|
-          next if skip_line? line
+          # Inside a BEGIN/END block every line is literal content -
+          # don't skip blank lines or lines that start with '#'.
+          next if !@in_block && skip_line?( line )
 
           if !@body_started && line =~ LIB_DIRECTIVE
             run_lib_directive line

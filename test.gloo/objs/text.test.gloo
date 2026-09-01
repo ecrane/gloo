@@ -12,6 +12,14 @@ tests [can] :
         three 3 tree
       END
 
+      # inside a block every line is literal - '#' lines and blank
+      # lines are kept, not treated as comments/blanks
+      hashed [text] : BEGIN
+# a heading
+
+- a list item
+      END
+
       b [string] :
 
       verify_text [test] :
@@ -56,11 +64,24 @@ tests [can] :
           assert "expected text to have 5 words"
 
       count_lines [test] :
-        description [string] : Get the number of lines 
+        description [string] : Get the number of lines
         on_test [script] :
           tell ^^.a to count_lines
           eval it = 3
           assert "expected text to have 3 lines"
+
+      block_keeps_hash_and_blank_lines [test] :
+        description [string] : a BEGIN/END block keeps '#' lines and blank lines verbatim
+        on_test [script] :
+          check ^^.hashed for substring? ( "# a heading" )
+          assert "expected the '#' line to be kept, not stripped as a comment"
+
+          check ^^.hashed for substring? ( "- a list item" )
+          assert "expected content after the blank line to be kept"
+
+          tell ^^.hashed to count_lines
+          eval it = 3
+          assert "expected 3 lines: heading, blank, list item"
 
       starts_with [test] :
         description [string] : Check if the string starts with a value
