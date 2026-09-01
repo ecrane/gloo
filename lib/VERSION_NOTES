@@ -1,3 +1,7 @@
+6.3.1 - 2026.09.01
+ - Fixes issue with MD in a text block (# ignored as comments)
+
+
 6.3.0 - 2026.08.31
  - Adds option to load a library at the top of a script that includes types from that lib.
 
