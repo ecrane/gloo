@@ -63,6 +63,29 @@ module Gloo
       end
 
       #
+      # Serialize this object's value for saving to a file.
+      # A script's value is an Array of command lines (once add_line
+      # has been called) or a single-line String. Render as indented
+      # body lines below the declaration, gloo's convention for
+      # scripts -- not a BEGIN/END block, which is reserved for a
+      # literal multi-line string value.
+      #
+      def serialize_value( indent )
+        lines = if value_is_array?
+                  value
+                elsif value_string? && !value.strip.empty?
+                  [ value ]
+                else
+                  []
+                end
+        return ' :' if lines.empty?
+
+        t = "\t" * ( indent + 1 )
+        body = lines.map { |line| "#{t}#{line}" }.join( "\n" )
+        return " :\n#{body}"
+      end
+
+      #
       # Get the number of lines in this script.
       #
       def line_count

@@ -119,6 +119,29 @@ module Gloo
       end
 
       #
+      # Serialize this object's value for saving to a file.
+      # Returns the text that follows "name [type]" on the declaration
+      # line -- including the leading ' :' and, for a multi-line string
+      # value, the additional indented lines and the closing END marker.
+      # indent is the indentation level of the declaration line itself.
+      #
+      def serialize_value( indent )
+        return " : #{value_display}" unless value_string? && value.include?( "\n" )
+
+        return serialize_block_value( indent )
+      end
+
+      #
+      # Serialize a multi-line string value as a BEGIN/END block.
+      #
+      def serialize_block_value( indent )
+        t = "\t" * indent
+        inner = "\t" * ( indent + 1 )
+        body = value.split( "\n" ).map { |line| "#{inner}#{line}" }.join( "\n" )
+        return " : BEGIN\n#{body}\n#{t}END"
+      end
+
+      #
       # Is the value a String?
       #
       def value_string?

@@ -39,7 +39,7 @@ module Gloo
       #
       def get_obj( obj, indent = 0 )
         t = tabs( indent )
-        str = "#{t}#{obj.name} [#{obj.type_display}] : #{obj.value_display}\n"
+        str = "#{t}#{obj.name} [#{obj.type_display}]#{obj.serialize_value( indent )}\n"
         obj.children.each do |child|
           str << get_obj( child, indent + 1 )
         end

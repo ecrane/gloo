@@ -147,6 +147,31 @@ class ObjTest < BaseEngineTest
     assert_equal 'test', s.value_display
   end
 
+  def test_serialize_value_single_line
+    s = Gloo::Objs::String.new @engine
+    s.value = 'test'
+    assert_equal ' : test', s.serialize_value( 0 )
+  end
+
+  def test_serialize_value_blank
+    s = Gloo::Objs::String.new @engine
+    assert_equal ' : ', s.serialize_value( 0 )
+  end
+
+  def test_serialize_value_multiline_string_as_begin_end_block
+    s = Gloo::Objs::String.new @engine
+    s.value = "line one\nline two"
+    expected = " : BEGIN\n\tline one\n\tline two\nEND"
+    assert_equal expected, s.serialize_value( 0 )
+  end
+
+  def test_serialize_value_multiline_string_as_begin_end_block_indented
+    s = Gloo::Objs::String.new @engine
+    s.value = "line one\nline two"
+    expected = " : BEGIN\n\t\tline one\n\t\tline two\n\tEND"
+    assert_equal expected, s.serialize_value( 1 )
+  end
+
   def test_messages
     msgs = Gloo::Core::Obj.messages
     assert msgs

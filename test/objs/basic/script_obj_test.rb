@@ -96,6 +96,31 @@ class ScriptObjTest < BaseEngineTest
     assert_equal 3, @engine.heap.it.value
   end
 
+  def test_serialize_value_for_empty_script
+    o = Gloo::Objs::Script.new @engine
+    assert_equal ' :', o.serialize_value( 0 )
+  end
+
+  def test_serialize_value_for_single_line_string_value
+    o = Gloo::Objs::Script.new @engine
+    o.set_value 'show 2 + 3'
+    assert_equal " :\n\tshow 2 + 3", o.serialize_value( 0 )
+  end
+
+  def test_serialize_value_for_array_value
+    o = Gloo::Objs::Script.new @engine
+    o.set_array_value [ 'show 2 + 3', 'show 1 + 2' ]
+    expected = " :\n\tshow 2 + 3\n\tshow 1 + 2"
+    assert_equal expected, o.serialize_value( 0 )
+  end
+
+  def test_serialize_value_for_array_value_indented
+    o = Gloo::Objs::Script.new @engine
+    o.set_array_value [ 'show 2 + 3', 'show 1 + 2' ]
+    expected = " :\n\t\tshow 2 + 3\n\t\tshow 1 + 2"
+    assert_equal expected, o.serialize_value( 1 )
+  end
+
   def test_running_an_empty_script
     i = @engine.parser.parse_immediate 'create s as script'
     i.run
