@@ -12,7 +12,7 @@ module Gloo
       BEGIN_BLOCK = 'BEGIN'.freeze
       END_BLOCK = 'END'.freeze
 
-      attr_reader :obj
+      attr_reader :obj, :raw_tail
 
       #
       # Set up a line splitter
@@ -20,6 +20,7 @@ module Gloo
       def initialize( line, tabs )
         @line = line
         @tabs = tabs
+        @raw_tail = ''
       end
 
       #
@@ -44,7 +45,12 @@ module Gloo
       end
 
       #
-      # Detect the object type.
+      # Detect the object type, and capture the exact source text that
+      # follows it -- everything from the closing ']' (or, for an
+      # untyped declaration with no brackets at all, from right after
+      # the name) to the end of the line. Kept byte-exact so a save can
+      # reproduce a declaration's original spacing when its value
+      # hasn't changed.
       #
       def detect_type
         @line = @line[ @idx + 1..-1 ]
@@ -52,12 +58,15 @@ module Gloo
 
         if @line[ 0 ] == ':'
           @type = 'untyped'
+          @raw_tail = @line
           return
         end
 
         @type = @line[ 0..( @idx ? @idx - 1 : -1 ) ]
         @type = @type[ 1..-1 ] if @type[ 0 ] == '['
         @type = @type[ 0..-2 ] if @type[ -1 ] == ']'
+        close = @line.index( ']' )
+        @raw_tail = close ? @line[ close + 1..-1 ] : ''
       end
 
       #

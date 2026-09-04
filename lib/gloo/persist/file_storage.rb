@@ -25,7 +25,7 @@ module Gloo
       # Save the object to the file.
       #
       def save
-        fs = FileSaver.new( @engine, @pn, @obj )
+        fs = FileSaver.new( @engine, @pn, @obj, @source_doc )
         fs.save
       end
 

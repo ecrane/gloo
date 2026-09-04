@@ -150,6 +150,7 @@ module Gloo
       def handle_block_line( line )
         if line.strip == END_BLOCK
           @in_block = false
+          @block_end_indent = leading_ws( line )
           finalize_declaration( @save_line )
         else
           @block_value << line
@@ -202,13 +203,13 @@ module Gloo
       #
       def create_declared_obj( line, line_tabs )
         parent = @indent_stack.parent
-        name, type, value, block_style = split_declaration( line )
+        name, type, value, style = split_declaration( line )
 
         params = { :name => name, :type => type, :value => value, :parent => parent }
         @last = @engine.factory.create( params )
         @roots << @last if parent == @engine.heap.root
 
-        node = build_obj_node( leading_ws( line ), name, type, value, block_style )
+        node = build_obj_node( leading_ws( line ), name, type, value, style )
         node.leading_doc = @comments.take_leading_doc( line_tabs, @indent_stack.node.children )
         @indent_stack.node.children << node
         @last_node = node
@@ -218,27 +219,39 @@ module Gloo
       end
 
       #
-      # Split a declaration line into name/type/value, folding in any
-      # BEGIN/END block value collected just before it.
+      # Split a declaration line into name/type/value, plus a style
+      # hash (:block_style, :raw_tail), folding in any BEGIN/END block
+      # value collected just before it. raw_tail is the exact source
+      # text that followed the type bracket on this line -- eg.
+      # " : BEGIN" or " :" -- kept for a save to reproduce the
+      # declaration's original spacing when unchanged.
       #
       def split_declaration( line )
-        name, type, value = split_line( line )
-        return name, type, value, :inline if @block_value == ''
+        splitter = LineSplitter.new( line, @indent_stack&.tabs || 0 )
+        name, type, value = splitter.split
+        style = { :raw_tail => splitter.raw_tail, :block_style => :inline }
+        return name, type, value, style if @block_value == ''
 
         value = @block_value
         @block_value = ''
-        return name, type, value, :begin_end
+        style[ :block_style ] = :begin_end
+        style[ :raw_end_indent ] = @block_end_indent
+        return name, type, value, style
       end
 
       #
-      # Build the source node for one object declaration.
+      # Build the source node for one object declaration. raw_value is
+      # kept byte-exact with whatever was handed to the heap object's
+      # set_value (trailing newline included, for a BEGIN/END block) so
+      # a save can compare the two directly.
       #
-      def build_obj_node( raw_indent, name, type, value, block_style )
-        raw_value = block_style == :begin_end ? value.chomp( "\n" ) : value
+      def build_obj_node( raw_indent, name, type, value, style )
         node = Source::ObjNode.new( :name => name, :raw_type => type )
         node.raw_indent = raw_indent
-        node.block_style = block_style
-        node.raw_value = raw_value
+        node.raw_tail = style[ :raw_tail ]
+        node.block_style = style[ :block_style ]
+        node.raw_value = value
+        node.raw_end_indent = style[ :raw_end_indent ] || ''
         node.obj = @last
         return node
       end

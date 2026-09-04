@@ -19,8 +19,8 @@ module Gloo
         #  :begin_end -- name [type] : BEGIN ... END
         #  :body      -- name [type] :, followed by an indented,
         #                unparsed body (script commands)
-        attr_accessor :name, :raw_type, :raw_indent, :block_style,
-                      :raw_value, :leading_doc, :trailing_comment, :obj
+        attr_accessor :name, :raw_type, :raw_indent, :raw_tail, :block_style,
+                      :raw_value, :raw_end_indent, :leading_doc, :trailing_comment, :obj
         attr_reader :children
 
         #
@@ -32,8 +32,12 @@ module Gloo
           @name = name
           @raw_type = raw_type
           @raw_indent = ''
+          @raw_tail = ''
           @block_style = :inline
           @raw_value = nil
+          # a begin_end block's closing END is not necessarily indented
+          # to match its declaration -- kept separately, raw.
+          @raw_end_indent = ''
           @leading_doc = nil
           @trailing_comment = nil
           @obj = nil
