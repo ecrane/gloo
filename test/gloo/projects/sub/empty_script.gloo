@@ -1,0 +1,7 @@
+holder [can] :
+	empty_script [script] :
+	after_empty [string] : still here
+
+	comment_only_script [script] :
+		# just a note, no commands
+	after_comment_only [string] : also here

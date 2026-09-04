@@ -1,7 +1,16 @@
 # Author::    Eric Crane  (mailto:eric.crane@mac.com)
 # Copyright:: Copyright (c) 2019 Eric Crane.  All rights reserved.
 #
-# Helper class used to load a file and create objects in the heap.
+# Helper class used to load a file, create objects in the heap, and
+# build a parallel Source::SourceDoc capturing everything about the
+# file that the heap alone can't represent (comments, blank lines,
+# raw formatting) -- so a later save can rewrite the file instead of
+# regenerating it from scratch.
+#
+# Comment buffering is delegated to CommentBuffer, script-body
+# collection to ScriptBodyCollector, and the nesting level shared by
+# the heap and source trees to IndentStack -- this class is the
+# orchestrator: per-line dispatch and BEGIN/END handling.
 #
 
 module Gloo
@@ -20,7 +29,7 @@ module Gloo
       # afterward.
       LIB_DIRECTIVE = /\A(?:load|ld)\s+(?:lib|ext)\s+\S+\s*\z/i.freeze
 
-      attr_reader :obj
+      attr_reader :obj, :roots, :source_doc
 
       #
       # Set up a file storage for an object.
@@ -29,10 +38,11 @@ module Gloo
         @engine = engine
         @mech = @engine.platform.get_file_mech( @engine )
         @pn = pn
-        @tabs = 0
         @obj = nil
-        @in_multiline = false
-        @exiting_multiline = false
+        @roots = []
+        @source_doc = Gloo::Persist::Source::SourceDoc.new
+        @comments = Gloo::Persist::CommentBuffer.new
+        @body = Gloo::Persist::ScriptBodyCollector.new
         @in_block = false
         @block_value = ''
         @body_started = false
@@ -49,27 +59,12 @@ module Gloo
         end
 
         @engine.log.debug "Loading file '#{@pn}'"
-        @tabs = 0
-        @parent_stack = []
-        @parent = @engine.heap.root
-        @parent_stack.push @parent
+        @indent_stack = IndentStack.new( @engine.heap.root, @source_doc )
         f = @mech.read( @pn )
 
         f = join_continuations( f )
-
-        f.each_line do |line|
-          # Inside a BEGIN/END block every line is literal content -
-          # don't skip blank lines or lines that start with '#'.
-          next if !@in_block && skip_line?( line )
-
-          if !@body_started && line =~ LIB_DIRECTIVE
-            run_lib_directive line
-            next
-          end
-          @body_started = true
-
-          handle_one_line line
-        end
+        f.each_line { |line| dispatch_line( line ) }
+        finish
       end
 
       #
@@ -90,25 +85,162 @@ module Gloo
         return data.gsub( "\\\n", '' )
       end
 
+      # ---------------------------------------------------------------------
+      #    Per-line dispatch
+      # ---------------------------------------------------------------------
+
       #
-      # Process one one of the file we're loading.
+      # Route one line of the file to whichever mode we're currently in:
+      # collecting a script body, collecting a BEGIN/END block, trivia
+      # (comment/blank), a top-of-file directive, or a normal
+      # declaration.
       #
-      def handle_one_line( line )
-        if line.strip.end_with? BEGIN_BLOCK
+      def dispatch_line( line )
+        return handle_body_line( line ) if @body.active
+        return handle_block_line( line ) if @in_block
+        return handle_trivia_line( line ) if skip_line?( line )
+
+        if !@body_started && line =~ LIB_DIRECTIVE
+          @indent_stack.node.children << Source::DirectiveNode.new( line.strip )
+          run_lib_directive line
+          return
+        end
+        @body_started = true
+
+        handle_declaration_line( line )
+      end
+
+      #
+      # End of file: close out anything still open so its content
+      # isn't silently dropped.
+      #
+      def finish
+        @body.finish
+        @comments.flush_into( @indent_stack.node.children )
+      end
+
+      # ---------------------------------------------------------------------
+      #    Trivia (comments and blank lines)
+      # ---------------------------------------------------------------------
+
+      #
+      # A comment or blank line, outside of any block/body. A comment
+      # is buffered -- it may turn out to be the leading_doc for the
+      # declaration that follows. A blank line always breaks that
+      # association (detaches any buffered comments as floating nodes)
+      # and is itself kept, not discarded.
+      #
+      def handle_trivia_line( line )
+        if line.strip.empty?
+          @comments.flush_into( @indent_stack.node.children )
+          @indent_stack.node.children << Source::BlankNode.new( chomped( line ) )
+        else
+          @comments.push( chomped( line ), tab_count( line ) )
+        end
+      end
+
+      # ---------------------------------------------------------------------
+      #    BEGIN / END blocks
+      # ---------------------------------------------------------------------
+
+      #
+      # Inside a BEGIN/END block every line is literal content -- kept
+      # exactly as-is, comments and blank lines included.
+      #
+      def handle_block_line( line )
+        if line.strip == END_BLOCK
+          @in_block = false
+          finalize_declaration( @save_line )
+        else
+          @block_value << line
+        end
+      end
+
+      # ---------------------------------------------------------------------
+      #    Script bodies (indented lines, no BEGIN/END)
+      # ---------------------------------------------------------------------
+
+      #
+      # One line while a script body might be open. Re-dispatches the
+      # line normally if it turns out to have closed the body.
+      #
+      def handle_body_line( line )
+        consumed = @body.handle_line( line, tab_count( line ) )
+        dispatch_line( line ) unless consumed
+      end
+
+      # ---------------------------------------------------------------------
+      #    Object declarations
+      # ---------------------------------------------------------------------
+
+      #
+      # A line that starts (or is) an object declaration.
+      #
+      def handle_declaration_line( line )
+        if line.strip.end_with?( BEGIN_BLOCK )
           @in_block = true
           @save_line = line
-        elsif @in_block
-          if line.strip == END_BLOCK
-            @in_block = false
-            determine_indent @save_line
-            process_line @save_line
-          else
-            @block_value << line
-          end
-        else
-          determine_indent line
-          process_line line
+          return
         end
+
+        finalize_declaration( line )
+      end
+
+      #
+      # Place the declaration at its indentation level and create the
+      # object (and its Source::ObjNode).
+      #
+      def finalize_declaration( line )
+        line_tabs = tab_count( line )
+        @indent_stack.place( line_tabs, @last, @last_node )
+        create_declared_obj( line, line_tabs )
+      end
+
+      #
+      # Create the heap object and its source node for one declaration
+      # line, and start body collection if its type calls for one.
+      #
+      def create_declared_obj( line, line_tabs )
+        parent = @indent_stack.parent
+        name, type, value, block_style = split_declaration( line )
+
+        params = { :name => name, :type => type, :value => value, :parent => parent }
+        @last = @engine.factory.create( params )
+        @roots << @last if parent == @engine.heap.root
+
+        node = build_obj_node( leading_ws( line ), name, type, value, block_style )
+        node.leading_doc = @comments.take_leading_doc( line_tabs, @indent_stack.node.children )
+        @indent_stack.node.children << node
+        @last_node = node
+        @obj = @last if @obj.nil?
+
+        @body.start( node, @last, @indent_stack.tabs ) if value&.empty? && @last&.multiline_value?
+      end
+
+      #
+      # Split a declaration line into name/type/value, folding in any
+      # BEGIN/END block value collected just before it.
+      #
+      def split_declaration( line )
+        name, type, value = split_line( line )
+        return name, type, value, :inline if @block_value == ''
+
+        value = @block_value
+        @block_value = ''
+        return name, type, value, :begin_end
+      end
+
+      #
+      # Build the source node for one object declaration.
+      #
+      def build_obj_node( raw_indent, name, type, value, block_style )
+        raw_value = block_style == :begin_end ? value.chomp( "\n" ) : value
+        node = Source::ObjNode.new( :name => name, :raw_type => type )
+        node.raw_indent = raw_indent
+        node.block_style = block_style
+        node.raw_value = raw_value
+        node.obj = @last
+        return node
       end
 
       #
@@ -121,84 +253,6 @@ module Gloo
         return true if line[ 0 ] == '#'
 
         return false
-      end
-
-      #
-      # Determine the relative indent level for the line.
-      #
-      def determine_indent( line )
-        tabs = tab_count( line )
-        @indent = 0 # same level as prior line
-        if tabs > @tabs # indent
-          # TODO:  What if indent is more than one more level?
-          @tabs = tabs
-          @indent = 1
-        elsif tabs < @tabs # outdent
-          diff = @tabs - tabs
-          @tabs -= diff
-          @indent -= diff
-        end
-        puts "tabs: #{@tabs}, indent: #{@indent}, line: #{line}" if @debug
-      end
-
-      #
-      # Process one line and add objects.
-      #
-      def process_line( line )
-        # reset multiline unless we're actually indented
-        if @in_multiline && @multi_indent > @indent
-          puts "Done multiline mi: #{@multi_indent}, i: #{@indent}" if @debug
-          @in_multiline = false
-          @exiting_multiline = true
-        end
-
-        if @in_multiline
-          @last.add_line line
-        else
-          setup_process_obj_line
-          process_obj_line line
-        end
-      end
-
-      #
-      # Setup and get ready to process an object line.
-      #
-      def setup_process_obj_line
-        if @exiting_multiline
-          @exiting_multiline = false
-          @indent += 1
-        end
-
-        if @indent.positive?
-          @parent = @last
-          @parent_stack.push @parent
-        elsif @indent.negative?
-          @indent.abs.times do
-            @parent_stack.pop
-            @parent = @parent_stack.last
-          end
-        end
-      end
-
-      #
-      # Process one line and add objects.
-      #
-      def process_obj_line( line )
-        name, type, value = split_line( line )
-        unless @block_value == ''
-          value = @block_value
-          @block_value = ''
-        end
-        params = { name: name, type: type, value: value, parent: @parent }
-        @last = @engine.factory.create( params )
-
-        if value&.empty? && @last&.multiline_value?
-          @multi_indent = 0
-          @in_multiline = true
-          puts "*** Start multiline. multi_indent: #{@multi_indent}" if @debug
-        end
-
-        @obj = @last if @obj.nil?
       end
 
       #
@@ -222,8 +276,22 @@ module Gloo
       # Split the line into 3 parts.
       #
       def split_line( line )
-        o = LineSplitter.new( line, @tabs )
+        o = LineSplitter.new( line, @indent_stack&.tabs || 0 )
         return o.split
+      end
+
+      #
+      # The line's leading whitespace, exactly as written.
+      #
+      def leading_ws( line )
+        return line[ /\A[ \t]*/ ]
+      end
+
+      #
+      # A line's raw text with its trailing newline removed.
+      #
+      def chomped( line )
+        return line.chomp( "\n" )
       end
 
     end

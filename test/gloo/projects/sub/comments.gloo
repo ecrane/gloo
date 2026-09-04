@@ -1,0 +1,10 @@
+#
+# leading doc comment for demo
+#
+demo [can] :
+  # leading doc for msg
+  msg [string] : hello
+
+  # detached from other by the blank line below
+
+  other [string] : world

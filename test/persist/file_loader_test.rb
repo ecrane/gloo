@@ -109,4 +109,110 @@ class FileLoaderTest < BaseEngineTest
                  'the blank line inside the block should be kept'
   end
 
+  # -------------------------------------------------------------------
+  #   SourceDoc
+  # -------------------------------------------------------------------
+
+  def test_source_doc_captures_leading_and_floating_comments
+    @engine.persist_man.load 'sub/comments'
+    doc = @engine.persist_man.maps.last.source_doc
+
+    demo = doc.roots.first
+    assert_equal 'demo', demo.name
+    assert_equal "#\n# leading doc comment for demo\n#", demo.leading_doc
+
+    msg_node = demo.children.find { |n| n.is_a?( Gloo::Persist::Source::ObjNode ) && n.name == 'msg' }
+    assert_equal '  # leading doc for msg', msg_node.leading_doc
+
+    # the detached comment floats as its own node, followed by a blank
+    # line node, both ahead of 'other' -- which gets no leading_doc.
+    trivia = demo.children.select { |n| !n.is_a?( Gloo::Persist::Source::ObjNode ) }
+    assert trivia.any? { |n| n.is_a?( Gloo::Persist::Source::CommentNode ) &&
+      n.raw.include?( 'detached from other' ) }
+    assert trivia.any? { |n| n.is_a?( Gloo::Persist::Source::BlankNode ) }
+
+    other_node = demo.children.find { |n| n.is_a?( Gloo::Persist::Source::ObjNode ) && n.name == 'other' }
+    assert_nil other_node.leading_doc
+  end
+
+  def test_source_doc_preserves_blank_lines
+    @engine.persist_man.load 'sub/comments'
+    doc = @engine.persist_man.maps.last.source_doc
+    demo = doc.roots.first
+
+    assert demo.children.any? { |n| n.is_a?( Gloo::Persist::Source::BlankNode ) }
+  end
+
+  def test_source_doc_captures_begin_end_block_raw
+    @engine.persist_man.load 'sub/block_lines'
+    doc = @engine.persist_man.maps.last.source_doc
+    body_node = doc.roots.first.children.first
+
+    assert_equal 'body', body_node.name
+    assert_equal :begin_end, body_node.block_style
+    assert_includes body_node.raw_value, '# not a comment here'
+  end
+
+  def test_source_doc_multiple_roots
+    @engine.persist_man.load 'ctrl/invoke'
+    doc = @engine.persist_man.maps.last.source_doc
+
+    names = doc.roots.map( &:name )
+    assert_equal %w[f add not_a_function greet failing], names
+    assert_equal doc.roots.length, @engine.persist_man.maps.last.roots.length
+  end
+
+  def test_source_doc_root_leading_doc_across_files
+    @engine.persist_man.load 'ctrl/invoke'
+    doc = @engine.persist_man.maps.last.source_doc
+
+    add_node = doc.roots.find { |n| n.name == 'add' }
+    assert_includes add_node.leading_doc, 'Function with declared params'
+  end
+
+  def test_empty_script_does_not_swallow_the_next_object
+    @engine.persist_man.load 'sub/empty_script'
+    holder = @engine.heap.root.children.first
+    assert_equal 4, holder.child_count
+
+    names = holder.children.map( &:name )
+    assert_equal %w[empty_script after_empty comment_only_script after_comment_only], names
+
+    after_empty = holder.find_child( 'after_empty' )
+    assert_equal 'still here', after_empty.value
+    after_comment_only = holder.find_child( 'after_comment_only' )
+    assert_equal 'also here', after_comment_only.value
+  end
+
+  def test_script_body_comment_is_kept_in_source_but_not_run_as_a_command
+    @engine.persist_man.load 'sub/empty_script'
+    holder = @engine.heap.root.children.first
+    comment_only = holder.find_child( 'comment_only_script' )
+
+    # not executed as a command -- the body stayed empty/blank
+    assert comment_only.value_is_blank? || comment_only.value == []
+
+    doc = @engine.persist_man.maps.last.source_doc
+    node = doc.roots.first.children.find do |n|
+      n.is_a?( Gloo::Persist::Source::ObjNode ) && n.name == 'comment_only_script'
+    end
+    assert_equal :body, node.block_style
+    assert_includes node.raw_value, '# just a note, no commands'
+  end
+
+  def test_source_doc_captures_lib_directive
+    dm = Gloo::Persist::FileLoader.instance_method( :run_lib_directive )
+    Gloo::Persist::FileLoader.send( :define_method, :run_lib_directive ) { |_line| nil }
+
+    begin
+      @engine.persist_man.load 'sub/uses_lib'
+      doc = @engine.persist_man.maps.last.source_doc
+      directive = doc.children.find { |n| n.is_a?( Gloo::Persist::Source::DirectiveNode ) }
+      assert directive
+      assert_equal 'load lib yaml', directive.raw
+    ensure
+      Gloo::Persist::FileLoader.send( :define_method, :run_lib_directive, dm )
+    end
+  end
+
 end

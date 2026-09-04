@@ -8,7 +8,7 @@ module Gloo
   module Persist
     class FileStorage
 
-      attr_reader :obj, :pn
+      attr_reader :obj, :pn, :roots, :source_doc
 
       #
       # Set up a file storage for an object.
@@ -17,6 +17,8 @@ module Gloo
         @engine = engine
         @obj = obj
         @pn = pn
+        @roots = obj ? [ obj ] : []
+        @source_doc = nil
       end
 
       #
@@ -34,6 +36,8 @@ module Gloo
         fl = FileLoader.new( @engine, @pn )
         fl.load
         @obj = fl.obj
+        @roots = fl.roots
+        @source_doc = fl.source_doc
         if @obj
           @engine.log.debug "Loaded object: #{@obj.name}"
         else
