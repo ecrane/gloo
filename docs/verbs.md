@@ -9,8 +9,9 @@ Verbs aren't just for scripts, though. They're also the interactive language of 
 - Run
 - Tell
 - Put
+- Load & Save
 
-This page walks through three of the most commonly used verbs to get a feel for how they work together. For the complete list of verbs, their full syntax, and every error they can raise, use the in-app help: enter `help` (or `?`), then `verbs` to list them all, or `verb {name}` for detail on one (see Application, Help).
+This page walks through the most commonly used verbs to get a feel for how they work together. For the complete list of verbs, their full syntax, and every error they can raise, use the in-app help: enter `help` (or `?`), then `verbs` to list them all, or `verb {name}` for detail on one (see Application, Help).
 
 ## Run
 
@@ -67,6 +68,30 @@ put {expression} into {dst.path}
 
 `it` also picks up the result of the evaluation, same as with other verbs — see It.
 
+## Load & Save
+
+`load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a path relative to the project folder (no extension needed) or a full path (extension required); `*` in place of a file name loads every `.gloo` file in a folder.
+
+```gloo
+> load my/project/config
+> load my/app/*
+> load ~/.my_app/settings.gloo
+```
+
+`save` writes loaded objects back to their files. With no argument it saves every open file; with an object it saves the file (or files) that object's tree came from; with `to {path}` it saves to a new file and remembers the mapping.
+
+```gloo
+> save                        # every open file
+> save config                 # just config's file
+> save config to backups/config
+```
+
+A save is a **rewrite, not a regeneration**: comments, blank lines, and the original spacing are kept, and only the values you actually changed are re-written. A declaration you never touched comes back byte-for-byte.
+
+Several files can contribute to one container — declare `app [container] :` in each and add different children. They merge in the heap, and each file's save only rewrites its own declarations. If two files declare the *same* object with different values, the first one loaded wins and `load` logs a warning.
+
+An object can also save itself: `tell config to save`.
+
 ---
 
-`run`, `tell`, and `put` cover a lot of ground on their own, but there are 26 more verbs — `show`, `if`, `create`, `each`, `check`, and so on — all documented in-app. Enter `help` (or `?`), then `verbs` to browse them. (This page itself is also viewable in-app: `help> doc verbs`.)
+`run`, `tell`, `put`, and `load` / `save` cover a lot of ground, but there are more than two dozen other verbs — `show`, `if`, `create`, `each`, `check`, `reload`, `unload`, and so on — all documented in-app. Enter `help` (or `?`), then `verbs` to browse them. (This page itself is also viewable in-app: `help> doc verbs`.)

@@ -213,7 +213,10 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'JSON data in a text string.',
+          :description => 'JSON data in a text string. Declare it ' \
+            'inline, in a BEGIN/END block, or assign it at run time: a ' \
+            'single-quoted literal keeps its double quotes, so ' \
+            'putting a JSON string into the object works.',
           :messages => [
             'get ({path}) — Get a value from the JSON data. Example: tell myjson to get (\'title\'). The parameter is the path in JSON to the value we want. The value is put into it.',
             'set ({obj.path}) — Convert an object to an approximate JSON value. Example: tell myjson to set (my.object). The parameter is the path to the object used as the source. Note this is an approximate conversion — a gloo object can have both a simple value and be a container for child objects, which JSON can\'t represent the same way.',

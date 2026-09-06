@@ -85,7 +85,10 @@ module Gloo
               '(.gloo appended if omitted). Registers the mapping, so ' \
               'a later bare save includes it.'
           ],
-          :result => 'The file(s) are updated with the latest object state.',
+          :result => 'The file(s) are updated with the latest object ' \
+            'state. This is a rewrite, not a regeneration: comments, ' \
+            'blank lines, and the original formatting are preserved, ' \
+            'and only values that actually changed are re-written.',
           :errors => [
             "#{MISSING_PATH_ERR} — 'to' was given with nothing after it.",
             'Could not resolve object to save — the object was not found.',
@@ -93,7 +96,9 @@ module Gloo
               'target path exists but is not mapped to this object.'
           ],
           :notes => 'An object can also be told to save itself: ' \
-            '`tell my_obj to save`.',
+            '`tell my_obj to save`. When several files contribute to ' \
+            'one container (the namespace pattern), each file save only ' \
+            "rewrites that file's own declarations.",
           :examples => <<~EXAMPLES.strip
             > save
             > save my_obj

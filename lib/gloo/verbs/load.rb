@@ -124,6 +124,11 @@ module Gloo
             "#{UNKNOWN_OPT_ERR} — The reference type given isn't file, ext, or lib.",
             "#{WRONG_NUM_ARGS_ERR} — load expects 2 or 3 arguments (the verb, an optional reference type, and the file/ext/lib name)."
           ],
+          :notes => 'Several files can contribute to one container: ' \
+            'declare it in each file and add different children, and ' \
+            'they merge in the heap. If two loaded files declare the ' \
+            'same object with different values, the first one loaded ' \
+            'wins and a warning is logged.',
           :examples => <<~EXAMPLES.strip
             > load my/project/file
             > load my/app/*

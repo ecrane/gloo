@@ -128,7 +128,10 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'An executable script — a set of commands to be run.',
+          :description => 'An executable script — a set of commands to ' \
+            'be run. A command line may end with an inline `# ...` ' \
+            'comment; it is ignored when the line runs but kept when ' \
+            'the file is saved.',
           :messages => [
             'run — Run the script. The script can be run by telling the ' \
               'object to run, or via the run verb.'
