@@ -58,6 +58,19 @@ Base classes: inherit from `GlooTest` (defined in `test/base_test.rb`).
 ### Gloo integration tests — `test.gloo/`
 Written in gloo itself. Each file contains `[test]` objects with `on_test` scripts using `assert` and `refute`.
 
+Run with `ruby lib/run.rb --test --quiet <paths...>` — **not** `bundle exec` (the Gemfile doesn't carry `gloo-test` / `gloo-md` / the other core-lib gems, so `[test]` and `load lib` fail under bundler; plain `ruby` uses the system gem env where they're installed).
+
+- Interpreter suite only:
+  `ruby ~/dev/gloo/lib/run.rb --test --quiet ~/dev/gloo/test.gloo/`
+- Interpreter **plus** every extension and core library:
+  ```
+  ruby ~/dev/gloo/lib/run.rb --test --quiet \
+    ~/dev/gloo/test.gloo/ \
+    ~/gloo/extensions/{alert,beep,git,ruby,slack,stats,teams}/test/ \
+    ~/dev/gloo_core_libraries/gloo-{beep,cli,db,email,md,mysql,pg,sqlite,test,web,yaml}/test/
+  ```
+  (brace expansion is shell sugar for the full explicit path list)
+
 ```
 test.gloo/
 ├── basic.test.gloo
