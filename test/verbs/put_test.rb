@@ -28,6 +28,24 @@ class PutTest < BaseEngineTest
     assert_equal 'one', s.value
   end
 
+  def test_put_a_json_string_into_a_string
+    @engine.parser.run 'create s as string : ORIGINAL'
+    s = @engine.heap.root.children.first
+
+    @engine.parser.run %q{put '{"x":1}' into s}
+    refute @engine.error?
+    assert_equal '{"x":1}', s.value
+  end
+
+  def test_put_a_string_with_escaped_double_quotes
+    @engine.parser.run 'create s as string'
+    s = @engine.heap.root.children.first
+
+    @engine.parser.run 'put "say \\"hi\\"" into s'
+    refute @engine.error?
+    assert_equal 'say "hi"', s.value
+  end
+
   def test_put_into_int
     o = @engine.parser.parse_immediate 'create i as int : 0'
     o.run

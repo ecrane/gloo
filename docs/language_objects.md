@@ -60,6 +60,11 @@ The following rules apply to literal values:
 
 - Strings
     - Can be delimited by single or double quotes. (`"` or `'`)
+    - A quote of the other kind inside needs no escaping —
+      `'{"x":1}'` is the string `{"x":1}`, which is the usual way to
+      write a JSON literal.
+    - A quote of the same kind inside is escaped with a backslash —
+      `"say \"hi\""` is the string `say "hi"`.
 - Numbers
     - Integer and decimal numbers need no delimiters.
     - To refer to a decimal with no fractional value, include `.0` to indicate a decimal value.
@@ -88,6 +93,8 @@ The following rules apply to literal values:
       put 'Hello world.' into ^.s
       show ^.s
       put "You're Awesome!" into ^.s
+      show ^.s
+      put '{"lang":"gloo"}' into ^.s
       show ^.s
 
       # Number literals

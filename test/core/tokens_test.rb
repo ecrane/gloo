@@ -52,6 +52,35 @@ class TokensTest < BaseTest
     assert_equal '"a string with spaces"', o.last
   end
 
+  def test_tokenize_single_quoted_literal_containing_double_quotes
+    o = Gloo::Core::Tokens.new( %q{put '{"x":1}' into t.s} )
+    assert_equal 4, o.token_count
+    assert_equal 'put', o.first
+    assert_equal %q('{"x":1}'), o.at( 1 )
+    assert_equal 'into', o.at( 2 )
+    assert_equal 't.s', o.at( 3 )
+  end
+
+  def test_tokenize_double_quoted_literal_containing_single_quote
+    o = Gloo::Core::Tokens.new( %q{put "it's here" into s} )
+    assert_equal 4, o.token_count
+    assert_equal %q("it's here"), o.at( 1 )
+  end
+
+  def test_tokenize_keeps_an_escaped_quote_inside_the_string
+    o = Gloo::Core::Tokens.new( 'show "say \\"hi\\""' )
+    assert_equal 2, o.token_count
+    assert_equal '"say \\"hi\\""', o.last
+  end
+
+  def test_tokenize_two_separate_quoted_strings
+    o = Gloo::Core::Tokens.new( "show 'a' + 'b'" )
+    assert_equal 4, o.token_count
+    assert_equal "'a'", o.at( 1 )
+    assert_equal '+', o.at( 2 )
+    assert_equal "'b'", o.at( 3 )
+  end
+
   def test_token_count
     o = Gloo::Core::Tokens.new( 'quit' )
     assert_equal 1, o.token_count

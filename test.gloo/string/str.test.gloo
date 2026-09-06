@@ -21,6 +21,21 @@ tests [can] :
         eval ^^.s = "hello world"
         assert "expected s to be 'hello world'"
 
+    put_a_quote_containing_value [test] :
+      description [string] : Put a literal that contains quote characters
+      on_test [script] :
+        put '{"x":1}' into ^^.s
+        eval ^^.s = '{"x":1}'
+        assert "expected s to hold the JSON string"
+
+        put "it's here" into ^^.s
+        eval ^^.s = "it's here"
+        assert "expected s to hold the apostrophe string"
+
+        put "say \"hi\"" into ^^.s
+        eval ^^.s = 'say "hi"'
+        assert "expected s to hold the unescaped double-quote string"
+
     blank [test] :
       description [string] : Check to see if the string is blank
       on_test [script] :

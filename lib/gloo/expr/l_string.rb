@@ -31,19 +31,23 @@ module Gloo
       end
 
       #
-      # Given a string with leading and trailing quotes,
-      # strip them out.
+      # Given a string with leading and trailing quotes, strip them
+      # out. A quote of the other kind inside needs nothing done to it
+      # ('{"x":1}' -> {"x":1}); an escaped quote of the same kind is
+      # unescaped ("say \"hi\"" -> say "hi").
       #
       def self.strip_quotes( str )
         if str.start_with?( '"' )
           str = str[ 1..-1 ]
           str = str[ 0..-2 ] if str.end_with?( '"' )
-          return str
+          return str.gsub( '\\"', '"' )
         elsif str.start_with?( "'" )
           str = str[ 1..-1 ]
           str = str[ 0..-2 ] if str.end_with?( "'" )
-          return str
+          return str.gsub( "\\'", "'" )
         end
+
+        return str
       end
 
       #

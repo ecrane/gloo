@@ -154,8 +154,9 @@ module Gloo
       # An inline call (invoke( ... ) / ~>( ... )) is checked for
       # first since it needs to be quote-aware in its own right (a
       # call's args can include a quoted string) - see
-      # find_call_range. Falls through to the original quote-then-
-      # plain-split handling, unchanged, when there's no call.
+      # find_call_range. Otherwise the first quoted run (whichever
+      # quote char opens first) becomes one token, and the rest is
+      # split on spaces.
       #
       def tokenize( str )
         range = find_call_range( str )
@@ -163,25 +164,50 @@ module Gloo
           tokenize( str[ 0...range.first ] ) if range.first.positive?
           @tokens << str[ range ]
           tokenize( str[ range.last + 1..-1 ] ) if range.last + 1 < str.length
-        elsif str.index( '"' )
-          i = str.index( '"' )
-          j = str.index( '"', i + 1 )
-          j ||= str.length
+          return
+        end
 
-          tokenize( str[ 0..i - 1 ] ) if i > 1
-          @tokens << str[ i..j ]
-          tokenize( str[ j + 1..-1 ] ) if j + 1 < str.length
-        elsif str.index( "'" )
-          i = str.index( "'" )
-          j = str.index( "'", i + 1 )
-          j ||= str.length
-
-          tokenize( str[ 0..i - 1 ] ) if i > 1
-          @tokens << str[ i..j ]
-          tokenize( str[ j + 1..-1 ] ) if j + 1 < str.length
+        qi, qc = first_quote( str )
+        if qi
+          close = closing_quote( str, qi, qc )
+          tokenize( str[ 0...qi ] ) if qi.positive?
+          @tokens << str[ qi..close ]
+          tokenize( str[ close + 1..-1 ] ) if close + 1 < str.length
         else
           str.strip.split( ' ' ).each { |t| @tokens << t }
         end
+      end
+
+      #
+      # Find the first quote character in the string, of either kind
+      # -- returns [index, char], or [nil, nil] if there is none. The
+      # kind that opens first wins, so a " inside a '...' literal (and
+      # vice versa) is treated as ordinary content.
+      #
+      def first_quote( str )
+        found = nil
+        QUOTE_CHARS.each do |q|
+          i = str.index( q )
+          found = [ i, q ] if i && ( found.nil? || i < found[ 0 ] )
+        end
+        return found || [ nil, nil ]
+      end
+
+      #
+      # Index of the quote that closes the one opened at open_index.
+      # A backslash-escaped quote (\" or \') does not close the
+      # string. Returns str.length if it is never closed.
+      #
+      def closing_quote( str, open_index, quote_char )
+        i = open_index + 1
+        while i < str.length
+          ch = str[ i ]
+          return i if ch == quote_char
+
+          i += 1
+          i += 1 if ch == '\\'
+        end
+        return str.length
       end
 
       #

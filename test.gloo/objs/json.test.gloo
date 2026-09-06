@@ -20,6 +20,7 @@ tests [can] :
       built [json] :
       out [can] :
       found [string] :
+      assigned [json] :
 
       get_a_value [test] :
         description [string] : get pulls a value out by dotted path.
@@ -68,3 +69,11 @@ tests [can] :
           tell ^^.compact to get ( 'b.c' )
           eval it = '2'
           assert "expected the value to still be reachable after pretty"
+
+      assign_a_json_string_at_run_time [test] :
+        description [string] : a quote-containing literal can be put into an object at run time.
+        on_test [script] :
+          put '{"lang":"gloo","ok":true}' into tests.objs.json.assigned
+          tell ^^.assigned to get ( 'lang' )
+          eval it = 'gloo'
+          assert "expected the run-time JSON string to be assigned and readable"
