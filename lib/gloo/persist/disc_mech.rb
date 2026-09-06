@@ -85,11 +85,24 @@ module Gloo
         return nil
       end
 
-      # 
+      #
       # Read in the contents of a single file.
-      # 
+      #
       def read( file )
         return File.read( file )
+      end
+
+      #
+      # Resolve a path to save a new (not-yet-existing) file to, given
+      # a name or relative path -- same convention as expand (relative
+      # to the project root, .gloo appended if missing), but without
+      # requiring the file to already exist.
+      #
+      def resolve_save_path( name )
+        full_name = name.end_with?( file_ext ) ? name : "#{name}#{file_ext}"
+        return full_name if full_name.start_with?( '/' )
+
+        return File.join( @engine.settings.project_path, full_name )
       end
 
       # 

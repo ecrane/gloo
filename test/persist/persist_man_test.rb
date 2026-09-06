@@ -57,6 +57,30 @@ class PersistManTest < BaseEngineTest
     assert_equal fs.obj.pn, obj.pn
   end
 
+  def test_finding_file_storages_for_a_root
+    @engine.parser.run 'load test'
+    root = @engine.heap.root.children.first
+    fs_list = @engine.persist_man.find_file_storages( root )
+
+    assert_equal 1, fs_list.length
+    assert_same root, fs_list.first.obj
+  end
+
+  def test_finding_file_storages_for_a_descendant_resolves_to_its_root
+    @engine.parser.run 'load test'
+    root = @engine.heap.root.children.first
+    child = root.find_child( 'msg' )
+
+    fs_list = @engine.persist_man.find_file_storages( child )
+    assert_equal 1, fs_list.length
+    assert_same root, fs_list.first.obj
+  end
+
+  def test_finding_file_storages_for_an_unmapped_object_is_empty
+    o = @engine.factory.create( { :name => 'fresh', :type => 'can' } )
+    assert_equal [], @engine.persist_man.find_file_storages( o )
+  end
+
   #
   # Regression: an unhandled Ruby exception while loading a file (or
   # running its on_load script) used to crash the whole process, since

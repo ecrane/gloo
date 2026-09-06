@@ -87,6 +87,37 @@ class FileSaverTest < BaseEngineTest
     assert_includes out, "\t\t# just a note, no commands"
   end
 
+  def test_dirty_is_false_with_no_source_doc
+    o = @engine.factory.create( { :name => 'fresh', :type => 'can' } )
+    saver = Gloo::Persist::FileSaver.new( @engine, '', o )
+    refute saver.dirty?
+  end
+
+  def test_dirty_is_false_when_nothing_changed
+    @engine.persist_man.load 'sub/comments'
+    fs = @engine.persist_man.maps.last
+    saver = Gloo::Persist::FileSaver.new( @engine, fs.pn, fs.obj, fs.source_doc )
+    refute saver.dirty?
+  end
+
+  def test_dirty_is_true_after_a_value_changes
+    @engine.persist_man.load 'sub/comments'
+    fs = @engine.persist_man.maps.last
+    fs.obj.find_child( 'msg' ).set_value( 'changed' )
+
+    saver = Gloo::Persist::FileSaver.new( @engine, fs.pn, fs.obj, fs.source_doc )
+    assert saver.dirty?
+  end
+
+  def test_dirty_is_true_after_a_deletion
+    @engine.persist_man.load 'sub/comments'
+    fs = @engine.persist_man.maps.last
+    fs.obj.remove_child( fs.obj.find_child( 'other' ) )
+
+    saver = Gloo::Persist::FileSaver.new( @engine, fs.pn, fs.obj, fs.source_doc )
+    assert saver.dirty?
+  end
+
   def test_round_trip_falls_back_to_regeneration_with_no_source_doc
     o = @engine.factory.create( { :name => 'fresh', :type => 'can' } )
     @engine.factory.create( { :name => 's', :type => 'str', :value => 'hi', :parent => o } )

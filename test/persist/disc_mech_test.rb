@@ -47,4 +47,29 @@ class DiscMechTest < BaseEngineTest
     assert data.start_with?( 'test' )
   end
 
+  def test_resolve_save_path_appends_extension_and_joins_project_root
+    o = Gloo::Persist::DiscMech.new( @engine )
+    pn = o.resolve_save_path( 'brand_new' )
+    assert_equal File.join( @engine.settings.project_path, 'brand_new.gloo' ), pn
+  end
+
+  def test_resolve_save_path_does_not_double_up_the_extension
+    o = Gloo::Persist::DiscMech.new( @engine )
+    pn = o.resolve_save_path( 'brand_new.gloo' )
+    assert_equal File.join( @engine.settings.project_path, 'brand_new.gloo' ), pn
+  end
+
+  def test_resolve_save_path_does_not_require_the_file_to_exist
+    o = Gloo::Persist::DiscMech.new( @engine )
+    pn = o.resolve_save_path( 'nothing_here_yet' )
+    refute o.exist?( pn )
+    assert pn.end_with?( 'nothing_here_yet.gloo' )
+  end
+
+  def test_resolve_save_path_leaves_an_absolute_path_alone
+    o = Gloo::Persist::DiscMech.new( @engine )
+    pn = o.resolve_save_path( '/tmp/somewhere/thing' )
+    assert_equal '/tmp/somewhere/thing.gloo', pn
+  end
+
 end

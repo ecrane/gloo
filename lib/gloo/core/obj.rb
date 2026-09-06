@@ -329,7 +329,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return %w[reload unload blank? contains? responds_to?]
+        return %w[save reload unload blank? contains? responds_to?]
       end
 
       #
@@ -377,6 +377,22 @@ module Gloo
         end
 
         @engine.persist_man.unload self
+      end
+
+      #
+      # Send the object the save message: tell it to save itself,
+      # rather than going through the save verb. Same rules as
+      # `save {path.to.object}` -- saves every file that owns a
+      # declaration in this object's root, or saves fresh to a default
+      # path if it isn't mapped to a file yet.
+      #
+      def msg_save
+        if self.root?
+          @engine.err 'Cannot save the root object.'
+          return
+        end
+
+        @engine.persist_man.save self.pn
       end
 
       #

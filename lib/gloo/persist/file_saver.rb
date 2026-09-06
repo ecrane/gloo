@@ -49,6 +49,19 @@ module Gloo
       end
 
       #
+      # Would saving now actually change anything on disk? True if any
+      # known declaration's value no longer matches its raw source, or
+      # its object was deleted. (Doesn't detect a brand-new object with
+      # no source node of its own -- an approximation, not a guarantee,
+      # good enough to warn before a reload discards changes.)
+      #
+      def dirty?
+        return false unless @source_doc
+
+        return any_dirty?( @source_doc.children, @engine.heap.root )
+      end
+
+      #
       # Convert an object to textual representation from scratch, with
       # no source text to preserve. This is a recursive function, and
       # is also reused by the rewriter for any object created since
@@ -71,6 +84,21 @@ module Gloo
       #
       def regenerate
         return get_obj( @obj )
+      end
+
+      #
+      # Does any node in the given list represent a change from what's
+      # on disk -- its object gone from live_parent's children (an
+      # untracked deletion counts too), or its value changed?
+      #
+      def any_dirty?( nodes, live_parent )
+        nodes.any? do |node|
+          next false unless node.is_a?( Source::ObjNode )
+          next true unless node.obj && live_parent.children.include?( node.obj )
+          next true unless value_unchanged?( node )
+
+          any_dirty?( node.children, node.obj )
+        end
       end
 
       # ---------------------------------------------------------------------

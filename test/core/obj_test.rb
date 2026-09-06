@@ -286,6 +286,29 @@ class ObjTest < BaseEngineTest
     assert_equal 0, @engine.heap.root.child_count
   end
 
+  def test_telling_an_object_to_save
+    original = File.read( fixture_path )
+
+    @engine.parser.run 'load test'
+    @engine.parser.run "put 'msg via obj test' into test.msg"
+    o = @engine.heap.root.children.first
+    o.send_message( 'save' )
+    refute @engine.error?
+
+    assert_includes File.read( fixture_path ), 'msg via obj test'
+  ensure
+    File.write( fixture_path, original ) if original
+  end
+
+  def test_cannot_save_the_root_object
+    @engine.heap.root.send_message( 'save' )
+    assert @engine.error?
+  end
+
+  def fixture_path
+    File.join( default_user_root, 'projects', 'test.gloo' )
+  end
+
   def test_telling_an_object_to_reload
     @engine.parser.run 'load test'
     @engine.parser.run 'files'

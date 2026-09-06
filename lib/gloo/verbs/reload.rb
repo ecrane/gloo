@@ -61,6 +61,9 @@ module Gloo
             'loaded again. Note that re-load does not trigger the ' \
             'on_load script to run. There is an on_reload message sent ' \
             'to all open files.',
+          :notes => 'If a file has changes that have not been saved, ' \
+            'reloading discards them (a warning is logged, but the ' \
+            'reload still proceeds).',
           :examples => <<~EXAMPLES.strip
             > reload
           EXAMPLES

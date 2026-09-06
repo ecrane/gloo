@@ -37,4 +37,29 @@ class ReloadTest < BaseEngineTest
     assert_equal 'test', @engine.heap.root.children.first.name
   end
 
+  def test_reloading_a_file_with_unsaved_changes_warns_but_still_reloads
+    @engine.parser.run 'load test'
+    @engine.parser.run "put 'not yet saved' into test.msg"
+
+    warnings = []
+    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+
+    @engine.parser.run 'tell test to reload'
+
+    assert warnings.any? { |w| w.include?( 'Reloading will discard unsaved changes' ) }
+    # the reload still happened -- the unsaved change is gone
+    assert_equal 'Hello from gloo!', @engine.heap.root.find_child( 'test' ).find_child( 'msg' ).value
+  end
+
+  def test_reloading_an_unchanged_file_does_not_warn
+    @engine.parser.run 'load test'
+
+    warnings = []
+    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+
+    @engine.parser.run 'tell test to reload'
+
+    assert_equal [], warnings
+  end
+
 end
