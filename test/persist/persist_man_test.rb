@@ -98,4 +98,34 @@ class PersistManTest < BaseEngineTest
     end
   end
 
+  def test_a_failed_load_is_not_added_to_the_maps
+    @engine.persist_man.load 'no_such_file'
+    assert_equal 0, @engine.persist_man.maps.count
+  end
+
+  def test_unload_removes_every_mapping_for_the_object
+    @engine.parser.run 'load test'
+    obj = @engine.heap.root.children.first
+
+    # a second mapping for the same root (as save-to / a namespace would leave)
+    extra = Gloo::Persist::FileStorage.new( @engine, '/tmp/gloo_extra.gloo', obj )
+    @engine.persist_man.maps << extra
+    assert_equal 2, @engine.persist_man.maps.count
+
+    obj.msg_unload
+    assert_equal 0, @engine.persist_man.maps.count
+  end
+
+  def test_unload_tolerates_a_mapping_whose_object_is_gone
+    @engine.parser.run 'load test'
+    obj = @engine.heap.root.children.first
+
+    stale = Gloo::Persist::FileStorage.new( @engine, '/tmp/gloo_stale.gloo', nil )
+    @engine.persist_man.maps << stale
+
+    obj.msg_unload # used to raise NoMethodError on stale.obj.pn
+    refute @engine.error?
+    assert_equal 0, @engine.persist_man.maps.count
+  end
+
 end

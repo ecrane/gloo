@@ -86,6 +86,8 @@ module Gloo
           begin
             fs = Gloo::Persist::FileStorage.new( @engine, pn )
             fs.load
+            next unless fs.obj # a failed load -- don't map it
+
             @maps << fs
             @engine.event_manager.on_load fs.obj
           rescue => ex
@@ -99,8 +101,8 @@ module Gloo
       # The engine  is reset to a clean state.
       # 
       def unload_all
-        objs = self.maps.map { |fs| fs.obj }
-        objs.each { |o| o.msg_unload }
+        objs = self.maps.map( &:obj ).compact
+        objs.each( &:msg_unload )
         @engine.reset_state
       end
 
@@ -113,12 +115,10 @@ module Gloo
       def unload( obj )
         @engine.event_manager.on_unload obj
         @engine.heap.unload obj
-        @maps.each_with_index do |o, i|
-          if o.obj.pn === obj.pn
-            @maps.delete_at( i )
-            return
-          end
-        end
+        # Drop every mapping for this object -- more than one when the
+        # root came from several files (the namespace pattern) -- and
+        # sweep out any mapping whose object is already gone.
+        @maps.reject! { |o| o.obj.nil? || ( o.obj.pn === obj.pn ) }
       end
 
       #
