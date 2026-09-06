@@ -1,3 +1,9 @@
+6.4.0 - 2026.09.06
+ - Persistance refresh with updates for loading and saving
+ - Nested container shortcut syntax
+ - Fixes a number of comment and quoting issues
+
+
 6.3.1 - 2026.09.01
  - Fixes issue with MD in a text block (# ignored as comments)
 
