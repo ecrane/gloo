@@ -1,0 +1,3 @@
+app [container] :
+	name [string] : from B
+	extra [string] : only in B

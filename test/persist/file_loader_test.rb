@@ -170,6 +170,42 @@ class FileLoaderTest < BaseEngineTest
     assert_includes add_node.leading_doc, 'Function with declared params'
   end
 
+  def test_cross_file_redeclaration_with_a_different_value_warns
+    warnings = []
+    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+
+    @engine.persist_man.load 'sub/dup_a'
+    @engine.persist_man.load 'sub/dup_b'
+
+    # the first file's value is kept
+    assert_equal 'from A', @engine.heap.root.find_child( 'app' ).find_child( 'name' ).value
+    assert warnings.any? { |w| w.include?( "'name' is already declared" ) }, warnings.inspect
+
+    # but file B still contributes its own new child
+    assert_equal 'only in B', @engine.heap.root.find_child( 'app' ).find_child( 'extra' ).value
+  end
+
+  def test_cross_file_redeclaration_with_the_same_value_does_not_warn
+    warnings = []
+    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+
+    @engine.persist_man.load 'sub/dup_a'
+    @engine.persist_man.load 'sub/dup_a'
+
+    assert_equal [], warnings.select { |w| w.include?( 'already declared' ) }
+  end
+
+  def test_same_file_duplicate_name_does_not_warn
+    warnings = []
+    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+
+    @engine.persist_man.load 'sub/intra_dup'
+
+    assert_equal 'first', @engine.heap.root.find_child( 'holder' ).find_child( 'd' ).value
+    assert_equal [], warnings.select { |w| w.include?( 'already declared' ) },
+                 'a documented first-wins duplicate inside one file should be silent'
+  end
+
   def test_nested_container_shorthand_builds_the_chain
     @engine.persist_man.load 'sub/shorthand'
     root = @engine.heap.root

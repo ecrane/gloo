@@ -57,6 +57,64 @@ class FileSaverTest < BaseEngineTest
     assert_equal original( 'sub/shorthand' ), round_trip( 'sub/shorthand' )
   end
 
+  # -------------------------------------------------------------------
+  #   Multi-file namespace (several files contributing to one container)
+  # -------------------------------------------------------------------
+
+  def load_namespace_files
+    @engine.settings.override_project_path( "#{@tmp_dir}/" )
+    File.write( File.join( @tmp_dir, 'a.gloo' ), "app [container] :\n\tx [string] : a-x\n" )
+    File.write( File.join( @tmp_dir, 'b.gloo' ), "app [container] :\n\ty [string] : b-y\n" )
+    @engine.persist_man.load 'a'
+    @engine.persist_man.load 'b'
+  end
+
+  def test_multi_file_namespace_round_trips_each_file_separately
+    load_namespace_files
+    @engine.persist_man.save
+
+    assert_equal "app [container] :\n\tx [string] : a-x\n", File.read( File.join( @tmp_dir, 'a.gloo' ) )
+    assert_equal "app [container] :\n\ty [string] : b-y\n", File.read( File.join( @tmp_dir, 'b.gloo' ) )
+  end
+
+  def test_multi_file_namespace_saves_each_files_own_value_changes
+    load_namespace_files
+    app = @engine.heap.root.find_child( 'app' )
+    app.find_child( 'x' ).set_value( 'A-X' )
+    app.find_child( 'y' ).set_value( 'B-Y' )
+    @engine.persist_man.save
+
+    assert_equal "app [container] :\n\tx [string] : A-X\n", File.read( File.join( @tmp_dir, 'a.gloo' ) )
+    assert_equal "app [container] :\n\ty [string] : B-Y\n", File.read( File.join( @tmp_dir, 'b.gloo' ) )
+  end
+
+  def test_a_brand_new_object_under_a_shared_container_is_written_once
+    load_namespace_files
+    app = @engine.heap.root.find_child( 'app' )
+    @engine.factory.create_string( 'fresh', 'new', app )
+    @engine.persist_man.save
+
+    a = File.read( File.join( @tmp_dir, 'a.gloo' ) )
+    b = File.read( File.join( @tmp_dir, 'b.gloo' ) )
+    combined = a + b
+    assert_equal 1, combined.scan( 'fresh [string] : new' ).length, "a=#{a.inspect} b=#{b.inspect}"
+  end
+
+  def test_round_trip_preserves_trailing_whitespace_in_a_string_value
+    src = "note [string] : two trailing spaces  \n"
+    src_path = File.join( @tmp_dir, 'ws.gloo' )
+    File.write( src_path, src )
+    @engine.settings.override_project_path( "#{@tmp_dir}/" )
+    @engine.persist_man.load 'ws'
+    fs = @engine.persist_man.maps.last
+
+    assert_equal 'two trailing spaces  ', fs.obj.value
+
+    out = File.join( @tmp_dir, 'out.gloo' )
+    Gloo::Persist::FileSaver.new( @engine, out, fs.obj, fs.source_doc ).save
+    assert_equal src, File.read( out )
+  end
+
   def test_round_trip_keeps_the_shorthand_line_when_a_value_changes
     out = round_trip( 'sub/shorthand' ) do |page|
       page.find_child( 'core' ).find_child( 'settings' ).set_value( 'custom' )

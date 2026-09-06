@@ -37,8 +37,14 @@ module Gloo
       #
       # Detect the object name.
       #
+      # Only leading whitespace (the indentation, captured separately by
+      # the loader) and the trailing newline are removed here --
+      # trailing spaces/tabs are left on the line so they survive into
+      # a string value, which can matter when the value is used to
+      # build HTML.
+      #
       def detect_name
-        @line = @line.strip
+        @line = @line.lstrip.chomp
         @idx = @line.index( ' ' )
         @idx = 0 unless @idx
         @name = @line[ 0..@idx - 1 ]

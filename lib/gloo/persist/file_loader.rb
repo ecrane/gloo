@@ -7,11 +7,12 @@
 # raw formatting) -- so a later save can rewrite the file instead of
 # regenerating it from scratch.
 #
-# Comment buffering is delegated to CommentBuffer, script-body
-# collection to ScriptBodyCollector, the nesting level shared by the
-# heap and source trees to IndentStack, and nested-container shorthand
-# to ShorthandExpander -- this class is the orchestrator: per-line
-# dispatch and BEGIN/END handling.
+# Work is delegated to CommentBuffer (comment buffering),
+# ScriptBodyCollector (script bodies), IndentStack (nesting shared by
+# the heap and source trees), ShorthandExpander (nested-container
+# shorthand), and DeclarationLedger (this file's roots + cross-file
+# clash warnings) -- this class is the orchestrator: per-line dispatch
+# and BEGIN/END handling.
 #
 
 module Gloo
@@ -30,7 +31,7 @@ module Gloo
       # afterward.
       LIB_DIRECTIVE = /\A(?:load|ld)\s+(?:lib|ext)\s+\S+\s*\z/i.freeze
 
-      attr_reader :obj, :roots, :source_doc
+      attr_reader :obj, :source_doc
 
       #
       # Set up a file storage for an object.
@@ -40,15 +41,22 @@ module Gloo
         @mech = @engine.platform.get_file_mech( @engine )
         @pn = pn
         @obj = nil
-        @roots = []
         @source_doc = Gloo::Persist::Source::SourceDoc.new
         @comments = Gloo::Persist::CommentBuffer.new
         @body = Gloo::Persist::ScriptBodyCollector.new
         @shorthand = Gloo::Persist::ShorthandExpander.new( engine )
+        @ledger = Gloo::Persist::DeclarationLedger.new( engine, pn )
         @in_block = false
         @block_value = ''
         @body_started = false
         @debug = false
+      end
+
+      #
+      # The top-level objects this file declared (for save resolution).
+      #
+      def roots
+        return @ledger.roots
       end
 
       #
@@ -205,28 +213,24 @@ module Gloo
       #
       def create_declared_obj( line, line_tabs )
         name, type, value, style = split_declaration( line )
-        leaf, parent, roots = @shorthand.expand( name, @indent_stack.parent )
-        roots.each { |r| register_root( r ) }
+        leaf, parent, roots, created = @shorthand.expand( name, @indent_stack.parent )
+        roots.each { |r| @ledger.root( r ) }
+        created.each { |c| @ledger.created( c ) }
 
+        prior = parent.find_child( leaf )
         params = { :name => leaf, :type => type, :value => value, :parent => parent }
         @last = @engine.factory.create( params )
-        register_root( @last ) if parent == @engine.heap.root
+        @ledger.clash( prior, leaf, value ) if prior
+        @ledger.created( @last )
+        @ledger.root( @last ) if parent == @engine.heap.root
 
         node = build_obj_node( leading_ws( line ), name, type, value, style )
         node.leading_doc = @comments.take_leading_doc( line_tabs, @indent_stack.node.children )
         @indent_stack.node.children << node
         @last_node = node
-        @obj ||= @roots.last || @last
+        @obj ||= @ledger.roots.last || @last
 
         @body.start( node, @last, @indent_stack.tabs ) if value&.empty? && @last&.multiline_value?
-      end
-
-      #
-      # Record a top-level object this file declares, without
-      # duplicates (shorthand lines can re-introduce the same root).
-      #
-      def register_root( obj )
-        @roots << obj unless @roots.include?( obj )
       end
 
       #

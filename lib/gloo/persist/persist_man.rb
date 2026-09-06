@@ -37,7 +37,7 @@ module Gloo
       # Save every open file.
       #
       def save_all
-        @maps.each( &:save )
+        save_batch( @maps )
       end
 
       #
@@ -54,7 +54,7 @@ module Gloo
         return save_new( obj, @mech.resolve_save_path( root_of( obj ).name ) ) if fs_list.empty?
 
         @engine.event_manager.on_save obj
-        fs_list.each( &:save )
+        save_batch( fs_list )
       end
 
       #
@@ -236,6 +236,49 @@ module Gloo
       end
 
       #
+      # Save a set of files as one batch so a multi-file namespace
+      # round-trips: each file only rewrites the declarations its own
+      # SourceDoc holds and leaves other files' declarations alone; a
+      # brand-new object no file owns is written once, by the first file
+      # in the batch to reach it.
+      #
+      def save_batch( files )
+        claimed = {}.compare_by_identity
+        files.each do |fs|
+          fs.save( :others => owned_elsewhere( fs ), :claimed => claimed )
+        end
+      end
+
+      #
+      # Every heap object declared by some loaded file's SourceDoc
+      # other than fs.
+      #
+      def owned_elsewhere( fs )
+        owned = {}.compare_by_identity
+        @maps.each do |other|
+          next if other.equal?( fs )
+
+          collect_owned( other.source_doc&.children, owned )
+        end
+        return owned
+      end
+
+      #
+      # Recursively collect the objects declared by the given source
+      # nodes into owned.
+      #
+      def collect_owned( nodes, owned )
+        return unless nodes
+
+        nodes.each do |node|
+          next unless node.is_a?( Gloo::Persist::Source::ObjNode )
+
+          owned[ node.obj ] = true if node.obj
+          collect_owned( node.children, owned )
+        end
+      end
+
+      #
       # Save to a path that's already mapped to some file. If that
       # mapping is for a different root, it's a real collision -- the
       # path belongs to something else.
@@ -244,7 +287,7 @@ module Gloo
         return @engine.err( "#{PATH_EXISTS_ERR}#{pn}" ) unless mapped.roots.include?( root_of( obj ) )
 
         @engine.event_manager.on_save obj
-        mapped.save
+        save_batch( [ mapped ] )
       end
 
       #

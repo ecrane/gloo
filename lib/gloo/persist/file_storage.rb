@@ -22,10 +22,12 @@ module Gloo
       end
 
       #
-      # Save the object to the file.
+      # Save the object to the file. batch, when given, lets a
+      # multi-file namespace round-trip -- see PersistMan#save_batch and
+      # FileSaver.
       #
-      def save
-        fs = FileSaver.new( @engine, @pn, @obj, @source_doc )
+      def save( batch = nil )
+        fs = FileSaver.new( @engine, @pn, @obj, @source_doc, batch )
         fs.save
       end
 

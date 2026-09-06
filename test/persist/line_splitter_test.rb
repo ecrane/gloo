@@ -33,4 +33,19 @@ class LineSplitterTest < BaseEngineTest
     assert_equal 'untyped', t
   end
 
+  def test_trailing_whitespace_is_kept_on_the_value
+    o = Gloo::Persist::LineSplitter.new( "s [string] : hello   \n", 0 )
+    n, t, v = o.split
+    assert_equal 's', n
+    assert_equal 'string', t
+    assert_equal 'hello   ', v
+    assert_equal ' : hello   ', o.raw_tail
+  end
+
+  def test_leading_indentation_is_still_removed
+    o = Gloo::Persist::LineSplitter.new( "\t\ts [string] : hi\n", 0 )
+    n, = o.split
+    assert_equal 's', n
+  end
+
 end

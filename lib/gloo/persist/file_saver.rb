@@ -25,12 +25,23 @@ module Gloo
       # save rewrites it in place; otherwise the file is regenerated
       # from the heap.
       #
-      def initialize( engine, pn, obj, source_doc = nil )
+      # For a multi-file namespace to round-trip, batch carries two sets
+      # (PersistMan#save_batch builds them):
+      #  - :others -- objects declared by *other* loaded files'
+      #    SourceDocs; this saver leaves them out even though they're
+      #    live children of a container it shares.
+      #  - :claimed -- a set shared across the whole save batch; a
+      #    brand-new object no file owns is written by the first saver to
+      #    reach it, which adds it here so the rest skip it.
+      #
+      def initialize( engine, pn, obj, source_doc = nil, batch = nil )
         @engine = engine
         @mech = @engine.platform.get_file_mech( @engine )
         @pn = pn
         @obj = obj
         @source_doc = source_doc
+        @others = batch && batch[ :others ]
+        @claimed = batch && batch[ :claimed ]
       end
 
       #
@@ -121,7 +132,8 @@ module Gloo
       # live_parent: trivia passes through untouched; a declaration
       # whose object is still present is patched in place; one whose
       # object is gone is dropped; anything in live_parent.children
-      # with no matching source node is new and gets rendered fresh.
+      # with no matching source node is new and gets rendered fresh
+      # (unless another file owns it -- see #owned).
       #
       def render_children( nodes, live_parent, indent )
         str = ''
@@ -138,8 +150,26 @@ module Gloo
           end
         end
 
-        ( live_parent.children - seen ).each { |child| str << get_obj( child, indent ) }
+        ( live_parent.children - seen ).each do |child|
+          next unless write_new_child?( child )
+
+          str << get_obj( child, indent )
+        end
         return str
+      end
+
+      #
+      # A live child with no source node at this level. Write it unless
+      # another file owns it, or another file in this batch already
+      # wrote it as a brand-new object. A genuinely new object is
+      # written here and claimed.
+      #
+      def write_new_child?( child )
+        return false if @others&.key?( child )
+        return false if @claimed&.key?( child )
+
+        @claimed[ child ] = true if @claimed
+        return true
       end
 
       #

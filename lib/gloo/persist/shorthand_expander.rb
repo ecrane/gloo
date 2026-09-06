@@ -21,22 +21,29 @@ module Gloo
 
       #
       # Split a possibly-dotted name against the given parent. Returns
-      # [leaf_name, parent_for_the_leaf, roots_touched] -- roots_touched
-      # being the containers created or reused directly under the heap
-      # root, for the loader to register as this file's roots.
+      # [leaf_name, parent_for_the_leaf, roots_touched, created]:
+      #  - roots_touched: containers created OR reused directly under
+      #    the heap root, for the loader to register as this file's roots
+      #  - created: containers this call actually created (any level),
+      #    for the loader to remember as its own
       #
       def expand( name, parent )
-        return [ name, parent, [] ] unless name.include?( '.' )
+        return [ name, parent, [], [] ] unless name.include?( '.' )
 
         segments = name.split( '.' )
         leaf = segments.pop
         roots = []
+        created = []
         segments.each do |seg|
-          child = parent.find_child( seg ) || @engine.factory.create_can( seg, parent )
+          child = parent.find_child( seg )
+          unless child
+            child = @engine.factory.create_can( seg, parent )
+            created << child
+          end
           roots << child if parent == @engine.heap.root
           parent = child
         end
-        return [ leaf, parent, roots ]
+        return [ leaf, parent, roots, created ]
       end
 
     end
