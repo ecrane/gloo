@@ -128,4 +128,41 @@ class PersistManTest < BaseEngineTest
     assert_equal 0, @engine.persist_man.maps.count
   end
 
+  def test_reload_picks_up_an_external_change_to_the_file
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    pn = File.join( dir, 'ext.gloo' )
+    File.write( pn, "ext [container] :\n\tv [string] : first\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+    @engine.persist_man.load 'ext'
+    assert_equal 'first', @engine.heap.root.find_child( 'ext' ).find_child( 'v' ).value
+
+    # a change made outside gloo
+    File.write( pn, "ext [container] :\n\tv [string] : second\n" )
+    @engine.heap.root.find_child( 'ext' ).msg_reload
+
+    assert_equal 'second', @engine.heap.root.find_child( 'ext' ).find_child( 'v' ).value
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
+  def test_reload_of_a_deleted_file_does_not_corrupt_state
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    pn = File.join( dir, 'gone.gloo' )
+    File.write( pn, "gone [container] :\n\tv [string] : here\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+    @engine.persist_man.load 'gone'
+    obj = @engine.heap.root.find_child( 'gone' )
+
+    File.delete( pn )
+    obj.msg_reload
+
+    # the object is gone, but a later unload_all must not raise
+    @engine.persist_man.unload_all
+    refute @engine.error?
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
 end

@@ -305,6 +305,28 @@ class ObjTest < BaseEngineTest
     assert @engine.error?
   end
 
+  def test_cannot_unload_the_root_object
+    @engine.heap.root.send_message( 'unload' )
+    assert @engine.error?
+  end
+
+  def test_cannot_reload_the_root_object
+    @engine.heap.root.send_message( 'reload' )
+    assert @engine.error?
+  end
+
+  def test_unloading_a_child_leaves_the_file_and_its_root
+    @engine.parser.run 'load test'
+    test_obj = @engine.heap.root.find_child( 'test' )
+    assert test_obj.find_child( 'msg' )
+
+    test_obj.find_child( 'msg' ).send_message( 'unload' )
+
+    refute test_obj.find_child( 'msg' ), 'the child should be gone'
+    assert @engine.heap.root.find_child( 'test' ), 'the root should still be loaded'
+    assert_equal 1, @engine.persist_man.maps.count, 'the file mapping should be untouched'
+  end
+
   def fixture_path
     File.join( default_user_root, 'projects', 'test.gloo' )
   end

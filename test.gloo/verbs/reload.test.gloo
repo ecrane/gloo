@@ -1,0 +1,57 @@
+#
+# Reload message tests -- 'tell {obj} to reload' re-reads the file.
+#
+# The bare 'reload' verb restarts the engine (covered by the unit
+# tests). These exercise per-object reload against a /tmp scratch file
+# that gets rewritten between load and reload.
+#
+
+tests [can] :
+  verbs [can] :
+    reload [can] :
+
+      f [file] : /tmp/gloo_reload_test.gloo
+      v1 [text] : BEGIN
+demo [container] :
+  msg [string] : original
+END
+
+      v2 [text] : BEGIN
+demo [container] :
+  msg [string] : edited outside gloo
+  added [string] : brand new
+END
+
+      reload_picks_up_an_external_change [test] :
+        description [string] : editing the file on disk then reloading takes effect.
+        on_test [script] :
+          tell ^^.f to write ( ^^.v1 )
+          load /tmp/gloo_reload_test.gloo
+          eval demo.msg = 'original'
+          assert "sanity: loaded the first version"
+
+          tell ^^.f to write ( ^^.v2 )
+          tell demo to reload
+
+          eval demo.msg = 'edited outside gloo'
+          assert "reload should pick up the changed value"
+          eval demo.added = 'brand new'
+          assert "reload should pick up a newly added child"
+
+          tell demo to unload
+          tell ^^.f to delete
+
+      reload_discards_an_in_memory_edit [test] :
+        description [string] : an unsaved change is thrown away by reload.
+        on_test [script] :
+          tell ^^.f to write ( ^^.v1 )
+          load /tmp/gloo_reload_test.gloo
+
+          put 'not saved' into demo.msg
+          tell demo to reload
+
+          eval demo.msg = 'original'
+          assert "reload should restore the on-disk value"
+
+          tell demo to unload
+          tell ^^.f to delete
