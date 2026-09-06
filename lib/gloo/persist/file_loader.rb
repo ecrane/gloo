@@ -230,7 +230,10 @@ module Gloo
         @last_node = node
         @obj ||= @ledger.roots.last || @last
 
-        @body.start( node, @last, @indent_stack.tabs ) if value&.empty? && @last&.multiline_value?
+        # A whitespace-only inline value (trailing spaces after the ':'
+        # on a `script :` line) counts as no value -- start the body.
+        no_value = value.nil? || value.strip.empty?
+        @body.start( node, @last, @indent_stack.tabs ) if no_value && @last&.multiline_value?
       end
 
       #

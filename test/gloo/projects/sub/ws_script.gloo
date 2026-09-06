@@ -1,0 +1,5 @@
+holder [container] :
+	on_load [script] :    
+		show "hi"
+		show "bye"
+	after [string] : sib

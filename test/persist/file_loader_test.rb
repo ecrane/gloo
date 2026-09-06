@@ -306,4 +306,51 @@ class FileLoaderTest < BaseEngineTest
     end
   end
 
+  # -------------------------------------------------------------------
+  #   Robustness against messy input
+  # -------------------------------------------------------------------
+
+  def test_trailing_whitespace_after_script_colon_still_starts_a_body
+    @engine.log.quiet = true
+    @engine.persist_man.load 'sub/ws_script'
+    holder = @engine.heap.root.children.first
+    refute @engine.error?
+
+    script = holder.find_child( 'on_load' )
+    assert_equal [ 'show "hi"', 'show "bye"' ], script.value
+    assert_equal 'sib', holder.find_child( 'after' ).value, 'the sibling should not be swallowed'
+  end
+
+  def test_a_line_that_outdents_past_the_root_does_not_crash
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    # tab, then 3-tab, then a space-indented line -- erratic enough to
+    # outdent further than it ever indented
+    File.write( File.join( dir, 'messy.gloo' ),
+                "root [container] :\n\t\t\tdeep [string] : x\n  shallow [string] : y\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+    @engine.log.quiet = true
+
+    @engine.persist_man.load 'messy' # used to raise on an emptied indent stack
+    refute @engine.error?
+    assert @engine.heap.root.find_child( 'root' )
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
+  def test_an_unknown_type_followed_by_an_indented_line_does_not_crash
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    File.write( File.join( dir, 'bad.gloo' ),
+                "c [container] :\n\tx [nosuchtype] :\n\t\tchild [string] : v\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+    @engine.log.quiet = true
+
+    @engine.persist_man.load 'bad' # 'nosuchtype' -> nil obj -> used to push nil as a parent
+    refute @engine.error?
+    assert @engine.heap.root.find_child( 'c' )
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
 end

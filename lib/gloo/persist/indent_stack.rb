@@ -46,10 +46,18 @@ module Gloo
       def place( line_tabs, last_obj, last_node )
         indent = indent_delta( line_tabs )
         if indent.positive?
-          @parent_stack.push last_obj
-          @node_stack.push last_node
+          # last_obj is nil when the previous line failed to make an
+          # object (eg. an unknown type in a malformed file) -- keep
+          # the current parent rather than pushing nil.
+          @parent_stack.push( last_obj || @parent_stack.last )
+          @node_stack.push( last_node || @node_stack.last )
         elsif indent.negative?
           indent.abs.times do
+            # never pop the root -- a file with erratic (mixed
+            # tab/space) indentation can outdent further than it ever
+            # indented; clamp instead of emptying the stack.
+            break if @parent_stack.length <= 1
+
             @parent_stack.pop
             @node_stack.pop
           end

@@ -47,7 +47,7 @@ module Gloo
         if self.value_string?
           first = self.value
           self.set_array_value []
-          self.value << first unless first.empty?
+          self.value << first unless first.strip.empty?
         elsif self.value_is_blank?
           self.set_array_value []
         end
