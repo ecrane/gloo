@@ -42,4 +42,11 @@ class ScriptTest < BaseEngineTest
     refute_equal 3, @engine.heap.it.value
   end
 
+  def test_setting_the_script_with_put
+    @engine.parser.run 'create s as script'
+    @engine.parser.run 'put "eval 3 + 4" into s'
+    @engine.parser.run 'run s'
+    assert_equal 7, @engine.heap.it.value
+  end
+
 end

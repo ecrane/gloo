@@ -18,6 +18,6 @@ tests [can] :
           assert "expected it to be 7"
 
           put "eval ^.b = true" into ^^.a
-          tell run ^^.a
+          run ^^.a
           assert "expected it to be true"
 
