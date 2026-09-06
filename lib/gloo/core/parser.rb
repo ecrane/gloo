@@ -21,7 +21,11 @@ module Gloo
       # Parse a command from the immediate execution context.
       #
       def parse_immediate( full_cmd )
-        # Break the full command into verb and params
+        # Drop an inline trailing comment first, then break the
+        # command into verb and params.
+        full_cmd = strip_comment( full_cmd )
+        return nil if full_cmd.strip.empty?
+
         cmd, params = split_params full_cmd
 
         # Params are the parenthetical part of the command at the end
@@ -33,6 +37,31 @@ module Gloo
 
         @engine.err "Verb '#{tokens.verb}' was not found."
         return nil
+      end
+
+      #
+      # Remove an inline trailing comment: the first '#' that starts a
+      # word (at the start of the command, or right after whitespace)
+      # and is not inside a quoted string -- and everything after it.
+      #
+      # Left alone: a '#' inside single or double quotes (show 'a # b'),
+      # a '#' glued to preceding text (a URL fragment like
+      # http://x?id=1#frag), and a command with no such '#'. Object
+      # declaration values in a .gloo file never reach here -- they're
+      # split by LineSplitter, not the parser.
+      #
+      def strip_comment( full_cmd )
+        quote = nil
+        full_cmd.each_char.with_index do |ch, i|
+          if quote
+            quote = nil if ch == quote
+          elsif Gloo::Core::Tokens::QUOTE_CHARS.include?( ch )
+            quote = ch
+          elsif ch == '#' && ( i.zero? || full_cmd[ i - 1 ] =~ /\s/ )
+            return full_cmd[ 0...i ].rstrip
+          end
+        end
+        return full_cmd
       end
 
       #

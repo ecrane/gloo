@@ -49,6 +49,10 @@ class FileSaverTest < BaseEngineTest
     assert_equal original( 'ctrl/invoke' ), round_trip( 'ctrl/invoke' )
   end
 
+  def test_round_trip_is_byte_identical_for_inline_comments_fixture
+    assert_equal original( 'sub/inline_comments' ), round_trip( 'sub/inline_comments' )
+  end
+
   def test_round_trip_rerenders_only_the_changed_value
     out = round_trip( 'sub/comments' ) do |demo|
       demo.find_child( 'msg' ).set_value( 'goodbye' )

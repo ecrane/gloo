@@ -3,6 +3,7 @@
 **Contents**
 
 - Gloo Script Files
+- Comments
 - Gloo Constants
 - Line Continuation
 
@@ -25,6 +26,46 @@ Conventions:
 hello [can] :
   on_load [script] : show 'hello world'
 ```
+
+## Comments
+
+A line whose first non-blank character is `#` is a comment. Whole-line comments
+can appear anywhere — between objects, inside a container, or inside a script
+body — and are ignored when the file runs.
+
+```gloo
+#
+# A whole-line comment.
+#
+demo [can] :
+  # a comment inside the container
+  msg [string] : hello
+  on_load [script] :
+    # a comment inside the script body
+    show demo.msg
+```
+
+A statement line may also end with an inline `# ...` comment. It is stripped
+before the statement runs, so it has no effect on execution:
+
+```gloo
+on_load [script] :
+  show 3 + 4        # prints 7
+  check demo.msg for blank?
+  show it           # prints false
+```
+
+Two things are *not* treated as inline comments, and are left alone:
+
+- a `#` inside a quoted string — `show 'a # b'`
+- a `#` with no space before it — a URL fragment such as
+  `http://example.com/page#section`
+
+An inline comment on an object declaration is also left alone — everything after
+the `:` is the object's value, so `note [string] : see item # 5` stores the
+string `see item # 5`.
+
+---
 
 ## Gloo Constants
 

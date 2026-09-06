@@ -200,6 +200,26 @@ class FileLoaderTest < BaseEngineTest
     assert_includes node.raw_value, '# just a note, no commands'
   end
 
+  def test_script_body_with_inline_comments_loads_runs_and_keeps_the_comments
+    @engine.log.quiet = true
+    @engine.persist_man.load 'sub/inline_comments'
+    refute @engine.error?, 'the inline-comment lines should not error on load/run'
+
+    script = @engine.heap.root.children.first.find_child( 'on_load' )
+    # comments are kept verbatim in the stored script lines (for save
+    # round-trip); they're only ignored when the line is executed.
+    assert script.value.any? { |line| line.include?( '# inline comment on a boolean' ) }
+  end
+
+  def test_source_doc_round_trips_a_body_with_inline_comments
+    @engine.persist_man.load 'sub/inline_comments'
+    doc = @engine.persist_man.maps.last.source_doc
+    node = doc.roots.first.children.find do |n|
+      n.is_a?( Gloo::Persist::Source::ObjNode ) && n.name == 'on_load'
+    end
+    assert_includes node.raw_value, "# inline comment after a quoted string"
+  end
+
   def test_source_doc_captures_lib_directive
     dm = Gloo::Persist::FileLoader.instance_method( :run_lib_directive )
     Gloo::Persist::FileLoader.send( :define_method, :run_lib_directive ) { |_line| nil }

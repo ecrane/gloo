@@ -1,0 +1,8 @@
+demo [container] :
+	msg [string] : hello
+	flag [bool] : false
+	on_load [script] :
+		check demo.msg for blank?
+		show it # inline comment on a boolean -- used to print blank
+		show 'literal' # inline comment after a quoted string
+		put demo.flag into demo.flag # comment on a real statement
