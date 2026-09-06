@@ -3,6 +3,7 @@
 **Contents**
 
 - Object Naming
+- Nested Container Shorthand
 - Keywords
 - Literals
 - Value Conversion
@@ -38,6 +39,36 @@ naming [container] :
 ```
 
 See also: Pathname.
+
+## Nested Container Shorthand
+
+A declaration whose name is a dotted path creates a container for each
+prefix segment, then declares the real object under the last one. These
+two files are equivalent:
+
+```gloo
+page [container] :
+  core [container] :
+    users [container] :
+      list [container] :
+        title [string] : Users
+```
+
+```gloo
+page.core.users.list [container] :
+  title [string] : Users
+```
+
+- Each prefix segment (`page`, `core`, `users`) becomes a container,
+  unless a sibling object of that name already exists — in which case
+  that object is used as-is.
+- The shorthand works at any indent level; the prefix is resolved
+  relative to the current parent.
+- Several shorthand lines can share a prefix — `page.core.users [...]`
+  and `page.core.settings [...]` both reuse the same `page` and
+  `page.core` containers.
+- Indented lines below a shorthand declaration are children of the last
+  segment (`list` above), not of any prefix container.
 
 ## Keywords
 

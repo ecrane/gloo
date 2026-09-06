@@ -53,6 +53,22 @@ class FileSaverTest < BaseEngineTest
     assert_equal original( 'sub/inline_comments' ), round_trip( 'sub/inline_comments' )
   end
 
+  def test_round_trip_is_byte_identical_for_shorthand_fixture
+    assert_equal original( 'sub/shorthand' ), round_trip( 'sub/shorthand' )
+  end
+
+  def test_round_trip_keeps_the_shorthand_line_when_a_value_changes
+    out = round_trip( 'sub/shorthand' ) do |page|
+      page.find_child( 'core' ).find_child( 'settings' ).set_value( 'custom' )
+    end
+
+    assert_includes out, 'page.core.settings [string] : custom'
+    refute_includes out, ': defaults'
+    # the other shorthand line and its children are untouched
+    assert_includes out, 'page.core.users.list [container] :'
+    assert_includes out, "\ttitle [string] : Users"
+  end
+
   def test_round_trip_rerenders_only_the_changed_value
     out = round_trip( 'sub/comments' ) do |demo|
       demo.find_child( 'msg' ).set_value( 'goodbye' )

@@ -1,0 +1,9 @@
+#
+# nested container shorthand
+#
+page.core.users.list [container] :
+	title [string] : Users
+	on_load [script] :
+		show page.core.users.list.title
+
+page.core.settings [string] : defaults

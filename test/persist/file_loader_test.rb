@@ -170,6 +170,41 @@ class FileLoaderTest < BaseEngineTest
     assert_includes add_node.leading_doc, 'Function with declared params'
   end
 
+  def test_nested_container_shorthand_builds_the_chain
+    @engine.persist_man.load 'sub/shorthand'
+    root = @engine.heap.root
+
+    page = root.find_child( 'page' )
+    assert page
+    assert_equal 'container', page.type_display
+    core = page.find_child( 'core' )
+    assert_equal 'container', core.type_display
+
+    list = core.find_child( 'users' ).find_child( 'list' )
+    assert_equal 'container', list.type_display
+    assert_equal 'Users', list.find_child( 'title' ).value
+
+    # the second shorthand line reuses the same 'core' container
+    assert_equal 'defaults', core.find_child( 'settings' ).value
+  end
+
+  def test_shorthand_source_node_keeps_the_dotted_name
+    @engine.persist_man.load 'sub/shorthand'
+    doc = @engine.persist_man.maps.last.source_doc
+
+    names = doc.roots.map( &:name )
+    assert_includes names, 'page.core.users.list'
+    assert_includes names, 'page.core.settings'
+  end
+
+  def test_shorthand_registers_the_top_container_as_a_root
+    @engine.persist_man.load 'sub/shorthand'
+    fs = @engine.persist_man.maps.last
+
+    assert_equal 1, fs.roots.length
+    assert_equal 'page', fs.roots.first.name
+  end
+
   def test_empty_script_does_not_swallow_the_next_object
     @engine.persist_man.load 'sub/empty_script'
     holder = @engine.heap.root.children.first

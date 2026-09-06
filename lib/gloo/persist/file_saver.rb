@@ -94,10 +94,12 @@ module Gloo
       def any_dirty?( nodes, live_parent )
         nodes.any? do |node|
           next false unless node.is_a?( Source::ObjNode )
-          next true unless node.obj && live_parent.children.include?( node.obj )
+
+          _top, leaf = locate( node, live_parent )
+          next true unless leaf
           next true unless value_unchanged?( node )
 
-          any_dirty?( node.children, node.obj )
+          any_dirty?( node.children, leaf )
         end
       end
 
@@ -126,9 +128,10 @@ module Gloo
         seen = []
         nodes.each do |node|
           if node.is_a?( Source::ObjNode )
-            next unless node.obj && live_parent.children.include?( node.obj )
+            top, leaf = locate( node, live_parent )
+            next unless leaf
 
-            seen << node.obj
+            seen << top
             str << render_obj_node( node, indent )
           else
             str << render_trivia( node )
@@ -137,6 +140,32 @@ module Gloo
 
         ( live_parent.children - seen ).each { |child| str << get_obj( child, indent ) }
         return str
+      end
+
+      #
+      # Resolve a source node against the live tree under live_parent.
+      # A plain name is a direct child; a dotted name (nested container
+      # shorthand, page.core.users.list) walks the chain. Returns
+      # [top-level object to mark as handled, the node's own object],
+      # or [nil, nil] if the node's object is no longer there.
+      #
+      def locate( node, live_parent )
+        return [ nil, nil ] unless node.obj
+
+        segments = node.name.split( '.' )
+        if segments.length == 1
+          return live_parent.children.include?( node.obj ) ? [ node.obj, node.obj ] : [ nil, nil ]
+        end
+
+        top = live_parent.find_child( segments.first )
+        return [ nil, nil ] unless top
+
+        leaf = top
+        segments[ 1..-1 ].each do |seg|
+          leaf = leaf.find_child( seg )
+          return [ nil, nil ] unless leaf
+        end
+        return leaf.equal?( node.obj ) ? [ top, leaf ] : [ nil, nil ]
       end
 
       #

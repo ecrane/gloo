@@ -8,9 +8,10 @@
 # regenerating it from scratch.
 #
 # Comment buffering is delegated to CommentBuffer, script-body
-# collection to ScriptBodyCollector, and the nesting level shared by
-# the heap and source trees to IndentStack -- this class is the
-# orchestrator: per-line dispatch and BEGIN/END handling.
+# collection to ScriptBodyCollector, the nesting level shared by the
+# heap and source trees to IndentStack, and nested-container shorthand
+# to ShorthandExpander -- this class is the orchestrator: per-line
+# dispatch and BEGIN/END handling.
 #
 
 module Gloo
@@ -43,6 +44,7 @@ module Gloo
         @source_doc = Gloo::Persist::Source::SourceDoc.new
         @comments = Gloo::Persist::CommentBuffer.new
         @body = Gloo::Persist::ScriptBodyCollector.new
+        @shorthand = Gloo::Persist::ShorthandExpander.new( engine )
         @in_block = false
         @block_value = ''
         @body_started = false
@@ -202,20 +204,29 @@ module Gloo
       # line, and start body collection if its type calls for one.
       #
       def create_declared_obj( line, line_tabs )
-        parent = @indent_stack.parent
         name, type, value, style = split_declaration( line )
+        leaf, parent, roots = @shorthand.expand( name, @indent_stack.parent )
+        roots.each { |r| register_root( r ) }
 
-        params = { :name => name, :type => type, :value => value, :parent => parent }
+        params = { :name => leaf, :type => type, :value => value, :parent => parent }
         @last = @engine.factory.create( params )
-        @roots << @last if parent == @engine.heap.root
+        register_root( @last ) if parent == @engine.heap.root
 
         node = build_obj_node( leading_ws( line ), name, type, value, style )
         node.leading_doc = @comments.take_leading_doc( line_tabs, @indent_stack.node.children )
         @indent_stack.node.children << node
         @last_node = node
-        @obj = @last if @obj.nil?
+        @obj ||= @roots.last || @last
 
         @body.start( node, @last, @indent_stack.tabs ) if value&.empty? && @last&.multiline_value?
+      end
+
+      #
+      # Record a top-level object this file declares, without
+      # duplicates (shorthand lines can re-introduce the same root).
+      #
+      def register_root( obj )
+        @roots << obj unless @roots.include?( obj )
       end
 
       #
