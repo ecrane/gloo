@@ -2,22 +2,20 @@
 # Script tests
 #
 
-tests [can] :
-  objs [can] :
-    script [can] :
+tests.objs.script [can] :
 
-      a [script] : 
-      b [boolean] : true
+  a [script] : 
+  b [boolean] : true
 
-      run_script [test] :
-        description [string] : Set the value of the script
-        on_test [script] :
-          put "eval 2 + 5" into ^^.a
-          tell ^^.a to run
-          eval it = 7
-          assert "expected it to be 7"
+  run_script [test] :
+    description [string] : Set the value of the script
+    on_test [script] :
+      put "eval 2 + 5" into ^^.a
+      tell ^^.a to run
+      eval it = 7
+      assert "expected it to be 7"
 
-          put "eval ^.b = true" into ^^.a
-          run ^^.a
-          assert "expected it to be true"
+      put "eval ^.b = true" into ^^.a
+      run ^^.a
+      assert "expected it to be true"
 
