@@ -2,15 +2,13 @@
 # Run verb tests
 #
 
-tests [can] :
-  verbs [can] :
-    run [can] :
+tests.verbs.run [can] :
 
-      s [script] :
-        eval true
+  s [script] :
+    eval true
 
-      run [test] :
-        description [string] : Run a script.
-        on_test [script] :
-          run ^^.s
-          assert "expected it to be true"
+  run [test] :
+    description [string] : Run a script.
+    on_test [script] :
+      run ^^.s
+      assert "expected it to be true"

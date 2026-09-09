@@ -9,36 +9,34 @@
 # the console by design.
 #
 
-tests [can] :
-  verbs [can] :
-    throw [can] :
+tests.verbs.throw [can] :
 
-      on_exception [script] :
-        put ^.exception_data.message into ^.caught
+  on_exception [script] :
+    put ^.exception_data.message into ^.caught
 
-      exception_data [can] :
-        message [string] :
-        backtrace [string] :
+  exception_data [can] :
+    message [string] :
+    backtrace [string] :
 
-      caught [string] :
+  caught [string] :
 
-      default_message [test] :
-        description [string] : bare throw uses the default message and execution continues.
-        on_test [script] :
-          put '' into tests.verbs.throw.caught
-          eval false
+  default_message [test] :
+    description [string] : bare throw uses the default message and execution continues.
+    on_test [script] :
+      put '' into tests.verbs.throw.caught
+      eval false
 
-          throw
-          eval true
-          assert "expected execution to continue after a bare throw"
+      throw
+      eval true
+      assert "expected execution to continue after a bare throw"
 
-          eval tests.verbs.throw.caught = 'Thrown by throw verb'
-          assert "expected the default thrown message"
+      eval tests.verbs.throw.caught = 'Thrown by throw verb'
+      assert "expected the default thrown message"
 
-      custom_message [test] :
-        description [string] : throw evaluates its argument as the message.
-        on_test [script] :
-          put '' into tests.verbs.throw.caught
-          throw 'boom ' + '42'
-          eval tests.verbs.throw.caught = 'boom 42'
-          assert "expected the evaluated custom message"
+  custom_message [test] :
+    description [string] : throw evaluates its argument as the message.
+    on_test [script] :
+      put '' into tests.verbs.throw.caught
+      throw 'boom ' + '42'
+      eval tests.verbs.throw.caught = 'boom 42'
+      assert "expected the evaluated custom message"
