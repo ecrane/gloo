@@ -6,24 +6,22 @@
 # under the last one.
 #
 
-tests [can] :
-  lang [can] :
-    shorthand [can] :
+tests.lang.shorthand [can] :
 
-      page.core.title [string] : Home
-      page.core.count [int] : 3
+  page.core.title [string] : Home
+  page.core.count [int] : 3
 
-      builds_the_container_chain [test] :
-        description [string] : a dotted name creates a container for each prefix segment.
-        on_test [script] :
-          eval ^^.page.core.title = 'Home'
-          assert "expected the shorthand-built value to be reachable"
+  builds_the_container_chain [test] :
+    description [string] : a dotted name creates a container for each prefix segment.
+    on_test [script] :
+      eval ^^.page.core.title = 'Home'
+      assert "expected the shorthand-built value to be reachable"
 
-          check ^^.page for contains?
-          assert "expected 'page' to be a real container"
+      check ^^.page for contains?
+      assert "expected 'page' to be a real container"
 
-      reuses_an_existing_prefix [test] :
-        description [string] : a second shorthand line reuses the same containers.
-        on_test [script] :
-          eval ^^.page.core.count = 3
-          assert "expected both shorthand lines to share the 'core' container"
+  reuses_an_existing_prefix [test] :
+    description [string] : a second shorthand line reuses the same containers.
+    on_test [script] :
+      eval ^^.page.core.count = 3
+      assert "expected both shorthand lines to share the 'core' container"
