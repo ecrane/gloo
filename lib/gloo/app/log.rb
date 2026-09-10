@@ -167,7 +167,7 @@ module Gloo
       #
       # Write an error message to the log and set the error
       # in the engine's data heap.
-      # Also write to the console unless quiet.
+      # Also write to the console (on stderr) unless quiet.
       #
       def error( msg, ex = nil, engine = nil )
         engine&.heap&.error&.set_to( msg ) if engine
@@ -176,11 +176,11 @@ module Gloo
         if ex
           @error.error ex.message
           @error.error ex.backtrace
-          puts @theme.error( msg ) unless @quiet
-          puts @theme.error( ex.message ) unless @quiet
-          puts ex.backtrace unless @quiet
+          $stderr.puts @theme.error( msg ) unless @quiet
+          $stderr.puts @theme.error( ex.message ) unless @quiet
+          $stderr.puts ex.backtrace unless @quiet
         else
-          puts @theme.error( msg ) unless @quiet
+          $stderr.puts @theme.error( msg ) unless @quiet
         end
       end
 

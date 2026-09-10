@@ -103,6 +103,30 @@ class PersistManTest < BaseEngineTest
     assert_equal 0, @engine.persist_man.maps.count
   end
 
+  #
+  # Regression: loading a file that can't be resolved used to return
+  # silently -- no log, no heap error, nothing on the console. It must
+  # now report the failure so a CLI run doesn't look like a no-op.
+  #
+  def test_load_of_a_missing_file_reports_an_error
+    refute @engine.error?
+    result = @engine.persist_man.load 'no_such_file'
+
+    refute result
+    assert @engine.error?
+    assert_equal 'File not found: no_such_file', @engine.heap.error.value
+  end
+
+  def test_load_of_a_good_file_returns_true
+    assert_equal true, @engine.persist_man.load( 'test' )
+    refute @engine.error?
+  end
+
+  def test_load_of_a_blank_name_does_not_report_an_error
+    refute @engine.persist_man.load( '   ' )
+    refute @engine.error?
+  end
+
   def test_unload_removes_every_mapping_for_the_object
     @engine.parser.run 'load test'
     obj = @engine.heap.root.children.first

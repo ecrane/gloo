@@ -122,7 +122,10 @@ module Gloo
           :errors => [
             "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb.",
             "#{UNKNOWN_OPT_ERR} — The reference type given isn't file, ext, or lib.",
-            "#{WRONG_NUM_ARGS_ERR} — load expects 2 or 3 arguments (the verb, an optional reference type, and the file/ext/lib name)."
+            "#{WRONG_NUM_ARGS_ERR} — load expects 2 or 3 arguments (the verb, an optional reference type, and the file/ext/lib name).",
+            'File not found: {name} — The file name given could not be ' \
+              'resolved to a gloo file (checked as a full path, and ' \
+              'relative to the project and gloo root folders).'
           ],
           :notes => 'Several files can contribute to one container: ' \
             'declare it in each file and add different children, and ' \

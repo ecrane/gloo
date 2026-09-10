@@ -15,6 +15,7 @@ module Gloo
       OBJ_NOT_FOUND_ERR = 'Could not resolve object to save: '.freeze
       PATH_EXISTS_ERR = 'Will not overwrite a file not already saved there: '.freeze
       RELOAD_DIRTY_WARNING = 'Reloading will discard unsaved changes in: '.freeze
+      FILE_NOT_FOUND_ERR = 'File not found: '.freeze
 
       #
       # Constructor for the persistence manager.
@@ -75,12 +76,20 @@ module Gloo
       end
 
       #
-      # Load the object from the file.
+      # Load the object(s) from the file (or files, for a wildcard).
+      # Returns true if at least one object was loaded, false if the
+      # name couldn't be resolved to any file or nothing loaded --
+      # a missing/unresolvable file is reported via engine.err rather
+      # than failing silently.
       #
       def load( name )
         pns = get_full_path_names name
-        return unless pns
+        if pns.nil? || pns.empty?
+          @engine.err( "#{FILE_NOT_FOUND_ERR}#{name}" ) unless name.to_s.strip.empty?
+          return false
+        end
 
+        loaded = false
         pns.each do |pn|
           @engine.log.debug "Load file(s) at: #{pn}"
           begin
@@ -90,10 +99,12 @@ module Gloo
 
             @maps << fs
             @engine.event_manager.on_load fs.obj
+            loaded = true
           rescue => ex
             @engine.handle_exception( ex )
           end
         end
+        return loaded
       end
 
       # 

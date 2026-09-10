@@ -28,3 +28,11 @@ tests.verbs.load [can] :
       load
       eval ^^.err_fired = true
       assert "expected 'load' with no arguments to fire on_error"
+
+  load_missing_file_errors [test] :
+    description [string] : load of a file that can't be found fires on_error.
+    on_test [script] :
+      put false into ^^.err_fired
+      load no_such_file_xyz
+      eval ^^.err_fired = true
+      assert "expected 'load' of a missing file to fire on_error"

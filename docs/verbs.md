@@ -78,6 +78,8 @@ put {expression} into {dst.path}
 > load ~/.my_app/settings.gloo
 ```
 
+If the name can't be resolved to a file, `load` reports `File not found: {name}` — it fires `on_error` and, when the file was named on the `gloo` command line, prints the message to stderr and exits non-zero. A bad or missing file never fails silently.
+
 `save` writes loaded objects back to their files. With no argument it saves every open file; with an object it saves the file (or files) that object's tree came from; with `to {path}` it saves to a new file and remembers the mapping.
 
 ```gloo

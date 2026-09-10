@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class LogTest < Minitest::Test
+class LogTest < BaseTest
 
   # def test_creation
   #   Gloo::App::Engine.new( [ '--quiet' ] )
@@ -73,5 +73,20 @@ class LogTest < Minitest::Test
     refute Gloo::App::Log.is_level? ''
     refute Gloo::App::Log.is_level? 1
     refute Gloo::App::Log.is_level? nil
+  end
+
+  #
+  # Errors go to stderr (not stdout) so that a script driving gloo
+  # can redirect them separately from the program's own output.
+  #
+  def test_error_is_written_to_stderr
+    engine = Gloo::App::Engine.new( default_context )
+    engine.start
+    engine.log.quiet = false
+
+    out, err = capture_io { engine.log.error 'something broke' }
+
+    assert_equal '', out
+    assert_match 'something broke', err
   end
 end

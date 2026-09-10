@@ -134,11 +134,15 @@ module Gloo
 
       #
       # Run files specified on the CLI.
-      # Then quit.
+      # Then quit, with a non-zero exit code if any file failed to
+      # load (missing, unresolvable, or errored on load) so that a
+      # calling shell script can tell a bad run from a good one.
       #
       def run_files
         load_files
+        failed = error?
         quit
+        exit( 1 ) if failed
       end
 
       # 
