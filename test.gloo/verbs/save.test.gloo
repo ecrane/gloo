@@ -7,29 +7,22 @@
 # next one starts clean.
 #
 
-tests [can] :
-  verbs [can] :
-    save [can] :
-      f [file] : /tmp/gloo_save_test.gloo
-      g [file] : /tmp/gloo_save_test_2.gloo
-      to_target [file] : /tmp/gloo_save_test_to.gloo
-      out [string] : BEGIN
-				#
-				# a comment above demo
-				#
-				demo [container] :
-				  msg [string] : hello
-			END
-      err [bool] : false
+tests.verbs.save [can] :
 
-      on_error [script] :
-        put true into ^.err
+  f [file] : /tmp/gloo_save_test.gloo
+  g [file] : /tmp/gloo_save_test_2.gloo
+  to_target [file] : /tmp/gloo_save_test_to.gloo
+  out [string] :
+  err [bool] : false
 
-      #
-      # The fixture used by most tests: two comments, a changed-in-place
-      # value, and an untouched sibling.
-      #
-      fixture [text] : BEGIN
+  on_error [script] :
+    put true into ^.err
+
+  #
+  # The fixture used by most tests: two comments, a changed-in-place
+  # value, and an untouched sibling.
+  #
+  fixture [text] : BEGIN
 #
 # a comment above demo
 #
@@ -39,77 +32,80 @@ demo [container] :
   other [string] : world
 END
 
-      round_trip_preserves_comments_and_untouched_lines [test] :
-        description [string] : load, change one value, save -- comments and the untouched sibling survive.
-        on_test [script] :
-					put false into ^^.err
-					tell ^^.f to write ( ^^.fixture )
-					load /tmp/gloo_save_test.gloo
-					put 'changed' into demo.msg
-					save demo
-					eval ^^.err = false
-					assert "save should not error"
-					tell ^^.f to read ( ^^.out )
-					check ^^.out for substring? ( "# a comment above demo" )
-					assert "the leading comment block should survive"
-					check ^^.out for substring? ( "# a comment above other" )
-					assert "the inner comment should survive"
-					check ^^.out for substring? ( "msg [string] : changed" )
-					assert "the changed value should be written"
-					check ^^.out for substring? ( "other [string] : world" )
-					assert "the untouched sibling should be unchanged"
-					tell demo to unload
-					tell ^^.f to delete
-      unchanged_file_round_trips_byte_for_byte [test] :
-        description [string] : load then save with no change reproduces the file exactly.
-        on_test [script] :
-					tell ^^.f to write ( ^^.fixture )
-					load /tmp/gloo_save_test.gloo
-					save demo
-					tell ^^.f to read ( ^^.out )
-					eval ^^.out = ^^.fixture
-					assert "an unchanged save should reproduce the original text"
-					tell demo to unload
-					tell ^^.f to delete
-      deleting_an_object_drops_its_line [test] :
-        description [string] : removing a child and saving drops just that declaration.
-        on_test [script] :
-					tell ^^.f to write ( ^^.fixture )
-					load /tmp/gloo_save_test.gloo
-					tell demo.other to unload
-					save demo
-					tell ^^.f to read ( ^^.out )
-					check ^^.out for substring? ( "msg [string] : hello" )
-					assert "the kept sibling should still be there"
-					check ^^.out for substring? ( "other [string]" )
-					refute "the removed child's line should be gone"
-					tell demo to unload
-					tell ^^.f to delete
-      save_to_a_new_path_creates_the_file [test] :
-        description [string] : save {obj} to {path} writes a new file and registers it.
-        on_test [script] :
-					tell ^^.f to write ( ^^.fixture )
-					load /tmp/gloo_save_test.gloo
-					save demo to /tmp/gloo_save_test_to
-					check ^^.to_target for exists?
-					assert "save ... to should create the target file"
-					tell ^^.to_target to read ( ^^.out )
-					check ^^.out for substring? ( "msg [string] : hello" )
-					assert "the new file should hold the object"
-					tell demo to unload
-					tell ^^.f to delete
-					tell ^^.to_target to delete
-      reload_discards_unsaved_changes [test] :
-        description [string] : reload throws away edits that were not saved.
-        on_test [script] :
-					tell ^^.f to write ( ^^.fixture )
-					load /tmp/gloo_save_test.gloo
-					put 'not saved' into demo.msg
-					eval demo.msg = 'not saved'
-					assert "sanity: the edit landed"
-					tell demo to reload
-					eval demo.msg = 'hello'
-					assert "reload should restore the on-disk value"
-					tell demo to unload
-					tell ^^.f to delete
+  round_trip_preserves_comments_and_untouched_lines [test] :
+    description [string] : load, change one value, save -- comments and the untouched sibling survive.
+    on_test [script] :
+      put false into ^^.err
+      tell ^^.f to write ( ^^.fixture )
+      load /tmp/gloo_save_test.gloo
+      put 'changed' into demo.msg
+      save demo
+      eval ^^.err = false
+      assert "save should not error"
+      tell ^^.f to read ( ^^.out )
+      check ^^.out for substring? ( "# a comment above demo" )
+      assert "the leading comment block should survive"
+      check ^^.out for substring? ( "# a comment above other" )
+      assert "the inner comment should survive"
+      check ^^.out for substring? ( "msg [string] : changed" )
+      assert "the changed value should be written"
+      check ^^.out for substring? ( "other [string] : world" )
+      assert "the untouched sibling should be unchanged"
+      tell demo to unload
+      tell ^^.f to delete
 
+  unchanged_file_round_trips_byte_for_byte [test] :
+    description [string] : load then save with no change reproduces the file exactly.
+    on_test [script] :
+      tell ^^.f to write ( ^^.fixture )
+      load /tmp/gloo_save_test.gloo
+      save demo
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.fixture
+      assert "an unchanged save should reproduce the original text"
+      tell demo to unload
+      tell ^^.f to delete
+
+  deleting_an_object_drops_its_line [test] :
+    description [string] : removing a child and saving drops just that declaration.
+    on_test [script] :
+      tell ^^.f to write ( ^^.fixture )
+      load /tmp/gloo_save_test.gloo
+      tell demo.other to unload
+      save demo
+      tell ^^.f to read ( ^^.out )
+      check ^^.out for substring? ( "msg [string] : hello" )
+      assert "the kept sibling should still be there"
+      check ^^.out for substring? ( "other [string]" )
+      refute "the removed child's line should be gone"
+      tell demo to unload
+      tell ^^.f to delete
+
+  save_to_a_new_path_creates_the_file [test] :
+    description [string] : save {obj} to {path} writes a new file and registers it.
+    on_test [script] :
+      tell ^^.f to write ( ^^.fixture )
+      load /tmp/gloo_save_test.gloo
+      save demo to /tmp/gloo_save_test_to
+      check ^^.to_target for exists?
+      assert "save ... to should create the target file"
+      tell ^^.to_target to read ( ^^.out )
+      check ^^.out for substring? ( "msg [string] : hello" )
+      assert "the new file should hold the object"
+      tell demo to unload
+      tell ^^.f to delete
+      tell ^^.to_target to delete
+
+  reload_discards_unsaved_changes [test] :
+    description [string] : reload throws away edits that were not saved.
+    on_test [script] :
+      tell ^^.f to write ( ^^.fixture )
+      load /tmp/gloo_save_test.gloo
+      put 'not saved' into demo.msg
+      eval demo.msg = 'not saved'
+      assert "sanity: the edit landed"
+      tell demo to reload
+      eval demo.msg = 'hello'
+      assert "reload should restore the on-disk value"
+      tell demo to unload
+      tell ^^.f to delete

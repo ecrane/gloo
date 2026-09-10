@@ -284,8 +284,29 @@ module Gloo
         nodes.each do |node|
           next unless node.is_a?( Gloo::Persist::Source::ObjNode )
 
-          owned[ node.obj ] = true if node.obj
+          if node.obj
+            owned[ node.obj ] = true
+            mark_shorthand_ancestors( node, owned )
+          end
           collect_owned( node.children, owned )
+        end
+      end
+
+      #
+      # A nested-container shorthand declaration (a.b.c [type] :) only
+      # records a source node for the leaf; the intermediate containers
+      # (a, a.b) are real heap objects with no node of their own. Mark
+      # them owned too, walking up from the leaf, so another file's save
+      # doesn't see an intermediate as an orphan and adopt its whole
+      # subtree.
+      #
+      def mark_shorthand_ancestors( node, owned )
+        return unless node.name.include?( '.' )
+
+        o = node.obj.parent
+        while o && !o.root?
+          owned[ o ] = true
+          o = o.parent
         end
       end
 

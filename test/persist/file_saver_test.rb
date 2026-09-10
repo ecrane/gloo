@@ -100,6 +100,34 @@ class FileSaverTest < BaseEngineTest
     assert_equal 1, combined.scan( 'fresh [string] : new' ).length, "a=#{a.inspect} b=#{b.inspect}"
   end
 
+  #
+  # Regression: the nested-container shorthand (a.b.c [type] :) puts
+  # its intermediate containers straight under the heap root but only
+  # records a source node for the leaf. Saving a *different* root-level
+  # object used to see that orphan intermediate as an unclaimed "new"
+  # child and append its entire subtree onto the unrelated file.
+  #
+  def test_saving_an_unrelated_root_does_not_adopt_a_shorthand_siblings_tree
+    @engine.settings.override_project_path( "#{@tmp_dir}/" )
+    File.write( File.join( @tmp_dir, 'ns.gloo' ),
+                "tests.verbs.save [can] :\n\tnote [string] : ns-note\n" )
+    File.write( File.join( @tmp_dir, 'demo.gloo' ),
+                "demo [container] :\n\tmsg [string] : hello\n" )
+    @engine.persist_man.load 'ns'
+    @engine.persist_man.load 'demo'
+
+    @engine.heap.root.find_child( 'demo' ).find_child( 'msg' ).set_value( 'changed' )
+    @engine.persist_man.save 'demo'
+
+    demo_file = File.read( File.join( @tmp_dir, 'demo.gloo' ) )
+    assert_equal "demo [container] :\n\tmsg [string] : changed\n", demo_file
+    refute_match( /tests/, demo_file )
+
+    # ns.gloo is untouched by demo's save
+    assert_equal "tests.verbs.save [can] :\n\tnote [string] : ns-note\n",
+                 File.read( File.join( @tmp_dir, 'ns.gloo' ) )
+  end
+
   def test_round_trip_preserves_trailing_whitespace_in_a_string_value
     src = "note [string] : two trailing spaces  \n"
     src_path = File.join( @tmp_dir, 'ws.gloo' )
