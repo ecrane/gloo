@@ -1,3 +1,7 @@
+6.5.1 - 2026.09.11
+ - Adds doc to the load verb for recent changes.
+
+
 6.5.0 - 2026.09.11
   - Adds option to show comments from the list verb.
 	  - Adds message to get doc for an object.
