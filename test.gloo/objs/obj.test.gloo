@@ -10,9 +10,7 @@ tests.objs.obj [can] :
     c [string] : "c"
     d [string] : "d"
 
-  #
   # A documented string, used to check the doc message.
-  #
   documented [string] : "value"
 
   no_doc [string] : "value"

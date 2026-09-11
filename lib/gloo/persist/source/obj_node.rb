@@ -47,15 +47,15 @@ module Gloo
         #
         # The cleaned-up leading_doc: each line's leading whitespace and
         # its '#' marker (plus one following space, if any) stripped,
-        # the result dedented to its shallowest line, and blank leading
-        # /trailing lines dropped (interior blank lines -- paragraph
-        # breaks -- are kept). '' when there's no leading_doc at all.
+        # then the result dedented to its shallowest line. The full
+        # block is kept as written, blank '#' lines at the top/bottom
+        # included -- it's a faithful reproduction of the comment, not
+        # a trimmed summary. '' when there's no leading_doc at all.
         #
         def doc
           return '' unless @leading_doc
 
           lines = @leading_doc.split( "\n" ).map { |l| strip_marker( l ) }
-          lines = trim_blank_edges( lines )
           return dedent( lines ).join( "\n" )
         end
 
@@ -68,14 +68,6 @@ module Gloo
         #
         def strip_marker( raw )
           return raw.lstrip.sub( /\A#\x20?/, '' ).rstrip
-        end
-
-        #
-        # Drop leading and trailing blank lines.
-        #
-        def trim_blank_edges( lines )
-          lines = lines.drop_while( &:empty? )
-          return lines.reverse.drop_while( &:empty? ).reverse
         end
 
         #

@@ -361,7 +361,9 @@ class FileLoaderTest < BaseEngineTest
     @engine.persist_man.load 'sub/comments'
     demo = @engine.heap.root.find_child( 'demo' )
 
-    assert_equal 'leading doc comment for demo', demo.doc
+    # the fixture's comment is padded with blank '#' lines above and
+    # below -- the full block is kept, not just the text in the middle
+    assert_equal "\nleading doc comment for demo\n", demo.doc
     assert_equal 'leading doc for msg', demo.find_child( 'msg' ).doc
     assert_equal '', demo.find_child( 'other' ).doc
   end
@@ -370,7 +372,7 @@ class FileLoaderTest < BaseEngineTest
     require 'tmpdir'
     dir = Dir.mktmpdir
     File.write( File.join( dir, 'a.gloo' ),
-                "#\n# from A\n#\napp [container] :\n\tname [string] : from A\n" )
+                "# from A\napp [container] :\n\tname [string] : from A\n" )
     File.write( File.join( dir, 'b.gloo' ), "app [container] :\n\tname [string] : from B\n" )
     @engine.settings.override_project_path( "#{dir}/" )
     @engine.log.quiet = true
@@ -389,7 +391,7 @@ class FileLoaderTest < BaseEngineTest
     dir = Dir.mktmpdir
     File.write( File.join( dir, 'b.gloo' ), "app [container] :\n\tname [string] : from B\n" )
     File.write( File.join( dir, 'a.gloo' ),
-                "#\n# from A\n#\napp [container] :\n\tname [string] : from A\n" )
+                "# from A\napp [container] :\n\tname [string] : from A\n" )
     @engine.settings.override_project_path( "#{dir}/" )
     @engine.log.quiet = true
 

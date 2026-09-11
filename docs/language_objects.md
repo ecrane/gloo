@@ -88,12 +88,15 @@ name [string] :
 ```gloo
 > check name for doc
 > show it
+
 The user's display name. Empty until they set it in preferences.
+
 ```
 
 Each line's own leading whitespace and `#` marker (plus one space after
-it, if there is one) are stripped; the result is dedented to its
-shallowest line and blank leading/trailing lines are dropped. An object
+it, if there is one) are stripped, and the result is dedented to its
+shallowest line — but otherwise the full block is kept exactly as
+written, blank `#` lines above and below the text included. An object
 with no leading comment — including anything created at run time rather
 than loaded from a file — has a blank doc (`''`).
 

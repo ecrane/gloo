@@ -64,12 +64,17 @@ class ObjNodeTest < BaseEngineTest
 
   def test_doc_treats_a_bare_hash_as_a_blank_line
     n = node_with_doc( "#\n# Summary.\n#" )
-    assert_equal 'Summary.', n.doc
+    assert_equal "\nSummary.\n", n.doc
   end
 
   def test_doc_keeps_interior_blank_lines
     n = node_with_doc( "# First paragraph.\n#\n# Second paragraph." )
     assert_equal "First paragraph.\n\nSecond paragraph.", n.doc
+  end
+
+  def test_doc_keeps_blank_leading_and_trailing_lines
+    n = node_with_doc( "#\n#\n# Padded on both sides.\n#\n#" )
+    assert_equal "\n\nPadded on both sides.\n\n", n.doc
   end
 
   def test_doc_dedents_to_the_shallowest_line

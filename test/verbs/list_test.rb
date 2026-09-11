@@ -71,4 +71,23 @@ class ListTest < BaseEngineTest
     refute_includes out, '#'
   end
 
+  #
+  # Regression: doc's full text (including a blank line at the end) is
+  # meant to render as its own line. each_line silently drops a
+  # trailing empty segment ("a\n".each_line => ["a\n"], not ["a\n", ""]),
+  # so show_doc has to split instead.
+  #
+  def test_list_docs_does_not_drop_a_trailing_blank_comment_line
+    @engine.settings.instance_variable_set( :@list_docs, true )
+    @engine.parser.run 'create s as string : hi'
+    @engine.heap.root.find_child( 's' ).doc = "Line one.\n"
+
+    shown = []
+    @engine.log.define_singleton_method( :show ) { |msg, *_| shown << msg }
+    @engine.parser.run 'list'
+
+    doc_lines = shown.select { |m| m.include?( '#' ) }
+    assert_equal 2, doc_lines.count, shown.inspect
+  end
+
 end

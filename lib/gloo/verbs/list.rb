@@ -99,7 +99,10 @@ module Gloo
         return if obj.doc.to_s.strip.empty?
 
         theme = @engine.theme
-        obj.doc.each_line( chomp: true ) do |line|
+        # split( -1 ), not each_line -- a doc ending in a blank '#' line
+        # ends with "\n", and each_line silently drops that trailing
+        # empty line rather than yielding it.
+        obj.doc.split( "\n", -1 ).each do |line|
           @engine.log.show theme.muted( "#{indent}# #{line}".rstrip )
         end
       end
