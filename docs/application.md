@@ -104,6 +104,13 @@ gloo:
   list_levels: 3
 
   #
+  # When listing the object tree, also show each object's doc (the
+  # comment declared immediately above it in its source file), if it
+  # has one.
+  #
+  list_docs: false
+
+  #
   # Show debug statements in the log?
   #
   debug: false

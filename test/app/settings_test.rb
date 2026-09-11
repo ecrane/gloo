@@ -82,6 +82,49 @@ class SettingsTest < BaseEngineTest
     end
   end
 
+  def test_list_docs_defaults_to_false_when_absent_from_settings_file
+    Dir.mktmpdir do |root|
+      user_root = File.join( root, 'gloo' )
+      Dir.mkdir( user_root )
+      config_path = File.join( user_root, 'config' )
+      Dir.mkdir( config_path )
+      File.write( File.join( config_path, 'gloo.yml' ), <<~YML )
+        gloo:
+          project_path:
+          start_with:
+          list_indent: 2
+          list_levels: 3
+          debug: false
+          theme: dark
+      YML
+
+      s = Gloo::App::Settings.new( @engine, user_root )
+      assert_equal false, s.list_docs
+    end
+  end
+
+  def test_list_docs_read_from_settings_file
+    Dir.mktmpdir do |root|
+      user_root = File.join( root, 'gloo' )
+      Dir.mkdir( user_root )
+      config_path = File.join( user_root, 'config' )
+      Dir.mkdir( config_path )
+      File.write( File.join( config_path, 'gloo.yml' ), <<~YML )
+        gloo:
+          project_path:
+          start_with:
+          list_indent: 2
+          list_levels: 3
+          list_docs: true
+          debug: false
+          theme: dark
+      YML
+
+      s = Gloo::App::Settings.new( @engine, user_root )
+      assert_equal true, s.list_docs
+    end
+  end
+
   def test_theme_falls_back_to_default_when_invalid
     Dir.mktmpdir do |root|
       user_root = File.join( root, 'gloo' )

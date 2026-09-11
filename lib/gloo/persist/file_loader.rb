@@ -226,6 +226,13 @@ module Gloo
 
         node = build_obj_node( leading_ws( line ), name, type, value, style )
         node.leading_doc = @comments.take_leading_doc( line_tabs, @indent_stack.node.children )
+        # First non-empty doc wins, same as "first value wins" for a
+        # name re-declared across files -- @last is the same object
+        # across re-declarations (the factory returns the existing
+        # one), so a later, comment-less re-declaration doesn't blank
+        # out an earlier file's doc. @last can be nil for an unknown
+        # type (factory.create logs a warning and returns nil).
+        @last.doc = node.doc if @last && @last.doc.to_s.strip.empty?
         @indent_stack.node.children << node
         @last_node = node
         @obj ||= @ledger.roots.last || @last

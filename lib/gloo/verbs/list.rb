@@ -74,6 +74,7 @@ module Gloo
       #
       def show_obj( obj, indent = '  ' )
         theme = @engine.theme
+        show_doc( obj, indent ) if @engine.settings.list_docs
         if obj.multiline_value? && obj.value_is_array?
           str = theme.emphasis( "#{indent}#{obj.name}" )
           str << theme.accent( " [#{obj.type_display}] : " )
@@ -86,6 +87,20 @@ module Gloo
           str << theme.accent( " [#{obj.type_display}] : " )
           str << "#{obj.value}"
           @engine.log.show str
+        end
+      end
+
+      #
+      # Show the object's doc (its leading comment, cleaned up) above
+      # its listing line, one '#'-prefixed line per line of doc.
+      # Silent when the object has none.
+      #
+      def show_doc( obj, indent )
+        return if obj.doc.to_s.strip.empty?
+
+        theme = @engine.theme
+        obj.doc.each_line( chomp: true ) do |line|
+          @engine.log.show theme.muted( "#{indent}# #{line}".rstrip )
         end
       end
 
@@ -130,12 +145,16 @@ module Gloo
             'current context. When a path is provided, it will be ' \
             'listed instead of the current context. When using context, ' \
             'the current context will be shown, but when context has ' \
-            'not been set, the root will be shown.',
+            'not been set, the root will be shown. When the list_docs ' \
+            'setting is on, any listed object that has a doc (the ' \
+            'comment block declared immediately above it in its source ' \
+            'file) shows it too.',
           :syntax => [ 'list {path.to.object}' ],
           :parameters => [
             '{path.to.object} — Optional path to object that will be listed. When no path is provided, the current context is used.'
           ],
-          :result => 'Object and children are listed out in the CLI.',
+          :result => 'Object and children are listed out in the CLI. ' \
+            'Doc lines are included when the list_docs setting is on.',
           :errors => [
             "#{TARGET_MISSING_ERR}{path.to.object} — The object specified that is to be listed could not be found."
           ],

@@ -44,6 +44,55 @@ module Gloo
           @children = []
         end
 
+        #
+        # The cleaned-up leading_doc: each line's leading whitespace and
+        # its '#' marker (plus one following space, if any) stripped,
+        # the result dedented to its shallowest line, and blank leading
+        # /trailing lines dropped (interior blank lines -- paragraph
+        # breaks -- are kept). '' when there's no leading_doc at all.
+        #
+        def doc
+          return '' unless @leading_doc
+
+          lines = @leading_doc.split( "\n" ).map { |l| strip_marker( l ) }
+          lines = trim_blank_edges( lines )
+          return dedent( lines ).join( "\n" )
+        end
+
+        private
+
+        #
+        # One raw comment line -> its text past the '#': leading
+        # whitespace dropped, then the '#' and at most one space after
+        # it, then trailing whitespace dropped.
+        #
+        def strip_marker( raw )
+          return raw.lstrip.sub( /\A#\x20?/, '' ).rstrip
+        end
+
+        #
+        # Drop leading and trailing blank lines.
+        #
+        def trim_blank_edges( lines )
+          lines = lines.drop_while( &:empty? )
+          return lines.reverse.drop_while( &:empty? ).reverse
+        end
+
+        #
+        # Remove the common leading whitespace shared by every non-blank
+        # line, so a comment block indented for readability (eg. a
+        # bullet list within it) keeps its relative indentation.
+        #
+        def dedent( lines )
+          non_blank = lines.reject( &:empty? )
+          return lines if non_blank.empty?
+
+          n = non_blank.map { |l| l[ /\A */ ].length }.min
+          return lines if n.zero?
+
+          return lines.map { |l| l.empty? ? l : l[ n.. ] }
+        end
+
       end
     end
   end

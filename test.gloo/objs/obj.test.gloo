@@ -10,6 +10,13 @@ tests.objs.obj [can] :
     c [string] : "c"
     d [string] : "d"
 
+  #
+  # A documented string, used to check the doc message.
+  #
+  documented [string] : "value"
+
+  no_doc [string] : "value"
+
   obj_contains [test] :
     description [string] : Check to see if an object contains children
     on_test [script] :
@@ -48,3 +55,20 @@ tests.objs.obj [can] :
 
       check tests.objs.obj.a.b for responds_to? ('up')
       assert "expected string to respond to up"
+
+  responds_to_doc [test] :
+    description [string] : Verify that all objects respond to doc message
+    on_test [script] :
+      check tests.objs.obj.o for responds_to? ('doc')
+      assert "expected any object to respond to doc"
+
+  doc_message [test] :
+    description [string] : doc returns the object's leading comment, cleaned up.
+    on_test [script] :
+      check tests.objs.obj.documented for doc
+      eval it = "A documented string, used to check the doc message."
+      assert "expected doc to return the cleaned leading comment"
+
+      check tests.objs.obj.no_doc for doc
+      eval it = ""
+      assert "expected doc to be blank for an object with no leading comment"

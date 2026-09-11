@@ -70,6 +70,43 @@ page.core.users.list [container] :
 - Indented lines below a shorthand declaration are children of the last
   segment (`list` above), not of any prefix container.
 
+## Documenting an Object
+
+A contiguous run of whole-line comments immediately above a declaration,
+at the same indent and with no blank line in between, is that object's
+**doc** — read it back at run time with `tell {obj} to doc` or
+`check {obj} for doc` (the cleaned text lands in `it`, like any other
+value-returning message):
+
+```gloo
+#
+# The user's display name. Empty until they set it in preferences.
+#
+name [string] :
+```
+
+```gloo
+> check name for doc
+> show it
+The user's display name. Empty until they set it in preferences.
+```
+
+Each line's own leading whitespace and `#` marker (plus one space after
+it, if there is one) are stripped; the result is dedented to its
+shallowest line and blank leading/trailing lines are dropped. An object
+with no leading comment — including anything created at run time rather
+than loaded from a file — has a blank doc (`''`).
+
+A comment separated from the declaration by a blank line, or at a
+different indent, is not associated with it — it's kept as its own
+floating comment in the file instead. When a name is declared in more
+than one loaded file, the first non-empty doc wins (same rule as the
+first value).
+
+`list` can show every documented object in a listed tree: turn on the
+`list_docs` setting (off by default) — see `list` and `settings` in the
+in-app help.
+
 ## Keywords
 
 Gloo doesn't reserve words the way many languages do. A verb keyword like `put` or an object type name like `string` can also be used as an object name — there's no parser conflict, because verbs are only looked up as the first word of a statement, and object type names are only looked up where a type is expected (inside the `[ ]` on a declaration). Everywhere else, the word is just a pathname segment (see Object Naming, above).

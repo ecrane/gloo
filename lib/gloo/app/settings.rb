@@ -15,7 +15,7 @@ module Gloo
 
       attr_reader :user_root, :log_path,
         :config_path, :project_path, :ext_path,
-        :start_with, :list_indent, :list_levels, :tmp_path,
+        :start_with, :list_indent, :list_levels, :list_docs, :tmp_path,
         :debug_path, :debug, :theme
 
       #
@@ -41,6 +41,7 @@ module Gloo
         puts theme.accent( '   Startup with:  ' ) + theme.emphasis( @start_with.to_s )
         puts theme.accent( '   Indent in Listing:  ' ) + theme.emphasis( @list_indent.to_s )
         puts theme.accent( '   List Levels:  ' ) + theme.emphasis( @list_levels.to_s )
+        puts theme.accent( '   List Docs:  ' ) + theme.emphasis( @list_docs.to_s )
         puts theme.accent( '   Debug?  ' ) + theme.emphasis( @debug.to_s )
         puts theme.accent( '   Theme:  ' ) + theme.emphasis( @theme )
         puts theme.accent( '   Screen Lines:  ' ) + theme.emphasis( Gloo::App::Settings.lines( @engine ).to_s )
@@ -158,6 +159,7 @@ module Gloo
         @start_with = settings[ 'gloo' ][ 'start_with' ]
         @list_indent = settings[ 'gloo' ][ 'list_indent' ]
         @list_levels = settings[ 'gloo' ][ 'list_levels' ]
+        @list_docs = settings[ 'gloo' ][ 'list_docs' ] == true
 
         @debug = settings[ 'gloo' ][ 'debug' ]
 
@@ -192,6 +194,7 @@ module Gloo
             start_with:
             list_indent: 2
             list_levels: 3
+            list_docs: false
             debug: false
             theme: #{DEFAULT_THEME}
         TEXT

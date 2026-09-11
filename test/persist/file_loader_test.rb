@@ -353,4 +353,54 @@ class FileLoaderTest < BaseEngineTest
     FileUtils.remove_entry dir if dir
   end
 
+  # -------------------------------------------------------------------
+  #   Obj#doc -- the cleaned leading_doc, copied onto the heap object
+  # -------------------------------------------------------------------
+
+  def test_leading_doc_reaches_the_heap_object
+    @engine.persist_man.load 'sub/comments'
+    demo = @engine.heap.root.find_child( 'demo' )
+
+    assert_equal 'leading doc comment for demo', demo.doc
+    assert_equal 'leading doc for msg', demo.find_child( 'msg' ).doc
+    assert_equal '', demo.find_child( 'other' ).doc
+  end
+
+  def test_first_non_empty_doc_wins_across_files
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    File.write( File.join( dir, 'a.gloo' ),
+                "#\n# from A\n#\napp [container] :\n\tname [string] : from A\n" )
+    File.write( File.join( dir, 'b.gloo' ), "app [container] :\n\tname [string] : from B\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+    @engine.log.quiet = true
+
+    @engine.persist_man.load 'a'
+    @engine.persist_man.load 'b'
+
+    app = @engine.heap.root.find_child( 'app' )
+    assert_equal 'from A', app.doc
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
+  def test_a_comment_less_redeclaration_does_not_blank_an_earlier_doc
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    File.write( File.join( dir, 'b.gloo' ), "app [container] :\n\tname [string] : from B\n" )
+    File.write( File.join( dir, 'a.gloo' ),
+                "#\n# from A\n#\napp [container] :\n\tname [string] : from A\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+    @engine.log.quiet = true
+
+    # loaded in the opposite order this time -- the commented file second
+    @engine.persist_man.load 'b'
+    @engine.persist_man.load 'a'
+
+    app = @engine.heap.root.find_child( 'app' )
+    assert_equal 'from A', app.doc
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
 end

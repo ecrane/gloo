@@ -12,12 +12,21 @@ module Gloo
       attr_accessor :value
       attr_reader :children, :parent
 
+      # The object's documentation: the cleaned comment block declared
+      # immediately above it in its source file (Source::ObjNode#doc),
+      # copied on at load time by FileLoader. '' for an object with no
+      # such comment, or one created at run time. Loader-set only --
+      # there's no verb/message path to change it, so it can't drift
+      # from what the file actually says.
+      attr_accessor :doc
+
       #
       # Set up the object.
       #
       def initialize( engine )
         @engine = engine
         @value = ''
+        @doc = ''
         @children = []
         @parent = nil
       end
@@ -329,7 +338,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return %w[save reload unload blank? contains? responds_to?]
+        return %w[save reload unload blank? contains? responds_to? doc]
       end
 
       #
@@ -443,6 +452,17 @@ module Gloo
           @engine.heap.it.set_to false
           return false
         end
+      end
+
+      #
+      # Get this object's documentation -- the comment block declared
+      # immediately above it in its source file, cleaned up. Puts the
+      # result into 'it' rather than printing, same as other
+      # value-returning messages (count, down, blank?, ...).
+      #
+      def msg_doc
+        @engine.heap.it.set_to self.doc
+        return self.doc
       end
 
 

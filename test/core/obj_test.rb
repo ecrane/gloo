@@ -432,4 +432,41 @@ class ObjTest < BaseEngineTest
     refute @engine.heap.it.value
   end
 
+  # -------------------------------------------------------------------
+  #   #doc
+  # -------------------------------------------------------------------
+
+  def test_default_doc_is_blank
+    o = Gloo::Core::Obj.new @engine
+    assert_equal '', o.doc
+  end
+
+  def test_doc_responds_to_message
+    @engine.parser.run 'create s as string : test'
+    assert @engine.heap.root.find_child( 's' ).can_receive_message?( 'doc' )
+  end
+
+  def test_check_for_doc_puts_the_cleaned_string_into_it
+    @engine.parser.run 'create s as string : test'
+    s = @engine.heap.root.find_child( 's' )
+    s.doc = 'The thing that s is for.'
+
+    @engine.parser.run 'check s for doc'
+    assert_equal 'The thing that s is for.', @engine.heap.it.value
+  end
+
+  def test_check_for_doc_with_no_doc_puts_a_blank_string_into_it
+    @engine.parser.run 'create s as string : test'
+    @engine.parser.run 'check s for doc'
+    assert_equal '', @engine.heap.it.value
+  end
+
+  def test_tell_to_doc_also_works
+    @engine.parser.run 'create s as string : test'
+    @engine.heap.root.find_child( 's' ).doc = 'Told, not checked.'
+
+    @engine.parser.run 'tell s to doc'
+    assert_equal 'Told, not checked.', @engine.heap.it.value
+  end
+
 end

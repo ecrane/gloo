@@ -51,6 +51,13 @@ tell {path.to.object} to {message}
 > if it then show 'it does'
 ```
 
+`doc` is one such message every object responds to: it returns the comment block declared immediately above it in its source file, cleaned up (see Language, Objects — Documenting an Object).
+
+```gloo
+> tell my.obj to doc
+> show it
+```
+
 ## Put
 
 `put` evaluates an expression and stores the result in an object.
