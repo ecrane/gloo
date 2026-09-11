@@ -131,7 +131,15 @@ module Gloo
             'declare it in each file and add different children, and ' \
             'they merge in the heap. If two loaded files declare the ' \
             'same object with different values, the first one loaded ' \
-            'wins and a warning is logged.',
+            "wins and a warning is logged.\n\n" \
+            'A contiguous run of whole-line comments declared ' \
+            'immediately above an object (same indent, no blank line ' \
+            "in between) becomes that object's doc, captured as the " \
+            'file loads. Read it back with tell {obj} to doc or ' \
+            'check {obj} for doc, or see it inline in the object tree ' \
+            'with list when the list_docs setting is on. When a name ' \
+            'is declared in more than one loaded file, the first ' \
+            'non-empty doc wins, same as the first value.',
           :examples => <<~EXAMPLES.strip
             > load my/project/file
             > load my/app/*
