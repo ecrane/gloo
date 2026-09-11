@@ -1,3 +1,10 @@
+6.5.0 - 2026.09.11
+  - Adds option to show comments from the list verb.
+	  - Adds message to get doc for an object.
+  - Report error if the file to load can't be found.
+  - Fixes issue with multisegment root level object.
+
+
 6.4.0 - 2026.09.06
  - Persistance refresh with updates for loading and saving
  - Nested container shortcut syntax
