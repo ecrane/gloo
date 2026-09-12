@@ -88,12 +88,18 @@ module Gloo
       end
 
       #
-      # Get the index of the given token.
+      # Get the index of the given token. token may also be an array
+      # of candidate keywords -- e.g. [ 'then', 'do' ] -- in which
+      # case the index of whichever one occurs earliest in the token
+      # stream wins (not just whichever is present). This lets a
+      # caller treat several spellings of the same separator as
+      # interchangeable while still keying the split on the first one
+      # actually used (see If/Unless's 'then'/'do').
       #
       def index_of( token )
         return nil unless @tokens
 
-        return @tokens.find_index { |o| o.casecmp( token ).zero? }
+        return Array( token ).filter_map { |t| @tokens.find_index { |o| o.casecmp( t ).zero? } }.min
       end
 
       #

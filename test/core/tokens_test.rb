@@ -177,6 +177,23 @@ class TokensTest < BaseTest
     refute o.index_of( 'xyz' )
   end
 
+  #
+  # index_of (and everything built on it: before_token, after_token,
+  # tokens_after, expr_after) also accepts an array of candidate
+  # keywords, matching whichever one occurs earliest -- not just
+  # whichever happens to be present. This is what lets if/unless treat
+  # 'then'/'do' as interchangeable while still keying the split on the
+  # separator actually used first.
+  #
+  def test_index_of_with_multiple_candidates_finds_the_earliest
+    o = Gloo::Core::Tokens.new( 'if x then unless y do z' )
+    assert_equal 2, o.index_of( %w[then do] )
+    assert_equal 2, o.index_of( %w[do then] )
+    assert_equal 5, o.index_of( 'do' )
+
+    refute o.index_of( %w[xyz abc] )
+  end
+
   def test_after_token
     o = Gloo::Core::Tokens.new( 'create thing as string' )
     assert_equal 'string', o.after_token( 'as' )
@@ -211,6 +228,12 @@ class TokensTest < BaseTest
     str = o.expr_after( 'then' )
     assert str
     assert_equal 'show 2 + 5', str
+  end
+
+  def test_before_token_and_expr_after_with_multiple_candidates
+    o = Gloo::Core::Tokens.new( 'if x then unless y do z' )
+    assert_equal %w[if x], o.before_token( %w[then do] )
+    assert_equal 'unless y do z', o.expr_after( %w[then do] )
   end
 
   def test_tokenize_with_inline_invoke_call

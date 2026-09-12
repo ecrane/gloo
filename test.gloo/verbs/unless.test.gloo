@@ -18,3 +18,24 @@ tests.verbs.unless [can] :
       eval false
       unless true do eval true
       refute "expected do block to be skipped when condition is true"
+
+  unless_then [test] :
+    description [string] : 'then' is a synonym for 'do'
+    on_test [script] :
+      eval false
+      unless ^^.b then eval true
+      assert "expected 'then' to work the same as 'do'"
+
+  unless_do_else [test] :
+    description [string] : else runs when the condition is true
+    on_test [script] :
+      eval false
+      unless true do eval false else eval true
+      assert "expected else to run when the condition is true"
+
+  unless_then_else [test] :
+    description [string] : else works the same with the 'then' synonym
+    on_test [script] :
+      eval false
+      unless true then eval false else eval true
+      assert "expected else to run after a 'then' action"

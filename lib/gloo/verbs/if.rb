@@ -11,7 +11,11 @@ module Gloo
       KEYWORD = 'if'.freeze
       KEYWORD_SHORT = 'if'.freeze
       THEN = 'then'.freeze
+      DO = 'do'.freeze
       ELSE = 'else'.freeze
+      # 'then' and 'do' are interchangeable -- whichever appears first
+      # in the tokens is the actual separator (see Tokens#index_of).
+      SEPARATORS = [ THEN, DO ].freeze
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
 
       #
@@ -21,7 +25,7 @@ module Gloo
         value = value_tokens
         return if value.nil?
 
-        @then = @tokens.expr_after( THEN, ELSE )
+        @then = @tokens.expr_after( SEPARATORS, ELSE )
         @else = @tokens.expr_after( ELSE )
 
         if evals_true( value )
@@ -56,7 +60,7 @@ module Gloo
       # of the if command.
       #
       def value_tokens
-        value = @tokens.before_token( THEN )
+        value = @tokens.before_token( SEPARATORS )
         if value && value.count > 1
           # The first token is the verb, so we drop it.
           value = value[ 1..-1 ]
@@ -113,19 +117,22 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'If an expression is true then do something.',
+          :description => 'If an expression is true then do something. ' \
+            "'then' and 'do' are interchangeable separators -- pick " \
+            'whichever reads better.',
           :syntax => [
-            'if {true} then {do}',
-            'if {true} then {do} else {do else}'
+            'if {true} then {action}',
+            'if {true} do {action}',
+            'if {true} then {action} else {else action}'
           ],
           :parameters => [
             '{true} — Does the expression evaluate to true?',
-            '{do} — Execute command if the expression is true.',
-            '{do else} — The else command is optional. Execute command if the expression is false.'
+            '{action} — Execute command if the expression is true.',
+            '{else action} — The else command is optional. Execute command if the expression is false.'
           ],
           :result => 'Unchanged if the expression is not true. If true, ' \
             'then the result will be based on the command specified ' \
-            'after the then keyword.',
+            "after the 'then'/'do' keyword.",
           :errors => [
             "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb.",
             'Other errors depend on the command that is run.'
@@ -150,6 +157,9 @@ module Gloo
                 if ^.x \\
                   then show 'T' \\
                   else show 'F'
+
+                # 'do' works the same as 'then'
+                if if.x do show "still true: " + if.true_msg
           EXAMPLES
         }
       end

@@ -12,3 +12,24 @@ tests.verbs.if [can] :
       eval false
       if ^^.b then eval true
       assert "expected b to be true"
+
+  if_do [test] :
+    description [string] : 'do' is a synonym for 'then'
+    on_test [script] :
+      eval false
+      if ^^.b do eval true
+      assert "expected 'do' to work the same as 'then'"
+
+  if_then_else [test] :
+    description [string] : else runs when the condition is false
+    on_test [script] :
+      eval false
+      if false then eval false else eval true
+      assert "expected else to run when the condition is false"
+
+  if_do_else [test] :
+    description [string] : else works the same with the 'do' synonym
+    on_test [script] :
+      eval false
+      if false do eval false else eval true
+      assert "expected else to run after a 'do' action"

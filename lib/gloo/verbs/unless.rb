@@ -11,7 +11,11 @@ module Gloo
       KEYWORD = 'unless'.freeze
       KEYWORD_SHORT = 'if!'.freeze
       DO = 'do'.freeze
+      THEN = 'then'.freeze
       ELSE = 'else'.freeze
+      # 'do' and 'then' are interchangeable -- whichever appears first
+      # in the tokens is the actual separator (see Tokens#index_of).
+      SEPARATORS = [ DO, THEN ].freeze
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
 
       #
@@ -21,7 +25,7 @@ module Gloo
         value = value_tokens
         return if value.nil?
 
-        @do = @tokens.expr_after( DO, ELSE )
+        @do = @tokens.expr_after( SEPARATORS, ELSE )
         @else = @tokens.expr_after( ELSE )
 
         if evals_false( value )
@@ -56,7 +60,7 @@ module Gloo
       # of the unless command.
       #
       def value_tokens
-        value = @tokens.before_token( DO )
+        value = @tokens.before_token( SEPARATORS )
         if value && value.count > 1
           # The first token is the verb, so we drop it.
           value = value[ 1..-1 ]
@@ -114,9 +118,11 @@ module Gloo
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
           :description => "Unless an expression is true, do something. " \
-            "This is the opposite of the if verb.",
+            "This is the opposite of the if verb. 'do' and 'then' are " \
+            'interchangeable separators -- pick whichever reads better.',
           :syntax => [
             'unless {true} do {command}',
+            'unless {true} then {command}',
             'unless {true} do {command} else {else command}'
           ],
           :parameters => [
@@ -126,7 +132,7 @@ module Gloo
           ],
           :result => 'Unchanged if the expression is true. If not true, ' \
             'then the result will be based on the command specified ' \
-            'after the do keyword.',
+            "after the 'do'/'then' keyword.",
           :errors => [
             "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb.",
             'Other errors depend on the command that is run.'
@@ -148,6 +154,9 @@ module Gloo
                 put false into unless.x
                 unless unless.x do show "second time: " +  unless.false_msg
                 unless ^.x do show 'F' else show 'T'
+
+                # 'then' works the same as 'do'
+                unless unless.x then show "still false: " + unless.false_msg
           EXAMPLES
         }
       end
