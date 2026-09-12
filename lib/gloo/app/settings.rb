@@ -189,13 +189,53 @@ module Gloo
       def get_default_settings
         projects = File.join( @user_root, 'projects' )
         str = <<~TEXT
+          #
+          # Gloo configuration
+          #
           gloo:
+
+            #
+            # Root directory for projects.
+            # Update this with the directory with your gloo projects.
+            #
             project_path: #{projects}
+
+            #
+            # Run this script when starting up gloo.
+            # (Only if a script file is not specified.)
+            # A bare filename (no path) is looked up in the config directory
+            # above. Either way, the .gloo extension is assumed if left off.
+            #
             start_with:
+
+            #
+            # Indentation (spaces) when showing an object outline.
+            #
             list_indent: 2
+
+            #
+            # Show listing the object tree,
+            # how many levels of children will be shown?
+            # Children at deeper levels will be hidden.
+            #
             list_levels: 3
+
+            #
+            # When listing the object tree, also show each object's doc (the
+            # comment declared immediately above it in its source file), if it
+            # has one.
+            #
             list_docs: false
+
+            #
+            # Show debug statements in the log?
+            #
             debug: false
+
+            #
+            # Color theme for console output: dark or light.
+            # Match this to your terminal's background.
+            #
             theme: #{DEFAULT_THEME}
         TEXT
         return str

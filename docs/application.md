@@ -88,6 +88,8 @@ gloo:
   #
   # Run this script when starting up gloo.
   # (Only if a script file is not specified.)
+  # A bare filename (no path) is looked up in the config directory
+  # above. Either way, the .gloo extension is assumed if left off.
   #
   start_with:
 

@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'tmpdir'
 
 class EngineTest < BaseTest
 
@@ -173,6 +174,68 @@ class EngineTest < BaseTest
     end
 
     assert_equal false, o.heap.root.find_child( 'fired' ).value
+  end
+
+  #
+  # A start_with setting with no path (a bare filename) is resolved
+  # against the config directory rather than the project path.
+  #
+  def test_start_with_bare_name_resolves_against_config_directory
+    Dir.mktmpdir do |root|
+      user_root = File.join( root, 'gloo' )
+      Dir.mkdir( user_root )
+      config_path = File.join( user_root, 'config' )
+      Dir.mkdir( config_path )
+      File.write( File.join( config_path, 'gloo.yml' ), <<~YML )
+        gloo:
+          project_path:
+          start_with: start
+          list_indent: 2
+          list_levels: 3
+          debug: false
+          theme: dark
+      YML
+      File.write( File.join( config_path, 'start.gloo' ),
+                  "greeting [container] :\n\tmsg [string] : hi\n" )
+
+      o = Gloo::App::Engine.new(
+        Gloo::App::EngineContext.new( [ '--quiet' ], nil, nil, user_root ) )
+      o.start
+      o.open_start_file
+
+      assert_equal 'greeting', o.heap.root.children.first.name
+    end
+  end
+
+  #
+  # A start_with setting doesn't need the .gloo extension -- it's
+  # assumed, whether the setting is a bare name or a full path.
+  #
+  def test_start_with_assumes_gloo_extension
+    Dir.mktmpdir do |root|
+      user_root = File.join( root, 'gloo' )
+      Dir.mkdir( user_root )
+      config_path = File.join( user_root, 'config' )
+      Dir.mkdir( config_path )
+      File.write( File.join( config_path, 'gloo.yml' ), <<~YML )
+        gloo:
+          project_path:
+          start_with: #{File.join( config_path, 'boot' )}
+          list_indent: 2
+          list_levels: 3
+          debug: false
+          theme: dark
+      YML
+      File.write( File.join( config_path, 'boot.gloo' ),
+                  "greeting [container] :\n\tmsg [string] : hi\n" )
+
+      o = Gloo::App::Engine.new(
+        Gloo::App::EngineContext.new( [ '--quiet' ], nil, nil, user_root ) )
+      o.start
+      o.open_start_file
+
+      assert_equal 'greeting', o.heap.root.children.first.name
+    end
   end
 
 end

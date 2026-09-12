@@ -207,7 +207,9 @@ module Gloo
         end
 
         name = @settings.start_with
-        @persist_man.load( name ) if name
+        return if name.blank?
+
+        @persist_man.load( resolve_start_with( name ) )
       end
 
       #
@@ -381,6 +383,20 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
+
+      #
+      # Resolve the start_with setting to a loadable name/path.
+      # A bare filename (no directory separator) is resolved against
+      # the config directory rather than the project path, and the
+      # .gloo extension is assumed when not given.
+      #
+      def resolve_start_with( name )
+        ext = @persist_man.file_ext
+        name = "#{name}#{ext}" unless name.end_with?( ext )
+        return name if name.include?( File::SEPARATOR )
+
+        return File.join( @settings.config_path, name )
+      end
 
       #
       # Get the stack trace as a string, truncating the middle if it's long.
