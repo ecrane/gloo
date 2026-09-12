@@ -92,19 +92,51 @@ module Gloo
 
       #
       # Show the object's doc (its leading comment, cleaned up) above
-      # its listing line, one '#'-prefixed line per line of doc.
-      # Silent when the object has none.
+      # its listing line, one '#'-prefixed line per line of doc, word-
+      # wrapped to fit the terminal. Silent when the object has none.
       #
       def show_doc( obj, indent )
         return if obj.doc.to_s.strip.empty?
 
-        theme = @engine.theme
+        prefix = "#{indent}# "
+        cont_indent = "#{indent}  " # lines up under the text after '# '
+        width = doc_wrap_width( prefix.length )
+
         # split( -1 ), not each_line -- a doc ending in a blank '#' line
         # ends with "\n", and each_line silently drops that trailing
         # empty line rather than yielding it.
         obj.doc.split( "\n", -1 ).each do |line|
-          @engine.log.show theme.muted( "#{indent}# #{line}".rstrip )
+          show_doc_line( line, prefix, cont_indent, width )
         end
+      end
+
+      #
+      # Word-wrap a single doc line to width, then show each wrapped
+      # piece: the '#' prefix on the first, the aligned continuation
+      # indent on the rest.
+      #
+      def show_doc_line( line, prefix, cont_indent, width )
+        theme = @engine.theme
+        wrapped = Gloo::Objs::WordWrap.wrap( line, width )
+        # "".split( "\n", -1 ) is [], not [ '' ] -- a blank line still
+        # needs one piece so it renders as a bare '#', not nothing.
+        pieces = wrapped.empty? ? [ '' ] : wrapped.split( "\n", -1 )
+        pieces.each_with_index do |piece, i|
+          p = i.zero? ? prefix : cont_indent
+          @engine.log.show theme.muted( "#{p}#{piece}".rstrip )
+        end
+      end
+
+      #
+      # How many columns of text fit after the doc-line prefix. Falls
+      # back to a small minimum rather than a zero/negative width when
+      # the terminal is very narrow or the indent is very deep.
+      #
+      def doc_wrap_width( prefix_length )
+        width = Gloo::App::Settings.cols( @engine ) - prefix_length
+        return width if width.positive?
+
+        return 20
       end
 
       #

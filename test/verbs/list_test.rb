@@ -90,4 +90,66 @@ class ListTest < BaseEngineTest
     assert_equal 2, doc_lines.count, shown.inspect
   end
 
+  #
+  # A long doc line should word-wrap to fit the terminal, rather than
+  # running past its edge as a single unwrapped line.
+  #
+  def test_list_docs_wraps_a_long_doc_line_to_terminal_width
+    @engine.settings.instance_variable_set( :@list_docs, true )
+    @engine.parser.run 'create s as string : hi'
+    long_doc = ( 'word ' * 30 ).strip
+    @engine.heap.root.find_child( 's' ).doc = long_doc
+
+    shown = []
+    @engine.log.define_singleton_method( :show ) { |msg, *_| shown << msg }
+    @engine.parser.run 'list'
+
+    doc_lines = shown.select { |m| m.include?( 'word' ) }
+    assert doc_lines.count > 1, shown.inspect
+
+    cols = Gloo::App::Settings.cols( @engine )
+    doc_lines.each do |line|
+      plain = line.gsub( /\e\[[0-9;]*m/, '' )
+      assert plain.length <= cols, plain
+    end
+  end
+
+  #
+  # A continuation line lines up under the text after '# ', not under
+  # the '#' itself -- so only the first wrapped piece of a doc line
+  # carries the '#' prefix.
+  #
+  def test_list_docs_wrap_continuation_lines_have_no_hash_prefix
+    @engine.settings.instance_variable_set( :@list_docs, true )
+    @engine.parser.run 'create s as string : hi'
+    @engine.heap.root.find_child( 's' ).doc = ( 'word ' * 30 ).strip
+
+    shown = []
+    @engine.log.define_singleton_method( :show ) { |msg, *_| shown << msg }
+    @engine.parser.run 'list'
+
+    doc_lines = shown.select { |m| m.include?( 'word' ) }
+    assert doc_lines.count > 1, shown.inspect
+    assert_includes doc_lines.first, '#'
+    doc_lines[ 1.. ].each do |line|
+      refute_includes line, '#'
+    end
+  end
+
+  #
+  # Wrapping never breaks a single long word (e.g. a URL) across lines.
+  #
+  def test_list_docs_wrap_never_breaks_a_word
+    @engine.settings.instance_variable_set( :@list_docs, true )
+    @engine.parser.run 'create s as string : hi'
+    long_word = "http://example.com/#{'x' * 60}"
+    @engine.heap.root.find_child( 's' ).doc = "before #{long_word} after"
+
+    shown = []
+    @engine.log.define_singleton_method( :show ) { |msg, *_| shown << msg }
+    @engine.parser.run 'list'
+
+    assert_includes shown.join( ' ' ), long_word
+  end
+
 end

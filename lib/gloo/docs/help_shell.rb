@@ -24,6 +24,10 @@ module Gloo
       README_GLOB = 'README*'.freeze
       NO_README_YET = 'No README found for library'.freeze
 
+      # Matches a (possibly indented) markdown bullet line, capturing
+      # its leading whitespace and the text after '- '.
+      BULLET_RE = /\A(\s*)-\s+(.*)\z/.freeze
+
       #
       # Initialize the help shell for the given engine.
       #
@@ -249,8 +253,49 @@ module Gloo
       #
       def page_markdown( md )
         rule = '-' * @engine.platform.cols
-        bracketed = "#{rule}\n#{md.strip}\n#{rule}\n"
+        wrapped = wrap_markdown_for_terminal( md.strip )
+        bracketed = "#{rule}\n#{wrapped}\n#{rule}\n"
         @engine.platform.page( Gloo::Docs::MarkdownRenderer.colorize( bracketed, @engine.theme ) )
+      end
+
+      #
+      # Word-wrap plain (pre-color) markdown to the terminal width.
+      # Headings and fenced code blocks are left untouched (code is
+      # never rewrapped); a bullet line's continuation lines are
+      # indented to line up under its text, not under the '-' itself
+      # -- same convention as List#show_doc's doc-line wrapping.
+      #
+      def wrap_markdown_for_terminal( md )
+        width = Gloo::App::Settings.cols( @engine )
+        in_code_fence = false
+        lines = md.split( "\n", -1 ).flat_map do |line|
+          if line.strip.start_with?( '```' )
+            in_code_fence = !in_code_fence
+            next [ line ]
+          end
+          next [ line ] if in_code_fence || line.start_with?( '#' ) || line.strip.empty?
+
+          wrap_markdown_line( line, width )
+        end
+        return lines.join( "\n" )
+      end
+
+      #
+      # Wrap one prose or bullet markdown line to width. A bullet's
+      # continuation lines get a blank-space prefix the same length as
+      # its '{indent}- ', so wrapped text lines up under the bullet's
+      # own text.
+      #
+      def wrap_markdown_line( line, width )
+        match = BULLET_RE.match( line )
+        prefix = match ? "#{match[1]}- " : ''
+        text = match ? match[2] : line
+        cont_indent = ' ' * prefix.length
+
+        wrapped = Gloo::Objs::WordWrap.wrap( text, width - prefix.length )
+        # "".split( "\n", -1 ) is [], not [ '' ] -- keep a blank line as one piece.
+        pieces = wrapped.empty? ? [ '' ] : wrapped.split( "\n", -1 )
+        return pieces.each_with_index.map { |piece, i| "#{i.zero? ? prefix : cont_indent}#{piece}" }
       end
 
       #

@@ -222,6 +222,46 @@ class HelpShellTest < BaseEngineTest
     assert_match( /No documentation available yet for 'nope'/, out )
   end
 
+  #
+  # Regression: a long description/notes/bullet line used to run past
+  # the edge of the terminal unwrapped. page_markdown now word-wraps
+  # the plain markdown before colorizing/paging it.
+  #
+  def test_wrap_markdown_for_terminal_wraps_a_long_paragraph
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    long_line = ( 'word ' * 30 ).strip
+    wrapped = shell.send( :wrap_markdown_for_terminal, long_line )
+
+    lines = wrapped.split( "\n" )
+    assert lines.count > 1, wrapped
+    cols = Gloo::App::Settings.cols( @engine )
+    lines.each { |line| assert line.length <= cols, line }
+  end
+
+  def test_wrap_markdown_for_terminal_leaves_headings_and_code_alone
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    long_code_line = 'x ' * 60
+    md = "## Heading\n```gloo\n#{long_code_line}\n```\n"
+
+    wrapped = shell.send( :wrap_markdown_for_terminal, md )
+    assert_includes wrapped, '## Heading'
+    assert_includes wrapped, long_code_line.strip
+  end
+
+  def test_wrap_markdown_for_terminal_indents_bullet_continuation
+    shell = Gloo::Docs::HelpShell.new( @engine )
+    long_bullet = "- #{( 'word ' * 30 ).strip}"
+
+    wrapped = shell.send( :wrap_markdown_for_terminal, long_bullet )
+    lines = wrapped.split( "\n" )
+    assert lines.count > 1, wrapped
+    assert lines.first.start_with?( '- ' )
+    lines[ 1.. ].each do |line|
+      refute line.start_with?( '-' )
+      assert line.start_with?( '  ' )
+    end
+  end
+
   def test_unknown_command_at_the_root
     shell = Gloo::Docs::HelpShell.new( @engine )
     out, = capture_io { shell.execute_once( [ 'nope' ] ) }
