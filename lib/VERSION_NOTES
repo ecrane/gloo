@@ -1,3 +1,9 @@
+6.6.0 - 2026.09.12
+ - Allow shortcut reference for start file in configuration directory.
+ - Adds word wrap message for strings and text.
+ - Adds line wrapping for object comments and help documentation.
+
+
 6.5.1 - 2026.09.11
  - Adds doc to the load verb for recent changes.
 
