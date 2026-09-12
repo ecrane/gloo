@@ -60,6 +60,7 @@ class StringTest < BaseEngineTest
     assert msgs.include?( 'splitl' )
     assert msgs.include?( 'splitr' )
     assert msgs.include?( 'split_list' )
+    assert msgs.include?( 'word_wrap' )
   end
 
   def test_size_msg
@@ -152,6 +153,40 @@ class StringTest < BaseEngineTest
     o.set_value 'test'
     assert_equal 'test', o.msg_down
     assert_equal 'test', @engine.heap.it.value
+  end
+
+  def test_word_wrap_msg_default_width_is_terminal_width
+    o = Gloo::Objs::String.new @engine
+    o.set_value( ( 'word ' * 30 ).strip )
+    result = o.msg_word_wrap
+    assert_equal result, o.value
+    assert_equal result, @engine.heap.it.value
+    result.split( "\n" ).each do |line|
+      assert line.length <= Gloo::App::Settings.cols( @engine )
+    end
+  end
+
+  def test_word_wrap_msg_with_explicit_width
+    o = @engine.parser.parse_immediate 'create s as string : "one two three four five"'
+    o.run
+    o = @engine.parser.parse_immediate 'check s for word_wrap (10)'
+    o.run
+
+    wrapped = @engine.heap.it.value
+    assert_equal wrapped, @engine.heap.root.children.first.value
+    wrapped.split( "\n" ).each do |line|
+      assert line.length <= 10
+    end
+  end
+
+  def test_word_wrap_msg_does_not_break_a_long_word
+    o = @engine.parser.parse_immediate(
+      'create s as string : "http://example.com/a-really-long-url short"' )
+    o.run
+    o = @engine.parser.parse_immediate 'check s for word_wrap (10)'
+    o.run
+
+    assert_includes @engine.heap.it.value.split( "\n" ), 'http://example.com/a-really-long-url'
   end
 
   def test_page_msg

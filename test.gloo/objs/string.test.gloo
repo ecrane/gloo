@@ -79,6 +79,23 @@ tests.objs.string [can] :
       eval it = 'three'
       assert "expected split (8 100) to clamp to 'three'"
 
+  word_wrap [test] :
+    description [string] : Word-wrap a string to an explicit width
+    on_test [script] :
+      put 'one two three four five' into ^^.s
+      tell ^^.s to word_wrap (10)
+      tell ^^.s to count_lines
+      eval it = 3
+      assert "expected word_wrap (10) to produce 3 lines"
+
+  word_wrap_keeps_long_word_intact [test] :
+    description [string] : word_wrap never breaks a word, even one wider than the width
+    on_test [script] :
+      put 'http://example.com/a-really-long-url short' into ^^.s
+      tell ^^.s to word_wrap (10)
+      check ^^.s for substring? ('http://example.com/a-really-long-url')
+      assert "expected the long word to remain intact on its own line"
+
   split_list [test] :
     description [string] : Split a string into children of a target container
     on_test [script] :

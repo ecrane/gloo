@@ -55,6 +55,7 @@ module Gloo
           'splitl ({index}) — Get the substring to the left of index {index} (same as split (0, {index})). A parameter is required. Does not change the value of the string. It will have the substring.',
           'splitr ({index}) — Get the substring from index {index} to the end of the string (same as split ({index}, size)). A parameter is required. Does not change the value of the string. It will have the substring.',
           'split_list ({delim} {dst.path}) — Split the string by {delim} and put the parts into children of the container at {dst.path} (or an alias that points to one), one part per child, in order. Existing children are matched by position and have their values set; extra parts get new (untyped) children, numbered from 1; extra existing children are left alone. Both parameters are required. Does not change the value of the string. It will have the number of parts.',
+          'word_wrap ({width}) — Word-wrap the string to {width} columns, breaking on whitespace (never mid-word; an overlong word is left on its own line rather than broken). The {width} parameter is optional; it defaults to the terminal\'s current width. This message changes the value of the string. It will have the wrapped string.',
           'page — Show the value in a pager (less), for viewing long content a screen at a time.'
         ]
       end
@@ -476,6 +477,25 @@ module Gloo
       #
       def msg_down
         s = value.downcase
+        set_value s
+        @engine.heap.it.set_to s
+        return s
+      end
+
+      #
+      # Word-wrap the string to the given column width, breaking on
+      # whitespace. Defaults to the terminal's current width when no
+      # width parameter is given.
+      #
+      def msg_word_wrap
+        width = Gloo::App::Settings.cols( @engine )
+        if @params&.token_count&.positive?
+          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+          data = expr.evaluate
+          width = data.to_i
+        end
+
+        s = Gloo::Objs::WordWrap.wrap( value, width )
         set_value s
         @engine.heap.it.set_to s
         return s

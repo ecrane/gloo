@@ -101,3 +101,12 @@ tests.objs.text [can] :
       put 'hello world' into ^^.b
       tell ^^.b to substring? ('lo w')
       assert "expected it to be true that it contains 'lo w'"
+
+  word_wrap [test] :
+    description [string] : Word-wrap text to an explicit width
+    on_test [script] :
+      put 'one two three four five' into ^^.b
+      tell ^^.b to word_wrap (10)
+      tell ^^.b to count_lines
+      eval it = 3
+      assert "expected word_wrap (10) to produce 3 lines"

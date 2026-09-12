@@ -47,4 +47,27 @@ class TextTest < BaseEngineTest
     assert_equal 'hello', o.value
   end
 
+  def test_word_wrap_msg_default_width_is_terminal_width
+    o = Gloo::Objs::Text.new @engine
+    o.set_value( ( 'word ' * 30 ).strip )
+    result = o.msg_word_wrap
+    assert_equal result, o.value
+    result.split( "\n" ).each do |line|
+      assert line.length <= Gloo::App::Settings.cols( @engine )
+    end
+  end
+
+  def test_word_wrap_msg_with_explicit_width
+    o = @engine.parser.parse_immediate 'create t as txt : "one two three four five"'
+    o.run
+    o = @engine.parser.parse_immediate 'check t for word_wrap (10)'
+    o.run
+
+    wrapped = @engine.heap.it.value
+    assert_equal wrapped, @engine.heap.root.children.first.value
+    wrapped.split( "\n" ).each do |line|
+      assert line.length <= 10
+    end
+  end
+
 end
