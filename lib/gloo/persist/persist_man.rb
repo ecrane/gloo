@@ -63,6 +63,13 @@ module Gloo
       # mapping so a future bare save includes it. Refuses to overwrite
       # a file that exists but isn't already mapped to this object.
       #
+      # Unlike a bare save, this extracts: obj's own declaration (and
+      # its descendants) move out of whichever file currently owns
+      # them into the new file -- they don't stay declared in both
+      # places. An object with no file of its own yet (brand new, or
+      # already mapped as part of some root shared with unrelated
+      # objects) is simply written fresh; nothing to remove.
+      #
       def save_to( name, path )
         obj = resolve_for_save( name )
         return unless obj
@@ -72,7 +79,7 @@ module Gloo
         return save_mapped( obj, mapped, pn ) if mapped
         return @engine.err( "#{PATH_EXISTS_ERR}#{pn}" ) if @mech.exist?( pn )
 
-        save_new( obj, pn )
+        extract_to( obj, pn )
       end
 
       #
@@ -331,6 +338,29 @@ module Gloo
         fs = Gloo::Persist::FileStorage.new( @engine, pn, root_of( obj ) )
         fs.save
         @maps << fs
+      end
+
+      #
+      # Extract obj's declaration into a brand-new file at pn: pulled
+      # out of whichever file currently owns it (that file loses it and
+      # gets re-saved), or written fresh if it had no file of its own.
+      # Both saves go through the same save_batch so each correctly
+      # treats the other's declarations as "owned elsewhere" rather
+      # than orphaned/new.
+      #
+      def extract_to( obj, pn )
+        node, source_fs = Gloo::Persist::SubtreeExtractor.new( @engine ).extract( obj, @maps )
+        return unless node
+
+        @engine.event_manager.on_save obj
+        source_doc = Gloo::Persist::Source::SourceDoc.new
+        source_doc.children << node
+
+        target_fs = Gloo::Persist::FileStorage.new( @engine, pn, obj, source_doc )
+        @maps << target_fs
+        # New file first: if writing it fails, the old file (source_fs)
+        # hasn't been touched on disk yet, so nothing is lost.
+        save_batch( [ target_fs, source_fs ].compact )
       end
 
       #

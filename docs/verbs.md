@@ -87,15 +87,19 @@ put {expression} into {dst.path}
 
 If the name can't be resolved to a file, `load` reports `File not found: {name}` — it fires `on_error` and, when the file was named on the `gloo` command line, prints the message to stderr and exits non-zero. A bad or missing file never fails silently.
 
-`save` writes loaded objects back to their files. With no argument it saves every open file; with an object it saves the file (or files) that object's tree came from; with `to {path}` it saves to a new file and remembers the mapping.
+`save` writes loaded objects back to their files. With no argument it saves every open file; with an object it saves the file (or files) that object's tree came from; with `to {path}` it **extracts** — moves the object (and its descendants) out of whichever file currently owns them, into a new file, under their full dotted path.
 
 ```gloo
 > save                        # every open file
 > save config                 # just config's file
-> save config to backups/config
+> save app.core.settings to config/settings
 ```
 
 A save is a **rewrite, not a regeneration**: comments, blank lines, and the original spacing are kept, and only the values you actually changed are re-written. A declaration you never touched comes back byte-for-byte.
+
+`save {obj} to {path}` doesn't just write a copy — `obj` stops being declared in its old file, wherever that was. Given `app.core.settings` declared inside `app.gloo`, `save app.core.settings to config/settings` leaves `app.gloo` without a `settings` subtree and writes `config/settings.gloo` with `app.core.settings [can] : ...` at the top level (the `app`/`core` prefix is implied via nested-container shorthand, not repeated as nested declarations) plus everything `settings` owns underneath, comments included. An object with no file of its own yet (brand new, or nested under an object that's never been saved) is simply written fresh — nothing to move.
+
+If `obj`'s own subtree already has declarations spread across more than one file (the namespace-merge pattern below, applied *inside* the subtree being extracted, not just above it), extraction refuses rather than guessing which file's slice is authoritative — save each contributing file on its own first.
 
 Several files can contribute to one container — declare `app [container] :` in each and add different children. They merge in the heap, and each file's save only rewrites its own declarations. If two files declare the *same* object with different values, the first one loaded wins and `load` logs a warning.
 

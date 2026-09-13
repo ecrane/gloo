@@ -96,6 +96,59 @@ END
       tell ^^.f to delete
       tell ^^.to_target to delete
 
+  extracting_a_subtree_moves_it_to_the_new_file [test] :
+    description [string] : save {nested obj} to {path} moves its declaration (and its own comment) out of the old file into the new one.
+    on_test [script] :
+      tell ^^.f to write ( ^^.fixture )
+      load /tmp/gloo_save_test.gloo
+      save demo.other to /tmp/gloo_save_test_to
+      check ^^.to_target for exists?
+      assert "extraction should create the target file"
+
+      tell ^^.to_target to read ( ^^.out )
+      check ^^.out for substring? ( "demo.other [string] : world" )
+      assert "the target file should declare the moved object under its full dotted path"
+      check ^^.out for substring? ( "# a comment above other" )
+      assert "the moved object's own comment should travel with it"
+
+      tell ^^.f to read ( ^^.out )
+      check ^^.out for substring? ( "other [string]" )
+      refute "the old file should no longer declare the moved object"
+      check ^^.out for substring? ( "msg [string] : hello" )
+      assert "the old file should keep everything else"
+
+      # a later plain save of demo must not resurrect the moved object
+      save demo
+      tell ^^.f to read ( ^^.out )
+      check ^^.out for substring? ( "other" )
+      refute "a later save of the old root should not re-add the moved object"
+
+      tell demo.other to unload
+      tell demo to unload
+      tell ^^.f to delete
+      tell ^^.to_target to delete
+
+  extracting_a_subtree_spanning_multiple_files_is_an_error [test] :
+    description [string] : save {obj} to {path} refuses when obj's own subtree has declarations in more than one file.
+    on_test [script] :
+      put false into ^^.err
+      tell ^^.f to write ( ^^.fixture )
+      load /tmp/gloo_save_test.gloo
+      # a second file adds its own child under the same 'demo' container --
+      # a namespace pattern applied inside the subtree we'll try to extract
+      tell ^^.g to write ( "demo [container] :\n  extra [string] : too\n" )
+      load /tmp/gloo_save_test_2.gloo
+
+      save demo to /tmp/gloo_save_test_to
+      eval ^^.err = true
+      assert "extraction should refuse a subtree spanning multiple files"
+      check ^^.to_target for exists?
+      refute "the target file should not have been created"
+
+      tell demo to unload
+      tell ^^.f to delete
+      tell ^^.g to delete
+
   reload_discards_unsaved_changes [test] :
     description [string] : reload throws away edits that were not saved.
     on_test [script] :

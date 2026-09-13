@@ -35,6 +35,42 @@ module Gloo
           return @children.select { |n| n.is_a?( Source::ObjNode ) }
         end
 
+        #
+        # Find and remove the node for the given heap object, searching
+        # this document's whole tree (not just the top level) -- used to
+        # move a subtree into a different file (see save {obj} to
+        # {path}). Returns the removed node, still carrying its own
+        # children/leading_doc, or nil if this document has no node for
+        # that object (it may be owned by a different file, or never
+        # have had a declaration of its own -- eg. a nested-container
+        # shorthand's auto-created intermediate).
+        #
+        def extract( obj )
+          return remove_matching( @children, obj )
+        end
+
+        private
+
+        #
+        # Depth-first search of nodes (and their children) for the one
+        # linked to obj; removes it from whichever children array it's
+        # actually in and returns it.
+        #
+        def remove_matching( nodes, obj )
+          nodes.each do |node|
+            next unless node.is_a?( Source::ObjNode )
+
+            if node.obj&.equal?( obj )
+              nodes.delete( node )
+              return node
+            end
+
+            found = remove_matching( node.children, obj )
+            return found if found
+          end
+          return nil
+        end
+
       end
     end
   end

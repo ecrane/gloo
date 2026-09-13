@@ -11,14 +11,18 @@ module Gloo
       attr_reader :obj, :pn, :roots, :source_doc
 
       #
-      # Set up a file storage for an object.
+      # Set up a file storage for an object. source_doc is optional --
+      # pass one already built (eg. a subtree just extracted into this
+      # file by save {obj} to {path}) so this file's saves rewrite it
+      # in place instead of falling back to plain regeneration; a
+      # bare/never-loaded FileStorage leaves it nil.
       #
-      def initialize( engine, pn, obj = nil )
+      def initialize( engine, pn, obj = nil, source_doc = nil )
         @engine = engine
         @obj = obj
         @pn = pn
         @roots = obj ? [ obj ] : []
-        @source_doc = nil
+        @source_doc = source_doc
       end
 
       #
@@ -29,6 +33,19 @@ module Gloo
       def save( batch = nil )
         fs = FileSaver.new( @engine, @pn, @obj, @source_doc, batch )
         fs.save
+      end
+
+      #
+      # This file no longer owns obj as one of its roots -- eg. it was
+      # just extracted into a different file via save {obj} to {path}.
+      # Drops it from roots, and re-points the file's primary obj at
+      # whatever root remains (nil if none left), so a later
+      # single-object reload/save doesn't act on a root that's moved
+      # elsewhere.
+      #
+      def drop_root( obj )
+        @roots.delete( obj )
+        @obj = @roots.first if @obj&.equal?( obj )
       end
 
       #
