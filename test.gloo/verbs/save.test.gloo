@@ -32,6 +32,27 @@ demo [container] :
   other [string] : world
 END
 
+  #
+  # Regression fixture: a blank line between a container's own
+  # declaration and its first child (not between two siblings, which
+  # already worked) used to land one level too shallow.
+  #
+  blank_before_first_child_fixture [text] : BEGIN
+#
+# The main app container.
+#
+app [can] :
+
+  # Core settings live here.
+  core [can] :
+
+    # Some other core thing.
+    other [string] : hi
+
+  # Something unrelated at the app level.
+  name [string] : My App
+END
+
   round_trip_preserves_comments_and_untouched_lines [test] :
     description [string] : load, change one value, save -- comments and the untouched sibling survive.
     on_test [script] :
@@ -64,6 +85,18 @@ END
       eval ^^.out = ^^.fixture
       assert "an unchanged save should reproduce the original text"
       tell demo to unload
+      tell ^^.f to delete
+
+  blank_before_first_child [test] :
+    description [string] : An unchanged save reproduces blank lines before a container's first child too.
+    on_test [script] :
+      tell ^^.f to write ( ^^.blank_before_first_child_fixture )
+      load /tmp/gloo_save_test.gloo
+      save app
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.blank_before_first_child_fixture
+      assert "an unchanged save should reproduce the original text, blank lines included"
+      tell app to unload
       tell ^^.f to delete
 
   deleting_an_object_drops_its_line [test] :

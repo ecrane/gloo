@@ -1,0 +1,13 @@
+#
+# The main app container.
+#
+app [can] :
+
+  # Core settings live here.
+  core [can] :
+
+    # Some other core thing.
+    other [string] : hi
+
+  # Something unrelated at the app level.
+  name [string] : My App

@@ -57,6 +57,19 @@ class FileSaverTest < BaseEngineTest
     assert_equal original( 'sub/shorthand' ), round_trip( 'sub/shorthand' )
   end
 
+  #
+  # Regression: a blank line sitting between a container's own
+  # declaration and its first child (not between two siblings, which
+  # already worked) used to land one level too shallow -- IndentStack
+  # doesn't push the container as the current node until a genuinely
+  # deeper line is actually seen, so the blank arrived before that
+  # push happened.
+  #
+  def test_round_trip_is_byte_identical_for_blank_before_first_child_fixture
+    assert_equal original( 'sub/blank_before_first_child' ),
+      round_trip( 'sub/blank_before_first_child' )
+  end
+
   # -------------------------------------------------------------------
   #   Multi-file namespace (several files contributing to one container)
   # -------------------------------------------------------------------

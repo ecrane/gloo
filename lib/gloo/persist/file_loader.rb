@@ -7,7 +7,7 @@
 # raw formatting) -- so a later save can rewrite the file instead of
 # regenerating it from scratch.
 #
-# Work is delegated to CommentBuffer (comment buffering),
+# Work is delegated to TriviaBuffer (comment/blank-line buffering),
 # ScriptBodyCollector (script bodies), IndentStack (nesting shared by
 # the heap and source trees), ShorthandExpander (nested-container
 # shorthand), and DeclarationLedger (this file's roots + cross-file
@@ -42,7 +42,7 @@ module Gloo
         @pn = pn
         @obj = nil
         @source_doc = Gloo::Persist::Source::SourceDoc.new
-        @comments = Gloo::Persist::CommentBuffer.new
+        @trivia = Gloo::Persist::TriviaBuffer.new
         @body = Gloo::Persist::ScriptBodyCollector.new
         @shorthand = Gloo::Persist::ShorthandExpander.new( engine )
         @ledger = Gloo::Persist::DeclarationLedger.new( engine, pn )
@@ -126,7 +126,7 @@ module Gloo
       #
       def finish
         @body.finish
-        @comments.flush_into( @indent_stack.node.children )
+        @trivia.flush_into( @indent_stack.node.children )
       end
 
       # ---------------------------------------------------------------------
@@ -134,18 +134,22 @@ module Gloo
       # ---------------------------------------------------------------------
 
       #
-      # A comment or blank line, outside of any block/body. A comment
-      # is buffered -- it may turn out to be the leading_doc for the
-      # declaration that follows. A blank line always breaks that
-      # association (detaches any buffered comments as floating nodes)
-      # and is itself kept, not discarded.
+      # A comment or blank line, outside of any block/body. Both are
+      # buffered, not placed immediately: a container's own declaration
+      # line doesn't push it as the current node (see IndentStack) until
+      # a genuinely deeper line is seen, so a comment/blank sitting
+      # between the container and its first child has to wait for that
+      # push before it's resolved against the *correct* node -- placing
+      # it against whatever's current right now would land it one level
+      # too shallow. TriviaBuffer#take_leading_doc/#flush_into do that
+      # resolving once the right moment comes (the next declaration, or
+      # end of file).
       #
       def handle_trivia_line( line )
         if line.strip.empty?
-          @comments.flush_into( @indent_stack.node.children )
-          @indent_stack.node.children << Source::BlankNode.new( chomped( line ) )
+          @trivia.push_blank( chomped( line ) )
         else
-          @comments.push( chomped( line ), tab_count( line ) )
+          @trivia.push_comment( chomped( line ), tab_count( line ) )
         end
       end
 
@@ -225,7 +229,7 @@ module Gloo
         @ledger.root( @last ) if parent == @engine.heap.root
 
         node = build_obj_node( leading_ws( line ), name, type, value, style )
-        node.leading_doc = @comments.take_leading_doc( line_tabs, @indent_stack.node.children )
+        node.leading_doc = @trivia.take_leading_doc( line_tabs, @indent_stack.node.children )
         # First non-empty doc wins, same as "first value wins" for a
         # name re-declared across files -- @last is the same object
         # across re-declarations (the factory returns the existing
