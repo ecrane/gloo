@@ -61,6 +61,11 @@ When specifying a file there are a couple ways to reference the gloo file to ope
              - By default gloo will look for a start.gloo file in the
                root level of the project. That start.gloo file should load other files
                and run the app.
+             - Any further parameter(s) after the project path are not loaded by
+               gloo as files - they're passed through as a single command for the
+               app's own command handling (e.g. a [shell] object, from the cli core
+               library, runs it once via its execute_once) and gloo exits once that
+               command completes, instead of starting an interactive session.
 --script     - Run in Script mode
              - Run the script in the file parameter and then quit.
              - If a file is provided as a parameter this option does not need to be specified.

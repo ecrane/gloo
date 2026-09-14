@@ -177,6 +177,47 @@ class EngineTest < BaseTest
   end
 
   #
+  # App mode's extra CLI parameter is meant for the app's own command
+  # handling (a [shell] object's one-shot command) - it must not also
+  # be attempted as a file load.
+  #
+  def test_app_mode_extra_param_is_not_loaded_as_a_file
+    Dir.mktmpdir do |root|
+      File.write( File.join( root, 'start.gloo' ), "greeting [container] :\n\tmsg [string] : hi\n" )
+
+      o = Gloo::App::Engine.new(
+        Gloo::App::EngineContext.new(
+          [ '--app', root, '--quiet', 'status' ], nil, nil, default_user_root ) )
+      o.start
+
+      refute o.error?
+    end
+  end
+
+  #
+  # In App mode, a supplied command means gloo runs it once and exits
+  # rather than dropping into the interactive gloo-language REPL.
+  #
+  def test_run_skips_interactive_loop_in_single_command_app_mode
+    Dir.mktmpdir do |root|
+      File.write( File.join( root, 'start.gloo' ), "greeting [container] :\n\tmsg [string] : hi\n" )
+
+      o = Gloo::App::Engine.new(
+        Gloo::App::EngineContext.new(
+          [ '--app', root, 'status' ], nil, nil, default_user_root ) )
+
+      looped = false
+      capture_io do
+        o.stub :loop, -> { looped = true } do
+          o.start
+        end
+      end
+
+      refute looped
+    end
+  end
+
+  #
   # A start_with setting with no path (a bare filename) is resolved
   # against the config directory rather than the project path.
   #

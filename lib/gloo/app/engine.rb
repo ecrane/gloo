@@ -179,7 +179,7 @@ module Gloo
         # Open any files specifed in args
         load_files
 
-        unless @mode == Mode::SCRIPT || @args.quiet?
+        unless @mode == Mode::SCRIPT || @args.quiet? || @args.single_command?
           self.loop
         end
 

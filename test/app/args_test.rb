@@ -126,4 +126,31 @@ class ArgsTest < BaseEngineTest
     assert o.verify_app_mode
   end
 
+  def test_app_mode_with_no_extra_param_has_no_command_tokens
+    o = Gloo::App::Args.new( @engine, [ '--app', '/Users' ] )
+    assert_empty o.command_tokens
+    refute o.single_command?
+  end
+
+  def test_app_mode_extra_param_is_a_command_token_not_a_file
+    o = Gloo::App::Args.new( @engine, [ '--app', '/Users', 'status' ] )
+    assert_equal [ 'status' ], o.command_tokens
+    assert_empty o.files
+    assert o.single_command?
+  end
+
+  def test_app_mode_multiple_extra_params_are_all_command_tokens
+    o = Gloo::App::Args.new( @engine, [ '--app', '/Users', 'put', 'foo', 'bar' ] )
+    assert_equal %w[put foo bar], o.command_tokens
+    assert_empty o.files
+    assert o.single_command?
+  end
+
+  def test_non_app_mode_extra_params_still_go_to_files
+    o = Gloo::App::Args.new( @engine, [ 'one.gloo', 'two.gloo' ] )
+    assert_equal [ 'one.gloo', 'two.gloo' ], o.files
+    assert_empty o.command_tokens
+    refute o.single_command?
+  end
+
 end

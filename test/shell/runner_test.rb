@@ -164,6 +164,32 @@ class ShellRunnerTest < BaseEngineTest
     assert_equal "Unknown command\n", out
   end
 
+  def test_single_command_false_by_default
+    r = Gloo::Shell::Runner.new( @engine )
+    refute r.single_command?
+  end
+
+  def test_single_command_true_when_command_supplied
+    r = Gloo::Shell::Runner.new( @engine, command: [ 'go' ] )
+    assert r.single_command?
+  end
+
+  def test_single_command_false_when_command_is_empty
+    r = Gloo::Shell::Runner.new( @engine, command: [] )
+    refute r.single_command?
+  end
+
+  def test_start_runs_the_single_command_and_does_not_enter_repl
+    r = Gloo::Shell::Runner.new( @engine, command: [ 'go' ] )
+    r.add_command_node( { name: 'go', description: '', method: 'cmd_test_action' } )
+    def r.cmd_test_action( _obj, _context )
+      @test_action_ran = true
+    end
+
+    r.start
+    assert r.instance_variable_get( :@test_action_ran )
+  end
+
   def test_traverse_empty_tokens_returns_root
     r = Gloo::Shell::Runner.new( @engine )
     root = r.instance_variable_get( :@root )

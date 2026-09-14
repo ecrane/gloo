@@ -40,7 +40,11 @@ module Gloo
       #   subclasses' command methods to query (dictionary, heap, etc).
       # @param opts [Hash] :prompt, :on_error, :on_unknown_command,
       #   :on_empty_command, :before_action, :after_action - all Procs
-      #   except :prompt (String) and :include_quit (Boolean).
+      #   except :prompt (String), :include_quit (Boolean), and
+      #   :command (Array<String>).
+      # @option opts :command [Array<String>] Tokens for a single
+      #   command to run once, instead of entering the interactive
+      #   REPL - see #single_command?.
       #
       def initialize( engine, opts = {} )
         @engine = engine
@@ -51,6 +55,7 @@ module Gloo
         @before_action = opts[ :before_action ]
         @after_action = opts[ :after_action ]
         @include_quit = opts[ :include_quit ] || false
+        @command = opts[ :command ]
 
         @context = Gloo::Shell::Context.new
         @root = Gloo::Shell::CommandNode.new( nil )
@@ -63,10 +68,24 @@ module Gloo
       # ---------------------------------------------------------------------
 
       #
-      # Start the shell.
+      # Were command tokens supplied at construction? When true, #start
+      # runs that one command via #execute_once and returns instead of
+      # entering the REPL.
+      #
+      def single_command?
+        return !( @command.nil? || @command.empty? )
+      end
+
+      #
+      # Start the shell: run the single supplied command and return,
+      # or enter the interactive REPL if none was supplied.
       #
       def start
-        repl
+        if single_command?
+          execute_once( @command )
+        else
+          repl
+        end
       end
 
       #

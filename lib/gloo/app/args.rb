@@ -14,7 +14,7 @@ module Gloo
       QUIET = 'quiet'.freeze
       GLOO_ENV = 'GLOO_ENV'.freeze
 
-      attr_reader :switches, :files, :app_path
+      attr_reader :switches, :files, :app_path, :command_tokens
 
       #
       # Create arguments and setup.
@@ -24,6 +24,7 @@ module Gloo
         @switches = []
         @files = []
         @app_path = nil
+        @command_tokens = []
 
         params.each { |o| process_one_arg( o ) }
         ARGV.each { |o| process_one_arg( o ) }
@@ -100,6 +101,16 @@ module Gloo
       end
 
       #
+      # Were there CLI tokens after the app path, in App mode?
+      # When true, those tokens are meant for the app's own command
+      # handling (e.g. a [shell] object's one-shot command) - they are
+      # not files for gloo itself to load.
+      #
+      def single_command?
+        return @command_tokens.any?
+      end
+
+      #
       # Detect the mode to be run in.
       # Start by seeing if a mode is specified.
       # Then look for the presence of files.
@@ -141,11 +152,19 @@ module Gloo
       #
       # Process one argument or parameter.
       #
+      # In App mode, only the first non-switch token is the app path.
+      # Anything after that is a command token for the app's own
+      # handling, not a file for gloo to load - keeping it out of
+      # @files is what keeps load_files from also trying (and failing)
+      # to open it as a file.
+      #
       def process_one_arg( arg )
         if arg.start_with? '--'
           switches << arg[ 2..-1 ]
-        elsif app? && ( @app_path.nil? )
+        elsif app? && @app_path.nil?
           @app_path = arg
+        elsif app?
+          command_tokens << arg
         else
           files << arg
         end
