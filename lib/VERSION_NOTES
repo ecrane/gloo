@@ -1,3 +1,7 @@
+6.7.2 - 2026.09.16
+ - Fixes issue with logging errors in the dictionary.
+
+
 6.7.1 - 2026.09.14
  - Fix issue with running shell in single command mode.
 
