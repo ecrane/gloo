@@ -27,10 +27,14 @@ module Gloo
       #
       # Get the singleton Dictionary and Initialize
       # if this is the first time.
+      # The engine is optional -- verbs/objects self-register at class
+      # load time, before any engine (and its log) exists. When an
+      # engine is given, it's used to report a duplicate-registration
+      # error; without one, duplicates are just silently skipped.
       #
-      def self.get
+      def self.get( engine=nil )
         o = Gloo::Core::Dictionary.instance
-        o.init if o.verbs.count == 0
+        o.init( engine ) if o.verbs.count == 0
         return o
       end
 
@@ -51,9 +55,9 @@ module Gloo
       #
       # Initialize verbs and objects in the dictionary.
       #
-      def init
-        init_verbs
-        init_objs
+      def init( engine=nil )
+        init_verbs( engine )
+        init_objs( engine )
       end
 
       #
@@ -145,15 +149,15 @@ module Gloo
       #
       # Register a verb after start up.
       #
-      def register_verb_post_start( verb_class )
-        add_verb verb_class
+      def register_verb_post_start( verb_class, engine=nil )
+        add_verb verb_class, engine
       end
 
       #
       # Register an object type after start up.
       #
-      def register_obj_post_start( obj_class )
-        add_object obj_class
+      def register_obj_post_start( obj_class, engine=nil )
+        add_object obj_class, engine
       end
 
       #
@@ -200,28 +204,32 @@ module Gloo
       #
       # Init the list of objects.
       #
-      def init_objs
+      def init_objs( engine=nil )
         @obj_references.each do |o|
-          add_object o
+          add_object o, engine
         end
       end
 
       #
       # Init the list of verbs.
       #
-      def init_verbs
+      def init_verbs( engine=nil )
         @verb_references.each do |v|
-          add_verb v
+          add_verb v, engine
         end
       end
 
-      # 
-      # Add an object to the dictionary
-      # 
-      def add_object( obj )
+      #
+      # Add an object to the dictionary.
+      # The engine is optional and is only used to report a
+      # duplicate-registration error -- when it's not given (e.g.
+      # self-registration at class load time), duplicates are just
+      # silently skipped.
+      #
+      def add_object( obj, engine=nil )
         # Make sure it hasn't already been registered
         if ( @objs.key?(obj.typename) || @objs.key?(obj.short_typename) )
-          @engine.err "duplicate object type '#{obj.typename}' or '#{obj.short_typename}'"
+          engine&.err "duplicate object type '#{obj.typename}' or '#{obj.short_typename}'"
           return
         end
 
@@ -232,12 +240,13 @@ module Gloo
       end
 
       #
-      # Add a verb to the dictionary
+      # Add a verb to the dictionary.
+      # The engine is optional -- see add_object.
       #
-      def add_verb( verb )
+      def add_verb( verb, engine=nil )
         # Make sure it hasn't already been registered
         if ( verb?( verb.keyword ) || verb?( verb.keyword_shortcut ) )
-          @engine.err "duplicate verb keyword '#{verb.keyword}' or '#{verb.keyword_shortcut}'"
+          engine&.err "duplicate verb keyword '#{verb.keyword}' or '#{verb.keyword_shortcut}'"
           return
         end
 

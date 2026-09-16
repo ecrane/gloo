@@ -67,7 +67,7 @@ module Gloo
         @mode = @args.detect_mode
         @running = true
 
-        @dictionary = Gloo::Core::Dictionary.get
+        @dictionary = Gloo::Core::Dictionary.get( self )
 
         @parser = Gloo::Core::Parser.new( self )
         @heap = Gloo::Core::Heap.new( self )

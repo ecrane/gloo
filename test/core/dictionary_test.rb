@@ -83,7 +83,7 @@ class DictionaryTest < BaseEngineTest
     refute @dic.lookup_keyword( Gloo::Verbs::Show.keyword )
     refute @dic.lookup_keyword( Gloo::Verbs::Show.keyword_shortcut )
 
-    @dic.register_verb_post_start( Gloo::Verbs::Show )
+    @dic.register_verb_post_start( Gloo::Verbs::Show, @engine )
 
     assert_equal 'show', @dic.lookup_keyword( Gloo::Verbs::Show.keyword )
     assert_equal 'show', @dic.lookup_keyword( Gloo::Verbs::Show.keyword_shortcut )
@@ -98,10 +98,30 @@ class DictionaryTest < BaseEngineTest
     refute @dic.lookup_keyword( Gloo::Objs::Text.typename )
     refute @dic.lookup_keyword( Gloo::Objs::Text.short_typename )
 
-    @dic.register_obj_post_start( Gloo::Objs::Text )
+    @dic.register_obj_post_start( Gloo::Objs::Text, @engine )
 
     assert_equal 'text', @dic.lookup_keyword( Gloo::Objs::Text.typename )
     assert_equal 'text', @dic.lookup_keyword( Gloo::Objs::Text.short_typename )
+  end
+
+  def test_duplicate_obj_registration_reports_error_when_engine_given
+    refute @engine.error?
+    @dic.register_obj_post_start( Gloo::Objs::Text, @engine )
+    assert @engine.error?
+  end
+
+  def test_duplicate_verb_registration_reports_error_when_engine_given
+    refute @engine.error?
+    @dic.register_verb_post_start( Gloo::Verbs::Show, @engine )
+    assert @engine.error?
+  end
+
+  def test_duplicate_obj_registration_does_not_raise_without_engine
+    @dic.register_obj_post_start( Gloo::Objs::Text )
+  end
+
+  def test_duplicate_verb_registration_does_not_raise_without_engine
+    @dic.register_verb_post_start( Gloo::Verbs::Show )
   end
 
 end
