@@ -9,6 +9,9 @@ module Gloo
     class OpPlus < Gloo::Core::Op
 
       SYMBOL = '+'.freeze
+      # An alternate spelling that reads better when joining strings:
+      # put first and ' ' and last into full_name
+      ALT_SYMBOL = 'and'.freeze
 
       #
       # Perform the operation and return the result.

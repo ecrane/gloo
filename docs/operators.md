@@ -5,6 +5,7 @@ Gloo operators can be used to do basic math and to compare values.
 **Contents**
 
 - Math Operators
+- Joining Values
 - Comparison Operators
 - Example
 
@@ -18,6 +19,19 @@ These are the gloo math operators:
 *   multiplication
 /   division
 ```
+
+## Joining Values
+
+`+` also joins strings: `"hello" + " world"` is `hello world`. When two values sit side by side with no operator between them, gloo joins them with `+` too.
+
+`and` is another way to write `+`. It reads better when building a string out of several pieces:
+
+```
+> put first_name and ' ' and last_name into full_name
+> put VPM_ROOT and 'Tasks/' and file_name into path
+```
+
+`and` always joins; it is not a logical (boolean) and. Because it's an operator, `and` is never looked up as an object, even if one by that name exists.
 
 ## Comparison Operators
 

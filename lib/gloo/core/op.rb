@@ -15,6 +15,7 @@ module Gloo
       def self.op?( token )
         return [ 
           Gloo::Expr::OpPlus::SYMBOL,
+          Gloo::Expr::OpPlus::ALT_SYMBOL,
           Gloo::Expr::OpMinus::SYMBOL,
           Gloo::Expr::OpMult::SYMBOL,
           Gloo::Expr::OpDiv::SYMBOL,
@@ -34,6 +35,7 @@ module Gloo
       def self.create_op( token )
         case token
           when Gloo::Expr::OpPlus::SYMBOL then Gloo::Expr::OpPlus.new
+          when Gloo::Expr::OpPlus::ALT_SYMBOL then Gloo::Expr::OpPlus.new
           when Gloo::Expr::OpMinus::SYMBOL then Gloo::Expr::OpMinus.new
           when Gloo::Expr::OpMult::SYMBOL then Gloo::Expr::OpMult.new
           when Gloo::Expr::OpDiv::SYMBOL then Gloo::Expr::OpDiv.new

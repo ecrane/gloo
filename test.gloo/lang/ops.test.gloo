@@ -4,6 +4,10 @@
 
 tests.lang.ops [can] :
 
+  first [string] : Ada
+  last [string] : Lovelace
+  full [string] :
+
   confirm_eq_ops [test] :
     description [string] : Confirm equality operations.
     on_test [script] :
@@ -75,3 +79,29 @@ tests.lang.ops [can] :
 
       eval 1 <= 1
       assert "expected 1 <= 1"
+
+  confirm_and_joins [test] :
+    description [string] : and joins values, the same as +.
+    on_test [script] :
+      put ^^.first and ' ' and ^^.last into ^^.full
+      eval ^^.full = 'Ada Lovelace'
+      assert "expected first and ' ' and last to be 'Ada Lovelace'"
+
+      eval 2 and 3 = 5
+      assert "expected 2 and 3 to be 5"
+
+  confirm_join_without_operator [test] :
+    description [string] : Values side by side with no operator between them are joined.
+    on_test [script] :
+      put 'hello ' 'world' into ^^.full
+      eval ^^.full = 'hello world'
+      assert "expected 'hello ' 'world' to be 'hello world'"
+
+      put ^^.first ' ' ^^.last into ^^.full
+      eval ^^.full = 'Ada Lovelace'
+      assert "expected first ' ' last to be 'Ada Lovelace'"
+
+      put 'a' 'b' + 'c' and 'd' into ^^.full
+      eval ^^.full = 'abcd'
+      assert "expected no operator, + and and to mix"
+

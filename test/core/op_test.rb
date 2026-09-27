@@ -5,6 +5,7 @@ class OpTest < BaseTest
   def test_op?
     assert Gloo::Core::Op.op?( ' + ' )
     assert Gloo::Core::Op.op?( '+' )
+    assert Gloo::Core::Op.op?( 'and' )
     assert Gloo::Core::Op.op?( '- ' )
     assert Gloo::Core::Op.op?( ' *' )
     assert Gloo::Core::Op.op?( '/' )
