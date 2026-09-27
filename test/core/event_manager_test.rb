@@ -113,4 +113,15 @@ class EventManagerTest < BaseEngineTest
     assert_equal 'syntax', data.find_child( 'kind' ).value
   end
 
+  def test_on_error_sets_the_location
+    @engine.parser.run '` on_error as script : "show 1"'
+    @engine.parser.run '` error_data as can'
+    @engine.parser.run '` error_data.location as string'
+
+    @engine.event_manager.on_error( 'boom', 'trace', Gloo::Core::Error::SYNTAX, 'x.gloo:3' )
+
+    data = @engine.heap.root.find_child( 'error_data' )
+    assert_equal 'x.gloo:3', data.find_child( 'location' ).value
+  end
+
 end

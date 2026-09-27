@@ -276,4 +276,17 @@ class TokensTest < BaseTest
     assert_equal 'invoke(', o.at( 1 )
   end
 
+  def test_syntax_problem
+    assert_nil Gloo::Core::Tokens.new( 'show "hello"' ).syntax_problem
+    assert_nil Gloo::Core::Tokens.new( 'show "a (b"' ).syntax_problem
+    assert_nil Gloo::Core::Tokens.new( 'show "it\\"s"' ).syntax_problem
+    assert_nil Gloo::Core::Tokens.new( 'show invoke( f 1 )' ).syntax_problem
+    assert_equal Gloo::Core::Tokens::UNCLOSED_QUOTE_ERR,
+      Gloo::Core::Tokens.new( 'show "hello' ).syntax_problem
+    assert_equal Gloo::Core::Tokens::UNCLOSED_PAREN_ERR,
+      Gloo::Core::Tokens.new( 'show (1 +' ).syntax_problem
+    assert_equal Gloo::Core::Tokens::UNMATCHED_PAREN_ERR,
+      Gloo::Core::Tokens.new( 'show 1 )' ).syntax_problem
+  end
+
 end

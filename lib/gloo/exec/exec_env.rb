@@ -12,6 +12,9 @@ module Gloo
       attr_accessor :verbs, :actions, :scripts, :here
       attr_reader :running_script
 
+      # The file and line being loaded, if a file is being loaded.
+      attr_accessor :load_location
+
       VERB_STACK = 'verbs'.freeze
       ACTION_STACK = 'actions'.freeze
       SCRIPT_STACK = 'scripts'.freeze
@@ -29,6 +32,16 @@ module Gloo
         @actions = Gloo::Exec::Stack.new( @engine, ACTION_STACK )
         @scripts = Gloo::Exec::Stack.new( @engine, SCRIPT_STACK )
         @here = Gloo::Exec::Stack.new( @engine, HERE_STACK )
+      end
+
+      #
+      # Where the line now running is, for error messages: the running
+      # script and its line, or the file and line being loaded.
+      #
+      def current_location
+        return @running_script.location if @running_script
+
+        return @load_location
       end
 
       #

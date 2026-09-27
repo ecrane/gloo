@@ -30,6 +30,18 @@ module Gloo
       end
 
       #
+      # Report any syntax problem in the command's tokens or params
+      # (see Tokens#syntax_problem) as a syntax error. The verb still
+      # runs afterward, with the tokens' best guess.
+      #
+      def check_syntax
+        [ @tokens, @params ].each do |t|
+          problem = t.syntax_problem if t.respond_to?( :syntax_problem )
+          @engine.syntax_err problem if problem
+        end
+      end
+
+      #
       # Run the verb.
       #
       # We'll mark the application as not running and let the

@@ -22,6 +22,10 @@ module Gloo
       BEGIN_BLOCK = 'BEGIN'.freeze
       END_BLOCK = 'END'.freeze
       SPACE_CNT = 2
+      OVER_INDENTED_WARNING = 'Indented more than one level deeper than ' \
+        'the line above; nesting it under that line.'.freeze
+      MISALIGNED_WARNING = "Indentation doesn't line up with any line " \
+        'above; nesting it under the closest one.'.freeze
 
       # A 'load lib {name}' (or 'load ext {name}') statement at the top
       # of a file, before the first object declaration. It makes a core
@@ -72,9 +76,17 @@ module Gloo
         @indent_stack = IndentStack.new( @engine.heap.root, @source_doc )
         f = @mech.read( @pn )
 
-        f = join_continuations( f )
-        f.each_line { |line| dispatch_line( line ) }
-        finish
+        exec_env = @engine.exec_env
+        outer_location = exec_env.load_location
+        begin
+          each_joined_line( f ) do |line, number|
+            exec_env.load_location = "#{@pn}:#{number}"
+            dispatch_line( line )
+          end
+          finish
+        ensure
+          exec_env.load_location = outer_location
+        end
       end
 
       #
@@ -89,10 +101,27 @@ module Gloo
       end
 
       #
-      # Join continuation lines.
+      # Yield each line of the file with its line number (counting from
+      # 1). A line ending in a backslash continues on the next line:
+      # the two are joined, dropping the backslash and the line break,
+      # and the joined line has the number of the line it starts on.
       #
-      def join_continuations( data )
-        return data.gsub( "\\\n", '' )
+      def each_joined_line( data )
+        pending = nil
+        start = 0
+        data.each_line.with_index( 1 ) do |line, number|
+          if pending
+            pending << line
+          else
+            pending = line.dup
+            start = number
+          end
+          next if pending.delete_suffix!( "\\\n" )
+
+          yield pending, start
+          pending = nil
+        end
+        yield pending, start if pending
       end
 
       # ---------------------------------------------------------------------
@@ -207,8 +236,22 @@ module Gloo
       #
       def finalize_declaration( line )
         line_tabs = tab_count( line )
-        @indent_stack.place( line_tabs, @last, @last_node )
+        placed = @indent_stack.place( line_tabs, @last, @last_node )
+        warn_indent( placed ) if placed
         create_declared_obj( line, line_tabs )
+      end
+
+      #
+      # Warn about indentation that was understood, but probably isn't
+      # what was meant.
+      #
+      def warn_indent( placed )
+        msg = if placed == IndentStack::OVER_INDENTED
+                OVER_INDENTED_WARNING
+              else
+                MISALIGNED_WARNING
+              end
+        @engine.log.warn "#{@engine.exec_env.load_location}: #{msg}"
       end
 
       #
@@ -234,8 +277,8 @@ module Gloo
         # name re-declared across files -- @last is the same object
         # across re-declarations (the factory returns the existing
         # one), so a later, comment-less re-declaration doesn't blank
-        # out an earlier file's doc. @last can be nil for an unknown
-        # type (factory.create logs a warning and returns nil).
+        # out an earlier file's doc. @last can be nil for a type that
+        # can't be created (an unknown type is created untyped).
         @last.doc = node.doc if @last && @last.doc.to_s.strip.empty?
         @indent_stack.node.children << node
         @last_node = node

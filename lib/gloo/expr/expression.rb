@@ -36,6 +36,7 @@ module Gloo
 
         @symbols.each do |sym|
           if sym.is_a? Gloo::Core::Op
+            missing_value( @op ) if @op
             @op = sym
           elsif @left.nil?
             @left = sym
@@ -45,6 +46,7 @@ module Gloo
 
           perform_op if @left && @right
         end
+        missing_value( @op ) if @op
 
         return @left.value if @left.is_a? Gloo::Core::Literal
         return @left.value if @left.is_a? Gloo::Expr::Call
@@ -69,6 +71,14 @@ module Gloo
         @left = @op.perform l, r
         @right = nil
         @op = nil
+      end
+
+      #
+      # An operator without a value on one side (eg. 'show 1 +') is a
+      # syntax error; the best guess is to leave the operator out.
+      #
+      def missing_value( op )
+        @engine.syntax_err "Operator '#{op.class::SYMBOL}' is missing a value."
       end
 
       #

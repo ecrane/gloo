@@ -18,6 +18,10 @@ module Gloo
 
       QUOTE_CHARS = [ '"', "'" ].freeze
 
+      UNCLOSED_QUOTE_ERR = 'Unclosed quote.'.freeze
+      UNCLOSED_PAREN_ERR = 'Unclosed parenthesis.'.freeze
+      UNMATCHED_PAREN_ERR = "Unmatched ')'.".freeze
+
       attr_reader :cmd, :tokens
 
       # ---------------------------------------------------------------------
@@ -37,6 +41,40 @@ module Gloo
       # ---------------------------------------------------------------------
       #    Public functions
       # ---------------------------------------------------------------------
+
+      #
+      # A syntax problem in the command (an unclosed quote, or
+      # parentheses that don't match), or nil. The tokens are still
+      # the best guess: an unclosed quote runs to the end of the line.
+      # Quotes are read the same way tokenize reads them.
+      #
+      def syntax_problem
+        quote = nil
+        depth = 0
+        escaped = false
+        @cmd.each_char do |ch|
+          if quote
+            if escaped
+              escaped = false
+            elsif ch == '\\'
+              escaped = true
+            elsif ch == quote
+              quote = nil
+            end
+          elsif QUOTE_CHARS.include?( ch )
+            quote = ch
+          elsif ch == '('
+            depth += 1
+          elsif ch == ')'
+            depth -= 1
+            return UNMATCHED_PAREN_ERR if depth.negative?
+          end
+        end
+        return UNCLOSED_QUOTE_ERR if quote
+        return UNCLOSED_PAREN_ERR if depth.positive?
+
+        return nil
+      end
 
       #
       # Get the number of tokens

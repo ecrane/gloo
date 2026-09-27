@@ -20,6 +20,7 @@ module Gloo
         engine.heap.error.start_tracking
         engine.exec_env.verbs.push verb
         begin
+          verb&.check_syntax
           verb&.run
         rescue => ex
           engine.handle_exception( ex )

@@ -65,5 +65,11 @@ class ExecEnvTest < BaseEngineTest
     assert_equal 0, @engine.exec_env.actions.size
   end
 
+  def test_current_location
+    assert_nil @engine.exec_env.current_location
+    @engine.exec_env.load_location = 'x.gloo:3'
+    assert_equal 'x.gloo:3', @engine.exec_env.current_location
+    @engine.exec_env.load_location = nil
+  end
 
 end

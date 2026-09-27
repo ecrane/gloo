@@ -8,6 +8,9 @@ module Gloo
   module Core
     class Factory < Baseo
 
+      UNTYPED = 'untyped'.freeze
+      UNKNOWN_TYPE_ERR = 'Unknown type '.freeze
+
       # ---------------------------------------------------------------------
       #    Initializer
       # ---------------------------------------------------------------------
@@ -190,16 +193,17 @@ module Gloo
 
       #
       # Find the object type by name.
-      # Return nil if the object type cannot be found or
-      # cannot be created.
+      # An unknown type is a syntax error; the best guess is untyped,
+      # so the object (and anything nested under it) is still created.
+      # Return nil if the object type cannot be created.
       #
       def find_type( type_name )
-        type_name = 'untyped' if type_name.nil? || type_name.strip.empty?
+        type_name = UNTYPED if type_name.nil? || type_name.strip.empty?
         t = @engine.dictionary.find_obj( type_name )
 
         if t.nil?
-          @engine.log.warn "Could not find type, '#{type_name}'"
-          return nil
+          @engine.syntax_err "#{UNKNOWN_TYPE_ERR}'#{type_name}'; using untyped."
+          t = @engine.dictionary.find_obj( UNTYPED )
         end
 
         unless t.can_create?

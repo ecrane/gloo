@@ -49,4 +49,14 @@ class ScriptTest < BaseEngineTest
     assert_equal 7, @engine.heap.it.value
   end
 
+  def test_error_location_is_the_script_line
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.s as script'
+    s = @engine.heap.root.find_child( 'c' ).find_child( 's' )
+    s.add_line 'show 1'
+    s.add_line 'show no.such.obj'
+    @engine.parser.run 'run c.s'
+    assert_equal 'c.s, line 2', @engine.heap.error.location
+  end
+
 end

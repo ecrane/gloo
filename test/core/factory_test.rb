@@ -120,7 +120,11 @@ class FactoryTest < BaseEngineTest
   def test_unknown_object_creation
     @engine.start
     o = @engine.factory.create( { :name => 'x', :type => 'notatype' } )
-    refute o
+    assert @engine.error?
+    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+    assert_equal "Unknown type 'notatype'; using untyped.", @engine.heap.error.value
+    assert o
+    assert_equal 'untyped', o.type_display
   end
 
   def test_untyped_object_creation
@@ -142,9 +146,10 @@ class FactoryTest < BaseEngineTest
     o = @engine.factory.find_type 'string'
     assert_equal Gloo::Objs::String, o
 
-    refute @engine.factory.find_type '24322343242'
-    refute @engine.factory.find_type 'alajsl;j'
-    refute @engine.factory.find_type 'xr2'
+    assert_equal Gloo::Objs::Untyped, @engine.factory.find_type( '24322343242' )
+    assert_equal Gloo::Objs::Untyped, @engine.factory.find_type( 'alajsl;j' )
+    assert_equal Gloo::Objs::Untyped, @engine.factory.find_type( 'xr2' )
+    assert @engine.error?
   end
 
 end

@@ -11,15 +11,25 @@ module Gloo
   module Persist
     class IndentStack
 
-      attr_reader :tabs
+      # What place reports about a line's indentation, when it's
+      # probably not what was meant (the loader warns about it).
+      OVER_INDENTED = :over_indented
+      MISALIGNED = :misaligned
 
       #
       # Set up a stack rooted at the given heap object and source node.
       #
       def initialize( root_obj, root_node )
-        @tabs = 0
+        @levels = [ 0 ]
         @parent_stack = [ root_obj ]
         @node_stack = [ root_node ]
+      end
+
+      #
+      # The indentation (in tabs) of the current nesting level.
+      #
+      def tabs
+        return @levels.last
       end
 
       #
@@ -43,46 +53,52 @@ module Gloo
       # new parent. last_obj/last_node are whatever was created for the
       # previous declaration line.
       #
+      # Each open nesting level remembers its own indentation, so a line
+      # nests under the line above whenever it's deeper (by any amount),
+      # and an outdent goes back to exactly the level it lines up with.
+      #
+      # Returns nil, or OVER_INDENTED if the line is more than one level
+      # deeper than the line above, or MISALIGNED if an outdent doesn't
+      # line up with any open level (it's nested under the closest one).
+      #
       def place( line_tabs, last_obj, last_node )
-        indent = indent_delta( line_tabs )
-        if indent.positive?
-          # last_obj is nil when the previous line failed to make an
-          # object (eg. an unknown type in a malformed file) -- keep
-          # the current parent rather than pushing nil.
-          @parent_stack.push( last_obj || @parent_stack.last )
-          @node_stack.push( last_node || @node_stack.last )
-        elsif indent.negative?
-          indent.abs.times do
-            # never pop the root -- a file with erratic (mixed
-            # tab/space) indentation can outdent further than it ever
-            # indented; clamp instead of emptying the stack.
-            break if @parent_stack.length <= 1
+        return indent( line_tabs, last_obj, last_node ) if line_tabs > tabs
 
-            @parent_stack.pop
-            @node_stack.pop
-          end
+        popped = nil
+        while tabs > line_tabs
+          @levels.pop
+          popped = [ @parent_stack.pop, @node_stack.pop ]
         end
+        return nil if tabs == line_tabs
+
+        # Between two open levels: best guess, keep it under the
+        # closest (deepest) one it's still inside of.
+        push_level( line_tabs, *popped )
+        return MISALIGNED
       end
 
       private
 
       #
-      # Update @tabs for the new line and return the signed change in
-      # nesting depth: positive if it's more indented than the last
-      # line placed, negative if less, zero if the same.
+      # A deeper line: the previous line's object/node becomes the
+      # new parent.
       #
-      def indent_delta( line_tabs )
-        if line_tabs > @tabs
-          # TODO:  What if indent is more than one more level?
-          @tabs = line_tabs
-          return 1
-        elsif line_tabs < @tabs
-          diff = @tabs - line_tabs
-          @tabs -= diff
-          return -diff
-        end
+      def indent( line_tabs, last_obj, last_node )
+        over = line_tabs > tabs + 1
+        # last_obj is nil when the previous line failed to make an
+        # object (eg. a type that can't be created) -- keep the
+        # current parent rather than pushing nil.
+        push_level( line_tabs, last_obj || parent, last_node || node )
+        return over ? OVER_INDENTED : nil
+      end
 
-        return 0
+      #
+      # Open a nesting level at the given indentation.
+      #
+      def push_level( line_tabs, obj, node )
+        @levels.push line_tabs
+        @parent_stack.push obj
+        @node_stack.push node
       end
 
     end

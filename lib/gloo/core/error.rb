@@ -13,7 +13,7 @@ module Gloo
       SYNTAX = 'syntax'.freeze
       RUNTIME = 'runtime'.freeze
 
-      attr_accessor :value, :error_count, :kind
+      attr_accessor :value, :error_count, :kind, :location
 
       #
       # Set up the error object.
@@ -29,15 +29,17 @@ module Gloo
         @error_count = 0
         @value = nil
         @kind = nil
+        @location = nil
       end
 
       #
       # Set the value of error.
       #
-      def set_to( new_value, kind = RUNTIME )
+      def set_to( new_value, kind = RUNTIME, location = nil )
         @error_count += 1
         @value = new_value
         @kind = kind
+        @location = location
       end
 
       #

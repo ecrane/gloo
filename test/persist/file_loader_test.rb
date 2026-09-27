@@ -346,9 +346,15 @@ class FileLoaderTest < BaseEngineTest
     @engine.settings.override_project_path( "#{dir}/" )
     @engine.log.quiet = true
 
-    @engine.persist_man.load 'bad' # 'nosuchtype' -> nil obj -> used to push nil as a parent
-    refute @engine.error?
-    assert @engine.heap.root.find_child( 'c' )
+    @engine.persist_man.load 'bad' # 'nosuchtype' used to give a nil obj, pushed as a parent
+    assert @engine.error?
+    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+    assert_equal "#{dir}/bad.gloo:2", @engine.heap.error.location
+
+    # The best guess: x is created untyped, so its child stays under it.
+    x = Gloo::Core::Pn.new( @engine, 'c.x' ).resolve
+    assert_equal 'untyped', x.type_display
+    assert_equal 'v', x.find_child( 'child' ).value
   ensure
     FileUtils.remove_entry dir if dir
   end
@@ -403,6 +409,43 @@ class FileLoaderTest < BaseEngineTest
     assert_equal 'from A', app.doc
   ensure
     FileUtils.remove_entry dir if dir
+  end
+
+  def load_text( text )
+    require 'tmpdir'
+    @dir = Dir.mktmpdir
+    File.write( File.join( @dir, 't.gloo' ), text )
+    @engine.settings.override_project_path( "#{@dir}/" )
+    @engine.log.quiet = true
+    @engine.persist_man.load 't'
+  end
+
+  def test_over_indented_line_nests_and_the_next_line_goes_back
+    load_text "a [can] :\n  c [int] : 1\n      d [int] : 2\n  e [string] : ok\n"
+    refute @engine.error?
+    a = @engine.heap.root.find_child( 'a' )
+    assert_equal %w[c e], a.children.map( &:name )
+    assert_equal 'd', a.find_child( 'c' ).children.first.name
+    assert_equal 1, @engine.heap.root.child_count
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_syntax_error_location_counts_continuation_lines
+    load_text "a [string] : one \\\n  two\nb [nosuchtype] : 1\n"
+    assert_equal "#{@dir}/t.gloo:3", @engine.heap.error.location
+    assert_equal 'one   two', @engine.heap.root.find_child( 'a' ).value
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_load_keeps_going_after_syntax_errors
+    load_text "a [nosuchtype] : 1\nb [int] : 2\nc [alsonotatype] : 3\n"
+    assert_equal 2, @engine.heap.error.error_count
+    assert_equal %w[a b c], @engine.heap.root.children.map( &:name )
+    assert_equal 2, @engine.heap.root.find_child( 'b' ).value
+  ensure
+    FileUtils.remove_entry @dir if @dir
   end
 
 end

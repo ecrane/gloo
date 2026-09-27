@@ -74,4 +74,13 @@ class CreateTest < BaseEngineTest
     assert_equal 0, @engine.heap.root.child_count
   end
 
+  def test_create_with_unknown_type_creates_it_untyped
+    @engine.parser.run 'create x as nosuchtype : 3'
+    assert @engine.error?
+    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+    x = @engine.heap.root.find_child( 'x' )
+    assert_equal 'untyped', x.type_display
+    assert_equal '3', x.value
+  end
+
 end

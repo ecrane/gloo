@@ -131,4 +131,14 @@ class ExpressionTest < BaseEngineTest
     refute @engine.error?
   end
 
+  def test_operator_missing_a_value_is_reported_and_left_out
+    [ [ %w[1 +], 1 ], [ %w[+ 1], 1 ], [ %w[1 + + 2], 3 ] ].each do |tokens, value|
+      @engine.heap.error.clear
+      expr = Gloo::Expr::Expression.new( @engine, tokens )
+      assert_equal value, expr.evaluate
+      assert_equal "Operator '+' is missing a value.", @engine.heap.error.value
+      assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+    end
+  end
+
 end
