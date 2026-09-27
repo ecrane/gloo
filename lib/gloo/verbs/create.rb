@@ -65,7 +65,9 @@ module Gloo
 
         obj = @engine.factory.create( { name: name, type: type, value: value } )
 
-        obj.add_default_children if obj&.add_children_on_create?
+        return unless obj
+
+        obj.add_default_children if obj.add_children_on_create?
         @engine.heap.it.set_to value
       end
 
@@ -96,7 +98,7 @@ module Gloo
             "to the existing object's current value.",
           :errors => [
             "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created.",
-            'Could not create object. Bad path: {name} — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist.'
+            'Could not create object. Bad path: {path} — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist. Nothing is created, and it is unchanged.'
           ],
           :examples => <<~EXAMPLES.strip
             # Basic examples of creating an object from the gloo shell:

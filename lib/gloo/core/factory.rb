@@ -155,6 +155,11 @@ module Gloo
           return self.update_existing pn, params[ :value ]
         end
 
+        unless parent
+          @engine.err "Could not create object.  Bad path: #{params[ :name ]}"
+          return nil
+        end
+
         @engine.log.debug "Creating new object: #{obj_name}"
         return create_new obj_name, params[ :value ], objtype, parent
       end
@@ -163,11 +168,6 @@ module Gloo
       # Create a new object.
       #
       def create_new( name, value, type, parent )
-        unless parent
-          @engine.err "Could not create object.  Bad path: #{name}"
-          return nil
-        end
-
         # Check to see if the object exists already
         return parent.find_child( name ) if parent.contains_child?( name )
 

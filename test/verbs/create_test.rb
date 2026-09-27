@@ -64,4 +64,13 @@ class CreateTest < BaseEngineTest
     assert_equal s.value, 'hello'
   end
 
+  def test_create_with_missing_parent_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create no.such.x as int : 1'
+    assert @engine.error?
+    assert_equal 'Could not create object.  Bad path: no.such.x', @engine.heap.error.value
+    assert_equal 'before', @engine.heap.it.value
+    assert_equal 0, @engine.heap.root.child_count
+  end
+
 end
