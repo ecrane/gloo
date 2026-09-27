@@ -293,4 +293,16 @@ class EngineTest < BaseTest
     end
   end
 
+  def test_on_error_handler_does_not_clear_the_error
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.log.quiet = true
+    o.parser.run 'create x as int : 0'
+    o.parser.run 'create on_error as script : "put 1 into x"'
+    o.parser.run 'tell nope to run'
+    assert_equal 1, o.heap.root.find_child( 'x' ).value
+    assert o.error?
+    assert_equal 'Object was not found:  nope', o.heap.error.value
+  end
+
 end

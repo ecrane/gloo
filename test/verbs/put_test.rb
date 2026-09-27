@@ -90,4 +90,11 @@ class PutTest < BaseEngineTest
     assert @engine.heap.error.value.start_with? msg
   end
 
+  def test_put_leaves_target_alone_when_value_is_missing
+    @engine.parser.run 'create s as string : "keep me"'
+    @engine.parser.run 'put no.such.obj into s'
+    assert @engine.error?
+    assert_equal 'keep me', @engine.heap.root.find_child( 's' ).value
+  end
+
 end

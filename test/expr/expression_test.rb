@@ -104,4 +104,31 @@ class ExpressionTest < BaseEngineTest
     assert_equal 1, @engine.heap.error.error_count
   end
 
+  def test_missing_object_is_reported
+    expr = Gloo::Expr::Expression.new( @engine, [ 'nope' ] )
+    assert_nil expr.evaluate
+    assert_equal "Object 'nope' was not found.", @engine.heap.error.value
+  end
+
+  def test_missing_child_of_existing_object_is_reported
+    @engine.parser.run 'create c as can'
+    @engine.heap.error.clear
+    expr = Gloo::Expr::Expression.new( @engine, [ 'c.nope' ] )
+    assert_nil expr.evaluate
+    assert_equal "Object 'c.nope' was not found.", @engine.heap.error.value
+  end
+
+  def test_missing_object_error_uses_the_path_as_written
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.s as script : "show ^.nope"'
+    @engine.parser.run 'run c.s'
+    assert_equal "Object '^.nope' was not found.", @engine.heap.error.value
+  end
+
+  def test_named_color_is_not_an_error
+    expr = Gloo::Expr::Expression.new( @engine, [ 'red' ] )
+    assert_equal 'red', expr.evaluate
+    refute @engine.error?
+  end
+
 end

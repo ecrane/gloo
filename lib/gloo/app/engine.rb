@@ -343,11 +343,18 @@ module Gloo
 
         return if @handling_error
 
+        # The handler's own lines run as commands, which reset and clear
+        # the error state; put it back afterward so the failed command
+        # is still seen as failed.
+        error = @heap.error
+        value, count = error.value, error.error_count
         @handling_error = true
         begin
           @event_manager.on_error( msg, backtrace )
         ensure
           @handling_error = false
+          error.value = value
+          error.error_count = count
         end
       end
 

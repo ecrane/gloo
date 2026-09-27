@@ -88,12 +88,13 @@ module Gloo
       def resolve_ref( ref )
         return ref.src if ref.named_color?
 
+        name = ref.src
         ob = ref.resolve
         return ob.value if ob
 
-        # A missing object partway along the path is reported (a missing
-        # final object is not, yet).
-        @engine.err "Object '#{ref.src}' was not found." unless ref.get_parent
+        # The object is being used as a value, so a missing object is
+        # a runtime error (the lookup itself doesn't report it).
+        @engine.err "Object '#{name}' was not found."
         return nil
       end
 

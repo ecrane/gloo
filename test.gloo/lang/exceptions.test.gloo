@@ -59,3 +59,28 @@ tests.lang.exceptions [can] :
 
       eval ^^.exc_fired = false
       assert "expected on_exception to NOT have fired for a gloo-level error"
+
+  confirm_missing_value_fires_on_error [test] :
+    description [string] : Using a missing object as a value is a runtime error, but asking whether it exists is not.
+    on_test [script] :
+      put false into ^^.err_fired
+      exists? instance ^^.no_such_value
+      eval ^^.err_fired = false
+      assert "expected exists? on a missing object to not fire on_error"
+
+      show ^^.no_such_value
+      eval ^^.err_fired = true
+      assert "expected using a missing object as a value to fire on_error"
+
+      eval ^^.error_data.message = "Object '^^.no_such_value' was not found."
+      assert "expected error_data.message to name the missing object"
+
+  kept [string] : keep me
+
+  confirm_put_of_missing_value_keeps_target [test] :
+    description [string] : A put whose value uses a missing object leaves the target unchanged.
+    on_test [script] :
+      put 'keep me' into ^^.kept
+      put ^^.no_such_value into ^^.kept
+      eval ^^.kept = 'keep me'
+      assert "expected the target to keep its value"
