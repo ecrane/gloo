@@ -53,7 +53,7 @@ module Gloo
       def fetch_value_tokens
         value = @tokens.before_token( INTO )
         if value.nil? || ( value.count <= 1 )
-          @engine.err MISSING_EXPR_ERR
+          @engine.syntax_err MISSING_EXPR_ERR
           return nil
         end
 
@@ -68,7 +68,7 @@ module Gloo
         target = @tokens.after_token( INTO )
         return target if target
 
-        @engine.err INTO_MISSING_ERR
+        @engine.syntax_err INTO_MISSING_ERR
         return nil
       end
 

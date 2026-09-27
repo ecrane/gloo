@@ -81,4 +81,19 @@ class ErrorTest < BaseEngineTest
     assert_equal 'err string', @engine.heap.it.value
   end
 
+  def test_kind_defaults_to_runtime
+    o = Gloo::Core::Error.new
+    refute o.kind
+    o.set_to 'something'
+    assert_equal Gloo::Core::Error::RUNTIME, o.kind
+  end
+
+  def test_setting_the_kind
+    o = Gloo::Core::Error.new
+    o.set_to 'something', Gloo::Core::Error::SYNTAX
+    assert_equal Gloo::Core::Error::SYNTAX, o.kind
+    o.clear
+    refute o.kind
+  end
+
 end

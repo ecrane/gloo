@@ -49,7 +49,7 @@ module Gloo
         name = @tokens.before_token( TO )[ 1 ]
         path = @tokens.after_token( TO )
         unless path
-          @engine.err MISSING_PATH_ERR
+          @engine.syntax_err MISSING_PATH_ERR
           return
         end
 

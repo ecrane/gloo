@@ -20,6 +20,7 @@ tests.lang.exceptions [can] :
   error_data [can] :
     message [string] :
     backtrace [string] :
+    kind [string] :
 
   confirm_throw_fires_on_exception [test] :
     description [string] : Confirm throw fires on_exception and populates exception_data, but does not fire on_error.
@@ -84,3 +85,15 @@ tests.lang.exceptions [can] :
       put ^^.no_such_value into ^^.kept
       eval ^^.kept = 'keep me'
       assert "expected the target to keep its value"
+
+  confirm_error_kind [test] :
+    description [string] : error_data.kind says whether the command couldn't be understood (syntax) or couldn't be done (runtime).
+    on_test [script] :
+      nosuchverb
+      eval ^^.error_data.kind = 'syntax'
+      assert "expected an unknown verb to be a syntax error"
+
+      show ^^.no_such_value
+      eval ^^.error_data.kind = 'runtime'
+      assert "expected a missing object to be a runtime error"
+

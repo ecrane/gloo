@@ -299,7 +299,7 @@ module Gloo
       #
       def msg_index_of
         unless @params&.token_count&.positive?
-          @engine.err MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end

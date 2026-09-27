@@ -23,7 +23,7 @@ module Gloo
         value = @tokens.after_token( VAL )
 
         unless name
-          @engine.err NO_NAME_ERR
+          @engine.syntax_err NO_NAME_ERR
           return
         end
         create name, type, value

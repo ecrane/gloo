@@ -30,12 +30,12 @@ module Gloo
           opt = @tokens.second.strip.downcase
           fn = @tokens.last
         else
-          @engine.err WRONG_NUM_ARGS_ERR
+          @engine.syntax_err WRONG_NUM_ARGS_ERR
           return
         end
 
         if fn.blank?
-          @engine.err MISSING_EXPR_ERR
+          @engine.syntax_err MISSING_EXPR_ERR
         elsif opt == FILE_OPT
           load_gloo_file fn
         elsif opt == EXT_OPT
@@ -43,7 +43,7 @@ module Gloo
         elsif opt == LIB_OPT
           load_library fn
         else 
-          @engine.err UNKNOWN_OPT_ERR
+          @engine.syntax_err UNKNOWN_OPT_ERR
         end
       end
 

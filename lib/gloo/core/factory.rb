@@ -203,7 +203,7 @@ module Gloo
         end
 
         unless t.can_create?
-          @engine.err "'#{type_name}' cannot be created."
+          @engine.syntax_err "'#{type_name}' cannot be created."
           return nil
         end
 

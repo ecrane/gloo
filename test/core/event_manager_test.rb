@@ -102,4 +102,15 @@ class EventManagerTest < BaseEngineTest
     assert_equal false, root.find_child( 'exception_fired' ).value
   end
 
+  def test_on_error_sets_the_kind
+    @engine.parser.run '` on_error as script : "show 1"'
+    @engine.parser.run '` error_data as can'
+    @engine.parser.run '` error_data.kind as string'
+
+    @engine.event_manager.on_error( 'boom', 'trace', Gloo::Core::Error::SYNTAX )
+
+    data = @engine.heap.root.find_child( 'error_data' )
+    assert_equal 'syntax', data.find_child( 'kind' ).value
+  end
+
 end

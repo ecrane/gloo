@@ -65,7 +65,7 @@ module Gloo
           # The first token is the verb, so we drop it.
           value = value[ 1..-1 ]
         else
-          @engine.err MISSING_EXPR_ERR
+          @engine.syntax_err MISSING_EXPR_ERR
         end
 
         return value

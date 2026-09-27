@@ -75,16 +75,18 @@ module Gloo
       # 
       # Run the on_error scripts in any open objects.
       # For each on_error script found, look for the error_data container
-      # and set the error message and backtrace.
+      # and set the error message, backtrace and kind (syntax or
+      # runtime) -- each only if error_data has that child.
       # 
-      def on_error msg, backtrace
+      def on_error msg, backtrace, kind = Gloo::Core::Error::RUNTIME
         @engine.log.debug 'on_error event'
         arr = Gloo::Core::ObjFinder.by_name( @engine, 'on_error' )
         arr.each do |o|
           data = o.parent.find_child 'error_data'
           if data
-            data.find_child( 'message' ).set_value msg
-            data.find_child( 'backtrace' ).set_value backtrace
+            data.find_child( 'message' )&.set_value msg
+            data.find_child( 'backtrace' )&.set_value backtrace
+            data.find_child( 'kind' )&.set_value kind
           end
 
           Gloo::Exec::Dispatch.message( @engine, 'run', o )

@@ -101,7 +101,7 @@ module Gloo
             return
           end
         else
-          @engine.err 'Source path for objects is required'
+          @engine.syntax_err 'Source path for objects is required'
           return
         end
         parent = pn.resolve
@@ -128,7 +128,7 @@ module Gloo
             return
           end
         else
-          @engine.err 'Destination path for parsed objects is required'
+          @engine.syntax_err 'Destination path for parsed objects is required'
           return
         end
         parent = pn.resolve

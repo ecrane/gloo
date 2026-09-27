@@ -25,7 +25,7 @@ module Gloo
       #
       def self.invoke( engine, target, arg_tokens )
         if target.nil? || target.to_s.strip.empty?
-          engine.err NO_TARGET_ERR
+          engine.syntax_err NO_TARGET_ERR
           return nil
         end
 

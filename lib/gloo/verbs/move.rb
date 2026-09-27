@@ -54,7 +54,7 @@ module Gloo
       def lookup_obj
         arr = @tokens.before_token( TO )
         if arr.count == 1
-          @engine.err MISSING_SRC_ERR
+          @engine.syntax_err MISSING_SRC_ERR
           return
         end
 
@@ -72,7 +72,7 @@ module Gloo
       def lookup_dst
         dst = @tokens.after_token( TO )
         unless dst
-          @engine.err MISSING_DST_ERR
+          @engine.syntax_err MISSING_DST_ERR
           return nil
         end
 

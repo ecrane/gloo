@@ -335,11 +335,11 @@ module Gloo
       # validating the command line) there's no heap to hold the
       # error and nothing to handle it, so it is only logged.
       #
-      def err( msg, backtrace=nil )
+      def err( msg, backtrace=nil, kind: Gloo::Core::Error::RUNTIME )
         @log.error msg
         return unless @heap
 
-        @heap.error.set_to msg
+        @heap.error.set_to msg, kind
 
         return if @handling_error
 
@@ -350,12 +350,21 @@ module Gloo
         value, count = error.value, error.error_count
         @handling_error = true
         begin
-          @event_manager.on_error( msg, backtrace )
+          @event_manager.on_error( msg, backtrace, kind )
         ensure
           @handling_error = false
           error.value = value
           error.error_count = count
+          error.kind = kind
         end
+      end
+
+      #
+      # Report a syntax error: the command couldn't be understood
+      # (eg. an unknown verb, or a required part of it is missing).
+      #
+      def syntax_err( msg )
+        err( msg, kind: Gloo::Core::Error::SYNTAX )
       end
 
       #

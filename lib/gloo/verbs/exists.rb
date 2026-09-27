@@ -27,7 +27,7 @@ module Gloo
           type = ANY_TYPE
           keyword = @tokens.second
         else
-          @engine.err WRONG_NUM_ARGS_ERR
+          @engine.syntax_err WRONG_NUM_ARGS_ERR
           return
         end
         

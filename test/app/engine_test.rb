@@ -305,4 +305,31 @@ class EngineTest < BaseTest
     assert_equal Gloo::Core::NotFound.object( 'nope' ), o.heap.error.value
   end
 
+  def test_err_is_a_runtime_error
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.log.quiet = true
+    o.err 'boom'
+    assert_equal Gloo::Core::Error::RUNTIME, o.heap.error.kind
+  end
+
+  def test_syntax_err_is_a_syntax_error
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.log.quiet = true
+    o.syntax_err 'boom'
+    assert o.error?
+    assert_equal 'boom', o.heap.error.value
+    assert_equal Gloo::Core::Error::SYNTAX, o.heap.error.kind
+  end
+
+  def test_on_error_handler_does_not_change_the_kind
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.log.quiet = true
+    o.parser.run 'create on_error as script : "tell nope to run"'
+    o.parser.run 'nosuchverb'
+    assert_equal Gloo::Core::Error::SYNTAX, o.heap.error.kind
+  end
+
 end

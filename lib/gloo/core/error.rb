@@ -8,7 +8,12 @@ module Gloo
   module Core
     class Error
 
-      attr_accessor :value, :error_count
+      # The kind of error: the command couldn't be understood (syntax),
+      # or it was understood but couldn't be done (runtime).
+      SYNTAX = 'syntax'.freeze
+      RUNTIME = 'runtime'.freeze
+
+      attr_accessor :value, :error_count, :kind
 
       #
       # Set up the error object.
@@ -23,14 +28,16 @@ module Gloo
       def clear
         @error_count = 0
         @value = nil
+        @kind = nil
       end
 
       #
       # Set the value of error.
       #
-      def set_to( new_value )
+      def set_to( new_value, kind = RUNTIME )
         @error_count += 1
         @value = new_value
+        @kind = kind
       end
 
       #

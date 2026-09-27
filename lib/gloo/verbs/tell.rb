@@ -22,7 +22,7 @@ module Gloo
         msg = @tokens.after_token( TO )
 
         unless msg
-          @engine.err( UNKNOWN_MSG_ERR ) 
+          @engine.syntax_err( UNKNOWN_MSG_ERR ) 
           return
         end
 

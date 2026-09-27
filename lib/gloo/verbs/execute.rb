@@ -17,7 +17,7 @@ module Gloo
       #
       def run
         if @tokens.token_count < 2
-          @engine.err MISSING_EXPR_ERR
+          @engine.syntax_err MISSING_EXPR_ERR
           return
         end
 
