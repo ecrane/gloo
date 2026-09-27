@@ -85,4 +85,14 @@ class BooleanTest < BaseEngineTest
     refute o.is_container?
   end
 
+  def test_bad_value_warns_with_the_guess
+    warnings = capture_warnings do
+      @engine.parser.run 'create b as bool : maybe'
+      @engine.parser.run 'create c as bool : TRUE'
+      @engine.parser.run 'create d as bool : ""'
+    end
+    assert_equal [ "'maybe' is not true or false; using false." ], warnings
+    refute @engine.error?
+  end
+
 end

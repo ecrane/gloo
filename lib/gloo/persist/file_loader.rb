@@ -251,7 +251,7 @@ module Gloo
               else
                 MISALIGNED_WARNING
               end
-        @engine.log.warn "#{@engine.exec_env.load_location}: #{msg}"
+        @engine.warn msg
       end
 
       #

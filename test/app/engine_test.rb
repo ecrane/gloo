@@ -332,4 +332,17 @@ class EngineTest < BaseTest
     assert_equal Gloo::Core::Error::SYNTAX, o.heap.error.kind
   end
 
+  def test_warn_logs_with_the_location_and_is_not_an_error
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    warnings = []
+    o.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+    o.exec_env.load_location = 'x.gloo:3'
+    o.warn 'careful'
+    o.exec_env.load_location = nil
+    o.warn 'plain'
+    assert_equal [ 'x.gloo:3: careful', 'plain' ], warnings
+    refute o.error?
+  end
+
 end

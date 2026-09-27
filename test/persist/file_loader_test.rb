@@ -448,4 +448,15 @@ class FileLoaderTest < BaseEngineTest
     FileUtils.remove_entry @dir if @dir
   end
 
+  def test_bad_value_in_a_file_warns_with_its_location
+    warnings = capture_warnings do
+      load_text "a [can] :\n  c [int] : x\n"
+    end
+    assert_equal [ "#{@dir}/t.gloo:2: 'x' is not an integer; using 0." ], warnings
+    refute @engine.error?
+    assert_equal 0, Gloo::Core::Pn.new( @engine, 'a.c' ).resolve.value
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
 end

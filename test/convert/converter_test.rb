@@ -29,4 +29,28 @@ class ConverterTest < BaseEngineTest
     assert_equal 0, val
   end
 
+  def test_bad_value_warns_with_the_guess
+    warnings = capture_warnings do
+      assert_equal 0, @engine.converter.convert( 'x', 'Integer', 0 )
+      assert_equal 1.5, @engine.converter.convert( '1.5.5', 'Decimal', 0.0 )
+      assert_nil @engine.converter.convert( 'notadate', 'Date' )
+    end
+    assert_equal [ "'x' is not an integer; using 0.",
+                   "'1.5.5' is not a decimal number; using 1.5.",
+                   "'notadate' is not a date; using no value." ], warnings
+    refute @engine.error?
+  end
+
+  def test_good_and_blank_values_do_not_warn
+    warnings = capture_warnings do
+      @engine.converter.convert( ' 42 ', 'Integer', 0 )
+      @engine.converter.convert( '', 'Integer', 0 )
+      @engine.converter.convert( '1e3', 'Decimal', 0.0 )
+      @engine.converter.convert( 'tomorrow', 'Date' )
+      @engine.converter.convert( 'noon', 'Time' )
+      @engine.converter.convert( '', 'DateTime' )
+    end
+    assert_empty warnings
+  end
+
 end

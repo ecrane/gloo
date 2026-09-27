@@ -12,9 +12,16 @@ module Gloo
       # Convert the given string value to an integer.
       #
       def convert( value )
-        return nil if value.blank?
-        
+        return 0 if value.blank?
+
         return value.to_i
+      end
+
+      #
+      # Is the value really an integer? A blank value is no value (0).
+      #
+      def valid?( value, _result )
+        return value.blank? || value.match?( /\A\s*[-+]?\d+\s*\z/ )
       end
 
     end

@@ -374,6 +374,17 @@ module Gloo
       end
 
       #
+      # Report a warning: the command was done, but probably not the
+      # way it was meant (eg. a value that isn't really an integer,
+      # used as a best guess). Only logged, with the location in front
+      # of the message: it doesn't set the error or run on_error.
+      #
+      def warn( msg )
+        location = @exec_env&.current_location
+        @log.warn( location ? "#{location}: #{msg}" : msg )
+      end
+
+      #
       # Log an exception.
       # This function does not log the full backtrace, but
       # does write part of it to the log.

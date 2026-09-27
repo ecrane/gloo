@@ -15,6 +15,19 @@ module Gloo
         return value.to_f
       end
 
+      #
+      # Is the value really a decimal number? A blank value is no
+      # value (0.0).
+      #
+      def valid?( value, _result )
+        return true if value.blank?
+
+        Float( value.strip )
+        return true
+      rescue ArgumentError
+        return false
+      end
+
     end
   end
 end

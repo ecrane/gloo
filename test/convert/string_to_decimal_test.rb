@@ -22,4 +22,11 @@ class StringToDecimalTest < BaseEngineTest
     assert_equal 7.1, x.value
   end
 
+  def test_valid
+    o = Gloo::Convert::StringToDecimal.new
+    %w[1.5 -2 1e3].each { |v| assert o.valid?( v, nil ), v }
+    assert o.valid?( '', nil )
+    %w[x 1,5 1.5.5].each { |v| refute o.valid?( v, nil ), v }
+  end
+
 end

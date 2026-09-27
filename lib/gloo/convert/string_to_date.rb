@@ -21,6 +21,20 @@ module Gloo
         return Chronic.parse( value )
       end
 
+      #
+      # Is the value really a date? A blank value is no value.
+      #
+      def valid?( value, result )
+        return value.blank? || !result.nil?
+      end
+
+      #
+      # Describe the guess for a warning.
+      #
+      def describe( result )
+        return result.strftime( Gloo::Objs::Date::DEFAULT_FORMAT )
+      end
+
     end
   end
 end

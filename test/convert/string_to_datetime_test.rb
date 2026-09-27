@@ -20,4 +20,11 @@ class StringToDateTimeTest < BaseEngineTest
     assert dt.value.start_with?( DateTime.now.strftime( '%Y.%m.%d' ) )
   end
 
+  def test_valid
+    o = Gloo::Convert::StringToDateTime.new
+    assert o.valid?( '2026-02-28 13:45', o.convert( '2026-02-28 13:45' ) )
+    refute o.valid?( 'notadatetime', o.convert( 'notadatetime' ) )
+    refute o.valid?( '2026-02-28 25:99', o.convert( '2026-02-28 25:99' ) )
+  end
+
 end

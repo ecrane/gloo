@@ -16,6 +16,22 @@ module Gloo
         return Chronic.parse( value )
       end
 
+      #
+      # Is the value really a date and time? A blank value is no value.
+      #
+      def valid?( value, result )
+        return true if value.blank?
+
+        return !result.nil? && !StringToTime.clock_out_of_range?( value )
+      end
+
+      #
+      # Describe the guess for a warning.
+      #
+      def describe( result )
+        return result.strftime( Gloo::Objs::DateTime::DEFAULT_FORMAT )
+      end
+
     end
   end
 end

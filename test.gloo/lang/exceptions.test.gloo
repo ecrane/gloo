@@ -106,3 +106,16 @@ tests.lang.exceptions [can] :
       eval ^^.error_data.location = 'tests.lang.exceptions.confirm_error_location.on_test, line 2'
       assert "expected the location of the failed line"
 
+  num [int] : 5
+
+  confirm_bad_value_is_a_warning [test] :
+    description [string] : A value that isn't really of its type is a warning, not an error; the best guess is used.
+    on_test [script] :
+      put false into ^^.err_fired
+      put 'x' into ^^.num
+      eval ^^.err_fired = false
+      assert "expected a bad value to not fire on_error"
+
+      eval ^^.num = 0
+      assert "expected the best guess, 0"
+

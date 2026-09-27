@@ -12,6 +12,7 @@ module Gloo
       KEYWORD_SHORT = 'bool'.freeze
       TRUE = 'true'.freeze
       FALSE = 'false'.freeze
+      BOOLEAN_STRINGS = [ TRUE, FALSE, 't', 'f' ].freeze
 
       #
       # The name of the object type.
@@ -32,6 +33,20 @@ module Gloo
       #
       def set_value( new_value )
         self.value = Gloo::Objs::Boolean.coerse_to_bool( new_value )
+        return unless Gloo::Objs::Boolean.bad_value?( new_value )
+
+        @engine.warn "'#{new_value}' is not true or false; using #{self.value}."
+      end
+
+      #
+      # Is the value a string that isn't a boolean? A blank value is
+      # no value (false).
+      #
+      def self.bad_value?( new_value )
+        return false unless new_value.is_a?( ::String )
+        return false if new_value.strip.empty?
+
+        return !BOOLEAN_STRINGS.include?( new_value.strip.downcase )
       end
 
       #
