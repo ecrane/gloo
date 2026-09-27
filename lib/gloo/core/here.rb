@@ -23,11 +23,16 @@ module Gloo
       #
       def self.expand_here( engine, pn )
         target = engine.exec_env.here_obj
+        # Outside a running script there's nothing for ^ to be
+        # relative to; leave the path as is, so the lookup finds nothing.
+        return unless target
 
         here = pn.elements.first
         remainder = pn.elements[ 1..-1 ].join( '.' )
 
-        here.length.times { target = target.parent }
+        here.length.times { target = target&.parent }
+        return unless target
+
         full_path = target.pn.empty? ? remainder : "#{target.pn}.#{remainder}"
         pn.set_to full_path
       end

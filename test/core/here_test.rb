@@ -46,4 +46,17 @@ class HereTest < BaseEngineTest
     assert_equal 5, @engine.heap.it.value
   end
 
+  def test_here_ref_outside_a_script_finds_nothing
+    @engine.parser.run 'create x as int : 3'
+    assert_nil Gloo::Core::Pn.new( @engine, '^.x' ).resolve
+    refute Gloo::Core::Pn.new( @engine, '^.x' ).exists?
+  end
+
+  def test_here_ref_past_the_root_finds_nothing
+    @engine.parser.run 'create x as int : 3'
+    @engine.parser.run 'create s as script : "show ^^^^.x"'
+    @engine.parser.run 'run s'
+    assert_nil @engine.heap.it.value
+  end
+
 end

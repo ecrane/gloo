@@ -98,4 +98,14 @@ class AliasTest < BaseEngineTest
     refute o.is_container?
   end
 
+  def test_path_through_alias_to_missing_object
+    @engine.parser.run 'create ln as alias : no.such.obj'
+    ln = @engine.heap.root.find_child( 'ln' )
+    assert_nil ln.find_child( 'x' )
+    assert_nil Gloo::Core::Pn.new( @engine, 'ln.x' ).resolve
+
+    @engine.parser.run 'put 1 into ln.x'
+    assert @engine.error?
+  end
+
 end

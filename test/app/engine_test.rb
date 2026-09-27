@@ -22,6 +22,20 @@ class EngineTest < BaseTest
     assert o.mode
   end
 
+  def test_err_before_start_only_logs
+    o = Gloo::App::Engine.new( default_context )
+    o.log.quiet = true
+    o.err 'something went wrong'
+    assert_nil o.heap
+  end
+
+  def test_bad_app_mode_before_start_falls_back_to_cli
+    context = Gloo::App::EngineContext.new(
+      [ '--quiet', '--app' ], nil, nil, default_user_root )
+    o = Gloo::App::Engine.new( context )
+    assert_equal Gloo::App::Mode::CLI, o.args.detect_mode
+  end
+
   def test_that_the_engine_has_args
     o = Gloo::App::Engine.new( default_context )
     assert o.args

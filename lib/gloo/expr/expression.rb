@@ -90,6 +90,11 @@ module Gloo
 
         ob = ref.resolve
         return ob.value if ob
+
+        # A missing object partway along the path is reported (a missing
+        # final object is not, yet).
+        @engine.err "Object '#{ref.src}' was not found." unless ref.get_parent
+        return nil
       end
 
       #

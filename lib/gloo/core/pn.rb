@@ -142,7 +142,20 @@ module Gloo
       end
 
       #
+      # Expand any here (^) or context (@) reference into the
+      # full path, so the lookup below starts from the heap root.
+      #
+      def expand_refs
+        Here.expand_here( @engine, self ) if Here.includes_here_ref?( @elements )
+        expand_context if self.includes_context?
+      end
+
+      #
       # Get the parent that contains the object referenced.
+      #
+      # This is a lookup, not a use of the object: a missing element
+      # returns nil without reporting an error. A caller that needs the
+      # object reports its own error.
       #
       def get_parent
         o = @engine.heap.root
@@ -150,10 +163,7 @@ module Gloo
         if self.includes_path?
           @elements[ 0..-2 ].each do |e|
             o = o.find_child( e )
-            if o.nil?
-              @engine.err "Object '#{e}' was not found."
-              return nil
-            end
+            return nil if o.nil?
           end
         end
 
@@ -162,12 +172,14 @@ module Gloo
 
       #
       # Does the object at the path exist?
+      # A question, so a missing object is an answer, not an error.
       #
       def exists?
         return true if self.root?
         return true if self.it?
         return true if self.error?
 
+        expand_refs
         parent = self.get_parent
         return false unless parent
 
@@ -186,6 +198,7 @@ module Gloo
       #
       # Resolve the pathname reference.
       # Find the object referenced or return nil if it is not found.
+      # Like get_parent, a missing object is not reported here.
       #
       def resolve
         return @engine.heap.root if self.root?
@@ -194,14 +207,7 @@ module Gloo
         return Gloo::Core::GlooSystem.new(
           @engine, self ) if self.gloo_sys?
 
-        if Here.includes_here_ref?( @elements )
-          Here.expand_here( @engine, self )
-        end
-
-        if self.includes_context?
-          expand_context
-        end
-
+        expand_refs
         parent = self.get_parent
         return nil unless parent
 

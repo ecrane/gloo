@@ -261,7 +261,7 @@ module Gloo
         if is_alias?
           ln = Gloo::Core::Pn.new( @engine, self.value )
           redirect = ln.resolve
-          return redirect.find_child( name )
+          return redirect&.find_child( name )
         end
         return nil
       end

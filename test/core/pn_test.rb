@@ -324,4 +324,35 @@ class PnTest < BaseEngineTest
     assert_equal y,z
   end
 
+  def test_missing_parent_is_not_an_error
+    o = Gloo::Core::Pn.new @engine, 'a.b.c'
+    refute o.get_parent
+    refute o.resolve
+    refute o.exists?
+    refute @engine.error?
+  end
+
+  def test_exists_expands_here_reference
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.x as int : 3'
+    @engine.parser.run 'create c.s as script : "exists? instance ^.x"'
+    @engine.parser.run 'run c.s'
+    assert_equal true, @engine.heap.it.value
+
+    s = @engine.heap.root.find_child( 'c' ).find_child( 's' )
+    @engine.exec_env.here.push s
+    assert Gloo::Core::Pn.new( @engine, '^.x' ).exists?
+    refute Gloo::Core::Pn.new( @engine, '^.nope' ).exists?
+    @engine.exec_env.here.pop
+    refute @engine.error?
+  end
+
+  def test_exists_expands_context_reference
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.x as int : 3'
+    @engine.parser.run '@ c'
+    assert Gloo::Core::Pn.new( @engine, '@.x' ).exists?
+    refute Gloo::Core::Pn.new( @engine, '@.nope' ).exists?
+  end
+
 end

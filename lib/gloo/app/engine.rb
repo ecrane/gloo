@@ -331,8 +331,14 @@ module Gloo
       # runs the on_error script (if any) unless we're already inside
       # one, so a broken handler can't loop.
       #
+      # Before the engine has started (eg. while start is still
+      # validating the command line) there's no heap to hold the
+      # error and nothing to handle it, so it is only logged.
+      #
       def err( msg, backtrace=nil )
         @log.error msg
+        return unless @heap
+
         @heap.error.set_to msg
 
         return if @handling_error

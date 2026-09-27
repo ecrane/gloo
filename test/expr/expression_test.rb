@@ -96,4 +96,12 @@ class ExpressionTest < BaseEngineTest
     assert @engine.error?
   end
 
+  def test_missing_middle_of_path_is_reported
+    expr = Gloo::Expr::Expression.new( @engine, [ 'no.such.obj' ] )
+    assert_nil expr.evaluate
+    assert @engine.error?
+    assert_equal "Object 'no.such.obj' was not found.", @engine.heap.error.value
+    assert_equal 1, @engine.heap.error.error_count
+  end
+
 end

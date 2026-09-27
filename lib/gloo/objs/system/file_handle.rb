@@ -13,6 +13,7 @@ module Gloo
 
       FILE_NAME_ERR = 'file and path name expected'.freeze
       FILE_MISSING_ERR = 'file not found'.freeze
+      READ_TARGET_ERR = 'Target for read could not be resolved: '.freeze
 
 
       #
@@ -83,6 +84,8 @@ module Gloo
         if @params&.token_count&.positive?
           pn = Gloo::Core::Pn.new( @engine, @params.first )
           o = pn.resolve
+          return @engine.err( "#{READ_TARGET_ERR}#{@params.first}" ) unless o
+
           o.set_value data
         else
           @engine.heap.it.set_to data
@@ -254,7 +257,7 @@ module Gloo
             'on disk. The string value of the file object is the path ' \
             'and name of the file.',
           :messages => [
-            'read ({into.obj}) — Read the file and put the data in the specified object. If {into.obj} is not specified, the data will be in it.',
+            'read ({into.obj}) — Read the file and put the data in the specified object. If {into.obj} is not specified, the data will be in it. If {into.obj} does not exist, that is an error.',
             'write ({from.obj}) — Write the data in {from.obj} into the file.',
             'append ({data}) — Append the given data to the file as a new line. Adds a leading newline first if the file doesn\'t already end with one.',
             'delete — Delete the file.',

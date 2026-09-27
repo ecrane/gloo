@@ -187,4 +187,18 @@ class FileHandleTest < BaseEngineTest
     refute @engine.heap.it.value
   end
 
+  def test_read_into_missing_object_is_an_error
+    tmp = Tempfile.new( [ 'gloo_test', '.txt' ] )
+    tmp.write( 'content' )
+    tmp.close
+
+    @engine.parser.run "create f as file : '#{tmp.path}'"
+    @engine.parser.run 'tell f to read (no.such.obj)'
+    assert @engine.error?
+    assert_equal "#{Gloo::Objs::FileHandle::READ_TARGET_ERR}no.such.obj",
+      @engine.heap.error.value
+  ensure
+    tmp.unlink
+  end
+
 end
