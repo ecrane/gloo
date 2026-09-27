@@ -94,7 +94,7 @@ module Gloo
 
         # The object is being used as a value, so a missing object is
         # a runtime error (the lookup itself doesn't report it).
-        @engine.err "Object '#{name}' was not found."
+        @engine.err Gloo::Core::NotFound.object( name )
         return nil
       end
 

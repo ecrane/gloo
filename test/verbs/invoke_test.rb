@@ -43,7 +43,7 @@ class InvokeTest < BaseEngineTest
   def test_unresolved_target_is_an_error
     @engine.parser.run 'invoke no.such.function'
     assert @engine.error?
-    assert_match Gloo::Core::Invoker::NOT_FOUND_ERR, @engine.heap.error.value
+    assert_equal Gloo::Core::NotFound.object( 'no.such.function' ), @engine.heap.error.value
   end
 
   def test_target_that_is_not_a_function_is_an_error

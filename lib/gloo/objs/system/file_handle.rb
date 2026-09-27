@@ -12,8 +12,6 @@ module Gloo
       KEYWORD_SHORT = 'dir'.freeze
 
       FILE_NAME_ERR = 'file and path name expected'.freeze
-      FILE_MISSING_ERR = 'file not found'.freeze
-      READ_TARGET_ERR = 'Target for read could not be resolved: '.freeze
 
 
       #
@@ -84,7 +82,7 @@ module Gloo
         if @params&.token_count&.positive?
           pn = Gloo::Core::Pn.new( @engine, @params.first )
           o = pn.resolve
-          return @engine.err( "#{READ_TARGET_ERR}#{@params.first}" ) unless o
+          return @engine.err( Gloo::Core::NotFound.object( @params.first ) ) unless o
 
           o.set_value data
         else
@@ -235,7 +233,7 @@ module Gloo
         end
 
         unless File.exist?( value )
-          @engine.log.error FILE_MISSING_ERR
+          @engine.log.error Gloo::Core::NotFound.file( value )
           return false
         end
 

@@ -28,8 +28,7 @@ class TellTest < BaseEngineTest
   def test_object_not_found
     @engine.parser.run 'tell x.y.z to run'
     assert @engine.error?
-    msg = Gloo::Exec::Dispatch::OBJ_NOT_FOUND_ERR
-    assert @engine.heap.error.value.start_with? msg
+    assert_equal Gloo::Core::NotFound.object( 'x.y.z' ), @engine.heap.error.value
   end
 
   def test_unknown_msg

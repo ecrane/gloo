@@ -67,7 +67,7 @@ module Gloo
             'directly rather than going through it.',
           :errors => [
             "#{Gloo::Core::Invoker::NO_TARGET_ERR} — No function reference was given.",
-            "#{Gloo::Core::Invoker::NOT_FOUND_ERR}{path.to.function} — The path doesn't resolve to any object.",
+            "Object '{path.to.function}' was not found. — The path doesn't resolve to any object.",
             "#{Gloo::Core::Invoker::NOT_FUNCTION_ERR}{path.to.function} — The path resolves to an object that isn't a function.",
             "#{Gloo::Core::Invoker::PARAM_COUNT_ERR}{path.to.function} (expected N, got N) — The number of params given doesn't match what the function declares."
           ],

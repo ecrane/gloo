@@ -97,7 +97,7 @@ module Gloo
         if @params&.token_count&.positive?
           pn = Gloo::Core::Pn.new( @engine, @params.tokens.first )
           unless pn&.exists?
-            @engine.err 'Source path for objects does not exist'
+            @engine.err Gloo::Core::NotFound.object( @params.tokens.first )
             return
           end
         else
@@ -124,7 +124,7 @@ module Gloo
         if @params&.token_count&.positive?
           pn = Gloo::Core::Pn.new( @engine, @params.tokens.first )
           unless pn&.exists?
-            @engine.err 'Destination path for parsed objects does not exist'
+            @engine.err Gloo::Core::NotFound.object( @params.tokens.first )
             return
           end
         else

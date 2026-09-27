@@ -18,7 +18,6 @@ module Gloo
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
       APP_NOT_RUNING_ERR = 'The application is not running!'.freeze
       BAD_TARGET_ERR = 'Bad redirect target!'.freeze
-      TARGET_NOT_FOUND_ERR = 'Redirect target could not be resolved: '.freeze
 
       #
       # Run the verb.
@@ -33,7 +32,7 @@ module Gloo
           redirect_hard
         else
           determine_target
-          return @engine.err( "#{TARGET_NOT_FOUND_ERR}#{@tokens.second}" ) unless @target_obj
+          return @engine.err( Gloo::Core::NotFound.object( @tokens.second ) ) unless @target_obj
 
           redirect_to_target
         end
@@ -166,7 +165,7 @@ module Gloo
             'the target page.',
           :errors => [
             "#{MISSING_EXPR_ERR} — Redirect requires the target page or script to redirect to.",
-            "#{TARGET_NOT_FOUND_ERR}{target} — The target object does not exist.",
+            "Object '{target}' was not found. — The target object does not exist.",
             "#{BAD_TARGET_ERR} — The target object cannot receive the redirect.",
             "#{APP_NOT_RUNING_ERR} — Page cannot redirect because the application is not running."
           ],

@@ -13,7 +13,6 @@ module Gloo
       INTO = 'into'.freeze
       MISSING_EXPR_ERR = 'Missing Expression!'.freeze
       INTO_MISSING_ERR = 'Target (into) missing!'.freeze
-      TARGET_ERR = 'Target could not be resolved: '.freeze
 
       #
       # Run the verb.
@@ -80,7 +79,7 @@ module Gloo
         pn = Gloo::Core::Pn.new( @engine, target )
         o = pn.resolve
         if o.nil?
-          @engine.err "#{TARGET_ERR} #{target}"
+          @engine.err Gloo::Core::NotFound.object( target )
         elsif value.count.positive?
           errors_before = @engine.heap.error.error_count
           expr = Gloo::Expr::Expression.new( @engine, value )
@@ -121,7 +120,7 @@ module Gloo
           :errors => [
             "#{MISSING_EXPR_ERR} — The into keyword is missing, or no source expression is provided.",
             "#{INTO_MISSING_ERR} — The destination is not specified.",
-            "#{TARGET_ERR}{dst.path} — The destination of the put cannot be resolved."
+            "Object '{dst.path}' was not found. — The destination of the put cannot be resolved."
           ],
           :examples => <<~EXAMPLES.strip
             > put 'one' into str

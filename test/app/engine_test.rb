@@ -302,7 +302,7 @@ class EngineTest < BaseTest
     o.parser.run 'tell nope to run'
     assert_equal 1, o.heap.root.find_child( 'x' ).value
     assert o.error?
-    assert_equal 'Object was not found:  nope', o.heap.error.value
+    assert_equal Gloo::Core::NotFound.object( 'nope' ), o.heap.error.value
   end
 
 end

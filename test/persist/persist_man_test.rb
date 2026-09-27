@@ -114,7 +114,7 @@ class PersistManTest < BaseEngineTest
 
     refute result
     assert @engine.error?
-    assert_equal 'File not found: no_such_file', @engine.heap.error.value
+    assert_equal Gloo::Core::NotFound.file( 'no_such_file' ), @engine.heap.error.value
   end
 
   def test_load_of_a_good_file_returns_true

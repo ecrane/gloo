@@ -10,7 +10,6 @@ module Gloo
 
       KEYWORD = 'list'.freeze
       KEYWORD_SHORT = '.'.freeze
-      TARGET_MISSING_ERR = 'Object does not exist: '.freeze
 
       #
       # Run the verb.
@@ -24,7 +23,7 @@ module Gloo
         if obj
           show_target( obj, levels, indent )
         else
-          @engine.err "#{TARGET_MISSING_ERR} #{target}"
+          @engine.err Gloo::Core::NotFound.object( @tokens.second )
         end
       end
 
@@ -191,7 +190,7 @@ module Gloo
           :result => 'Object and children are listed out in the CLI. ' \
             'Doc lines are included when the list_docs setting is on.',
           :errors => [
-            "#{TARGET_MISSING_ERR}{path.to.object} — The object specified that is to be listed could not be found."
+            "Object '{path.to.object}' was not found. — The object specified that is to be listed could not be found."
           ],
           :examples => <<~EXAMPLES.strip
             > list

@@ -98,7 +98,7 @@ module Gloo
             "to the existing object's current value.",
           :errors => [
             "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created.",
-            'Could not create object. Bad path: {path} — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist. Nothing is created, and it is unchanged.'
+            "Could not create '{path}': Object '{parent.path}' was not found. — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist. Nothing is created, and it is unchanged."
           ],
           :examples => <<~EXAMPLES.strip
             # Basic examples of creating an object from the gloo shell:

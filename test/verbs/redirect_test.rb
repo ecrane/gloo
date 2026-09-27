@@ -27,7 +27,7 @@ class RedirectTest < BaseEngineTest
   def test_redirect_to_missing_target_is_an_error
     @engine.parser.run 'redirect no.such.script'
     assert @engine.error?
-    assert_equal "#{Gloo::Verbs::Redirect::TARGET_NOT_FOUND_ERR}no.such.script",
+    assert_equal Gloo::Core::NotFound.object( 'no.such.script' ),
       @engine.heap.error.value
   end
 

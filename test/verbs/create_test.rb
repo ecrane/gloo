@@ -68,7 +68,8 @@ class CreateTest < BaseEngineTest
     @engine.heap.it.set_to 'before'
     @engine.parser.run 'create no.such.x as int : 1'
     assert @engine.error?
-    assert_equal 'Could not create object.  Bad path: no.such.x', @engine.heap.error.value
+    assert_equal "Could not create 'no.such.x': Object 'no.such' was not found.",
+      @engine.heap.error.value
     assert_equal 'before', @engine.heap.it.value
     assert_equal 0, @engine.heap.root.child_count
   end

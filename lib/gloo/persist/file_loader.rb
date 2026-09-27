@@ -64,7 +64,7 @@ module Gloo
       #
       def load
         unless @mech.exist?( @pn )
-          @engine.err "File '#{@pn}' does not exist."
+          @engine.err Gloo::Core::NotFound.file( @pn )
           return
         end
 

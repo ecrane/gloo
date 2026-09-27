@@ -31,8 +31,7 @@ class ListTest < BaseEngineTest
   def test_help_not_fount
     @engine.parser.run 'list asjdfajkfjekajfe'
     assert @engine.error?
-    msg = Gloo::Verbs::List::TARGET_MISSING_ERR
-    assert @engine.heap.error.value.start_with? msg
+    assert_equal Gloo::Core::NotFound.object( 'asjdfajkfjekajfe' ), @engine.heap.error.value
   end
 
   # -------------------------------------------------------------------

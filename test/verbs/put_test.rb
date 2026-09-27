@@ -86,8 +86,7 @@ class PutTest < BaseEngineTest
   def test_dst_resolution_err
     @engine.parser.run 'put x into y'
     assert @engine.error?
-    msg = Gloo::Verbs::Put::TARGET_ERR
-    assert @engine.heap.error.value.start_with? msg
+    assert_equal Gloo::Core::NotFound.object( 'y' ), @engine.heap.error.value
   end
 
   def test_put_leaves_target_alone_when_value_is_missing

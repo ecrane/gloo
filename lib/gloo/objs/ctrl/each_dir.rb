@@ -46,7 +46,8 @@ module Gloo
         return unless folder
 
         unless Dir.exist?( folder )
-          @engine.err "Folder does not exist: #{folder}"
+          @engine.err Gloo::Core::NotFound.folder( folder )
+          return
         end
 
         Dir.glob( "#{folder}*" ).each do |f|

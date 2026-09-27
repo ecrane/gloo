@@ -57,16 +57,14 @@ class MoveTest < BaseEngineTest
     @engine.parser.run 'create can as container'
     @engine.parser.run 'move x to can'
     assert @engine.error?
-    msg = Gloo::Verbs::Move::MISSING_SRC_OBJ_ERR
-    assert @engine.heap.error.value.start_with? msg
+    assert_equal Gloo::Core::NotFound.object( 'x' ), @engine.heap.error.value
   end
 
   def test_moving_with_bad_dst_path
     @engine.parser.run 'create x as string'
     @engine.parser.run 'move x to cant'
     assert @engine.error?
-    msg = Gloo::Verbs::Move::MISSING_DST_OBJ_ERR
-    assert @engine.heap.error.value.start_with? msg
+    assert_equal Gloo::Core::NotFound.object( 'cant' ), @engine.heap.error.value
   end
 
 end

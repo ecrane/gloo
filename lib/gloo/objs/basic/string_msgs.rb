@@ -559,7 +559,7 @@ module Gloo
       def split_list_target( token )
         pn = Gloo::Core::Pn.new( @engine, token )
         unless pn&.exists?
-          @engine.log.error 'Target container path does not exist!'
+          @engine.log.error Gloo::Core::NotFound.object( token )
           @engine.heap.it.set_to false
           return nil
         end

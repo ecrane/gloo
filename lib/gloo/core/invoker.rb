@@ -12,7 +12,6 @@ module Gloo
     class Invoker
 
       NO_TARGET_ERR = 'Missing function reference!'.freeze
-      NOT_FOUND_ERR = 'Object was not found: '.freeze
       NOT_FUNCTION_ERR = 'Not a function: '.freeze
       PARAM_COUNT_ERR = 'Wrong number of parameters for function: '.freeze
 
@@ -49,7 +48,7 @@ module Gloo
         func = pn.resolve
 
         unless func
-          engine.err "#{NOT_FOUND_ERR}#{target}"
+          engine.err Gloo::Core::NotFound.object( target )
           return nil
         end
 

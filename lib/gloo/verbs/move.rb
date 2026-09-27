@@ -12,9 +12,7 @@ module Gloo
       KEYWORD_SHORT = 'mv'.freeze
       TO = 'to'.freeze
       MISSING_SRC_ERR = 'Object to move was not specified!'.freeze
-      MISSING_SRC_OBJ_ERR = 'Could not find object to move: '.freeze
       MISSING_DST_ERR = "'Move' must include 'to' parent object!".freeze
-      MISSING_DST_OBJ_ERR = 'Could not resolve target: '.freeze
 
       #
       # Run the verb.
@@ -64,7 +62,7 @@ module Gloo
         pn = Gloo::Core::Pn.new( @engine, name )
         o = pn.resolve
 
-        @engine.err( "#{MISSING_SRC_OBJ_ERR} #{name}" ) unless o
+        @engine.err( Gloo::Core::NotFound.object( name ) ) unless o
         return o
       end
 
@@ -80,7 +78,7 @@ module Gloo
 
         pn = Gloo::Core::Pn.new( @engine, dst )
         o = pn.resolve
-        @engine.err( "#{MISSING_DST_OBJ_ERR} '#{dst}'" ) unless o
+        @engine.err( Gloo::Core::NotFound.object( dst ) ) unless o
         return o
       end
 
@@ -104,9 +102,9 @@ module Gloo
           :result => 'The object will now be in the new location.',
           :errors => [
             "#{MISSING_SRC_ERR} The {path.to.object} is not specified.",
-            "#{MISSING_SRC_OBJ_ERR}{path.to.object} — The {path.to.object} cannot be resolved.",
+            "Object '{path.to.object}' was not found. — The {path.to.object} cannot be resolved.",
             "#{MISSING_DST_ERR} The {new.parent} is not specified.",
-            "#{MISSING_DST_OBJ_ERR}{new.parent} — The {new.parent} cannot be resolved."
+            "Object '{new.parent}' was not found. — The {new.parent} cannot be resolved."
           ],
           :examples => <<~EXAMPLES.strip
             can [can] :

@@ -12,10 +12,8 @@ module Gloo
 
       attr_reader :maps, :mech
 
-      OBJ_NOT_FOUND_ERR = 'Could not resolve object to save: '.freeze
       PATH_EXISTS_ERR = 'Will not overwrite a file not already saved there: '.freeze
       RELOAD_DIRTY_WARNING = 'Reloading will discard unsaved changes in: '.freeze
-      FILE_NOT_FOUND_ERR = 'File not found: '.freeze
 
       #
       # Constructor for the persistence manager.
@@ -92,7 +90,7 @@ module Gloo
       def load( name )
         pns = get_full_path_names name
         if pns.nil? || pns.empty?
-          @engine.err( "#{FILE_NOT_FOUND_ERR}#{name}" ) unless name.to_s.strip.empty?
+          @engine.err( Gloo::Core::NotFound.file( name ) ) unless name.to_s.strip.empty?
           return false
         end
 
@@ -239,7 +237,7 @@ module Gloo
       #
       def resolve_for_save( name )
         obj = Gloo::Core::Pn.new( @engine, name ).resolve
-        @engine.err( "#{OBJ_NOT_FOUND_ERR}#{name}" ) unless obj
+        @engine.err( Gloo::Core::NotFound.object( name ) ) unless obj
         return obj
       end
 

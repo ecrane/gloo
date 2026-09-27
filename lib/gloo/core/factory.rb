@@ -156,7 +156,8 @@ module Gloo
         end
 
         unless parent
-          @engine.err "Could not create object.  Bad path: #{params[ :name ]}"
+          missing = pn.elements[ 0..-2 ].join( '.' )
+          @engine.err "Could not create '#{params[ :name ]}': #{Gloo::Core::NotFound.object( missing )}"
           return nil
         end
 

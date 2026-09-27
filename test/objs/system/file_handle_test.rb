@@ -195,7 +195,7 @@ class FileHandleTest < BaseEngineTest
     @engine.parser.run "create f as file : '#{tmp.path}'"
     @engine.parser.run 'tell f to read (no.such.obj)'
     assert @engine.error?
-    assert_equal "#{Gloo::Objs::FileHandle::READ_TARGET_ERR}no.such.obj",
+    assert_equal Gloo::Core::NotFound.object( 'no.such.obj' ),
       @engine.heap.error.value
   ensure
     tmp.unlink

@@ -41,7 +41,7 @@ module Gloo
         if o
           o.send_message 'run'
         else
-          engine.err "Could not send message to object.  Bad path: #{path_name}"
+          engine.err Gloo::Core::NotFound.object( path_name )
         end
       end
 

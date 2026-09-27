@@ -35,7 +35,7 @@ module Gloo
         verb = dic.find_verb( tokens.verb )
         return verb.new( @engine, tokens, params ) if verb
 
-        @engine.err "Verb '#{tokens.verb}' was not found."
+        @engine.err Gloo::Core::NotFound.verb( tokens.verb )
         return nil
       end
 

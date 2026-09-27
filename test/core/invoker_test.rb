@@ -20,7 +20,7 @@ class InvokerTest < BaseEngineTest
     result = Gloo::Core::Invoker.invoke( @engine, 'no.such.function', [] )
     assert_nil result
     assert @engine.error?
-    assert_match Gloo::Core::Invoker::NOT_FOUND_ERR, @engine.heap.error.value
+    assert_equal Gloo::Core::NotFound.object( 'no.such.function' ), @engine.heap.error.value
   end
 
   def test_target_that_is_not_a_function_is_an_error
