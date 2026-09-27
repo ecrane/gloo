@@ -175,6 +175,7 @@ module Gloo
             'yyyy — Get the 4 digit year portion of the date. Put the 4 digit year into it.',
             'format ({fmt}) — Format the date using a strftime-style format string. Default if none given: %Y-%m-%d. It will have the formatted string.'
           ],
+          :notes => 'A value that isn\'t a date (eg. \'2026-02-31\') is left with no value, with a warning: "\'2026-02-31\' is not a date; using no value."',
           :examples => <<~EXAMPLES.strip
             #
             # Show the current date.

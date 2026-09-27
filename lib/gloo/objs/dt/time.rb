@@ -175,6 +175,7 @@ module Gloo
             'am — Get the am/pm portion of the time. Put "am" or "pm" into it.',
             'format ({fmt}) — Format the time using a strftime-style format string. Default if none given: %H:%M:%S. It will have the formatted string.'
           ],
+          :notes => 'A value that isn\'t a time is left with no value, with a warning. A clock time out of range (eg. \'25:99\') is used as a best guess, with a warning that shows the time used.',
           :examples => <<~EXAMPLES.strip
             #
             # Show the current time.

@@ -201,4 +201,24 @@ class FileHandleTest < BaseEngineTest
     tmp.unlink
   end
 
+  def test_file_system_failures_are_errors
+    require 'tmpdir'
+    Dir.mktmpdir do |dir|
+      missing = File.join( dir, 'no', 'such', 'x.txt' )
+      @engine.parser.run "create w as file : '#{missing}'"
+      @engine.parser.run "tell w to write ('hi')"
+      assert_equal Gloo::Core::NotFound.file( missing ), @engine.heap.error.value
+
+      @engine.heap.error.clear
+      @engine.parser.run 'tell w to delete'
+      assert_equal Gloo::Core::NotFound.file( missing ), @engine.heap.error.value
+
+      @engine.heap.error.clear
+      @engine.parser.run "create d as file : '#{dir}'"
+      @engine.parser.run 'tell d to read'
+      assert @engine.heap.error.value.start_with?( "Could not read '#{dir}'" )
+      assert_equal Gloo::Core::Error::RUNTIME, @engine.heap.error.kind
+    end
+  end
+
 end

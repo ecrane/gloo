@@ -8,6 +8,8 @@ module Gloo
   module Expr
     class Expression
 
+      DIVIDE_BY_ZERO_ERR = 'Division by zero.'.freeze
+
       # ---------------------------------------------------------------------
       #    Constructor
       # ---------------------------------------------------------------------
@@ -68,9 +70,29 @@ module Gloo
         @op ||= Gloo::Core::Op.default_op
         l = evaluate_sym @left
         r = evaluate_sym @right
-        @left = @op.perform l, r
+        @left = apply_op( @op, l, r )
         @right = nil
         @op = nil
+      end
+
+      #
+      # Apply the operator. An operator that can't be used with the value
+      # (eg. 'a' / 2), or a division by zero, is a runtime error, and the
+      # result is no value. A missing value (nil) was already reported.
+      #
+      def apply_op( op, left, right )
+        result = op.perform( left, right )
+        if op.is_a?( Gloo::Expr::OpDiv ) && result.is_a?( Float ) &&
+           ( result.nan? || result.infinite? )
+          raise ZeroDivisionError
+        end
+        return result unless result.nil? && !left.nil?
+
+        @engine.err "Operator '#{op.class::SYMBOL}' can't be used with '#{left}'."
+        return nil
+      rescue ZeroDivisionError
+        @engine.err DIVIDE_BY_ZERO_ERR
+        return nil
       end
 
       #

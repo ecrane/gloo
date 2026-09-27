@@ -147,6 +147,7 @@ module Gloo
             'true — Set the boolean to true.',
             'false — Set the boolean to false.'
           ],
+          :notes => 'Recognized values are true, false, t and f (in any case), and integers (0 is false). Any other string is false, with a warning: "\'maybe\' is not true or false; using false." A blank value is false.',
           :examples => <<~EXAMPLES.strip
             b [can] :
               flag [boolean] : true

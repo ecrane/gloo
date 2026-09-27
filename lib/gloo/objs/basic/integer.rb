@@ -140,6 +140,7 @@ module Gloo
               'range to 6 and add 1 to the result.',
             'format ({fmt}) — With no parameter, adds comma separators (e.g. 1000 -> 1,000). With a parameter, uses it as a sprintf-style format string (e.g. \'%05d\'). It will have the formatted string.'
           ],
+          :notes => 'A value that isn\'t a whole number (eg. \'x\', \'12abc\' or \'3.7\') is used as a best guess, with a warning: "\'x\' is not an integer; using 0." A blank value is 0.',
           :examples => <<~EXAMPLES.strip
             #
             # Integer object.

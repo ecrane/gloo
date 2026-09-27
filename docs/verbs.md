@@ -75,6 +75,8 @@ put {expression} into {dst.path}
 
 `it` also picks up the result of the evaluation, same as with other verbs — see It.
 
+If the destination doesn't exist, or the expression can't be worked out (eg. it uses an object that doesn't exist), `put` reports an error and leaves the destination and `it` unchanged. A value that doesn't fit the destination's type is used as a best guess, with a warning: `put 'x' into x` (an integer) gives `0` and warns `'x' is not an integer; using 0.` (see Language, Syntax > Errors and Warnings).
+
 ## Load & Save
 
 `load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a path relative to the project folder (no extension needed) or a full path (extension required); `*` in place of a file name loads every `.gloo` file in a folder.

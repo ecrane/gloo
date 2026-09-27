@@ -35,13 +35,13 @@ module Gloo
         root = @engine.settings.ext_path
 
         unless File.exist?( root )
-          @engine.log.error "Extension directory does not exist: #{root}"
+          @engine.err Gloo::Core::NotFound.folder( root )
           return nil
         end
         
         f = File.join( root, name, name + EXT_FILE )
         unless File.exist?( f )
-          @engine.log.error "Extension start file does not exist: #{f}"
+          @engine.err Gloo::Core::NotFound.file( f )
           return nil
         end
         
@@ -62,10 +62,8 @@ module Gloo
         @engine.log.debug "Loading extension: #{name}"
         fn = ext_start_file name
 
-        unless fn
-          @engine.log.error "Extension start file not found for: #{name}"
-          return
-        end
+        # ext_start_file has already reported what's missing.
+        return unless fn
         
         @extensions[name] = fn
         register_extension name, fn
@@ -85,9 +83,8 @@ module Gloo
           inst = plugin_class.new
           ext_cb = Callback.new( @engine )
           inst.register( ext_cb )
-        rescue NameError => ex
-          @engine.log_exception ex
-          @engine.log.error "Could not find class #{class_name} in file #{full_path}"
+        rescue NameError
+          @engine.err "Could not find class '#{class_name}' in extension file '#{full_path}'."
         end
       end
 

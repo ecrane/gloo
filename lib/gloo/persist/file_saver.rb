@@ -263,7 +263,8 @@ module Gloo
         return body_value_unchanged?( node ) if node.block_style == :body
 
         trial = node.obj.class.new( @engine )
-        trial.set_value( node.raw_value )
+        # Only a comparison: any bad-value warning was given on load.
+        @engine.without_warnings { trial.set_value( node.raw_value ) }
         return trial.value == node.obj.value
       rescue
         return false

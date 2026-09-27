@@ -93,8 +93,8 @@ module Gloo
           inst = plugin_class.new
           lib_cb = Callback.new( @engine )
           inst.register( lib_cb )
-        rescue NameError => ex
-          @engine.log.error "Warning: Could not find class #{class_name}", ex
+        rescue NameError
+          @engine.err "Could not find class '#{class_name}' in library '#{name}'."
         end
       end
 

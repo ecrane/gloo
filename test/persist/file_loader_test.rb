@@ -459,4 +459,19 @@ class FileLoaderTest < BaseEngineTest
     FileUtils.remove_entry @dir if @dir
   end
 
+  def test_saving_does_not_repeat_bad_value_warnings
+    warnings = capture_warnings do
+      load_text "a [can] :\n  c [int] : x\n  d [int] : 2\n"
+    end
+    assert_equal 1, warnings.count
+
+    warnings = capture_warnings do
+      @engine.parser.run 'put 3 into a.d'
+      @engine.parser.run 'save a'
+    end
+    assert_empty warnings
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
 end

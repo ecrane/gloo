@@ -32,7 +32,16 @@ class ErrorKindTest < BaseEngineTest
     'exists?',
     'show "unclosed',
     'show 1 +',
-    'create x as nosuchtype'
+    'create x as nosuchtype',
+    'tell s to starts_with?',
+    'tell s to ends_with?',
+    'tell s to substring?',
+    'tell s to sub',
+    'tell s to gsub',
+    'tell s to split',
+    'tell s to splitl',
+    'tell s to splitr',
+    'tell s to split_list'
   ].freeze
 
   RUNTIME_ERRORS = [
@@ -41,13 +50,21 @@ class ErrorKindTest < BaseEngineTest
     'tell s to nosuchmsg',
     'put 1 into no.such.obj',
     'create no.such.x as int',
-    "tell s to index_of ('l' 99)"
+    "tell s to index_of ('l' 99)",
+    "tell s to split_list (',' no.such.obj)",
+    "tell s to split_list (',' s)",
+    'tell f to read',
+    'show 1 / 0',
+    'show 1.5 / 0',
+    "show 'a' / 2",
+    'load ext nosuchext'
   ].freeze
 
   def setup
     super
     @engine.parser.run 'create s as string : "hello"'
     @engine.parser.run 'create j as json'
+    @engine.parser.run 'create f as file : "/no/such/file.txt"'
   end
 
   def test_syntax_errors

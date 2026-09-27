@@ -284,6 +284,7 @@ module Gloo
             'end_year — Set the datetime to the end of the year.',
             'format ({fmt}) — Format the date and time using a strftime-style format string. Default if none given: %Y-%m-%d %H:%M:%S. It will have the formatted string.'
           ],
+          :notes => 'A value that isn\'t a date and time is left with no value, with a warning. A clock time out of range (eg. \'25:99\') is used as a best guess, with a warning that shows the value used.',
           :examples => <<~EXAMPLES.strip
             #
             # Show the current date and time.

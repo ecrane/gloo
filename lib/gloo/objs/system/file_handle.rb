@@ -78,7 +78,9 @@ module Gloo
       def msg_read
         return unless check_file_exists?
 
-        data = File.read( value )
+        data = file_op( 'read' ) { File.read( value ) }
+        return unless data
+
         if @params&.token_count&.positive?
           pn = Gloo::Core::Pn.new( @engine, @params.first )
           o = pn.resolve
@@ -102,9 +104,11 @@ module Gloo
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
         end
-        existing = File.exist?( value ) ? File.read( value ) : ''
-        prefix = existing.empty? || existing.end_with?( "\n" ) ? '' : "\n"
-        File.open( value, 'a' ) { |f| f.puts "#{prefix}#{data}" }
+        file_op( 'append to' ) do
+          existing = File.exist?( value ) ? File.read( value ) : ''
+          prefix = existing.empty? || existing.end_with?( "\n" ) ? '' : "\n"
+          File.open( value, 'a' ) { |f| f.puts "#{prefix}#{data}" }
+        end
       end
 
       #
@@ -118,7 +122,7 @@ module Gloo
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
         end
-        File.write( value, data )
+        file_op( 'write' ) { File.write( value, data ) }
       end
 
       #
@@ -126,7 +130,8 @@ module Gloo
       #
       def msg_delete
         return unless value
-        File.delete( value )
+
+        file_op( 'delete' ) { File.delete( value ) }
       end
 
       #
@@ -157,7 +162,7 @@ module Gloo
       # Create a directory.
       #
       def msg_mkdir
-        FileUtils.mkdir_p(value) unless Dir.exist?(value)
+        file_op( 'make folder' ) { FileUtils.mkdir_p( value ) } unless Dir.exist?( value )
       end
 
       #
@@ -208,8 +213,8 @@ module Gloo
       def msg_get_sha256
         return unless check_file_exists?
 
-        file_hash = FileHandle.hash_for_file( value )
-        @engine.heap.it.set_to file_hash
+        file_hash = file_op( 'read' ) { FileHandle.hash_for_file( value ) }
+        @engine.heap.it.set_to file_hash if file_hash
       end
 
       # 
@@ -223,17 +228,32 @@ module Gloo
       end
 
       #
+      # Run a file system operation. A failure the file system reports
+      # (no such file, a folder where a file was expected, no permission,
+      # ...) is a runtime error, and the result is nil.
+      #
+      def file_op( action )
+        return yield
+      rescue Errno::ENOENT
+        @engine.err Gloo::Core::NotFound.file( value )
+        return nil
+      rescue SystemCallError => e
+        @engine.err "Could not #{action} '#{value}': #{e.message}"
+        return nil
+      end
+
+      #
       # Check to see if the file exists.
-      # Show error if not.
+      # Report an error if not.
       #
       def check_file_exists?
         if value.blank?
-          @engine.log.error FILE_NAME_ERR
+          @engine.err FILE_NAME_ERR
           return false
         end
 
         unless File.exist?( value )
-          @engine.log.error Gloo::Core::NotFound.file( value )
+          @engine.err Gloo::Core::NotFound.file( value )
           return false
         end
 

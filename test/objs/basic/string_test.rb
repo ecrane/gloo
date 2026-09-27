@@ -471,6 +471,7 @@ class StringTest < BaseEngineTest
     o.run
 
     refute @engine.heap.it.value
+    assert_equal Gloo::Core::NotFound.object( 'no.such.dst' ), @engine.heap.error.value
   end
 
   def test_split_list_msg_target_not_a_container
@@ -483,6 +484,7 @@ class StringTest < BaseEngineTest
     o.run
 
     refute @engine.heap.it.value
+    assert @engine.error?
   end
 
   def test_count_chars_msg

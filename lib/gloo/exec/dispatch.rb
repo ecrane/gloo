@@ -43,10 +43,6 @@ module Gloo
       # Dispatch an action.
       #
       def self.action( engine, action )
-        unless action.valid?
-          engine.log.warn "Object #{action.to.name} does not respond to #{action.msg}"
-        end
-
         engine.exec_env.push_action action
         engine.log.debug "Sending message #{action.msg} to #{action.to.name}"
         action.dispatch

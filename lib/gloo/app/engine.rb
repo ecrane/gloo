@@ -380,8 +380,23 @@ module Gloo
       # of the message: it doesn't set the error or run on_error.
       #
       def warn( msg )
+        return if @warnings_off
+
         location = @exec_env&.current_location
         @log.warn( location ? "#{location}: #{msg}" : msg )
+      end
+
+      #
+      # Run the block without logging warnings, for internal work that
+      # repeats what was already warned about (eg. re-reading a value
+      # just to compare it).
+      #
+      def without_warnings
+        was_off = @warnings_off
+        @warnings_off = true
+        yield
+      ensure
+        @warnings_off = was_off
       end
 
       #

@@ -53,4 +53,12 @@ class ConverterTest < BaseEngineTest
     assert_empty warnings
   end
 
+  def test_value_with_no_converter_warns_and_uses_the_default
+    warnings = capture_warnings do
+      assert_equal 0, @engine.converter.convert( [ 1, 2 ], 'Integer', 0 )
+    end
+    assert_equal [ "'[1, 2]' is not an integer; using 0." ], warnings
+    refute @engine.error?
+  end
+
 end

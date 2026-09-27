@@ -165,7 +165,7 @@ module Gloo
             `xdg-open "#{url}"`
           end
         else
-          engine.log.warn 'Opening URL not supported on this platform.' if engine
+          engine&.err 'Opening a URL is not supported on this platform.'
         end
       end
 

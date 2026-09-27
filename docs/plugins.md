@@ -150,7 +150,15 @@ end
 
 ### Adding a Verb
 
-A verb subclasses `Gloo::Core::Verb` and must implement `self.keyword`, `self.keyword_shortcut`, and `run`. Inside `run`, `@tokens` gives access to the parsed command line and `@engine` is the running engine (use `@engine.err` for user-facing errors, `@engine.heap.it` to set the implicit `it` result).
+A verb subclasses `Gloo::Core::Verb` and must implement `self.keyword`, `self.keyword_shortcut`, and `run`. Inside `run`, `@tokens` gives access to the parsed command line and `@engine` is the running engine (`@engine.heap.it` sets the implicit `it` result).
+
+Report problems the same way the interpreter does (see Language, Syntax > Errors and Warnings):
+
+- `@engine.syntax_err( msg )` — the command couldn't be understood (eg. a required expression is missing)
+- `@engine.err( msg )` — it was understood but couldn't be done (eg. an object or file wasn't found; use `Gloo::Core::NotFound.object( path )` and friends for the message)
+- `@engine.warn( msg )` — it was done, but probably not the way it was meant (eg. a value used as a best guess)
+
+Don't use `@engine.log.error` or `@engine.log.warn` for these: they only write to the log, so scripts and `on_error` never see them.
 
 The simplest possible verb — `beep`, which takes no parameters (`extensions/beep/src/beep.rb`):
 

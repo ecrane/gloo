@@ -30,7 +30,7 @@ gloo [global option] [file]
 
 Running gloo with a file specified will run that file. Once that file is done, gloo will quit. However, by specifying `--cli`, once the file has finished, gloo will remain open in CLI mode.
 
-If a file named on the command line can't be found (a typo, the wrong folder, a missing `.gloo` extension on a full path), gloo prints `File '{name}' was not found.` to stderr and exits with a non-zero status. Any other load or run error also exits non-zero, so a shell script calling gloo can tell a failed run from a clean one.
+If a file named on the command line can't be found (a typo, the wrong folder, a missing `.gloo` extension on a full path), gloo prints `File '{name}' was not found.` to stderr and exits with a non-zero status. Any other load or run error also exits non-zero — including syntax errors in a file that otherwise loaded (gloo keeps loading past them, reporting each with its file and line) — so a shell script calling gloo can tell a failed run from a clean one.
 
 When specifying a file there are a couple ways to reference the gloo file to open:
 

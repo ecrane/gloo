@@ -35,4 +35,11 @@ class DispatchTest < BaseEngineTest
     assert @engine.error?
   end
 
+  def test_unknown_message_is_one_error_and_no_warning
+    @engine.parser.run 'create s as string : hi'
+    warnings = capture_warnings { @engine.parser.run 'tell s to nosuchmsg' }
+    assert_empty warnings
+    assert_equal 1, @engine.heap.error.error_count
+  end
+
 end

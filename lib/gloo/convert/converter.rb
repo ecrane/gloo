@@ -16,6 +16,7 @@ module Gloo
         'Time' => 'a time',
         'DateTime' => 'a date and time'
       }.freeze
+      NO_CONVERSION_ERR = 'There is no conversion to '.freeze
 
       #
       # Initializer.
@@ -34,12 +35,24 @@ module Gloo
       #
       # If the value isn't really of that type (eg. 'x' for an
       # integer), the conversion is still the best guess, and a warning
-      # says what was guessed.
+      # says what was guessed. A kind of value there's no converter for
+      # is also warned about, using the default. Converting to a type
+      # that isn't known is an error.
       #
       def convert( value, to_type, default = nil )
         begin
           name = "Gloo::Convert::#{value.class}To#{to_type}"
-          clazz = name.split( '::' ).inject( Object ) { |o, c| o.const_get c }
+          clazz = find_converter( name )
+          unless TYPE_NAMES.key?( to_type )
+            @engine.err "#{NO_CONVERSION_ERR}'#{to_type}'."
+            return default
+          end
+          unless clazz
+            @engine.warn "'#{value}' is not #{TYPE_NAMES[ to_type ]}; " \
+              "using #{default.nil? ? 'no value' : default}."
+            return default
+          end
+
           o = clazz.new
           result = o.convert( value )
           warn_bad_value( o, value, result, to_type )
@@ -52,6 +65,16 @@ module Gloo
       end
 
       private
+
+      #
+      # Find the converter class by name, or nil if there isn't one for
+      # that kind of value.
+      #
+      def find_converter( name )
+        return name.split( '::' ).inject( Object ) { |o, c| o.const_get( c, false ) }
+      rescue NameError
+        return nil
+      end
 
       #
       # Warn if the converter says the value isn't valid for its type.

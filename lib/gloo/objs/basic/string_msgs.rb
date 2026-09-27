@@ -89,7 +89,7 @@ module Gloo
           return result
         else
           # Error
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -108,7 +108,7 @@ module Gloo
           return result
         else
           # Error
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -131,7 +131,7 @@ module Gloo
           return result
         else
           # Error
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -156,7 +156,7 @@ module Gloo
           return result
         else
           # Error
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -181,7 +181,7 @@ module Gloo
           return result
         else
           # Error
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -203,7 +203,7 @@ module Gloo
           return result
         else
           # Error
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -225,7 +225,7 @@ module Gloo
           return result
         else
           # Error
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -246,7 +246,7 @@ module Gloo
         return unless value
 
         if @params&.token_count.to_i < 2
-          @engine.log.error MISSING_PARAM_MSG
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -285,6 +285,7 @@ module Gloo
           @engine.heap.it.set_to result
           return result
         else
+          @engine.syntax_err MISSING_PARAM_MSG
           @engine.heap.it.set_to false
           return false
         end
@@ -553,13 +554,13 @@ module Gloo
       #
       # Resolve the target container path for split_list. The path may
       # point directly at a container, or at an alias that points to
-      # one. Returns nil (and logs an error, setting 'it' to false)
+      # one. Returns nil (and reports an error, setting 'it' to false)
       # if the path doesn't exist or doesn't resolve to a container.
       #
       def split_list_target( token )
         pn = Gloo::Core::Pn.new( @engine, token )
         unless pn&.exists?
-          @engine.log.error Gloo::Core::NotFound.object( token )
+          @engine.err Gloo::Core::NotFound.object( token )
           @engine.heap.it.set_to false
           return nil
         end
@@ -567,7 +568,7 @@ module Gloo
         target = pn.resolve
         target = Gloo::Objs::Alias.resolve_alias( @engine, target )
         unless target&.is_container?
-          @engine.log.error 'Target for split_list must be a container!'
+          @engine.err 'Target for split_list must be a container!'
           @engine.heap.it.set_to false
           return nil
         end

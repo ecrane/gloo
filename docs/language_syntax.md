@@ -43,7 +43,22 @@ colors [can] :
 
 See also: Show.
 
-## Errors
+## Errors and Warnings
+
+Gloo makes a best guess and keeps going when it can, but it never does so silently: every problem is reported, in one of these ways.
+
+- **Syntax error** — the command couldn't be understood: an unknown verb or object type, a required part missing (`put 3 into`), the wrong number of arguments, an unclosed quote or parenthesis, or an operator missing a value (`show 1 +`).
+- **Runtime error** — the command was understood but couldn't be done: an object that doesn't exist used as a value or a target (`show no.such.obj`), division by zero, a file that can't be read or written, a position out of range.
+- **Warning** — the command was done, but probably not the way it was meant: a value that isn't really of its type, used as a best guess (`'x' is not an integer; using 0.`), or indentation that doesn't line up. A warning is only logged; it isn't an error.
+- **Just a result** — a question whose answer is "no" is not an error at all: `exists?`, `contains?`, `substring?`, and `index_of` (which gives -1) answer in `it`.
+
+Errors are logged with where they happened in front of the message: the file and line while a file is loading (`app.gloo:12: Unknown type 'strng'; using untyped.`), or the script and its line (`app.on_load, line 3: Object 'app.nme' was not found.`). "Not found" errors always read the same way: `Object 'x' was not found.`, `File 'x' was not found.`, `Folder 'x' was not found.`, `Verb 'x' was not found.`
+
+What happens after an error:
+
+- The line that failed is abandoned, and the script continues with the next line. A `put` whose value couldn't be worked out leaves its target unchanged.
+- Loading a file keeps going after a syntax error, so every problem in the file is reported at once. An object with an unknown type is created untyped, so anything nested under it still loads where it should.
+- The error runs any `on_error` handler (see Events below).
 
 Gloo has a special `error` variable that's not part of the normal object heap. The error will be empty most of the time, but if a command results in an error, this variable will hold the error message until the next command is executed. The error is a string and can be accessed by simply referring to the path-name `error`.
 
@@ -88,10 +103,17 @@ The following events are application and file-level events:
 - `on_quit` — event triggered when gloo is quitting
 - `on_save` — when an object is saved, this event is triggered
 - `on_reload` — event triggered when an object receives message to reload
-- `on_error` — event triggered when gloo hits a checked error condition (a bad path, a missing object, a verb used wrongly)
-- `on_exception` — event triggered when gloo's safety net catches an unanticipated Ruby exception (rare in normal code; use the `throw` verb to exercise it)
+- `on_error` — event triggered when gloo reports a syntax or runtime error (see Errors and Warnings). Warnings don't trigger it.
+- `on_exception` — event triggered when gloo's safety net catches an unanticipated Ruby exception — a bug in gloo itself, since anticipated failures such as division by zero or a missing file are runtime errors (use the `throw` verb to exercise it)
 
-`on_error` and `on_exception` are independent channels — a checked gloo error fires `on_error` only, an unhandled Ruby exception fires `on_exception` only, and neither triggers the other. In both cases the line that failed is abandoned and execution continues with the next line; a handler is a place to log or react, not a way to retry. Each handler reads its details from a sibling data container (`error_data` / `exception_data`) that the engine populates before running the script; the handler script and its data container can sit at the root of a file or be nested together inside a container.
+`on_error` and `on_exception` are independent channels — a gloo error fires `on_error` only, an unhandled Ruby exception fires `on_exception` only, and neither triggers the other. In both cases the line that failed is abandoned and execution continues with the next line; a handler is a place to log or react, not a way to retry. After the handler runs, the error is still there for the rest of the command to see (`error`).
+
+Each handler reads its details from a sibling data container (`error_data` / `exception_data`) that the engine populates before running the script; the handler script and its data container can sit at the root of a file or be nested together inside a container. Each child is optional — the engine fills in the ones that are there:
+
+- `message` — the error message
+- `backtrace` — the backtrace, when there is one
+- `kind` (`error_data` only) — `syntax` if the command couldn't be understood, `runtime` if it couldn't be done
+- `location` (`error_data` only) — where it happened: `file:line` while loading, or `script path, line N`
 
 Some objects also have events that are triggered as part of their lifecycle. Here are some examples:
 
@@ -146,6 +168,8 @@ on_error [script] :
 error_data [can] :
   message [string] :
   backtrace [string] :
+  kind [string] :
+  location [string] :
 
 
 #

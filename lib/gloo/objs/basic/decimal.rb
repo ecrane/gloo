@@ -109,6 +109,7 @@ module Gloo
               'an optional parameter is included, round to the precision specified.',
             'format ({fmt}) — With no parameter, adds comma separators to the whole part (e.g. 1000.5 -> 1,000.5). With a parameter, uses it as a sprintf-style format string (e.g. \'%.2f\'). It will have the formatted string.'
           ],
+          :notes => 'A value that isn\'t a number (eg. \'x\' or \'1,5\') is used as a best guess, with a warning: "\'1,5\' is not a decimal number; using 1.0." A blank value is 0.0.',
           :examples => <<~EXAMPLES.strip
             d [can] :
               x [decimal] : 100
