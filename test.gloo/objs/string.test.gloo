@@ -52,6 +52,30 @@ tests.objs.string [can] :
       eval ^^.s = 'one two three'
       assert "expected split to leave the string unchanged"
 
+  index_of [test] :
+    description [string] : Find the position of a substring
+    on_test [script] :
+      put 'one two three' into ^^.s
+      tell ^^.s to index_of ('two')
+      eval it = 4
+      assert "expected index_of ('two') to equal 4"
+      tell ^^.s to index_of ('four')
+      eval it = -1
+      assert "expected index_of a missing needle to equal -1"
+      eval ^^.s = 'one two three'
+      assert "expected index_of to leave the string unchanged"
+
+  index_of_from [test] :
+    description [string] : Find a substring at or after a start position
+    on_test [script] :
+      put '![[123.png]] and ]]' into ^^.s
+      tell ^^.s to index_of (']]' 3)
+      eval it = 10
+      assert "expected index_of (']]' 3) to equal 10"
+      tell ^^.s to index_of (']]' 11)
+      eval it = 17
+      assert "expected index_of (']]' 11) to equal 17"
+
   splitl [test] :
     description [string] : Get the substring to the left of an index
     on_test [script] :

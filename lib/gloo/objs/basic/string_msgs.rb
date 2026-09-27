@@ -10,6 +10,8 @@ module Gloo
   module Objs
     module StringMsgs
 
+      MISSING_PARAM_MSG = 'Missing parameter!'.freeze
+
       #
       # Get the list of message names this mixin implements, derived
       # from its own msg_* methods so String/Text don't have to
@@ -39,6 +41,7 @@ module Gloo
           'starts_with? ({str}) — Check if the string starts with the given string. A parameter is required: the string to look for at the beginning of this string. It will have a boolean.',
           'ends_with? ({str}) — Check if the string ends with the given string. A parameter is required: the string to look for at the end of this string. It will have a boolean.',
           'substring? ({str}) — Check if the string includes the given sub-string. A parameter is required: the string to look for in this string. It will have a boolean.',
+          'index_of ({needle} {from}) — Find the 0-based position of the first occurrence of {needle} at or after position {from}. The {needle} parameter is required; {from} is optional and defaults to 0. Does not change the value of the string. It will have the position, or -1 if {needle} is not found; an out-of-range {from} (negative, or past the end of the string) is an error, and it will have false.',
           'format_for_html — Format this string for HTML output. Tabs, spaces and returns are converted to HTML elements. The value of the string is changed.',
           'encode64 — Base64 encode the string. This message changes the value of the string. It will have the encoded string.',
           'decode64 — Decode the string from Base64. This message changes the value of the string. It will have the decoded string.',
@@ -285,6 +288,41 @@ module Gloo
           @engine.heap.it.set_to false
           return false
         end
+      end
+
+      #
+      # Get the 0-based position of the first occurrence of {needle}
+      # at or after the optional {from} position (default 0).
+      # Puts -1 into 'it' if not found. An out-of-range {from} (negative,
+      # or past the end of the string) logs an error and puts false
+      # into 'it'. Does not change the string's value.
+      #
+      def msg_index_of
+        unless @params&.token_count&.positive?
+          @engine.err MISSING_PARAM_MSG
+          @engine.heap.it.set_to false
+          return false
+        end
+
+        expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
+        needle = expr.evaluate.to_s
+
+        from = 0
+        if @params.token_count > 1
+          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
+          from = expr.evaluate.to_i
+        end
+
+        str = value.to_s
+        if from.negative? || from > str.length
+          @engine.err "Start position #{from} is out of range!"
+          @engine.heap.it.set_to false
+          return false
+        end
+
+        result = str.index( needle, from ) || -1
+        @engine.heap.it.set_to result
+        return result
       end
 
       #

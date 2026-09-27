@@ -13,7 +13,6 @@ module Gloo
 
       KEYWORD = 'string'.freeze
       KEYWORD_SHORT = 'str'.freeze
-      MISSING_PARAM_MSG = 'Missing parameter!'.freeze
 
       #
       # The name of the object type.

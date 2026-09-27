@@ -43,6 +43,7 @@ class StringTest < BaseEngineTest
     assert msgs.include?( 'starts_with?' )
     assert msgs.include?( 'ends_with?' )
     assert msgs.include?( 'substring?' )
+    assert msgs.include?( 'index_of' )
 
     assert msgs.include?( 'up' )
     assert msgs.include?( 'down' )
@@ -276,6 +277,74 @@ class StringTest < BaseEngineTest
     o = @engine.parser.parse_immediate "check s for split (9 4)"
     o.run
     assert_equal '', @engine.heap.it.value
+  end
+
+  def test_index_of_msg_found
+    o = @engine.parser.parse_immediate 'create s as string : "one two three two"'
+    o.run
+    s = @engine.heap.root.children.first
+    o = @engine.parser.parse_immediate "check s for index_of ('two')"
+    o.run
+    assert_equal 4, @engine.heap.it.value
+    assert_equal 'one two three two', s.value
+
+    o = @engine.parser.parse_immediate "check s for index_of ('one')"
+    o.run
+    assert_equal 0, @engine.heap.it.value
+  end
+
+  def test_index_of_msg_not_found
+    o = @engine.parser.parse_immediate 'create s as string : "one two three"'
+    o.run
+    o = @engine.parser.parse_immediate "check s for index_of ('four')"
+    o.run
+    assert_equal( -1, @engine.heap.it.value )
+  end
+
+  def test_index_of_msg_with_from
+    o = @engine.parser.parse_immediate 'create s as string : "one two three two"'
+    o.run
+
+    o = @engine.parser.parse_immediate "check s for index_of ('two' 5)"
+    o.run
+    assert_equal 14, @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for index_of ('two' 4)"
+    o.run
+    assert_equal 4, @engine.heap.it.value
+
+    o = @engine.parser.parse_immediate "check s for index_of ('two' 15)"
+    o.run
+    assert_equal( -1, @engine.heap.it.value )
+
+    o = @engine.parser.parse_immediate "check s for index_of ('two' 17)"
+    o.run
+    assert_equal( -1, @engine.heap.it.value )
+  end
+
+  def test_index_of_msg_from_out_of_range
+    o = @engine.parser.parse_immediate 'create s as string : "one two three"'
+    o.run
+
+    o = @engine.parser.parse_immediate "check s for index_of ('two' 100)"
+    o.run
+    assert_equal false, @engine.heap.it.value
+    assert @engine.error?
+
+    @engine.heap.error.clear
+    o = @engine.parser.parse_immediate "check s for index_of ('one' -3)"
+    o.run
+    assert_equal false, @engine.heap.it.value
+    assert @engine.error?
+  end
+
+  def test_index_of_msg_missing_param
+    o = @engine.parser.parse_immediate 'create s as string : "one two three"'
+    o.run
+    o = @engine.parser.parse_immediate "check s for index_of"
+    o.run
+    assert_equal false, @engine.heap.it.value
+    assert @engine.error?
   end
 
   def test_splitl_msg
