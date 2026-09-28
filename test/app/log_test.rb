@@ -118,4 +118,21 @@ class LogTest < BaseTest
     end
   end
 
+  def test_counts_errors_and_warnings
+    log = log_for( true )
+    assert_equal 0, log.error_count
+    assert_equal 0, log.warning_count
+
+    log.error 'one'
+    log.error 'two'
+    log.warn 'careful'
+    log.backtrace 'part of the last error'
+    assert_equal 2, log.error_count
+    assert_equal 1, log.warning_count
+
+    log.reset_counts
+    assert_equal 0, log.error_count
+    assert_equal 0, log.warning_count
+  end
+
 end

@@ -28,6 +28,11 @@ module Gloo
       # to the console (eg. while running tests, where the output is
       # the test results).
       attr_accessor :console_errors
+
+      # How many errors and warnings have been logged (since the log was
+      # created, or since reset_counts). A test runner uses these to
+      # summarize what was logged during the run.
+      attr_reader :error_count, :warning_count
       attr_reader :logger
 
       # ---------------------------------------------------------------------
@@ -43,6 +48,7 @@ module Gloo
         @engine = engine
         @quiet = quiet
         @console_errors = true
+        reset_counts
         @debug = engine.settings.debug
         @theme = engine.theme
 
@@ -165,6 +171,7 @@ module Gloo
       # Also write to the console unless quiet.
       #
       def warn( msg )
+        @warning_count += 1
         @logger.warn msg
         @error.warn msg
         puts @theme.warn( msg ) if errors_to_console?
@@ -176,6 +183,7 @@ module Gloo
       # Also write to the console (on stderr) unless quiet.
       #
       def error( msg, ex = nil, engine = nil )
+        @error_count += 1
         engine&.heap&.error&.set_to( msg ) if engine
         @logger.error msg
         @error.error msg
@@ -190,6 +198,24 @@ module Gloo
         elsif errors_to_console?
           $stderr.puts @theme.error( msg )
         end
+      end
+
+      #
+      # Write a backtrace for an error that was (or is about to be)
+      # logged. It's part of that error, so it isn't counted again.
+      #
+      def backtrace( text )
+        @logger.error text
+        @error.error text
+        $stderr.puts @theme.error( text ) if errors_to_console?
+      end
+
+      #
+      # Start counting errors and warnings from zero.
+      #
+      def reset_counts
+        @error_count = 0
+        @warning_count = 0
       end
 
       #

@@ -408,7 +408,7 @@ module Gloo
       #
       def log_exception ex
         backtrace = format_backtrace( ex )
-        @log.error backtrace
+        @log.backtrace backtrace
 
         err( ex.message, backtrace)
       end
@@ -422,7 +422,7 @@ module Gloo
       def handle_exception ex
         backtrace = format_backtrace( ex )
         @log.error ex.message
-        @log.error backtrace
+        @log.backtrace backtrace
 
         return if @handling_exception
 

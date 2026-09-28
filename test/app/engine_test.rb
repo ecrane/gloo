@@ -345,4 +345,27 @@ class EngineTest < BaseTest
     refute o.error?
   end
 
+  def test_each_report_is_counted_once
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.log.quiet = true
+    o.log.reset_counts
+
+    o.err 'runtime'
+    o.syntax_err 'syntax'
+    o.log_exception raised( 'raised' )
+    o.handle_exception raised( 'unhandled' )
+    assert_equal 4, o.log.error_count
+
+    o.warn 'careful'
+    o.without_warnings { o.warn 'not logged' }
+    assert_equal 1, o.log.warning_count
+  end
+
+  def raised( msg )
+    raise msg
+  rescue RuntimeError => e
+    return e
+  end
+
 end
