@@ -43,8 +43,19 @@ module Gloo
       # a string value, which can matter when the value is used to
       # build HTML.
       #
+      # A line that starts with the type ('[') or the value (':') has no
+      # name: the name is nil, and the whole line is left for the type
+      # and value.
+      #
       def detect_name
         @line = @line.lstrip.chomp
+        if @line.start_with?( '[', ':' )
+          @name = nil
+          @line = " #{@line}"
+          @idx = 0
+          return
+        end
+
         @idx = @line.index( ' ' )
         @idx = 0 unless @idx
         @name = @line[ 0..@idx - 1 ]

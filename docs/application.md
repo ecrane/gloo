@@ -148,6 +148,8 @@ Debug messages are written to the log only, but other messages are also written 
 
 Only error and warning level messages are written to the error log.
 
+In test mode (`--test`), errors and warnings go to the log files only, not the console, so the test output is just the test results. An error a test expects (or one from a test file that deliberately contains a problem) is still in `error.log`.
+
 The application logs folder is in the gloo folder. When gloo is run, the log files will be created if they do not exist. To trim the logs, just delete those log files.
 
 Example tail command to watch the gloo log:

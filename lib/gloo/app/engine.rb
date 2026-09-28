@@ -65,6 +65,8 @@ module Gloo
         @log.debug 'starting the engine...'
         @log.debug Gloo::App::Info.display_title
         @mode = @args.detect_mode
+        # Test output is the test results; errors go to the log only.
+        @log.console_errors = false if @mode == Mode::TEST
         @running = true
 
         @dictionary = Gloo::Core::Dictionary.get( self )

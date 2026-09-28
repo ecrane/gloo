@@ -48,4 +48,14 @@ class LineSplitterTest < BaseEngineTest
     assert_equal 's', n
   end
 
+  def test_a_line_with_no_name
+    assert_equal [ nil, 'int', '3' ], Gloo::Persist::LineSplitter.new( '[int] : 3', 0 ).split
+    assert_equal [ nil, 'string', 'a b' ], Gloo::Persist::LineSplitter.new( '[string] : a b', 0 ).split
+    assert_equal [ nil, 'untyped', '3' ], Gloo::Persist::LineSplitter.new( ': 3', 0 ).split
+    n, t, v = Gloo::Persist::LineSplitter.new( '  [int] :', 1 ).split
+    assert_nil n
+    assert_equal 'int', t
+    assert_empty v.to_s
+  end
+
 end

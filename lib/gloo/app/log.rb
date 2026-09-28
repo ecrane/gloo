@@ -23,6 +23,11 @@ module Gloo
       ERROR_FILE = 'error.log'.freeze
 
       attr_accessor :quiet
+
+      # When false, errors and warnings go to the log files only, not
+      # to the console (eg. while running tests, where the output is
+      # the test results).
+      attr_accessor :console_errors
       attr_reader :logger
 
       # ---------------------------------------------------------------------
@@ -37,6 +42,7 @@ module Gloo
       def initialize( engine, quiet = true )
         @engine = engine
         @quiet = quiet
+        @console_errors = true
         @debug = engine.settings.debug
         @theme = engine.theme
 
@@ -161,7 +167,7 @@ module Gloo
       def warn( msg )
         @logger.warn msg
         @error.warn msg
-        puts @theme.warn( msg ) unless @quiet
+        puts @theme.warn( msg ) if errors_to_console?
       end
 
       #
@@ -176,12 +182,21 @@ module Gloo
         if ex
           @error.error ex.message
           @error.error ex.backtrace
-          $stderr.puts @theme.error( msg ) unless @quiet
-          $stderr.puts @theme.error( ex.message ) unless @quiet
-          $stderr.puts ex.backtrace unless @quiet
-        else
-          $stderr.puts @theme.error( msg ) unless @quiet
+          if errors_to_console?
+            $stderr.puts @theme.error( msg )
+            $stderr.puts @theme.error( ex.message )
+            $stderr.puts ex.backtrace
+          end
+        elsif errors_to_console?
+          $stderr.puts @theme.error( msg )
         end
+      end
+
+      #
+      # Should errors and warnings also be written to the console?
+      #
+      def errors_to_console?
+        return !@quiet && @console_errors
       end
 
     end

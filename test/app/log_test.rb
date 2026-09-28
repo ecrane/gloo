@@ -89,4 +89,33 @@ class LogTest < BaseTest
     assert_equal '', out
     assert_match 'something broke', err
   end
+
+  def log_for( quiet )
+    engine = Gloo::App::Engine.new( default_context )
+    return Gloo::App::Log.new( engine, quiet )
+  end
+
+  def test_errors_go_to_the_console_unless_quiet
+    assert log_for( false ).errors_to_console?
+    refute log_for( true ).errors_to_console?
+  end
+
+  def test_errors_can_be_kept_off_the_console
+    log = log_for( false )
+    log.console_errors = false
+    refute log.errors_to_console?
+    assert_output( '', '' ) do
+      log.error 'not shown'
+      log.warn 'not shown either'
+    end
+  end
+
+  def test_errors_shown_on_the_console_by_default
+    log = log_for( false )
+    assert_output( /careful/, /boom/ ) do
+      log.warn 'careful'
+      log.error 'boom'
+    end
+  end
+
 end

@@ -14,6 +14,10 @@ tests.lang.naming [can] :
   string [string] : a type keyword as a name
   put [string] : a verb keyword as a name
 
+  # Deliberately has no name: loading reports a syntax error and
+  # creates it as unnamed_1.
+  [string] : no name given
+
   first_of_a_duplicate_name_wins [test] :
     description [string] : when two siblings share a name, the path always reaches the first.
     on_test [script] :
@@ -40,3 +44,10 @@ tests.lang.naming [can] :
 
       eval ^^.put = 'a verb keyword as a name'
       assert "expected a verb keyword to be usable as a name"
+
+  declaration_with_no_name_gets_a_placeholder [test] :
+    description [string] : a declaration with no name loads under the placeholder name unnamed_1.
+    on_test [script] :
+      eval ^^.unnamed_1 = 'no name given'
+      assert "expected the nameless object to be reached as unnamed_1"
+

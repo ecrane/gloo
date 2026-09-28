@@ -474,4 +474,40 @@ class FileLoaderTest < BaseEngineTest
     FileUtils.remove_entry @dir if @dir
   end
 
+  def test_declaration_with_no_name_gets_a_placeholder
+    load_text "a [can] :\n  [int] : 3\n    kid [int] : 1\n  [bool] : true\n  b [int] : 2\n"
+    assert_equal 2, @engine.heap.error.error_count
+    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+    assert_equal "Object name is missing; using 'unnamed_2'.", @engine.heap.error.value
+    assert_equal "#{@dir}/t.gloo:4", @engine.heap.error.location
+
+    a = @engine.heap.root.find_child( 'a' )
+    assert_equal %w[unnamed_1 unnamed_2 b], a.children.map( &:name )
+    one = a.find_child( 'unnamed_1' )
+    assert_equal 3, one.value
+    assert_equal 1, one.find_child( 'kid' ).value
+    assert_equal true, a.find_child( 'unnamed_2' ).value
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_placeholder_name_is_not_already_taken
+    load_text "a [can] :\n  unnamed_1 [int] : 1\n  [int] : 2\n"
+    a = @engine.heap.root.find_child( 'a' )
+    assert_equal %w[unnamed_1 unnamed_2], a.children.map( &:name )
+    assert_equal 2, a.find_child( 'unnamed_2' ).value
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_saving_writes_the_placeholder_name
+    load_text "a [can] :\n  [int] : 3\n  b [int] : 2\n"
+    @engine.parser.run 'put 5 into a.b'
+    @engine.parser.run 'save a'
+    assert_equal "a [can] :\n  unnamed_1 [int] : 3\n  b [int] : 5\n",
+      File.read( File.join( @dir, 't.gloo' ) )
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
 end

@@ -22,6 +22,8 @@ module Gloo
       BEGIN_BLOCK = 'BEGIN'.freeze
       END_BLOCK = 'END'.freeze
       SPACE_CNT = 2
+      UNNAMED = 'unnamed_'.freeze
+      NO_NAME_ERR = 'Object name is missing; using '.freeze
       OVER_INDENTED_WARNING = 'Indented more than one level deeper than ' \
         'the line above; nesting it under that line.'.freeze
       MISALIGNED_WARNING = "Indentation doesn't line up with any line " \
@@ -242,6 +244,19 @@ module Gloo
       end
 
       #
+      # A declaration with no name is a syntax error. The best guess is
+      # a placeholder name that isn't taken under the parent, so the
+      # object (its type, value and children) still loads.
+      #
+      def placeholder_name( parent )
+        n = 1
+        n += 1 while parent&.contains_child?( "#{UNNAMED}#{n}" )
+        name = "#{UNNAMED}#{n}"
+        @engine.syntax_err "#{NO_NAME_ERR}'#{name}'."
+        return name
+      end
+
+      #
       # Warn about indentation that was understood, but probably isn't
       # what was meant.
       #
@@ -260,6 +275,7 @@ module Gloo
       #
       def create_declared_obj( line, line_tabs )
         name, type, value, style = split_declaration( line )
+        name ||= placeholder_name( @indent_stack.parent )
         leaf, parent, roots, created = @shorthand.expand( name, @indent_stack.parent )
         roots.each { |r| @ledger.root( r ) }
         created.each { |c| @ledger.created( c ) }
