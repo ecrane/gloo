@@ -57,7 +57,7 @@ Errors are logged with where they happened in front of the message: the file and
 What happens after an error:
 
 - The line that failed is abandoned, and the script continues with the next line. A `put` whose value couldn't be worked out leaves its target unchanged.
-- Loading a file keeps going after a syntax error, so every problem in the file is reported at once. An object with an unknown type is created untyped, so anything nested under it still loads where it should. A declaration with no name (`[int] : 3`) is created under a placeholder name, `unnamed_1`, `unnamed_2` and so on.
+- Loading a file keeps going after a syntax error, so every problem in the file is reported at once. An object with an unknown type is created untyped, so anything nested under it still loads where it should. A declaration with no name (`[int] : 3`) is created under a placeholder name, `unnamed_1`, `unnamed_2` and so on. A type missing its closing bracket (`count [int : 3`) is read as if it were closed after the type word.
 - The error runs any `on_error` handler (see Events below).
 
 Gloo has a special `error` variable that's not part of the normal object heap. The error will be empty most of the time, but if a command results in an error, this variable will hold the error message until the next command is executed. The error is a string and can be accessed by simply referring to the path-name `error`.

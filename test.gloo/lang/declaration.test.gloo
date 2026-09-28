@@ -1,0 +1,27 @@
+#
+# Declaration syntax tests
+#
+
+tests.lang.declaration [can] :
+
+  # Deliberately missing the ']' after its type: loading reports a
+  # syntax error and reads the type as 'int' anyway.
+  unclosed [int : 7
+
+  closed_then_colon [int]: 8
+
+  type_missing_its_closing_bracket [test] :
+    description [string] : a type missing its ']' is still read as that type, with its value.
+    on_test [script] :
+      eval ^^.unclosed = 7
+      assert "expected the value 7"
+
+      put '12' into ^^.unclosed
+      eval ^^.unclosed = 12
+      assert "expected it to still be an integer"
+
+  closed_type_followed_by_the_colon [test] :
+    description [string] : a ']' followed directly by ':' is a normal declaration.
+    on_test [script] :
+      eval ^^.closed_then_colon = 8
+      assert "expected the value 8"

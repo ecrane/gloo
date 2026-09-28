@@ -24,6 +24,7 @@ module Gloo
       SPACE_CNT = 2
       UNNAMED = 'unnamed_'.freeze
       NO_NAME_ERR = 'Object name is missing; using '.freeze
+      MISSING_BRACKET_ERR = "Missing ']' after type ".freeze
       OVER_INDENTED_WARNING = 'Indented more than one level deeper than ' \
         'the line above; nesting it under that line.'.freeze
       MISALIGNED_WARNING = "Indentation doesn't line up with any line " \
@@ -317,6 +318,7 @@ module Gloo
       def split_declaration( line )
         splitter = LineSplitter.new( line, @indent_stack&.tabs || 0 )
         name, type, value = splitter.split
+        @engine.syntax_err "#{MISSING_BRACKET_ERR}'#{type}'." if splitter.missing_bracket
         style = { :raw_tail => splitter.raw_tail, :block_style => :inline }
         return name, type, value, style if @block_value == ''
 

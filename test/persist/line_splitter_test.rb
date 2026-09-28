@@ -58,4 +58,35 @@ class LineSplitterTest < BaseEngineTest
     assert_empty v.to_s
   end
 
+  def test_a_type_missing_its_closing_bracket
+    o = Gloo::Persist::LineSplitter.new( 'a [int : 3', 0 )
+    assert_equal [ 'a', 'int', '3' ], o.split
+    assert o.missing_bracket
+    assert_equal ' : 3', o.raw_tail
+
+    o = Gloo::Persist::LineSplitter.new( 'a [int', 0 )
+    assert_equal [ 'a', 'int', nil ], o.split
+    assert o.missing_bracket
+  end
+
+  def test_a_bracket_in_the_value_does_not_close_the_type
+    o = Gloo::Persist::LineSplitter.new( 'a [string : a ] b', 0 )
+    assert_equal [ 'a', 'string', 'a ] b' ], o.split
+    assert o.missing_bracket
+    assert_equal ' : a ] b', o.raw_tail
+  end
+
+  def test_a_closed_type_followed_by_the_colon
+    o = Gloo::Persist::LineSplitter.new( 'a [int]: 3', 0 )
+    assert_equal [ 'a', 'int', '3' ], o.split
+    refute o.missing_bracket
+    assert_equal ': 3', o.raw_tail
+  end
+
+  def test_a_closed_type_is_not_missing_a_bracket
+    o = Gloo::Persist::LineSplitter.new( 'a [int] : 3', 0 )
+    o.split
+    refute o.missing_bracket
+  end
+
 end

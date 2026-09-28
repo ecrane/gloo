@@ -510,4 +510,26 @@ class FileLoaderTest < BaseEngineTest
     FileUtils.remove_entry @dir if @dir
   end
 
+  def test_type_missing_its_closing_bracket_is_reported
+    load_text "a [can] :\n  b [int : 3\n"
+    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+    assert_equal "Missing ']' after type 'int'.", @engine.heap.error.value
+    assert_equal "#{@dir}/t.gloo:2", @engine.heap.error.location
+    b = Gloo::Core::Pn.new( @engine, 'a.b' ).resolve
+    assert_equal 'integer', b.type_display
+    assert_equal 3, b.value
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_saving_repairs_a_missing_bracket_and_keeps_the_values
+    load_text "a [can] :\n  b [int : 3\n  s [string : a ] b\n  c [int] : 1\n"
+    @engine.parser.run 'put 2 into a.c'
+    @engine.parser.run 'save a'
+    assert_equal "a [can] :\n  b [int] : 3\n  s [string] : a ] b\n  c [int] : 2\n",
+      File.read( File.join( @dir, 't.gloo' ) )
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
 end
