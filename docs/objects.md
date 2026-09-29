@@ -48,6 +48,35 @@ can [can] :
 
 `can.data` is itself a container holding three children; `count` puts the number of children into `it`. Because containers can nest arbitrarily, this is how gloo builds up everything from simple config blocks to entire applications.
 
+### Getting children by position
+
+A container keeps its children in the order they were added, so you can also reach them by position. Positions are 0-based: after `split_list`, index 0 is the child named `1`.
+
+- `child_value_at (index)` — the value of the child at that position.
+- `child_path_at (index)` — the child's path from root. This works for any child, including a container.
+- `random_child_value` — the value of a randomly chosen child.
+- `random_child_path` — the path of a randomly chosen child.
+
+Each puts its result into `it`. The `_value` messages are for simple children; a container child has no value of its own, so asking for one is an error. Use the path instead, and put it into an alias to reach the child's fields:
+
+```gloo
+books [can] :
+  list [can] :
+    a [can] :
+      title [string] : Walden
+    b [can] :
+      title [string] : Emma
+  ptr [alias] :
+  on_load [script] :
+    tell books.list to random_child_path
+    put it into books.ptr*
+    show books.ptr.title
+```
+
+An index that is out of range (including a negative one) or isn't a number, or an empty container for the `random_` messages, is an error, and `it` is `false`.
+
+The `random_` messages pick with replacement, so two calls can give the same child. For distinct picks, pick a random index with an integer's `randomize` message, keep the indexes already used as children of another container, and check it with `child_exists` before using `child_path_at`.
+
 ## Integer
 
 An integer holds a numeric value and responds to a handful of convenience messages:

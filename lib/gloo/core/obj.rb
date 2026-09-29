@@ -241,7 +241,7 @@ module Gloo
       #
       def contains_child?( name )
         @children.each do |o|
-          return true if name.downcase == o.name.downcase
+          return true if name.to_s.downcase == o.name.downcase
         end
         return false
       end

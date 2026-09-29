@@ -43,3 +43,104 @@ tests.objs.can [can] :
       eval it = 0
       assert "expected it to be 0"
 
+
+#
+# Child value and path messages.
+#
+
+tests.objs.can_child [can] :
+
+  list [can] :
+    x [string] : ex
+    y [integer] : 7
+    book [can] :
+      title [string] : Walden
+
+  empty [can] :
+  path [string] :
+  ptr [alias] :
+  slot [alias] :
+  idx [integer] : 0
+  n [integer] : 0
+  found [integer] : 0
+  picked [can] :
+
+  # Pick distinct random children: a random index, skipped if already used.
+  pick_distinct [repeat] :
+    times [integer] : 200
+    index [integer] : 0
+    do [script] :
+      tell tests.objs.can_child.idx to randomize ( tests.objs.can_child.n )
+      check tests.objs.can_child.picked for child_exists ( tests.objs.can_child.idx )
+      unless it do tell tests.objs.can_child.mark to run
+
+  mark [script] :
+    put 'tests.objs.can_child.picked.' + tests.objs.can_child.idx into tests.objs.can_child.slot*
+    create tests.objs.can_child.slot* as integer
+    put tests.objs.can_child.found + 1 into tests.objs.can_child.found
+
+  value_at [test] :
+    description [string] : child_value_at gets a simple child's value by 0-based index.
+    on_test [script] :
+      tell ^^.list to child_value_at ( 0 )
+      eval it = 'ex'
+      assert "expected index 0 to be the first child"
+
+      tell ^^.list to child_value_at ( 1 )
+      eval it = 7
+      assert "expected index 1 to be the second child"
+
+  value_at_container_child [test] :
+    description [string] : child_value_at on a container child is an error, and it is false.
+    on_test [script] :
+      tell ^^.list to child_value_at ( 2 )
+      eval it = false
+      assert "expected false for a container child"
+
+  path_at_alias [test] :
+    description [string] : child_path_at into an alias reaches a container child's fields.
+    on_test [script] :
+      tell ^^.list to child_path_at ( 2 )
+      put it into ^^.path
+      eval ^^.path = 'tests.objs.can_child.list.book'
+      assert "expected the path from root"
+
+      put ^^.path into ^^.ptr*
+      eval ^^.ptr.title = 'Walden'
+      assert "expected to read the field through the alias"
+
+  out_of_range [test] :
+    description [string] : An out-of-range index is an error, and it is false.
+    on_test [script] :
+      tell ^^.list to child_path_at ( 3 )
+      eval it = false
+      assert "expected false for index 3 of 3 children"
+
+  random_path [test] :
+    description [string] : random_child_path gives the path of one of the children.
+    on_test [script] :
+      tell ^^.list to random_child_path
+      put it into ^^.path
+      check ^^.path for starts_with? ( 'tests.objs.can_child.list.' )
+      assert "expected a child's path"
+
+  random_empty [test] :
+    description [string] : random_child_value on an empty container is an error, and it is false.
+    on_test [script] :
+      tell ^^.empty to random_child_value
+      eval it = false
+      assert "expected false for an empty container"
+
+  distinct_random_picks [test] :
+    description [string] : A random index plus a picked container gives distinct picks.
+    on_test [script] :
+      tell ^^.list to count
+      put it into ^^.n
+      tell ^^.pick_distinct to run
+
+      tell ^^.picked to count
+      eval it = 3
+      assert "expected every child picked exactly once"
+
+      eval ^^.found = 3
+      assert "expected no index to be picked twice"
