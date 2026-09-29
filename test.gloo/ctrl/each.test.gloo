@@ -35,3 +35,91 @@ tests.ctrl.each [can] :
       tell ^^.rpt to run
       eval ^^.count = 3
       assert "expected repeat to run 3 times"
+
+#
+# Each file / each dir over a nested folder tree.
+# The tree is built under /tmp and removed at the end.
+#
+
+tests.ctrl.each_folder [can] :
+
+  count [int] : 0
+
+  make_tree [system] :
+    command [string] : rm -rf /tmp/gloo_each_walk && mkdir -p /tmp/gloo_each_walk/a/deep /tmp/gloo_each_walk/.obs && touch /tmp/gloo_each_walk/top.md /tmp/gloo_each_walk/notes.txt /tmp/gloo_each_walk/a/x.md /tmp/gloo_each_walk/a/deep/Y.MD /tmp/gloo_each_walk/.obs/o.md
+    get_output [bool] : false
+  remove_tree [system] :
+    command [string] : rm -rf /tmp/gloo_each_walk
+    get_output [bool] : false
+
+  files [each] :
+    file [file] :
+    in [file] : /tmp/gloo_each_walk
+    ext [string] : md
+    recursive [bool] : true
+    do [script] :
+      eval ^^.count + 1
+      put it into ^^.count
+
+  wild [each] :
+    file [file] :
+    in [file] : /tmp/gloo_each_walk/**/
+    ext [string] : md
+    do [script] :
+      eval ^^.count + 1
+      put it into ^^.count
+
+  top [each] :
+    file [file] :
+    in [file] : /tmp/gloo_each_walk
+    do [script] :
+      eval ^^.count + 1
+      put it into ^^.count
+
+  dirs [each] :
+    dir [file] :
+    in [file] : /tmp/gloo_each_walk
+    recursive [bool] : true
+    do [script] :
+      eval ^^.count + 1
+      put it into ^^.count
+
+  recursive_each_file [test] :
+    description [string] : Recursive each file finds nested files, ignoring ext case and hidden folders.
+    on_test [script] :
+      tell ^^.make_tree to run
+      put 0 into ^^.count
+      tell ^^.files to run
+      eval ^^.count = 3
+      assert "expected top.md, a/x.md and a/deep/Y.MD"
+      tell ^^.remove_tree to run
+
+  wildcard_in_folder [test] :
+    description [string] : A ** wildcard in the folder walks the tree too.
+    on_test [script] :
+      tell ^^.make_tree to run
+      put 0 into ^^.count
+      tell ^^.wild to run
+      eval ^^.count = 3
+      assert "expected the same 3 files as recursive"
+      tell ^^.remove_tree to run
+
+  files_only_by_default [test] :
+    description [string] : Each file without ext lists files, not folders.
+    on_test [script] :
+      tell ^^.make_tree to run
+      put 0 into ^^.count
+      tell ^^.top to run
+      eval ^^.count = 2
+      assert "expected top.md and notes.txt, but not the folder a"
+      tell ^^.remove_tree to run
+
+  recursive_each_dir [test] :
+    description [string] : Recursive each dir lists every folder in the tree, skipping hidden ones.
+    on_test [script] :
+      tell ^^.make_tree to run
+      put 0 into ^^.count
+      tell ^^.dirs to run
+      eval ^^.count = 2
+      assert "expected a and a/deep"
+      tell ^^.remove_tree to run

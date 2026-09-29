@@ -133,8 +133,8 @@ module Gloo
             'child (alias) — iterate a container\'s children.',
             'word (string) — iterate the words in a string.',
             'line (string) — iterate the lines in a block of text.',
-            'file (file) — iterate the files in a folder; an optional ext (string) child limits to files of that extension.',
-            'dir (file) — iterate the directories in a folder.'
+            'file (file) — iterate the files in a folder. Optional children: ext (string) limits to files of that extension, ignoring case; recursive (bool) walks the subfolders too; include_dirs (bool) lists folders as well as files.',
+            'dir (file) — iterate the directories in a folder. Optional child: recursive (bool) walks the subfolders too.'
           ],
           :messages => [
             'run — Run the loop for each item in the collection.'
@@ -144,7 +144,16 @@ module Gloo
             '(string) child naming a property of each child, plus ' \
             'on_group_start / on_group_end (script) children — those ' \
             'scripts run whenever the group_by value changes, letting ' \
-            'you aggregate results in groups.',
+            'you aggregate results in groups. ' \
+            'When iterating files or directories, the in folder may be ' \
+            'given with or without a trailing slash, may start with ~ ' \
+            'for the home folder, and may include ' \
+            'wildcards: in: /notes/**/ walks every subfolder, and ' \
+            'in: /projects/*/docs/ looks in each project\'s docs folder. ' \
+            'Wildcards combine with ext, recursive and include_dirs. ' \
+            'Paths are full paths, sorted, with each folder before ' \
+            'what is in it. Hidden files and folders are skipped, and ' \
+            'a recursive walk does not go into symlinked folders.',
           :examples => <<~EXAMPLES.strip
             #
             # Show each child in a container.
@@ -167,6 +176,16 @@ module Gloo
               on_load [script] :
                 show 'showing children in container' (white)
                 tell each_child.for to run
+
+            #
+            # Show every markdown file in a folder tree.
+            #
+            notes [each] :
+              file [file] :
+              in [file] : /my/notes/
+              ext [string] : md
+              recursive [bool] : true
+              do [script] : show ^.file
           EXAMPLES
         }
       end

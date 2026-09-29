@@ -9,6 +9,7 @@ module Gloo
     class EachDir
 
       DIR = 'dir'.freeze
+      RECURSIVE = 'recursive'.freeze
       
       # ---------------------------------------------------------------------
       #    Create Iterator
@@ -42,20 +43,31 @@ module Gloo
       # Run for each directory.
       #
       def run
-        folder = @iterator_obj.in_value
+        folder = EachFile.expand_home( @iterator_obj.in_value )
         return unless folder
 
         unless Dir.exist?( folder )
-          @engine.err Gloo::Core::NotFound.folder( folder )
-          return
-        end
-
-        Dir.glob( "#{folder}*" ).each do |f|
-          if Dir.exist?( f )
-            set_dir f
-            @iterator_obj.run_do
+          # A path with a wildcard is a pattern, not a folder.
+          unless EachFile.wildcard?( folder )
+            @engine.err Gloo::Core::NotFound.folder( folder )
+            return
           end
         end
+
+        Dir.glob( EachFile.pattern( folder, recursive? ) ).each do |f|
+          next unless File.directory?( f )
+
+          set_dir f
+          @iterator_obj.run_do
+        end
+      end
+
+      #
+      # Walk the subfolders too?
+      #
+      def recursive?
+        value = @iterator_obj.find_child_value RECURSIVE
+        return Gloo::Objs::Boolean.coerse_to_bool( value )
       end
 
       #

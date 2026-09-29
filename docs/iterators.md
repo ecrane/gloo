@@ -103,9 +103,11 @@ Children:
 - `dir` (file — a directory)
     - The directory instance.
 - `in` (file — a directory)
-    - The folder (directory) we will look in for directories.
+    - The folder (directory) we will look in for directories. The trailing slash is optional, a leading `~` means your home folder, and the path may include wildcards (see Walking a Folder Tree, under Each File).
 - `do` (script)
     - The action we want to perform for each directory in the folder.
+- `recursive` (bool)
+    - Optional. Walk the subfolders too, listing every folder in the tree. Default false.
 
 Messages:
 
@@ -140,11 +142,15 @@ Children:
 - `file` (file)
     - The file instance.
 - `in` (file)
-    - The folder (directory) we will look in for files.
+    - The folder (directory) we will look in for files. The trailing slash is optional, a leading `~` means your home folder, and the path may include wildcards (see Walking a Folder Tree, below).
 - `do` (script)
     - The action we want to perform for each file in the folder.
 - `ext` (string)
-    - Optional file extension. Limit to files of this kind.
+    - Optional file extension. Limit to files of this kind. The match ignores case, so `md` also finds `Notes.MD`, and a leading dot is optional.
+- `recursive` (bool)
+    - Optional. Walk the subfolders too. Default false.
+- `include_dirs` (bool)
+    - Optional. List folders as well as files. Default false: `each file` gives only files. Works with or without `recursive`.
 
 Messages:
 
@@ -168,6 +174,36 @@ each_file [can] :
     show 'showing files in folder' (white)
     tell each_file.for to run
 ```
+
+### Walking a Folder Tree
+
+To go through every file in a folder and all its subfolders, set `recursive`:
+
+```gloo
+notes [each] :
+  file [file] :
+  in [file] : /my/notes/
+  ext [string] : md
+  recursive [bool] : true
+  do [script] : show ^.file
+```
+
+`each dir` takes `recursive` too, and then lists every folder in the tree (but not the `in` folder itself).
+
+For more control, put wildcards in the `in` path instead. They are the same wildcards the shell uses:
+
+- `in: /my/notes/**/` — every folder in the tree; the same as `recursive: true`.
+- `in: /projects/*/docs/` — the `docs` folder of each project, one level down.
+- `in: /projects/*/` — each folder one level down, but not the top folder.
+
+Wildcards combine with `ext`, `recursive` and `include_dirs`. For example, `in: /projects/*/docs/` with `recursive: true` walks every project's docs tree.
+
+What the walk gives:
+
+- Full paths, sorted, with each folder listed before what is in it.
+- Hidden files and folders (names starting with `.`, such as `.git/`) are skipped.
+- A `**` or `recursive` walk does not go into symlinked folders, so a link loop can't trap it. A symlinked folder is still listed itself by `each dir`, or by `each file` with `include_dirs`, and a single-level `*` in the path does go through it.
+- A missing `in` folder is an error for `each dir`, unless the path includes wildcards (then it just finds nothing). `each file` finds nothing either way.
 
 See also: Object Base, Each, Each Line, Each Word, Each Child, Each Directory.
 
