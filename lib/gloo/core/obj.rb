@@ -379,7 +379,9 @@ module Gloo
         @params = params
         return self.dispatch msg if self.can_receive_message? msg
 
+        # The message never ran, so there is no result.
         @engine.err "Object #{self.name} cannot receive message #{msg}"
+        @engine.heap.it.set_to false
         return false
       end
 
@@ -393,6 +395,7 @@ module Gloo
           return true
         else
           @engine.err "Message #{msg} not implemented"
+          @engine.heap.it.set_to false
           return false
         end
       end

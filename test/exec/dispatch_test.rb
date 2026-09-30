@@ -42,4 +42,35 @@ class DispatchTest < BaseEngineTest
     assert_equal 1, @engine.heap.error.error_count
   end
 
+  def test_message_to_a_missing_object_sets_it_false
+    @engine.heap.it.set_to 'stale'
+    @engine.parser.run 'tell no.such.obj to get_parent'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, "Object 'no.such.obj' was not found."
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_check_on_a_missing_object_sets_it_false
+    @engine.heap.it.set_to 'stale'
+    @engine.parser.run 'check no.such.obj for blank?'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_message_the_object_does_not_take_sets_it_false
+    @engine.parser.run "create s as string : 'hi'"
+    @engine.heap.it.set_to 'stale'
+    @engine.parser.run 'tell s to no_such_msg'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, 'cannot receive message no_such_msg'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_message_to_it_still_leaves_it_unchanged
+    @engine.parser.run "eval 'abc'"
+    @engine.parser.run 'tell it to trim'
+    assert @engine.error?
+    assert_equal 'abc', @engine.heap.it.value
+  end
+
 end

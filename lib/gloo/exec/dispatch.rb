@@ -24,7 +24,9 @@ module Gloo
         target_obj = pn.resolve
 
         unless target_obj
+          # The message never ran, so there is no result.
           engine.err Gloo::Core::NotFound.object( to_obj_pn )
+          engine.heap.it.set_to false
           return
         end
         Gloo::Exec::Dispatch.message( engine, msg, target_obj, params )

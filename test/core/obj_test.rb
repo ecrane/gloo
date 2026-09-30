@@ -469,4 +469,13 @@ class ObjTest < BaseEngineTest
     assert_equal 'Told, not checked.', @engine.heap.it.value
   end
 
+  def test_a_listed_message_with_no_implementation_sets_it_false
+    o = Gloo::Objs::String.new( @engine )
+    @engine.heap.it.set_to 'stale'
+    assert_equal false, o.dispatch( 'ghost' )
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, 'Message ghost not implemented'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

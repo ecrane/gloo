@@ -50,4 +50,20 @@ class RunnerTest < BaseEngineTest
     assert_kind_of SyntaxError, handled
   end
 
+  def test_run_of_a_missing_object_sets_it_false
+    @engine.heap.it.set_to 'stale'
+    @engine.parser.run 'run no.such.obj'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_run_of_an_object_that_cannot_run_sets_it_false
+    @engine.parser.run "create s as string : 'hi'"
+    @engine.heap.it.set_to 'stale'
+    @engine.parser.run 'run s'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, 'cannot receive message run'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

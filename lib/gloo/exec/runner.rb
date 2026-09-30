@@ -47,7 +47,9 @@ module Gloo
         if o
           o.send_message 'run'
         else
+          # The message never ran, so there is no result.
           engine.err Gloo::Core::NotFound.object( path_name )
+          engine.heap.it.set_to false
         end
       end
 

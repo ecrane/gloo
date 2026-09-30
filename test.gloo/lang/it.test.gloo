@@ -152,3 +152,21 @@ tests.lang.it_rule [can] :
     on_invoke [script] :
       put 1 into no.such.object
     result [int] :
+
+  message_to_missing_object_sets_it_false [test] :
+    description [string] : A message that can't be delivered leaves no stale value in it.
+    on_test [script] :
+      eval 'stale'
+      tell ^^.no_such_obj to get_parent
+      eval it = false
+      assert "expected it to be false after a message to a missing object"
+
+      eval 'stale'
+      tell ^^.s to no_such_msg
+      eval it = false
+      assert "expected it to be false after a message the object doesn't take"
+
+      eval 'stale'
+      run ^^.no_such_obj
+      eval it = false
+      assert "expected it to be false after running a missing object"
