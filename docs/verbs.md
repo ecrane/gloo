@@ -43,7 +43,7 @@ tell {path.to.object} to {message}
 > tell the.container to count
 ```
 
-`check` is the same verb under another name — it sends a message exactly the way `tell` does. The two spellings exist so code reads like natural communication: use `tell` to trigger an action (`up`, `run`, `unload`), and `check` to investigate state with a yes/no question (`blank?`, `contains?`, `starts_with?`). The answer to a `check` lands in `it`, so it pairs naturally with `if` / `unless`.
+`check` is the same verb under another name — it sends a message exactly the way `tell` does. The two spellings exist so code reads like natural communication: use `tell` to trigger an action (`up`, `run`, `unload`), and `check` to investigate state with a yes/no question (`blank?`, `contains?`, `starts_with?`). The answer to a `check` lands in `it`, so it pairs naturally with `if` / `unless`. `it` itself can't be sent a message (`check it for …` is an error); put it into an object first — see Language, Syntax > It.
 
 ```gloo
 > tell my.str to up

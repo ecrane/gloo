@@ -355,4 +355,16 @@ class PnTest < BaseEngineTest
     refute Gloo::Core::Pn.new( @engine, '@.nope' ).exists?
   end
 
+  def test_it_target_err_reports_for_it
+    pn = Gloo::Core::Pn.new( @engine, 'IT' )
+    assert pn.it_target_err?( 'run' )
+    assert_includes @engine.heap.error.value, 'put it into an object first'
+  end
+
+  def test_it_target_err_is_quiet_for_other_paths
+    pn = Gloo::Core::Pn.new( @engine, 'item' )
+    refute pn.it_target_err?( 'run' )
+    refute @engine.error?
+  end
+
 end

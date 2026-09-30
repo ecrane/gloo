@@ -37,3 +37,54 @@ tests.lang.it [can] :
       list ^^.n
       eval it = 42
       assert "expected it to survive statements that don't produce a result"
+
+#
+# it is a read-only result value, not an object: it can be read, but
+# nothing can target it.
+#
+
+tests.lang.it_read_only [can] :
+
+  err_fired [bool] : false
+  s [string] :
+
+  on_error [script] :
+    put true into ^.err_fired
+
+  error_data [can] :
+    message [string] :
+    backtrace [string] :
+    kind [string] :
+    location [string] :
+
+  message_to_it_is_an_error [test] :
+    description [string] : Sending it a message reports an error that says what to do instead.
+    on_test [script] :
+      put false into ^^.err_fired
+      eval 'abc'
+      check it for starts_with? ( 'a' )
+      eval ^^.err_fired = true
+      assert "expected check it for ... to be an error"
+
+      eval ^^.error_data.message = "it isn't an object and can't be sent messages; put it into an object first (put it into x)."
+      assert "expected the error to say to put it into an object first"
+
+  put_into_it_is_an_error [test] :
+    description [string] : Putting a value into it is an error.
+    on_test [script] :
+      put false into ^^.err_fired
+      put 'x' into it
+      eval ^^.err_fired = true
+      assert "expected put into it to be an error"
+
+  put_it_into_an_object_works [test] :
+    description [string] : The workaround: put it into an object, then send that object the message.
+    on_test [script] :
+      put false into ^^.err_fired
+      eval 'abc'
+      put it into ^^.s
+      check ^^.s for starts_with? ( 'a' )
+      assert "expected the message to work on the object"
+
+      eval ^^.err_fired = false
+      assert "expected no error"

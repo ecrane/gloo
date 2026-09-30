@@ -31,6 +31,9 @@ module Gloo
         if is_hard_redirect?
           redirect_hard
         else
+          pn = Gloo::Core::Pn.new( @engine, @tokens.second )
+          return if pn.it_target_err?( 'redirected to' )
+
           determine_target
           return @engine.err( Gloo::Core::NotFound.object( @tokens.second ) ) unless @target_obj
 

@@ -17,7 +17,9 @@ module Gloo
       # Run the verb.
       #
       def run
-        return @engine.persist_man.save @tokens.second unless @tokens.index_of( TO )
+        name = @tokens.second
+        return if name && Gloo::Core::Pn.new( @engine, name ).it_target_err?( 'saved' )
+        return @engine.persist_man.save name unless @tokens.index_of( TO )
 
         run_save_to
       end

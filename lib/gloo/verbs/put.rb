@@ -77,6 +77,9 @@ module Gloo
       #
       def update_target( target, value )
         pn = Gloo::Core::Pn.new( @engine, target )
+        return if pn.it_target_err?( 'put into',
+          'put the value into an object instead' )
+
         o = pn.resolve
         if o.nil?
           @engine.err Gloo::Core::NotFound.object( target )

@@ -322,6 +322,23 @@ example [can] :
 
 Running this script will show `7` twice. The first time will be the result of the addition. The second time will be showing the result object.
 
+`it` is read-only. It is a result value, not an object: it has no type, and the next command that produces a result replaces it. You can read it anywhere a value is allowed (`eval it = 7`, `put it into x`, `if it then …`), but nothing can target it. Sending it a message (`check it for …`, `tell it to …`), putting a value into it, or using it with `run`, `move`, `list`, `create`, `save` or `redirect` is an error, and `it` keeps its value.
+
+To send a message to the value in `it`, put it into an object first. Putting it into an object of a given type also says what kind of value it is:
+
+```gloo
+example [can] :
+  path [string] :
+  list [can] :
+    a : one
+    b : two
+  on_load [script] :
+    tell ^.list to random_child_path
+    put it into ^.path
+    check ^.path for starts_with? ( 'example.list.' )
+    show it
+```
+
 See also: Pathname.
 
 ## Operators

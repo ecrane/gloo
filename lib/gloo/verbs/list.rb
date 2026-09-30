@@ -19,6 +19,8 @@ module Gloo
         target = self.determine_target
         indent = self.determine_indent
 
+        return if target.it_target_err?( 'listed' )
+
         obj = target.resolve
         if obj
           show_target( obj, levels, indent )

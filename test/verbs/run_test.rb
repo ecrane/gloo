@@ -44,4 +44,14 @@ class RunTest < BaseEngineTest
     assert_equal Gloo::Verbs::Run::MISSING_EXPR_ERR, @engine.heap.error.value
   end
 
+  def test_run_it_is_an_error
+    @engine.parser.run 'create c as can'
+    @engine.parser.run "create c.x as string : 'ex'"
+    @engine.parser.run "eval 'abc'"
+    @engine.parser.run "run it"
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, "it isn't an object and can't be run;"
+    assert_equal 'abc', @engine.heap.it.value
+  end
+
 end

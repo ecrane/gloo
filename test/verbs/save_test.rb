@@ -255,4 +255,20 @@ class SaveTest < BaseEngineTest
     File.write( fixture_path, original ) if original
   end
 
+  def test_save_it_is_an_error
+    @engine.parser.run "eval 'abc'"
+    @engine.parser.run 'save it'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, "it isn't an object and can't be saved;"
+    assert_equal 'abc', @engine.heap.it.value
+  end
+
+  def test_save_it_to_a_path_is_an_error
+    @engine.parser.run "eval 'abc'"
+    @engine.parser.run 'save it to /tmp/gloo_it_save.gloo'
+    assert @engine.error?
+    refute File.exist?( '/tmp/gloo_it_save.gloo' )
+    assert_equal 'abc', @engine.heap.it.value
+  end
+
 end

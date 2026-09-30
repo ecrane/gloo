@@ -96,4 +96,14 @@ class PutTest < BaseEngineTest
     assert_equal 'keep me', @engine.heap.root.find_child( 's' ).value
   end
 
+  def test_put_into_it_is_an_error
+    @engine.parser.run 'create c as can'
+    @engine.parser.run "create c.x as string : 'ex'"
+    @engine.parser.run "eval 'abc'"
+    @engine.parser.run "put 'x' into it"
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, "it isn't an object and can't be put into;"
+    assert_equal 'abc', @engine.heap.it.value
+  end
+
 end

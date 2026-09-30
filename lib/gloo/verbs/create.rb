@@ -60,6 +60,9 @@ module Gloo
 
         # Check to see if this is an alias
         pn = Gloo::Core::Pn.new( @engine, name )
+        return if pn.it_target_err?( 'created',
+          'it is reserved for the result of the last command, so use another name' )
+
         obj = pn.resolve if pn
         name = obj.value if obj&.is_alias?
 

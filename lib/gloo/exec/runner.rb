@@ -37,6 +37,8 @@ module Gloo
       def self.run( engine, path_name )
         engine.log.debug "running script at #{path_name}"
         pn = Gloo::Core::Pn.new( engine, path_name )
+        return if pn.it_target_err?( 'run' )
+
         o = pn.resolve
 
         if o

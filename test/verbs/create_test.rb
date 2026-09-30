@@ -83,4 +83,14 @@ class CreateTest < BaseEngineTest
     assert_equal '3', x.value
   end
 
+  def test_create_it_is_an_error
+    @engine.parser.run 'create c as can'
+    @engine.parser.run "create c.x as string : 'ex'"
+    @engine.parser.run "eval 'abc'"
+    @engine.parser.run "create it as string"
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, "it isn't an object and can't be created;"
+    assert_equal 'abc', @engine.heap.it.value
+  end
+
 end

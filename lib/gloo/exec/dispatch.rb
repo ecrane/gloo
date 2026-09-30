@@ -19,6 +19,8 @@ module Gloo
       # 
       def self.send_message( engine, msg, to_obj_pn, params = nil )
         pn = Gloo::Core::Pn.new( engine, to_obj_pn )
+        return if pn.it_target_err?( 'sent messages' )
+
         target_obj = pn.resolve
 
         unless target_obj

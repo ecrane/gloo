@@ -60,6 +60,8 @@ module Gloo
 
         name = arr[ 1 ]
         pn = Gloo::Core::Pn.new( @engine, name )
+        return nil if pn.it_target_err?( 'moved' )
+
         o = pn.resolve
 
         @engine.err( Gloo::Core::NotFound.object( name ) ) unless o
@@ -77,6 +79,8 @@ module Gloo
         end
 
         pn = Gloo::Core::Pn.new( @engine, dst )
+        return nil if pn.it_target_err?( 'moved into' )
+
         o = pn.resolve
         @engine.err( Gloo::Core::NotFound.object( dst ) ) unless o
         return o

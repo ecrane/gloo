@@ -14,6 +14,8 @@ module Gloo
       ERROR = 'error'.freeze
       CONTEXT = '@'.freeze
       NAMED_COLORS = %w[red blue green white black yellow].freeze
+      IT_NOT_AN_OBJECT = "it isn't an object and can't be %s; %s.".freeze
+      IT_HINT = 'put it into an object first (put it into x)'.freeze
 
       attr_reader :src, :elements
 
@@ -59,6 +61,19 @@ module Gloo
       #
       def it?
         return @src.downcase == IT
+      end
+
+      #
+      # it is a read-only result value, not an object, so it can't
+      # be the target of a verb or message. If the path refers to it,
+      # report that (what it can't be: 'sent messages', 'run', ...,
+      # and what to do instead) and return true.
+      #
+      def it_target_err?( what, hint = IT_HINT )
+        return false unless self.it?
+
+        @engine.err format( IT_NOT_AN_OBJECT, what, hint )
+        return true
       end
 
       #
