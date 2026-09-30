@@ -77,6 +77,34 @@ An index that is out of range (including a negative one) or isn't a number, or a
 
 The `random_` messages pick with replacement, so two calls can give the same child. For distinct picks, pick a random index with an integer's `randomize` message, keep the indexes already used as children of another container, and check it with `child_exists` before using `child_path_at`.
 
+### Building a numbered list
+
+To add children one at a time — say, while walking a folder — create each one through an alias. Point the alias at the next numbered path, then create the object there, and put its value in:
+
+```gloo
+names [can] :
+  words [string] : red green blue
+  list [can] :
+  next [int] : 0
+  slot [alias] :
+
+  add_each [each] :
+    word [string] :
+    in [alias] : names.words
+    do [script] :
+      tell names.list to count
+      put it + 1 into names.next
+      put 'names.list.' + names.next into names.slot*
+      create names.slot* as string
+      put ^.word into names.slot
+
+  on_load [script] :
+    tell names.add_each to run
+    tell names.list to show_key_value_table
+```
+
+The children are named `1`, `2`, `3`, the same way `split_list` names them, so `child_value_at ( 0 )` is the child named `1`. The `*` after the alias refers to the alias itself rather than what it points to (see `alias` in the in-app help), so `put … into names.slot*` changes where it points and `create names.slot*` creates the object there.
+
 ## Integer
 
 An integer holds a numeric value and responds to a handful of convenience messages:
