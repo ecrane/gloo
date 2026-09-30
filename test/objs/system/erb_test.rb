@@ -72,4 +72,24 @@ class ErbTest < BaseEngineTest
     assert_equal 'wow!', @engine.heap.it.value
   end
 
+  def test_run_with_an_unknown_name_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create e as erb'
+    @engine.parser.run "put '<%= nope %>' into e.template"
+    @engine.parser.run 'run e'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'Could not render the template in e:'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_run_with_a_syntax_error_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create e as erb'
+    @engine.parser.run "put '<%= 1 + %>' into e.template"
+    @engine.parser.run 'run e'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'Could not render the template in e:'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

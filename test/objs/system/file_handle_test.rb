@@ -256,4 +256,28 @@ class FileHandleTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  def test_show_of_a_missing_file_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create f as file : '/tmp/gloo_no_such_file_xyz'"
+    @engine.parser.run 'tell f to show'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, "File '/tmp/gloo_no_such_file_xyz' was not found."
+  end
+
+  def test_show_of_a_folder_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create f as file : '/tmp'"
+    @engine.parser.run 'tell f to show'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, "'/tmp' is a folder, not a file."
+  end
+
+  def test_page_of_a_missing_file_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create f as file : '/tmp/gloo_no_such_file_xyz'"
+    @engine.parser.run 'tell f to page'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, "File '/tmp/gloo_no_such_file_xyz' was not found."
+  end
+
 end

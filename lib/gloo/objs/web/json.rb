@@ -65,9 +65,10 @@ module Gloo
       def msg_pretty
         return unless self.value
 
-        json = JSON.parse( self.value )
-        if self.value.start_with?( '"{' )
-          json = JSON.parse( json )
+        json = nil
+        return false unless attempt( "parse the JSON in #{pn}", JSON::ParserError ) do
+          json = JSON.parse( self.value )
+          json = JSON.parse( json ) if self.value.start_with?( '"{' )
         end
         pretty = JSON.pretty_generate( json )
         set_value pretty
@@ -93,7 +94,10 @@ module Gloo
           return false
         end
 
-        field = Gloo::Objs::Json.get_value_in_json self.value, data
+        field = nil
+        return false unless attempt( "parse the JSON in #{pn}", JSON::ParserError ) do
+          field = Gloo::Objs::Json.get_value_in_json self.value, data
+        end
         @engine.heap.it.set_to field
         return field
       end
@@ -142,7 +146,10 @@ module Gloo
         end
         parent = pn.resolve
 
-        json = JSON.parse( self.value )
+        json = nil
+        return unless attempt( "parse the JSON in #{self.pn}", JSON::ParserError, set_it: false ) do
+          json = JSON.parse( self.value )
+        end
         self.handle_json_to_obj( json, parent )
       end
 
@@ -205,8 +212,12 @@ module Gloo
       # 
       def self.get_value_in_json( json, path_to_value )
         data = JSON.parse( json )
-        path_to_value.split( '.' ).each do |segment|
-          data = data[ segment ]
+        path_to_value.to_s.split( '.' ).each do |segment|
+          data = case data
+                 when Hash then data[ segment ]
+                 when Array then segment.match?( /\A\d+\z/ ) ? data[ segment.to_i ] : nil
+                 end
+          return nil if data.nil?
         end
         return data
       end

@@ -88,3 +88,67 @@ tests.lang.it_read_only [can] :
 
       eval ^^.err_fired = false
       assert "expected no error"
+
+#
+# The it rule: a command that works out a value puts it in it; when
+# something goes wrong, it is false.
+#
+
+tests.lang.it_rule [can] :
+
+  err_fired [bool] : false
+  s [string] :
+  kept [string] : keep me
+
+  on_error [script] :
+    put true into ^.err_fired
+
+  failed_put_sets_it_false [test] :
+    description [string] : A put whose value can't be worked out sets it to false and keeps the target.
+    on_test [script] :
+      put false into ^^.err_fired
+      eval 'before'
+      put ^^.no_such_value into ^^.kept
+      eval it = false
+      assert "expected it to be false after a failed put"
+
+      eval ^^.kept = 'keep me'
+      assert "expected the target to keep its value"
+
+      eval ^^.err_fired = true
+      assert "expected the failed put to be an error"
+
+  put_into_missing_object_sets_it_false [test] :
+    description [string] : A put into an object that doesn't exist sets it to false.
+    on_test [script] :
+      eval 'before'
+      put 'x' into ^^.no_such_target
+      eval it = false
+      assert "expected it to be false"
+
+  value_messages_set_it [test] :
+    description [string] : A message that changes its own value also puts the new value in it.
+    on_test [script] :
+      put '  padded  ' into ^^.s
+      tell ^^.s to trim
+      eval it = 'padded'
+      assert "expected trim to put the trimmed string in it"
+
+      put 'a b' into ^^.s
+      tell ^^.s to format_for_html
+      eval it = 'a b'
+      assert "expected format_for_html to put the result in it"
+
+  failed_function_sets_it_false [test] :
+    description [string] : A function whose on_invoke fails sets it to false.
+    on_test [script] :
+      eval 'before'
+      invoke ^^.failing
+      eval it = false
+      assert "expected it to be false after a failed invoke"
+
+  failing [ƒ] :
+    params [can] :
+    on_invoke [script] :
+      put 1 into no.such.object
+    result [int] :

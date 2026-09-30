@@ -14,6 +14,10 @@ module Gloo
       KEYWORD_SHORT = 'crypt'.freeze
 
       CIPHER_TYPE = 'AES-256-CBC'.freeze
+
+      # A key or vector of the wrong size, or data encrypted with a
+      # different key.
+      CIPHER_ERRORS = [ ArgumentError, OpenSSL::Cipher::CipherError ].freeze
       KEY = 'key'.freeze
       INIT_VECTOR = 'init_vector'.freeze
       DATA = 'data'.freeze
@@ -144,14 +148,22 @@ module Gloo
       # Decrypt the encrypted child object.
       #
       def msg_decrypt
-        update_data Cipher.decrypt( data, key, init_vector )
+        result = nil
+        return false unless attempt( "decrypt #{pn}", *CIPHER_ERRORS ) do
+          result = Cipher.decrypt( data, key, init_vector )
+        end
+        update_data result
       end
 
       #
       # Encrypt the decrypted child object.
       #
       def msg_encrypt
-        update_data Cipher.encrypt( data, key, init_vector )
+        result = nil
+        return false unless attempt( "encrypt #{pn}", *CIPHER_ERRORS ) do
+          result = Cipher.encrypt( data, key, init_vector )
+        end
+        update_data result
       end
 
       # ---------------------------------------------------------------------

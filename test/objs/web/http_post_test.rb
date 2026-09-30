@@ -74,4 +74,16 @@ class HttpPostTest < BaseEngineTest
     assert_equal 'posted', @engine.heap.it.value
   end
 
+  def test_run_with_a_network_failure_is_an_error
+    @engine.parser.run 'create p as post'
+    @engine.parser.run 'put "https://no-such-host.invalid/" into p.uri'
+    @engine.heap.it.set_to 'before'
+    failing = ->( *_ ) { raise Errno::ECONNREFUSED }
+    Gloo::Objs::HttpPost.stub( :post_json, failing ) do
+      @engine.parser.run 'run p'
+    end
+    assert_includes @engine.heap.error.value, 'Could not post to https://no-such-host.invalid/:'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

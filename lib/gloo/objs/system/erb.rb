@@ -107,8 +107,13 @@ module Gloo
         tmpl = template_value
         return unless tmpl
 
-        render = ERB.new( tmpl )
-        set_result render.result_with_hash( param_hash )
+        # The template is Ruby code the script wrote, so anything it
+        # raises (including a syntax error) is the script's problem.
+        result = nil
+        return false unless attempt( "render the template in #{pn}", StandardError, ScriptError ) do
+          result = ERB.new( tmpl ).result_with_hash( param_hash )
+        end
+        set_result result
       end
 
       # ---------------------------------------------------------------------

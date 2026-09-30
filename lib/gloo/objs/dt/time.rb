@@ -73,14 +73,17 @@ module Gloo
       # Add the given modifier to the time.
       #
       def msg_add
-        modifier = "1 hour"
+        data = nil
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
-          modifier = data
         end
+        modifier = DtTools.amount( @engine, data, 'hour' )
+        return false unless modifier
         
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         new_value = DtTools.add( dt, modifier )
         self.set_value( new_value )
         @engine.heap.it.set_to self.value
@@ -90,14 +93,17 @@ module Gloo
       # Subtract the given modifier from the time.
       #
       def msg_sub
-        modifier = "1 hour"
+        data = nil
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
-          modifier = data
         end
+        modifier = DtTools.amount( @engine, data, 'hour' )
+        return false unless modifier
 
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         self.set_value( DtTools.sub( dt, modifier ) )
         @engine.heap.it.set_to self.value
       end
@@ -106,7 +112,9 @@ module Gloo
       # Get the hour.
       #
       def msg_hh
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         @engine.heap.it.set_to "#{dt.hour}".rjust(2, '0')
       end
 
@@ -114,7 +122,9 @@ module Gloo
       # Get the minute.
       #
       def msg_mm
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         @engine.heap.it.set_to "#{dt.min}".rjust(2, '0')
       end
 
@@ -122,7 +132,9 @@ module Gloo
       # Get the second.
       #
       def msg_ss
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         @engine.heap.it.set_to "#{dt.sec}".rjust(2, '0')
       end
 
@@ -130,7 +142,9 @@ module Gloo
       # Get the AM/PM.
       #
       def msg_am
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         @engine.heap.it.set_to dt.strftime( '%p' )
       end
 
@@ -146,7 +160,9 @@ module Gloo
           data = expr.evaluate
           format = data
         end
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         @engine.heap.it.set_to dt.strftime( format )
       end
 

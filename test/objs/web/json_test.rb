@@ -114,4 +114,38 @@ class JsonTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  def test_pretty_of_invalid_json_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create j as json : '{bad'"
+    @engine.parser.run 'tell j to pretty'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'Could not parse the JSON in j:'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_get_from_invalid_json_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create j as json : '{bad'"
+    @engine.parser.run "tell j to get ( 'a' )"
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'Could not parse the JSON in j:'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_parse_of_invalid_json_is_an_error_and_leaves_it
+    @engine.parser.run "create j as json : '{bad'"
+    @engine.parser.run 'create d as can'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell j to parse ( d )'
+    assert_includes @engine.heap.error.value, 'Could not parse the JSON in j:'
+    assert_equal 'before', @engine.heap.it.value
+  end
+
+  def test_get_value_through_a_plain_value_is_nil
+    json = '{"a":1,"list":["x","y"]}'
+    assert_nil Gloo::Objs::Json.get_value_in_json( json, 'a.b' )
+    assert_equal 'y', Gloo::Objs::Json.get_value_in_json( json, 'list.1' )
+    assert_nil Gloo::Objs::Json.get_value_in_json( json, 'list.z' )
+  end
+
 end

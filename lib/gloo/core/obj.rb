@@ -350,6 +350,29 @@ module Gloo
       end
 
       #
+      # Run a step of a message that can fail on ordinary bad input or
+      # the outside world (invalid JSON, an unknown host, a wrong key).
+      # Returns true if the block ran. If it raises one of the given
+      # exception classes, report it as a gloo error ("Could not
+      # {action}: {reason}"), put false into it (unless set_it is
+      # false, for an action that doesn't set it), and return false.
+      # Any other exception is left alone, so a real bug still shows
+      # up as one.
+      #
+      #   return false unless attempt( 'parse the JSON', JSON::ParserError ) do
+      #     json = JSON.parse( value )
+      #   end
+      #
+      def attempt( action, *errors, set_it: true )
+        yield
+        return true
+      rescue *errors => e
+        @engine.err "Could not #{action}: #{e.message}"
+        @engine.heap.it.set_to false if set_it
+        return false
+      end
+
+      #
       # Sent this object the given message.
       #
       def send_message( msg, params = nil )

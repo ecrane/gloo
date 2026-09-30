@@ -116,4 +116,15 @@ class PasswordTest < BaseEngineTest
     assert_equal hash.value, @engine.heap.it.value
   end
 
+  def test_check_against_a_bad_hash_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create p as password'
+    @engine.parser.run "put 'secret' into p.password"
+    @engine.parser.run "put 'nothash' into p.hash"
+    @engine.parser.run 'tell p to check'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'Could not check the password against the hash in p: invalid hash'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

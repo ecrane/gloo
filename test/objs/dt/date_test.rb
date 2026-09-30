@@ -84,4 +84,37 @@ class DateTest < BaseEngineTest
     assert_equal '2025-10-15', @engine.heap.it.value
   end
 
+  def test_mm_of_a_value_that_is_not_a_date_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create d as date : 'garbage'"
+    @engine.parser.run 'tell d to mm'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'There is no date to work with!'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_add_with_a_bad_unit_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create d as date : '2026-01-01'"
+    @engine.parser.run "tell d to add ( '3 dayz' )"
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, "'3 dayz' is not an amount like '1 day' or '3 months'."
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_add_a_bare_number_is_days_with_a_warning
+    @engine.parser.run "create d as date : '2026-01-01'"
+    warnings = capture_warnings { @engine.parser.run 'tell d to add ( 3 )' }
+    assert_includes warnings.first, "'3' has no unit; using 3 days."
+    assert_equal '2026.01.04', @engine.heap.it.value
+    refute @engine.error?
+  end
+
+  def test_add_with_a_unit_does_not_warn
+    @engine.parser.run "create d as date : '2026-01-01'"
+    warnings = capture_warnings { @engine.parser.run "tell d to add ( '2 Weeks' )" }
+    assert_empty warnings
+    assert_equal '2026.01.15', @engine.heap.it.value
+  end
+
 end

@@ -22,7 +22,10 @@ module Gloo
         begin
           verb&.check_syntax
           verb&.run
-        rescue => ex
+        rescue StandardError, ScriptError => ex
+          # ScriptError (a SyntaxError from eval'd code, a LoadError
+          # from a missing gem) isn't a StandardError, and would
+          # otherwise stop gloo altogether.
           engine.handle_exception( ex )
         ensure
           engine.exec_env.verbs.pop

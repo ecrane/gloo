@@ -75,4 +75,14 @@ class SystemTest < BaseEngineTest
     assert_equal true, @engine.heap.it.value
   end
 
+  def test_run_of_an_unknown_command_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create s as sys'
+    @engine.parser.run "put 'no_such_cmd_xyz' into s.command"
+    @engine.parser.run 'run s'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, "Could not run 'no_such_cmd_xyz':"
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

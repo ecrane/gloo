@@ -69,14 +69,17 @@ module Gloo
       # Add the given modifier to the date.
       #
       def msg_add
-        modifier = "1 day"
+        data = nil
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
-          modifier = data
         end
+        modifier = DtTools.amount( @engine, data )
+        return false unless modifier
         
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         new_value = DtTools.add( dt, modifier )
         self.set_value( new_value )
         @engine.heap.it.set_to self.value
@@ -86,14 +89,17 @@ module Gloo
       # Subtract the given modifier from the date.
       #
       def msg_sub
-        modifier = "1 day"
+        data = nil
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
           data = expr.evaluate
-          modifier = data
         end
+        modifier = DtTools.amount( @engine, data )
+        return false unless modifier
 
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         self.set_value( DtTools.sub( dt, modifier ) )
         @engine.heap.it.set_to self.value
       end
@@ -102,7 +108,10 @@ module Gloo
       # Set the value to the beginning of the month.
       #
       def msg_begin_month
-        dt = self.value.to_time.beginning_of_month
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.beginning_of_month
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -111,7 +120,10 @@ module Gloo
       # Set the value to the end of the month.
       #
       def msg_end_month
-        dt = self.value.to_time.end_of_month
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.end_of_month
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -120,7 +132,10 @@ module Gloo
       # Set the value to the beginning of the year.
       #
       def msg_begin_year
-        dt = self.value.to_time.beginning_of_year
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.beginning_of_year
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -129,7 +144,10 @@ module Gloo
       # Set the value to the end of the year.
       #
       def msg_end_year
-        dt = self.value.to_time.end_of_year
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.end_of_year
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -138,7 +156,10 @@ module Gloo
       # Set the value to the beginning of the week.
       #
       def msg_begin_week
-        dt = self.value.to_time.beginning_of_week( start_day = :sunday )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.beginning_of_week( start_day = :sunday )
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -147,7 +168,10 @@ module Gloo
       # Set the value to the end of the week.
       #
       def msg_end_week
-        dt = self.value.to_time.end_of_week( start_day = :sunday )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.end_of_week( start_day = :sunday )
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -156,7 +180,10 @@ module Gloo
       # Set the value to the beginning of the day.
       #
       def msg_begin_day
-        dt = self.value.to_time.beginning_of_day
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.beginning_of_day
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -165,7 +192,10 @@ module Gloo
       # Set the value to the end of the day.
       # 
       def msg_end_day
-        dt = self.value.to_time.end_of_day
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        dt = dt.to_time.end_of_day
         self.set_value dt
         @engine.heap.it.set_to dt
       end
@@ -175,7 +205,10 @@ module Gloo
       # Tell the datetime to check if it is today.
       #
       def msg_is_today
-        today = DtTools.is_today?( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        today = DtTools.is_today?( dt )
         @engine.heap.it.set_to today
         return today
       end
@@ -184,7 +217,10 @@ module Gloo
       # Tell the datetime to check if it is in the future.
       #
       def msg_is_future
-        today = DtTools.is_future?( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        today = DtTools.is_future?( dt )
         @engine.heap.it.set_to today
         return today
       end
@@ -193,7 +229,10 @@ module Gloo
       # Tell the datetime to check if it is in the past.
       #
       def msg_is_past
-        today = DtTools.is_past?( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        today = DtTools.is_past?( dt )
         @engine.heap.it.set_to today
         return today
       end
@@ -202,7 +241,10 @@ module Gloo
       # Tell the datetime to check if it is yesterday.
       #
       def msg_is_yesterday
-        today = DtTools.is_yesterday?( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        today = DtTools.is_yesterday?( dt )
         @engine.heap.it.set_to today
         return today
       end
@@ -211,7 +253,10 @@ module Gloo
       # Tell the datetime to check if it is tomorrow.
       #
       def msg_is_tomorrow
-        today = DtTools.is_tomorrow?( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        today = DtTools.is_tomorrow?( dt )
         @engine.heap.it.set_to today
         return today
       end
@@ -220,7 +265,10 @@ module Gloo
       # Tell the datetime to check if it is this week.
       #
       def msg_is_this_week
-        today = DtTools.is_this_week?( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
+        today = DtTools.is_this_week?( dt )
         @engine.heap.it.set_to today
         return today
       end
@@ -245,7 +293,9 @@ module Gloo
           data = expr.evaluate
           format = data
         end
-        dt = Chronic.parse( self.value )
+        dt = DtTools.parse_value( @engine, self.value, self.class.typename )
+        return false unless dt
+
         @engine.heap.it.set_to dt.strftime( format )
       end
 

@@ -131,3 +131,31 @@ tests [can] :
         tell ^^.s to substring? ('lo w')
         assert "expected it to be true that s contains 'lo w'"
 
+
+#
+# format_for_html: each leading space becomes one &nbsp; (not the
+# &nbsp; plus the space), and it gets the formatted string.
+#
+
+tests.string_html [can] :
+
+  s [string] :
+
+  leading_spaces_appear_once [test] :
+    description [string] : format_for_html turns leading spaces into &nbsp; once, and puts the result in it.
+    on_test [script] :
+      put '  b' into ^^.s
+      tell ^^.s to format_for_html
+      eval it = '&nbsp;&nbsp;b'
+      assert "expected it to have the formatted string"
+
+      eval ^^.s = '&nbsp;&nbsp;b'
+      assert "expected each leading space once, as &nbsp;"
+
+  inner_spaces_are_kept [test] :
+    description [string] : Only leading spaces are converted.
+    on_test [script] :
+      put ' a b' into ^^.s
+      tell ^^.s to format_for_html
+      eval ^^.s = '&nbsp;a b'
+      assert "expected the inner space to stay a space"

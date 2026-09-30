@@ -48,7 +48,7 @@ See also: Show.
 Gloo makes a best guess and keeps going when it can, but it never does so silently: every problem is reported, in one of these ways.
 
 - **Syntax error** — the command couldn't be understood: an unknown verb or object type, a required part missing (`put 3 into`), the wrong number of arguments, an unclosed quote or parenthesis, or an operator missing a value (`show 1 +`).
-- **Runtime error** — the command was understood but couldn't be done: an object that doesn't exist used as a value or a target (`show no.such.obj`), division by zero, a file that can't be read or written, a position out of range.
+- **Runtime error** — the command was understood but couldn't be done: an object that doesn't exist used as a value or a target (`show no.such.obj`), division by zero, a file that can't be read or written, a position out of range. This includes failures caused by the input or the outside world: JSON that doesn't parse, a URL that's malformed or can't be reached, a wrong encryption key, a template with a mistake in it, a date object whose value isn't a date. These read `Could not {what}: {why}.` — for example `Could not parse the JSON in j: expected object key, got 'bad' at line 1 column 2`. A command that would have set `it` sets it to `false` (see It).
 - **Warning** — the command was done, but probably not the way it was meant: a value that isn't really of its type, used as a best guess (`'x' is not an integer; using 0.`), or indentation that doesn't line up. A warning is only logged; it isn't an error.
 - **Just a result** — a question whose answer is "no" is not an error at all: `exists?`, `contains?`, `substring?`, and `index_of` (which gives -1) answer in `it`.
 
@@ -56,7 +56,7 @@ Errors are logged with where they happened in front of the message: the file and
 
 What happens after an error:
 
-- The line that failed is abandoned, and the script continues with the next line. A `put` whose value couldn't be worked out leaves its target unchanged.
+- The line that failed is abandoned, and the script continues with the next line. A `put` whose value couldn't be worked out leaves its target unchanged (and `it` is `false`).
 - Loading a file keeps going after a syntax error, so every problem in the file is reported at once. An object with an unknown type is created untyped, so anything nested under it still loads where it should. A declaration with no name (`[int] : 3`) is created under a placeholder name, `unnamed_1`, `unnamed_2` and so on. A type missing its closing bracket (`count [int : 3`) is read as if it were closed after the type word.
 - The error runs any `on_error` handler (see Events below).
 

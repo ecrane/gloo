@@ -155,7 +155,10 @@ module Gloo
       # Uses the salt and the hash to check the password.
       #
       def msg_check
-        hashed_pwd = BCrypt::Password.new( hash )
+        hashed_pwd = nil
+        return false unless attempt( "check the password against the hash in #{pn}", BCrypt::Errors::InvalidHash ) do
+          hashed_pwd = BCrypt::Password.new( hash )
+        end
         result = ( hashed_pwd == salt_pwd )
         @engine.heap.it.set_to result
       end

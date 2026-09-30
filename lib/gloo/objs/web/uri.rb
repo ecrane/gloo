@@ -66,10 +66,12 @@ module Gloo
           return @engine.heap.it.set_to( false )
         end
 
-        uri = URI( value )
-        response = Net::HTTP.start( uri.host, uri.port, :use_ssl => true )
-        cert = response.peer_cert
-        o = cert.not_after
+        o = nil
+        return false unless attempt( "get the certificate for #{value}", *HttpGet::NETWORK_ERRORS ) do
+          uri = URI( value )
+          response = Net::HTTP.start( uri.host, uri.port, :use_ssl => true )
+          o = response.peer_cert.not_after
+        end
 
         @engine.heap.it.set_to o
         return o
@@ -82,7 +84,10 @@ module Gloo
       def msg_get_fragment
         return @engine.heap.it.set_to( '' ) if value.blank?
 
-        o = URI( value ).fragment
+        o = nil
+        return false unless attempt( "read the URL '#{value}'", URI::InvalidURIError ) do
+          o = URI( value ).fragment
+        end
         @engine.heap.it.set_to o
         return o
       end
@@ -94,7 +99,10 @@ module Gloo
       def msg_get_query
         return @engine.heap.it.set_to( '' ) if value.blank?
 
-        o = URI( value ).query
+        o = nil
+        return false unless attempt( "read the URL '#{value}'", URI::InvalidURIError ) do
+          o = URI( value ).query
+        end
         @engine.heap.it.set_to o
         return o
       end
@@ -106,7 +114,10 @@ module Gloo
       def msg_get_path
         return @engine.heap.it.set_to( '' ) if value.blank?
 
-        o = URI( value ).path
+        o = nil
+        return false unless attempt( "read the URL '#{value}'", URI::InvalidURIError ) do
+          o = URI( value ).path
+        end
         @engine.heap.it.set_to o
         return o
       end
@@ -118,7 +129,10 @@ module Gloo
       def msg_get_host
         return @engine.heap.it.set_to( '' ) if value.blank?
 
-        o = URI( value ).host
+        o = nil
+        return false unless attempt( "read the URL '#{value}'", URI::InvalidURIError ) do
+          o = URI( value ).host
+        end
         @engine.heap.it.set_to o
         return o
       end
@@ -130,7 +144,10 @@ module Gloo
       def msg_get_scheme
         return @engine.heap.it.set_to( '' ) if value.blank?
 
-        o = URI( value ).scheme
+        o = nil
+        return false unless attempt( "read the URL '#{value}'", URI::InvalidURIError ) do
+          o = URI( value ).scheme
+        end
         @engine.heap.it.set_to o
         return o
       end

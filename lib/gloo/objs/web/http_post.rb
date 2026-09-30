@@ -112,7 +112,10 @@ module Gloo
         @engine.log.debug "posting to: #{uri}"
         body = self.body_as_json
         @engine.log.debug "posting body: #{body}"
-        result = Gloo::Objs::HttpPost.post_json( uri, body, skip_ssl_verify? )
+        result = nil
+        return false unless attempt( "post to #{uri}", *HttpGet::NETWORK_ERRORS ) do
+          result = Gloo::Objs::HttpPost.post_json( uri, body, skip_ssl_verify? )
+        end
         @engine.log.debug result.code
         @engine.log.debug result.message
 

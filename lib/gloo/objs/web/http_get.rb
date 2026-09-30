@@ -14,6 +14,12 @@ module Gloo
 
       KEYWORD = 'http_get'.freeze
       KEYWORD_SHORT = 'get'.freeze
+
+      # What can go wrong reaching a URL: a bad URL, an unknown host,
+      # no connection, a timeout, an SSL problem, a bad response.
+      NETWORK_ERRORS = [ URI::InvalidURIError, SocketError, SystemCallError,
+                         IOError, Timeout::Error, OpenSSL::SSL::SSLError,
+                         Net::ProtocolError ].freeze
       URL = 'uri'.freeze
       DEFAULT_URL = 'https://web.site/'.freeze
       PARAMS = 'params'.freeze
@@ -76,7 +82,10 @@ module Gloo
       def msg_run
         url = full_url_value
         @engine.log.debug url
-        r = Gloo::Objs::HttpGet.invoke_request( url, skip_ssl_verify? )
+        r = nil
+        return false unless attempt( "get #{url}", *NETWORK_ERRORS ) do
+          r = Gloo::Objs::HttpGet.invoke_request( url, skip_ssl_verify? )
+        end
         update_result r
       end
 

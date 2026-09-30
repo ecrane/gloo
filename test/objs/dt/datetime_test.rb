@@ -190,4 +190,22 @@ class DatetimeTest < BaseEngineTest
     assert_equal '10/15/2025', @engine.heap.it.value
   end
 
+  def test_begin_day_of_a_value_that_is_not_a_datetime_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create d as datetime : 'garbage'"
+    @engine.parser.run 'tell d to begin_day'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'There is no datetime to work with!'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_is_today_of_a_value_that_is_not_a_datetime_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create d as datetime : 'garbage'"
+    @engine.parser.run 'tell d to is_today'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'There is no datetime to work with!'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

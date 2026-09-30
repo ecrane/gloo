@@ -91,4 +91,20 @@ class TimeTest < BaseEngineTest
     i.run
     assert_equal '02:30 PM', @engine.heap.it.value
   end
+  def test_hh_of_a_value_that_is_not_a_time_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create t as time : 'garbage'"
+    @engine.parser.run 'tell t to hh'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'There is no time to work with!'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_add_a_bare_number_is_hours_with_a_warning
+    @engine.parser.run "create t as time : '10:00'"
+    warnings = capture_warnings { @engine.parser.run 'tell t to add ( 2 )' }
+    assert_includes warnings.first, "'2' has no unit; using 2 hours."
+    assert_equal '12:00:00 pm', @engine.heap.it.value
+  end
+
 end

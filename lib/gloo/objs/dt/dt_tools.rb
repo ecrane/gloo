@@ -22,6 +22,50 @@ class DtTools
   end
 
 
+  UNITS = %w[second minute hour day week fortnight month year].freeze
+
+  #
+  # Get a date/time object's value as a Time, for a message to work
+  # with. If it isn't a date or time (Chronic can't read it), report
+  # that, put false into it, and return nil.
+  #
+  def self.parse_value( engine, value, kind )
+    unless value.blank?
+      dt = is_dt_type?( value ) ? value : Chronic.parse( value.to_s )
+      return dt if dt
+    end
+
+    msg = value.blank? ? "There is no #{kind} to work with!" : "'#{value}' is not a #{kind}."
+    engine.err msg
+    engine.heap.it.set_to false
+    return nil
+  end
+
+  #
+  # Get the amount for add or sub, in the form "1 day" or "3 months".
+  # No amount is 1 of the default unit. A number with no unit is that
+  # many of the default unit (a best guess, with a warning). Anything
+  # else that isn't a number and a unit is reported; put false into it
+  # and return nil.
+  #
+  def self.amount( engine, data, default_unit = 'day' )
+    return "1 #{default_unit}" if data.nil?
+
+    text = data.to_s.strip
+    if text.match?( /\A-?\d+\z/ )
+      unit = text == '1' ? default_unit : "#{default_unit}s"
+      engine.warn "'#{text}' has no unit; using #{text} #{unit}."
+      return "#{text} #{default_unit}"
+    end
+
+    count, unit = text.split( ' ' )
+    return text if count&.match?( /\A-?\d+\z/ ) && UNITS.include?( unit.to_s.downcase.chomp( 's' ) )
+
+    engine.err "'#{text}' is not an amount like '1 day' or '3 months'."
+    engine.heap.it.set_to false
+    return nil
+  end
+
   # ---------------------------------------------------------------------
   #    Date Math
   # ---------------------------------------------------------------------
@@ -35,7 +79,7 @@ class DtTools
     amount, unit = modifier.split(' ')  
 
     # converts "1 day" to 1.day
-    duration = amount.to_i.send( unit )
+    duration = amount.to_i.send( unit.downcase )
     return date + duration
   end
 
@@ -48,7 +92,7 @@ class DtTools
     amount, unit = modifier.split(' ')  
 
     # converts "1 day" to 1.day
-    duration = amount.to_i.send( unit )  
+    duration = amount.to_i.send( unit.downcase )
     return dt - duration
   end
 

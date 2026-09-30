@@ -163,7 +163,7 @@ module Gloo
         begin
           @lib_manager.load_lib TEST_LIB_NAME
           TestRunner.new( self, @args.files ).run
-        rescue => ex
+        rescue StandardError, ScriptError => ex
           handle_exception ex
         end
 
@@ -247,7 +247,7 @@ module Gloo
 
         begin
           @parser.run @last_cmd
-        rescue => e
+        rescue StandardError, ScriptError => e
           handle_exception e
         end
       end

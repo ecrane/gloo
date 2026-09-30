@@ -100,4 +100,28 @@ class CipherTest < BaseEngineTest
     assert_equal str, @engine.heap.it.value
   end
 
+  def test_encrypt_with_a_bad_key_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create c as cipher'
+    @engine.parser.run "put 'abc' into c.key"
+    @engine.parser.run "put 'hello' into c.data"
+    @engine.parser.run 'tell c to encrypt'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'Could not encrypt c: key must be 32 bytes'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_decrypt_with_the_wrong_key_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create c as cipher'
+    @engine.parser.run "put 'hello' into c.data"
+    @engine.parser.run 'tell c to generate_keys'
+    @engine.parser.run 'tell c to encrypt'
+    @engine.parser.run 'tell c to generate_keys'
+    @engine.parser.run 'tell c to decrypt'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, 'Could not decrypt c:'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

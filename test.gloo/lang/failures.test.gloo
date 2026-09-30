@@ -1,0 +1,139 @@
+#
+# Predictable failures tests
+#
+# A failure a script can cause with ordinary bad input or the outside
+# world (invalid JSON, a template with a mistake, a value that isn't a
+# date) is a gloo runtime error: it fires on_error (not on_exception),
+# reads "Could not ...", and a command that would set it sets it false.
+#
+
+tests.lang.failures [can] :
+
+  err_fired [bool] : false
+  exc_fired [bool] : false
+
+  on_error [script] :
+    put true into ^.err_fired
+
+  on_exception [script] :
+    put true into ^.exc_fired
+
+  error_data [can] :
+    message [string] :
+    backtrace [string] :
+    kind [string] :
+    location [string] :
+
+  j [json] : {bad
+  e [erb] :
+    template [text] : <%= 1 + %>
+    params [can] :
+    result [text] :
+  d [date] :
+  msg [string] :
+
+  invalid_json_is_an_error [test] :
+    description [string] : Pretty-printing invalid JSON fires on_error, not on_exception, and it is false.
+    on_test [script] :
+      put false into ^^.err_fired
+      put false into ^^.exc_fired
+      tell ^^.j to pretty
+      eval it = false
+      assert "expected it to be false"
+
+      eval ^^.err_fired = true
+      assert "expected on_error to fire"
+      eval ^^.exc_fired = false
+      assert "expected on_exception not to fire"
+
+      put ^^.error_data.message into ^^.msg
+      check ^^.msg for starts_with? ( 'Could not parse the JSON in tests.lang.failures.j:' )
+      assert "expected the error to say what couldn't be done"
+
+  template_syntax_error_is_an_error [test] :
+    description [string] : An erb template with a syntax error is a gloo error, and gloo keeps running.
+    on_test [script] :
+      put false into ^^.err_fired
+      put false into ^^.exc_fired
+      run ^^.e
+      eval it = false
+      assert "expected it to be false"
+
+      eval ^^.err_fired = true
+      assert "expected on_error to fire"
+      eval ^^.exc_fired = false
+      assert "expected on_exception not to fire"
+
+  not_a_date_is_an_error [test] :
+    description [string] : A date message on a value that isn't a date fires on_error, and it is false.
+    on_test [script] :
+      put '' into ^^.d
+      put false into ^^.err_fired
+      put false into ^^.exc_fired
+      tell ^^.d to mm
+      eval it = false
+      assert "expected it to be false"
+
+      eval ^^.err_fired = true
+      assert "expected on_error to fire"
+      eval ^^.exc_fired = false
+      assert "expected on_exception not to fire"
+
+  unknown_unit_is_an_error [test] :
+    description [string] : Adding an amount with an unknown unit fires on_error, and it is false.
+    on_test [script] :
+      put '2026-01-01' into ^^.d
+      put false into ^^.err_fired
+      tell ^^.d to add ( '3 dayz' )
+      eval it = false
+      assert "expected it to be false"
+
+      eval ^^.err_fired = true
+      assert "expected on_error to fire"
+
+      eval ^^.error_data.message = "'3 dayz' is not an amount like '1 day' or '3 months'."
+      assert "expected the error to show what an amount looks like"
+
+#
+# Chronic phrases are still dates: the checks above only catch a value
+# that couldn't be read as one.
+#
+
+tests.lang.chronic_phrases [can] :
+
+  d [date] :
+  now [date] :
+  dt [datetime] :
+  a [string] :
+  b [string] :
+
+  today_is_a_date [test] :
+    description [string] : put 'today' into a date gives today's date.
+    on_test [script] :
+      put 'today' into ^^.d
+      tell ^^.now to now
+      tell ^^.d to format ( '%Y-%m-%d' )
+      put it into ^^.a
+      tell ^^.now to format ( '%Y-%m-%d' )
+      put it into ^^.b
+      eval ^^.a = ^^.b
+      assert "expected 'today' to be today's date"
+
+  add_to_a_phrase [test] :
+    description [string] : A date set from a phrase can be added to.
+    on_test [script] :
+      put '2026-01-01' into ^^.d
+      tell ^^.d to add ( '1 week' )
+      eval it = '2026.01.08'
+      assert "expected a week later"
+
+  tomorrow_is_in_the_future [test] :
+    description [string] : 'tomorrow at 3pm' in a datetime is tomorrow, and in the future.
+    on_test [script] :
+      put 'tomorrow at 3pm' into ^^.dt
+      tell ^^.dt to is_tomorrow
+      assert "expected it to be tomorrow"
+      tell ^^.dt to is_future
+      assert "expected it to be in the future"
+      tell ^^.dt to is_past
+      refute "expected it not to be in the past"

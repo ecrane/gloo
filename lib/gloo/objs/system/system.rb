@@ -111,7 +111,10 @@ module Gloo
         cmd = cmd_value
         return unless cmd
 
-        result = `#{cmd}`
+        result = nil
+        return false unless attempt( "run '#{cmd}'", SystemCallError ) do
+          result = `#{cmd}`
+        end
         set_result result
       end
 

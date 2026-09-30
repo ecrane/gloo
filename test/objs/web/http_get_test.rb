@@ -76,4 +76,16 @@ class HttpGetTest < BaseEngineTest
     assert_equal 'the body', @engine.heap.root.children.first.children.last.value
   end
 
+  def test_run_with_a_network_failure_is_an_error
+    @engine.parser.run 'create g as get'
+    @engine.parser.run 'put "https://no-such-host.invalid/" into g.uri'
+    @engine.heap.it.set_to 'before'
+    failing = ->( *_ ) { raise SocketError, 'Failed to open TCP connection' }
+    Gloo::Objs::HttpGet.stub( :invoke_request, failing ) do
+      @engine.parser.run 'run g'
+    end
+    assert_includes @engine.heap.error.value, 'Could not get https://no-such-host.invalid/: Failed to open TCP connection'
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

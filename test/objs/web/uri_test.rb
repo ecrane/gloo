@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'minitest/mock'
 
 class UriTest < BaseEngineTest
 
@@ -96,6 +97,26 @@ class UriTest < BaseEngineTest
     @engine.heap.it.set_to 'before'
     @engine.parser.run 'tell u to get_cert_expires'
     assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_get_host_of_a_malformed_url_is_an_error
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "create u as uri : 'ht tp://x y'"
+    @engine.parser.run 'tell u to get_host'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value.to_s, "Could not read the URL 'ht tp://x y':"
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_get_cert_expires_with_a_network_failure_is_an_error
+    @engine.parser.run "create u as uri : 'https://no-such-host.invalid'"
+    @engine.heap.it.set_to 'before'
+    failing = ->( *_ ) { raise SocketError, 'getaddrinfo failed' }
+    Net::HTTP.stub( :start, failing ) do
+      @engine.parser.run 'tell u to get_cert_expires'
+    end
+    assert_includes @engine.heap.error.value, 'Could not get the certificate for https://no-such-host.invalid:'
     assert_equal false, @engine.heap.it.value
   end
 

@@ -58,7 +58,7 @@ module Gloo
       # Show the contents of the file, paginated.
       #
       def msg_page
-        return unless value && File.file?( value )
+        return unless check_is_file?
 
         system "less #{value}"
       end
@@ -67,9 +67,10 @@ module Gloo
       # Show the contents of the file.
       #
       def msg_show
-        return unless value && File.file?( value )
+        return unless check_is_file?
 
-        puts File.read( value )
+        data = file_op( 'read' ) { File.read( value ) }
+        puts data if data
       end
 
       #
@@ -242,6 +243,18 @@ module Gloo
       rescue SystemCallError => e
         @engine.err "Could not #{action} '#{value}': #{e.message}"
         return nil
+      end
+
+      #
+      # Check that the file exists and is a file, not a folder.
+      # Report an error if not.
+      #
+      def check_is_file?
+        return false unless check_file_exists?
+        return true if File.file?( value )
+
+        @engine.err "'#{value}' is a folder, not a file."
+        return false
       end
 
       #

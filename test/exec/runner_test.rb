@@ -40,4 +40,14 @@ class RunnerTest < BaseEngineTest
     assert_equal 7, @engine.heap.it.value
   end
 
+  def test_a_script_error_is_handled_not_raised
+    verb = @engine.parser.parse_immediate 'show 1'
+    verb.define_singleton_method( :run ) { raise SyntaxError, 'bad code' }
+
+    handled = nil
+    @engine.define_singleton_method( :handle_exception ) { |ex| handled = ex }
+    Gloo::Exec::Runner.go @engine, verb
+    assert_kind_of SyntaxError, handled
+  end
+
 end
