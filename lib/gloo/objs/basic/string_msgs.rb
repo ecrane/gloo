@@ -367,25 +367,20 @@ module Gloo
       # 
       def msg_format_for_html
         text = self.value
-        out = ""
-        return out unless text
+        return @engine.heap.it.set_to( '' ) unless text
 
-        # indentation
+        # Indentation: each leading space is one &nbsp;, each leading
+        # tab four, in whatever order they come.
+        out = ""
         text.each_line do |line|
           i = 0
-          while line[i] == ' '
+          while [ ' ', "\t" ].include?( line[ i ] )
+            out << ( line[ i ] == ' ' ? '&nbsp;' : '&nbsp;&nbsp;&nbsp;&nbsp;' )
             i += 1
-            out << "&nbsp;"
           end
-    
-          i = 0
-          while line[i] == "\t"
-            i += 1
-            out << "&nbsp;&nbsp;&nbsp;&nbsp;"
-          end
-          out << line
+          out << line[ i..]
         end
-    
+
         self.value = out.gsub( "\n", "<br/>" )
         @engine.heap.it.set_to self.value
         return self.value

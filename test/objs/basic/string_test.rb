@@ -534,4 +534,40 @@ class StringTest < BaseEngineTest
     assert_equal 0, @engine.heap.it.value
   end
 
+  def format_for_html( text )
+    o = Gloo::Objs::String.new( @engine )
+    o.value = text
+    return o.msg_format_for_html
+  end
+
+  def test_format_for_html_leading_spaces_appear_once
+    assert_equal 'a<br/>&nbsp;&nbsp;b', format_for_html( "a\n  b" )
+  end
+
+  def test_format_for_html_leading_tabs
+    assert_equal '&nbsp;&nbsp;&nbsp;&nbsp;x', format_for_html( "\tx" )
+  end
+
+  def test_format_for_html_mixed_indentation
+    four = '&nbsp;' * 4
+    assert_equal "#{four}&nbsp;&nbsp;x", format_for_html( "\t  x" )
+    assert_equal "&nbsp;&nbsp;#{four}x", format_for_html( "  \tx" )
+  end
+
+  def test_format_for_html_keeps_inner_spaces
+    assert_equal '&nbsp;a b', format_for_html( ' a b' )
+  end
+
+  def test_format_for_html_blank_line
+    assert_equal 'a<br/><br/>b', format_for_html( "a\n\nb" )
+  end
+
+  def test_format_for_html_on_an_empty_value_sets_it
+    o = Gloo::Objs::String.new( @engine )
+    o.value = nil
+    @engine.heap.it.set_to 'before'
+    o.msg_format_for_html
+    assert_equal '', @engine.heap.it.value
+  end
+
 end
