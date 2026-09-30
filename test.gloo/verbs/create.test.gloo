@@ -10,3 +10,39 @@ tests.verbs.create [can] :
       create cx as string : 'hello'
       eval it = 'hello'
       assert "expected it to equal the created value"
+
+tests.verbs.create_names [can] :
+
+  err_fired [bool] : false
+  list [can] :
+  n [int] : 3
+  before [int] : 0
+  slot [alias] :
+
+  on_error [script] :
+    put true into ^.err_fired
+
+  parenthesised_name_is_an_error [test] :
+    description [string] : create doesn't compute a name; a parenthesised one is reported and nothing is created.
+    on_test [script] :
+      tell ^^.list to count
+      put it into ^^.before
+      put false into ^^.err_fired
+      create ( 'tests.verbs.create_names.list.' + ^^.n ) as string
+      eval it = false
+      assert "expected it to be false"
+
+      eval ^^.err_fired = true
+      assert "expected a parenthesised name to be an error"
+
+      tell ^^.list to count
+      eval it = ^^.before
+      assert "expected nothing to be created"
+
+  alias_computes_the_name [test] :
+    description [string] : The way to create at a computed path: point an alias at it, then create the alias.
+    on_test [script] :
+      put 'tests.verbs.create_names.list.' + ^^.n into ^^.slot*
+      create ^^.slot* as string
+      exists? instance tests.verbs.create_names.list.3
+      assert "expected the object to be created at the computed path"

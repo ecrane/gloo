@@ -70,7 +70,7 @@ class CreateTest < BaseEngineTest
     assert @engine.error?
     assert_equal "Could not create 'no.such.x': Object 'no.such' was not found.",
       @engine.heap.error.value
-    assert_equal 'before', @engine.heap.it.value
+    assert_equal false, @engine.heap.it.value
     assert_equal 0, @engine.heap.root.child_count
   end
 
@@ -98,6 +98,53 @@ class CreateTest < BaseEngineTest
     @engine.parser.run 'create'
     assert @engine.error?
     assert_equal false, @engine.heap.it.value
+  end
+
+  def test_a_parenthesised_name_is_an_error_and_creates_nothing
+    @engine.parser.run 'create n as int : 3'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create ( "list." + n ) as string : four'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, %q('( "list." + n )' isn't a name!)
+    assert_includes @engine.heap.error.value, 'put the path into an alias'
+    assert_equal false, @engine.heap.it.value
+    assert_nil @engine.heap.root.find_child( '(' )
+  end
+
+  def test_extra_words_after_the_name_are_an_error
+    @engine.parser.run 'create list as can'
+    @engine.parser.run 'create list.x + 1 as string'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, "'list.x + 1' isn't a name!"
+    assert_equal 0, @engine.heap.root.find_child( 'list' ).child_count
+  end
+
+  def test_quoted_and_parenthesised_names_are_errors
+    [ 'create "x" as string', 'create list.(n) as string' ].each do |cmd|
+      @engine.heap.error.clear
+      @engine.parser.run cmd
+      assert @engine.error?, cmd
+    end
+  end
+
+  def test_valid_names_still_work
+    @engine.parser.run 'create list as can'
+    [ 'create list.1 as string : ok', 'create list.2 : ok', 'create list.3', 'create list.put as string' ].each do |cmd|
+      @engine.heap.error.clear
+      @engine.parser.run cmd
+      refute @engine.error?, cmd
+    end
+    assert_equal 4, @engine.heap.root.find_child( 'list' ).child_count
+  end
+
+  def test_create_through_an_alias_computes_the_path
+    @engine.parser.run 'create list as can'
+    @engine.parser.run 'create n as int : 3'
+    @engine.parser.run 'create slot as alias'
+    @engine.parser.run "put 'list.' + n into slot*"
+    @engine.parser.run 'create slot* as string'
+    refute @engine.error?
+    assert @engine.heap.root.find_child( 'list' ).find_child( '3' )
   end
 
 end

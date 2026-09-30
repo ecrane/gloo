@@ -13,6 +13,10 @@ module Gloo
       AS = 'as'.freeze
       VAL = ':'.freeze
       NO_NAME_ERR = 'Object name is missing!'.freeze
+      BAD_NAME_CHARS = /[()"']/.freeze
+      BAD_NAME_ERR = "'%s' isn't a name! To create an object at a " \
+        'computed path, put the path into an alias, then create ' \
+        'the alias: create slot* as string.'.freeze
 
       #
       # Run the verb.
@@ -26,6 +30,7 @@ module Gloo
           @engine.syntax_err NO_NAME_ERR
           return @engine.heap.it.set_to( false )
         end
+        return @engine.heap.it.set_to( false ) if bad_name?( name )
         create name, type, value
       end
 
@@ -50,6 +55,22 @@ module Gloo
       private
 
       #
+      # Is the name something create can't use? A name is taken as
+      # written, so expression characters -- parentheses or quotes -- or
+      # extra words between the name and 'as' / ':' mean the script was
+      # trying to compute it. Report that and return true.
+      #
+      def bad_name?( name )
+        after = @tokens.token_count > 2 ? @tokens.tokens[ 2 ] : nil
+        return false unless name.match?( BAD_NAME_CHARS ) ||
+                            !( after.nil? || after.downcase == AS || after.start_with?( VAL ) )
+
+        written = @tokens.tokens[ 1..].take_while { |t| t.downcase != AS && !t.start_with?( VAL ) }
+        @engine.syntax_err format( BAD_NAME_ERR, written.join( ' ' ) )
+        return true
+      end
+
+      #
       # Create an object with given name of given type with
       # the given initial value.
       #
@@ -68,7 +89,8 @@ module Gloo
 
         obj = @engine.factory.create( { name: name, type: type, value: value } )
 
-        return unless obj
+        # Couldn't be created (already reported).
+        return @engine.heap.it.set_to( false ) unless obj
 
         obj.add_default_children if obj.add_children_on_create?
         @engine.heap.it.set_to value
@@ -101,7 +123,8 @@ module Gloo
             "to the existing object's current value.",
           :errors => [
             "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created.",
-            "Could not create '{path}': Object '{parent.path}' was not found. — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist. Nothing is created, and it is unchanged."
+            "Could not create '{path}': Object '{parent.path}' was not found. — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist. Nothing is created, and it is false.",
+            "#{format( BAD_NAME_ERR, '{name}' )} — The name has parentheses or quotes, or there are extra words between the name and as / : — create takes a name as written. Nothing is created, and it is false."
           ],
           :examples => <<~EXAMPLES.strip
             # Basic examples of creating an object from the gloo shell:
