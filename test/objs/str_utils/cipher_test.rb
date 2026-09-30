@@ -85,4 +85,19 @@ class CipherTest < BaseEngineTest
     assert_equal str, data.value
   end
 
+  def test_encrypt_and_decrypt_set_it
+    str = 'hello to the encrypted world'
+    @engine.parser.run 'create o as cipher'
+    data = @engine.heap.root.children.first.children.last
+    data.value = str
+    @engine.parser.run 'tell o to generate_keys'
+
+    @engine.parser.run 'tell o to encrypt'
+    refute_equal str, @engine.heap.it.value
+    assert_equal data.value, @engine.heap.it.value
+
+    @engine.parser.run 'tell o to decrypt'
+    assert_equal str, @engine.heap.it.value
+  end
+
 end

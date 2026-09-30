@@ -93,4 +93,11 @@ class CreateTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  def test_create_with_no_name_sets_it_false
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'create'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

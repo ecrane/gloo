@@ -304,7 +304,14 @@ See also: Pathname.
 
 ## It
 
-`it` is a special virtual object. `it` contains the value of the last expression or command run. Not all commands result in a change to the value of `it`.
+`it` is a special virtual object. `it` contains the value of the last expression or command run. Which commands change it follows a simple rule:
+
+- **A question** (`check x for exists?`, `contains?`, `starts_with?`, …) puts its answer in `it`.
+- **A command or message that works out a value** puts that value in `it` (`eval`, `put`, `show 3 + 4`) — even if it also stores it somewhere, in the object's own value (`trim`, `sub`, `format_for_html`) or in a child (`run` on an `erb`, `http_get` or `system` object also sets its `result`).
+- **A pure action** — `list`, a bare `show`, deleting, opening a file — leaves `it` alone, so a value in `it` survives it. Running a script or a loop doesn't set `it` either, though the commands inside it do.
+- **When something goes wrong** in a question or a command that would set `it`, the problem is reported and `it` is `false`.
+
+Each object's messages say what `it` will have (see Objects, or `help` in the app).
 
 Get the value of an expression and store it somewhere for later use:
 

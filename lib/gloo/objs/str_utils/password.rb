@@ -79,6 +79,7 @@ module Gloo
       # Update the hashed password value.
       #
       def update_hash( new_hash )
+        @engine.heap.it.set_to new_hash
         o = find_child_resolve_alias HASH
         return unless o
 
@@ -178,7 +179,7 @@ module Gloo
           ],
           :messages => [
             'generate ({len}) — Generate a new password, put in the password child object. The {len} parameter is optional; the length is 7 if not specified.',
-            'hash — Hash the password in the child object. Put it in the hash child object.',
+            'hash — Hash the password in the child object. Put it in the hash child object. It will have the hash.',
             'check — Check the password in the child object. Is it the same as the hash?'
           ],
           :examples => <<~EXAMPLES.strip

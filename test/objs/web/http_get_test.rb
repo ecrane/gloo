@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'minitest/mock'
 
 class HttpGetTest < BaseEngineTest
 
@@ -64,5 +65,15 @@ class HttpGetTest < BaseEngineTest
   #   i.run
   #   refute result.value.blank?
   # end
+
+  def test_run_sets_it
+    @engine.parser.run 'create g as get'
+    @engine.parser.run 'put "https://example.com" into g.uri'
+    Gloo::Objs::HttpGet.stub( :invoke_request, 'the body' ) do
+      @engine.parser.run 'run g'
+    end
+    assert_equal 'the body', @engine.heap.it.value
+    assert_equal 'the body', @engine.heap.root.children.first.children.last.value
+  end
 
 end

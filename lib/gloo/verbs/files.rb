@@ -16,7 +16,7 @@ module Gloo
       #
       def run
         warn_extra_words
-        return unless @engine.persist_man.maps
+        return @engine.heap.it.set_to( 0 ) unless @engine.persist_man.maps
         
         @engine.persist_man.maps.each do |map|
           @engine.log.show "#{map.obj.name} - #{map.pn}"

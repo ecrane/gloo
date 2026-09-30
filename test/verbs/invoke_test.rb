@@ -67,12 +67,12 @@ class InvokeTest < BaseEngineTest
     assert_match Gloo::Core::Invoker::PARAM_COUNT_ERR, @engine.heap.error.value
   end
 
-  def test_invocation_failure_does_not_set_it
+  def test_invocation_failure_sets_it_to_false
     @engine.parser.run 'load ctrl/invoke'
     @engine.heap.it.set_to 'unchanged'
     @engine.parser.run 'invoke failing'
     assert @engine.error?
-    assert_equal 'unchanged', @engine.heap.it.value
+    assert_equal false, @engine.heap.it.value
   end
 
 end

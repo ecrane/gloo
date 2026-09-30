@@ -71,6 +71,8 @@ module Gloo
         end
         pretty = JSON.pretty_generate( json )
         set_value pretty
+        @engine.heap.it.set_to pretty
+        return pretty
       end
 
       #
@@ -78,11 +80,18 @@ module Gloo
       # The additional parameter is the path to the value.
       #
       def msg_get
-        if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
-          data = expr.evaluate
+        unless @params&.token_count&.positive?
+          @engine.syntax_err 'Missing path to the value!'
+          @engine.heap.it.set_to false
+          return false
         end
-        return unless data
+
+        expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+        data = expr.evaluate
+        if data.nil?
+          @engine.heap.it.set_to false
+          return false
+        end
 
         field = Gloo::Objs::Json.get_value_in_json self.value, data
         @engine.heap.it.set_to field
@@ -98,11 +107,11 @@ module Gloo
           pn = Gloo::Core::Pn.new( @engine, @params.tokens.first )
           unless pn&.exists?
             @engine.err Gloo::Core::NotFound.object( @params.tokens.first )
-            return
+            return @engine.heap.it.set_to( false )
           end
         else
           @engine.syntax_err 'Source path for objects is required'
-          return
+          return @engine.heap.it.set_to( false )
         end
         parent = pn.resolve
 
@@ -221,7 +230,7 @@ module Gloo
             'get ({path}) — Get a value from the JSON data. Example: tell myjson to get (\'title\'). The parameter is the path in JSON to the value we want. The value is put into it.',
             'set ({obj.path}) — Convert an object to an approximate JSON value. Example: tell myjson to set (my.object). The parameter is the path to the object used as the source. Note this is an approximate conversion — a gloo object can have both a simple value and be a container for child objects, which JSON can\'t represent the same way.',
             'parse ({dst.path}) — Parse the JSON data and put values in the object specified by the parameter. Example: tell myjson to parse (path.to.dst).',
-            'pretty — Make the JSON format pretty.'
+            'pretty — Make the JSON format pretty. The value of the json is changed. It will have the pretty JSON.'
           ],
           :examples => <<~EXAMPLES.strip
             #

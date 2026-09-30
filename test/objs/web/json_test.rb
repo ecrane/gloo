@@ -81,4 +81,37 @@ class JsonTest < BaseEngineTest
     assert_equal 3, h[ 'count' ]
   end
 
+  def test_pretty_sets_it
+    @engine.parser.run 'create j as json'
+    j = @engine.heap.root.children.first
+    j.set_value '{"a":1}'
+    @engine.parser.run 'tell j to pretty'
+    assert_equal "{\n  \"a\": 1\n}", @engine.heap.it.value
+    assert_equal j.value, @engine.heap.it.value
+  end
+
+  def test_set_with_no_source_sets_it_false
+    @engine.parser.run 'create j as json'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell j to set'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_set_with_missing_source_sets_it_false
+    @engine.parser.run 'create j as json'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell j to set ( no.such.obj )'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_get_with_no_path_is_a_syntax_error
+    @engine.parser.run 'create j as json'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell j to get'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

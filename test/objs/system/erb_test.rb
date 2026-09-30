@@ -63,4 +63,13 @@ class ErbTest < BaseEngineTest
     assert_equal 'wow', result.value
   end
 
+  def test_run_sets_it
+    @engine.parser.run 'create e as erb'
+    @engine.parser.run 'put "<%= s %>!" into e.template'
+    @engine.parser.run 'create e.params.s as string'
+    @engine.parser.run 'put "wow" into e.params.s'
+    @engine.parser.run 'run e'
+    assert_equal 'wow!', @engine.heap.it.value
+  end
+
 end

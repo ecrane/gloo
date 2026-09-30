@@ -106,4 +106,27 @@ class PutTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  def test_put_into_missing_object_sets_it_false
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "put 'x' into no.such.obj"
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_put_of_a_bad_value_sets_it_false_and_keeps_the_target
+    @engine.parser.run "create s as string : 'keep'"
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'put no.such.value into s'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+    assert_equal 'keep', @engine.heap.root.find_child( 's' ).value
+  end
+
+  def test_put_with_no_into_sets_it_false
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run "put 'x'"
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

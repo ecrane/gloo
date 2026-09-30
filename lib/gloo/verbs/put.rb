@@ -19,10 +19,10 @@ module Gloo
       #
       def run
         value = fetch_value_tokens
-        return if value.nil?
+        return @engine.heap.it.set_to( false ) if value.nil?
 
         target = lookup_target
-        return if target.nil?
+        return @engine.heap.it.set_to( false ) if target.nil?
 
         update_target target, value
       end
@@ -83,6 +83,7 @@ module Gloo
         o = pn.resolve
         if o.nil?
           @engine.err Gloo::Core::NotFound.object( target )
+          @engine.heap.it.set_to false
         elsif value.count.positive?
           errors_before = @engine.heap.error.error_count
           expr = Gloo::Expr::Expression.new( @engine, value )
@@ -90,7 +91,7 @@ module Gloo
 
           # The value couldn't be evaluated (already reported); leave
           # the target with its last good value rather than nil.
-          return if @engine.heap.error.error_count > errors_before
+          return @engine.heap.it.set_to( false ) if @engine.heap.error.error_count > errors_before
 
           o.set_value result
           @engine.heap.it.set_to result
@@ -118,8 +119,8 @@ module Gloo
           :result => 'The destination object has the result of the ' \
             'evaluated expression. It will also be set into it. If ' \
             'evaluating the expression reports an error (eg. it uses ' \
-            'an object that does not exist), the destination and it ' \
-            'are left unchanged.',
+            'an object that does not exist), the destination is left ' \
+            'unchanged. If the put fails for any reason, it is false.',
           :errors => [
             "#{MISSING_EXPR_ERR} — The into keyword is missing, or no source expression is provided.",
             "#{INTO_MISSING_ERR} — The destination is not specified.",

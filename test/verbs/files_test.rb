@@ -35,4 +35,10 @@ class FilesTest < BaseEngineTest
     assert_empty warnings
   end
 
+  def test_files_with_nothing_open_sets_it_to_zero
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'files'
+    assert_equal 0, @engine.heap.it.value
+  end
+
 end

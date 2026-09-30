@@ -221,4 +221,39 @@ class FileHandleTest < BaseEngineTest
     end
   end
 
+  def test_read_missing_file_sets_it_false
+    @engine.parser.run "create f as file : '/tmp/gloo_no_such_file_xyz'"
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell f to read'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_read_into_missing_object_sets_it_false
+    @engine.parser.run "create f as file : '/etc/hosts'"
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell f to read ( no.such.obj )'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_read_into_an_object_also_sets_it
+    File.write( '/tmp/gloo_read_it_test.txt', 'hello' )
+    @engine.parser.run "create f as file : '/tmp/gloo_read_it_test.txt'"
+    @engine.parser.run 'create s as string'
+    @engine.parser.run 'tell f to read ( s )'
+    assert_equal 'hello', @engine.heap.root.find_child( 's' ).value
+    assert_equal 'hello', @engine.heap.it.value
+  ensure
+    File.delete( '/tmp/gloo_read_it_test.txt' ) if File.exist?( '/tmp/gloo_read_it_test.txt' )
+  end
+
+  def test_get_sha256_missing_file_sets_it_false
+    @engine.parser.run "create f as file : '/tmp/gloo_no_such_file_xyz'"
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell f to get_sha256'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

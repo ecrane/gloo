@@ -81,6 +81,7 @@ module Gloo
       # Update the data value of the object.
       #
       def update_data( new_val )
+        @engine.heap.it.set_to new_val
         o = find_child_resolve_alias DATA
         return unless o
 
@@ -204,8 +205,8 @@ module Gloo
           ],
           :messages => [
             'generate_keys — Generate an encryption key and initialization vector. The keys are base64 encoded.',
-            'encrypt — Encrypt the data.',
-            'decrypt — Decrypt the data.'
+            'encrypt — Encrypt the data. The data child is changed. It will have the encrypted data.',
+            'decrypt — Decrypt the data. The data child is changed. It will have the decrypted data.'
           ],
           :examples => <<~EXAMPLES.strip
             #

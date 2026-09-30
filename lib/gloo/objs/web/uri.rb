@@ -61,7 +61,10 @@ module Gloo
       # Get the expiration date for the certificate.
       #
       def msg_get_cert_expires
-        return unless value
+        if value.blank?
+          @engine.err 'There is no URL to get the certificate for!'
+          return @engine.heap.it.set_to( false )
+        end
 
         uri = URI( value )
         response = Net::HTTP.start( uri.host, uri.port, :use_ssl => true )
@@ -77,7 +80,7 @@ module Gloo
       # in the URL.  Might be used to scroll down in the page.
       #
       def msg_get_fragment
-        return unless value
+        return @engine.heap.it.set_to( '' ) if value.blank?
 
         o = URI( value ).fragment
         @engine.heap.it.set_to o
@@ -89,7 +92,7 @@ module Gloo
       # Example:  id=121
       #
       def msg_get_query
-        return unless value
+        return @engine.heap.it.set_to( '' ) if value.blank?
 
         o = URI( value ).query
         @engine.heap.it.set_to o
@@ -101,7 +104,7 @@ module Gloo
       # Example:  /posts
       #
       def msg_get_path
-        return unless value
+        return @engine.heap.it.set_to( '' ) if value.blank?
 
         o = URI( value ).path
         @engine.heap.it.set_to o
@@ -113,7 +116,7 @@ module Gloo
       # Example:  google.com
       #
       def msg_get_host
-        return unless value
+        return @engine.heap.it.set_to( '' ) if value.blank?
 
         o = URI( value ).host
         @engine.heap.it.set_to o
@@ -125,7 +128,7 @@ module Gloo
       # Example:  http
       #
       def msg_get_scheme
-        return unless value
+        return @engine.heap.it.set_to( '' ) if value.blank?
 
         o = URI( value ).scheme
         @engine.heap.it.set_to o

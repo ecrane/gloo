@@ -107,4 +107,13 @@ class PasswordTest < BaseEngineTest
     refute @engine.heap.it.value
   end
 
+  def test_hash_sets_it
+    @engine.parser.run 'create p as password'
+    @engine.parser.run 'tell p to generate'
+    @engine.parser.run 'tell p to hash'
+    hash = @engine.heap.root.children.first.children.last
+    refute hash.value.blank?
+    assert_equal hash.value, @engine.heap.it.value
+  end
+
 end

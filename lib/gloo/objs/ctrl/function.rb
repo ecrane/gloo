@@ -164,10 +164,10 @@ module Gloo
       #
       # Invoke the function, run the script and return the result.
       #
-      # If on_invoke itself hits an error, it is left alone rather
-      # than being clobbered with an unreliable result - callers can
-      # tell this happened because the engine is left in an error
-      # state (@engine.heap.error), same as any other failed verb.
+      # If on_invoke itself hits an error, there is no reliable
+      # result, so it is set to false (like any other command that
+      # would set it and fails), and the engine is left in an error
+      # state (@engine.heap.error).
       #
       def invoke args
         @engine.log.debug "Invoking function: #{name}"
@@ -179,6 +179,7 @@ module Gloo
         failed = @engine.heap.error.error_count.positive?
 
         if failed
+          @engine.heap.it.set_to false
           run_after_invoke
           return nil
         end
@@ -230,7 +231,7 @@ module Gloo
             'result (string) — The result of the function to return to the caller.'
           ],
           :messages => [
-            'invoke — Invoke the function, set it and return the result. The function result is put into it as well as being returned to the caller.'
+            'invoke — Invoke the function, set it and return the result. The function result is put into it as well as being returned to the caller. If on_invoke hits an error, there is no result: it is false, and after_invoke still runs.'
           ],
           :examples => <<~EXAMPLES.strip
             #

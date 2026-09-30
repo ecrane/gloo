@@ -28,7 +28,7 @@ module Gloo
           keyword = @tokens.second
         else
           @engine.syntax_err WRONG_NUM_ARGS_ERR
-          return
+          return @engine.heap.it.set_to( false )
         end
         
         @engine.heap.it.set_to lookup_keyword(keyword, type)

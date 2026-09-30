@@ -42,7 +42,7 @@ module Gloo
           'ends_with? ({str}) — Check if the string ends with the given string. A parameter is required: the string to look for at the end of this string. It will have a boolean.',
           'substring? ({str}) — Check if the string includes the given sub-string. A parameter is required: the string to look for in this string. It will have a boolean.',
           'index_of ({needle} {from}) — Find the 0-based position of the first occurrence of {needle} at or after position {from}. The {needle} parameter is required; {from} is optional and defaults to 0. Does not change the value of the string. It will have the position, or -1 if {needle} is not found; an out-of-range {from} (negative, or past the end of the string) is an error, and it will have false.',
-          'format_for_html — Format this string for HTML output. Tabs, spaces and returns are converted to HTML elements. The value of the string is changed.',
+          'format_for_html — Format this string for HTML output. Tabs, spaces and returns are converted to HTML elements. The value of the string is changed. It will have the formatted string.',
           'encode64 — Base64 encode the string. This message changes the value of the string. It will have the encoded string.',
           'decode64 — Decode the string from Base64. This message changes the value of the string. It will have the decoded string.',
           'escape — Escape the string to make it URL safe. This message changes the value of the string. It will have the escaped string.',
@@ -68,7 +68,7 @@ module Gloo
       # Strip whitespace from the beginning and end of the string.
       #
       def msg_trim
-        return '' unless value
+        return @engine.heap.it.set_to( '' ) unless value
         
         result = value.strip
         @engine.heap.it.set_to result
@@ -118,7 +118,7 @@ module Gloo
       # Substitute the given string with another string.
       #
       def msg_sub
-        return '' unless value
+        return @engine.heap.it.set_to( '' ) unless value
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
           from = expr.evaluate
@@ -142,7 +142,7 @@ module Gloo
       # Find all occurrences and replace them.
       #
       def msg_gsub
-        return '' unless value
+        return @engine.heap.it.set_to( '' ) unless value
 
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
@@ -168,7 +168,7 @@ module Gloo
       # beginning or end of the string. Does not change the string's value.
       #
       def msg_split
-        return '' unless value
+        return @engine.heap.it.set_to( '' ) unless value
 
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
@@ -192,7 +192,7 @@ module Gloo
       # Same as split( 0, index ). Does not change the string's value.
       #
       def msg_splitl
-        return '' unless value
+        return @engine.heap.it.set_to( '' ) unless value
 
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
@@ -214,7 +214,7 @@ module Gloo
       # Same as split( index, size ). Does not change the string's value.
       #
       def msg_splitr
-        return '' unless value
+        return @engine.heap.it.set_to( '' ) unless value
 
         if @params&.token_count&.positive?
           expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
@@ -243,7 +243,7 @@ module Gloo
       # into 'it'.
       #
       def msg_split_list
-        return unless value
+        return @engine.heap.it.set_to( 0 ) unless value
 
         if @params&.token_count.to_i < 2
           @engine.syntax_err MISSING_PARAM_MSG
@@ -387,6 +387,8 @@ module Gloo
         end
     
         self.value = out.gsub( "\n", "<br/>" )
+        @engine.heap.it.set_to self.value
+        return self.value
       end
 
       # 

@@ -42,6 +42,7 @@ module Gloo
       # Set the result of the ERB template conversion.
       #
       def set_result( data )
+        @engine.heap.it.set_to data
         r = find_child_resolve_alias RESULT
         return unless r
 
@@ -130,7 +131,7 @@ module Gloo
             'result (text) — The result of the template rendering.'
           ],
           :messages => [
-            'run — Render the result based on the template and the parameter values.'
+            'run — Render the result based on the template and the parameter values. It will have the rendered result.'
           ],
           :examples => <<~EXAMPLES.strip
             e [can] :

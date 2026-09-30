@@ -509,4 +509,29 @@ class StringTest < BaseEngineTest
     o = Gloo::Objs::String.new @engine
     refute o.is_container?
   end
+  def test_format_for_html_sets_it
+    @engine.parser.run 'create s as string'
+    s = @engine.heap.root.children.first
+    s.set_value "a\nb"
+    @engine.parser.run 'tell s to format_for_html'
+    assert_equal 'a<br/>b', @engine.heap.it.value
+    assert_equal s.value, @engine.heap.it.value
+  end
+
+  def test_messages_on_an_empty_string_set_it
+    o = Gloo::Objs::String.new( @engine )
+    o.value = nil
+    @engine.heap.it.set_to 'before'
+    assert_equal '', o.msg_trim
+    assert_equal '', @engine.heap.it.value
+  end
+
+  def test_split_list_on_an_empty_string_sets_it_to_zero
+    o = Gloo::Objs::String.new( @engine )
+    o.value = nil
+    @engine.heap.it.set_to 'before'
+    o.msg_split_list
+    assert_equal 0, @engine.heap.it.value
+  end
+
 end

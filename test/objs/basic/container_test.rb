@@ -209,4 +209,12 @@ class ContainerTest < BaseEngineTest
     end
   end
 
+  def test_child_exists_with_no_name_is_a_syntax_error
+    @engine.parser.run 'create c as can'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'check c for child_exists'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

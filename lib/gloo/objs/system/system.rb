@@ -41,6 +41,7 @@ module Gloo
       # Set the result of the system call.
       #
       def set_result( data )
+        @engine.heap.it.set_to data
         r = find_child_resolve_alias RESULT
         return unless r
 
@@ -143,7 +144,7 @@ module Gloo
             'result (string) — The result of running the command. Only set if get_output is true.'
           ],
           :messages => [
-            'run — Run the system level command. Sets the result value to the output of the command if get_output is true.'
+            'run — Run the system level command. Sets the result value to the output of the command if get_output is true, or to whether the command succeeded (true or false) if it is not. It will have the same value as result.'
           ],
           :examples => <<~EXAMPLES.strip
             date [system] :

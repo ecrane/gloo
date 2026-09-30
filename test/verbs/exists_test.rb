@@ -72,4 +72,11 @@ class ExistsTest < BaseEngineTest
     assert @engine.heap.it.value
   end
 
+  def test_exists_with_too_many_args_sets_it_false
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'exists? a b c'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

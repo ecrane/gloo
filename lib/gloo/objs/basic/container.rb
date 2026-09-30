@@ -11,6 +11,7 @@ module Gloo
       KEYWORD = 'container'.freeze
       KEYWORD_SHORT = 'can'.freeze
       MISSING_INDEX_MSG = 'Missing index!'.freeze
+      MISSING_NAME_MSG = 'Missing child name!'.freeze
 
       #
       # The name of the object type.
@@ -67,11 +68,14 @@ module Gloo
       # Check to see if there is a child with the given name.
       # 
       def msg_child_exists
-        if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
-          data = expr.evaluate
+        unless @params&.token_count&.positive?
+          @engine.syntax_err MISSING_NAME_MSG
+          return put_it( false )
         end
-        return unless data
+
+        expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
+        data = expr.evaluate
+        return put_it( false ) if data.nil?
 
         val = self.contains_child?( data )
         @engine.heap.it.set_to val

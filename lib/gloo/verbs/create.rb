@@ -24,7 +24,7 @@ module Gloo
 
         unless name
           @engine.syntax_err NO_NAME_ERR
-          return
+          return @engine.heap.it.set_to( false )
         end
         create name, type, value
       end

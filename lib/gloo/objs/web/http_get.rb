@@ -125,6 +125,7 @@ module Gloo
       # Set the result of the API call.
       #
       def update_result( data )
+        @engine.heap.it.set_to data
         r = find_child_resolve_alias RESULT
         return unless r
 
@@ -167,7 +168,7 @@ module Gloo
             'skip_ssl_verify (boolean) — Optional. Skip the SSL verification as part of the request.'
           ],
           :messages => [
-            'run — Run the HTTP Get and update the result.'
+            'run — Run the HTTP Get and update the result. It will have the response body.'
           ],
           :examples => <<~EXAMPLES.strip
             g [http_get] :

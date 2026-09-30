@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'minitest/mock'
 
 class HttpPostTest < BaseEngineTest
 
@@ -62,5 +63,15 @@ class HttpPostTest < BaseEngineTest
   #   i.run
   #   refute result.value.blank?
   # end
+
+  def test_run_sets_it
+    @engine.parser.run 'create p as post'
+    @engine.parser.run 'put "https://example.com" into p.uri'
+    response = Struct.new( :code, :message, :body ).new( '200', 'OK', 'posted' )
+    Gloo::Objs::HttpPost.stub( :post_json, response ) do
+      @engine.parser.run 'run p'
+    end
+    assert_equal 'posted', @engine.heap.it.value
+  end
 
 end

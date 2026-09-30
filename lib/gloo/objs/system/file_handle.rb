@@ -76,20 +76,22 @@ module Gloo
       # Read the contents of the file into the object.
       #
       def msg_read
-        return unless check_file_exists?
+        return @engine.heap.it.set_to( false ) unless check_file_exists?
 
         data = file_op( 'read' ) { File.read( value ) }
-        return unless data
+        return @engine.heap.it.set_to( false ) unless data
 
         if @params&.token_count&.positive?
           pn = Gloo::Core::Pn.new( @engine, @params.first )
           o = pn.resolve
-          return @engine.err( Gloo::Core::NotFound.object( @params.first ) ) unless o
+          unless o
+            @engine.err Gloo::Core::NotFound.object( @params.first )
+            return @engine.heap.it.set_to( false )
+          end
 
           o.set_value data
-        else
-          @engine.heap.it.set_to data
         end
+        @engine.heap.it.set_to data
       end
 
       #
@@ -211,10 +213,10 @@ module Gloo
       # Get the SHA256 hash of the file contents.
       #
       def msg_get_sha256
-        return unless check_file_exists?
+        return @engine.heap.it.set_to( false ) unless check_file_exists?
 
         file_hash = file_op( 'read' ) { FileHandle.hash_for_file( value ) }
-        @engine.heap.it.set_to file_hash if file_hash
+        @engine.heap.it.set_to( file_hash || false )
       end
 
       # 

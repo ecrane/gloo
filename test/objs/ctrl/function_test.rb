@@ -75,7 +75,7 @@ class FunctionTest < BaseEngineTest
     refute @engine.error?
   end
 
-  def test_invoke_does_not_set_it_on_failure
+  def test_invoke_sets_it_to_false_on_failure
     @engine.parser.run 'load ctrl/invoke'
     @engine.heap.it.set_to 'unchanged'
     func = @engine.heap.root.find_child 'failing'
@@ -83,7 +83,7 @@ class FunctionTest < BaseEngineTest
     result = func.invoke( [] )
     assert_nil result
     assert @engine.error?
-    assert_equal 'unchanged', @engine.heap.it.value
+    assert_equal false, @engine.heap.it.value
   end
 
 end

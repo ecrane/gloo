@@ -81,4 +81,22 @@ class UriTest < BaseEngineTest
     assert_equal 'paragrah=2', @engine.heap.it.value
   end
 
+  def test_getters_on_an_empty_uri_set_it_to_empty
+    @engine.parser.run 'create u as uri'
+    %w[get_host get_scheme get_path get_query get_fragment].each do |m|
+      @engine.heap.it.set_to 'before'
+      @engine.parser.run "tell u to #{m}"
+      assert_equal '', @engine.heap.it.value, m
+    end
+    refute @engine.error?
+  end
+
+  def test_get_cert_expires_on_an_empty_uri_is_an_error
+    @engine.parser.run 'create u as uri'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell u to get_cert_expires'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

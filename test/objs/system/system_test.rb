@@ -60,4 +60,19 @@ class SystemTest < BaseEngineTest
     refute_equal '', obj.children.last.value
   end
 
+  def test_run_with_output_sets_it
+    @engine.parser.run 'create s as sys'
+    @engine.parser.run 'put "echo hi" into s.command'
+    @engine.parser.run 'run s'
+    assert_equal "hi\n", @engine.heap.it.value
+  end
+
+  def test_run_without_output_sets_it_to_success
+    @engine.parser.run 'create s as sys'
+    @engine.parser.run 'put "true" into s.command'
+    @engine.parser.run 'put false into s.get_output'
+    @engine.parser.run 'run s'
+    assert_equal true, @engine.heap.it.value
+  end
+
 end
