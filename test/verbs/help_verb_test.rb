@@ -24,4 +24,16 @@ class HelpVerbTest < BaseEngineTest
     assert_equal Gloo::Verbs::Help.keyword_shortcut, data[:shortcut]
   end
 
+  def test_extra_words_warn_and_still_open_the_shell
+    v = @engine.parser.parse_immediate 'help verbs'
+    opened = false
+    shell = Object.new
+    shell.define_singleton_method( :start ) { opened = true }
+    v.define_singleton_method( :build_shell ) { shell }
+
+    warnings = capture_warnings { v.run }
+    assert_includes warnings.first, "help takes no object; ignoring 'verbs'."
+    assert opened
+  end
+
 end

@@ -17,3 +17,37 @@ tests.verbs.unload [can] :
       tell tests.verbs.unload.temp to unload
       exists? instance tests.verbs.unload.temp
       refute "temp should be gone after unload"
+
+#
+# The unload verb takes no object: 'unload x' is an error, and nothing
+# is unloaded. (If this ever regressed, it would unload the test run.)
+#
+
+tests.verbs.unload_no_object [can] :
+
+  err_fired [bool] : false
+  temp [string] : still here
+
+  on_error [script] :
+    put true into ^.err_fired
+
+  error_data [can] :
+    message [string] :
+    backtrace [string] :
+    kind [string] :
+    location [string] :
+
+  unload_with_an_object_unloads_nothing [test] :
+    description [string] : 'unload x' reports an error, points to 'tell x to unload', and unloads nothing.
+    on_test [script] :
+      put false into ^^.err_fired
+      unload tests.verbs.unload_no_object.temp
+
+      eval ^^.err_fired = true
+      assert "expected unload with an object to be an error"
+
+      eval ^^.error_data.message = "unload takes no object, so nothing was unloaded; to unload one object, use tell x to unload."
+      assert "expected the error to point to tell x to unload"
+
+      exists? instance tests.verbs.unload_no_object.temp
+      assert "expected temp to still be loaded"

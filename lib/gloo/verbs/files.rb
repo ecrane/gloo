@@ -15,6 +15,7 @@ module Gloo
       # Run the verb.
       #
       def run
+        warn_extra_words
         return unless @engine.persist_man.maps
         
         @engine.persist_man.maps.each do |map|

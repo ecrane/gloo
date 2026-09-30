@@ -17,6 +17,8 @@ module Gloo
       # Then the engine will restart with the original parameters.
       #
       def run
+        return if extra_words_err?( 'nothing was reloaded; to reload one object, use tell x to reload' )
+
         @engine.persist_man.reload_all
       end
 
@@ -61,9 +63,15 @@ module Gloo
             'loaded again. Note that re-load does not trigger the ' \
             'on_load script to run. There is an on_reload message sent ' \
             'to all open files.',
+          :errors => [
+            'reload takes no object, so nothing was reloaded — anything ' \
+              'written after reload is an error, and nothing is reloaded. ' \
+              'To reload one object, use tell x to reload.'
+          ],
           :notes => 'If a file has changes that have not been saved, ' \
             'reloading discards them (a warning is logged, but the ' \
-            'reload still proceeds).',
+            'reload still proceeds). reload takes no object; to reload ' \
+            'just one object\'s file, send it the reload message.',
           :examples => <<~EXAMPLES.strip
             > reload
           EXAMPLES

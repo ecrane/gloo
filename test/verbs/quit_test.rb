@@ -25,4 +25,11 @@ class QuitTest < BaseEngineTest
     assert_equal Gloo::Verbs::Quit.keyword_shortcut, data[:shortcut]
   end
 
+  def test_extra_words_warn_and_still_quit
+    @engine.start
+    warnings = capture_warnings { @engine.parser.run 'quit now' }
+    assert_includes warnings.first, "quit takes no object; ignoring 'now'."
+    refute @engine.running
+  end
+
 end

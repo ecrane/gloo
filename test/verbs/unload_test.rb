@@ -36,4 +36,20 @@ class UnloadTest < BaseEngineTest
     assert_equal 0, @engine.heap.root.child_count
   end
 
+  def test_unload_with_an_object_is_an_error_and_unloads_nothing
+    @engine.parser.run 'load test'
+    @engine.parser.run 'unload test'
+
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, 'unload takes no object, so nothing was unloaded'
+    assert_includes @engine.heap.error.value, 'tell x to unload'
+    assert_equal 1, @engine.heap.root.child_count
+  end
+
+  def test_plain_unload_has_no_error
+    @engine.parser.run 'load test'
+    @engine.parser.run 'unload'
+    refute @engine.error?
+  end
+
 end

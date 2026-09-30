@@ -42,6 +42,48 @@ module Gloo
       end
 
       #
+      # For a verb that takes no object: whatever was written after it,
+      # as one string (empty if nothing was).
+      #
+      def extra_words
+        words = @tokens.respond_to?( :params ) ? @tokens.params.to_a : []
+        words += @params.tokens.to_a if @params.respond_to?( :tokens )
+        return words.join( ' ' )
+      end
+
+      #
+      # The verb as written in the command (keyword or shortcut).
+      #
+      def written_verb
+        written = @tokens.verb if @tokens.respond_to?( :verb )
+        return written || self.class.keyword
+      end
+
+      #
+      # For a harmless verb that takes no object: warn if anything was
+      # written after it. The verb still runs.
+      #
+      def warn_extra_words
+        extra = extra_words
+        return if extra.empty?
+
+        @engine.warn "#{written_verb} takes no object; ignoring '#{extra}'."
+      end
+
+      #
+      # For a destructive verb that takes no object: if anything was
+      # written after it, report an error and return true; the verb
+      # should not run. The detail says what didn't happen and what to
+      # do instead.
+      #
+      def extra_words_err?( detail )
+        return false if extra_words.empty?
+
+        @engine.err "#{written_verb} takes no object, so #{detail}."
+        return true
+      end
+
+      #
       # Run the verb.
       #
       # We'll mark the application as not running and let the

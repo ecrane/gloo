@@ -20,6 +20,7 @@ module Gloo
       # Takes no arguments - always enters the interactive help shell.
       #
       def run
+        warn_extra_words
         @engine.log.show BANNER
         build_shell.start
       end

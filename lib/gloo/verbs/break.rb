@@ -16,6 +16,7 @@ module Gloo
       # Stop the execution of the current script.
       #
       def run
+        warn_extra_words
         @engine.exec_env.running_script.break_out
       end
 

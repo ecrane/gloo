@@ -15,6 +15,7 @@ module Gloo
       # Run the verb.
       #
       def run
+        warn_extra_words
         @engine.platform&.clear_screen
       end
 

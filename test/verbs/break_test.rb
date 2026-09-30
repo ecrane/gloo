@@ -24,4 +24,15 @@ class BreakTest < BaseEngineTest
     assert_equal 3, @engine.heap.it.value
   end
 
+  def test_extra_words_warn_and_still_break
+    @engine.parser.run 'create s as script'
+    script = @engine.heap.root.find_child( 's' )
+    script.set_array_value [ 'show 3', 'break now', 'show 4' ]
+
+    warnings = capture_warnings { @engine.parser.run 'run s' }
+    assert_equal 1, warnings.size
+    assert_includes warnings.first, "break takes no object; ignoring 'now'."
+    assert_equal 3, @engine.heap.it.value
+  end
+
 end

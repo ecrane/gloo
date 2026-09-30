@@ -22,4 +22,17 @@ class FilesTest < BaseEngineTest
     assert_equal 1, @engine.heap.it.value
   end
 
+  def test_extra_words_warn_and_still_run
+
+    warnings = capture_warnings { @engine.parser.run 'files all' }
+    assert_equal 1, warnings.size
+    assert_includes warnings.first, "files takes no object; ignoring 'all'."
+    refute @engine.error?
+  end
+
+  def test_bare_verb_does_not_warn
+    warnings = capture_warnings { @engine.parser.run 'files' }
+    assert_empty warnings
+  end
+
 end

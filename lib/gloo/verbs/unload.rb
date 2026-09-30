@@ -16,6 +16,7 @@ module Gloo
       # This will unload all loaded objects and reset the engine state.
       #
       def run
+        return if extra_words_err?( 'nothing was unloaded; to unload one object, use tell x to unload' )
         return unless @engine.persist_man.maps
         
         @engine.persist_man.unload_all
@@ -58,6 +59,13 @@ module Gloo
             'save state prior to executing.',
           :syntax => [ 'unload' ],
           :result => 'All objects will be unloaded from the heap.',
+          :errors => [
+            'unload takes no object, so nothing was unloaded — anything ' \
+              'written after unload is an error, and nothing is unloaded. ' \
+              'To unload one object, use tell x to unload.'
+          ],
+          :notes => 'unload takes no object; to unload just one object, ' \
+            'send it the unload message (tell x to unload).',
           :examples => <<~EXAMPLES.strip
             > unload
           EXAMPLES

@@ -18,6 +18,7 @@ module Gloo
       # engine stop gracefully next time through the loop.
       #
       def run
+        warn_extra_words
         @engine.stop_running
       end
 

@@ -62,4 +62,14 @@ class ReloadTest < BaseEngineTest
     assert_equal [], warnings
   end
 
+  def test_reload_with_an_object_is_an_error_and_reloads_nothing
+    @engine.parser.run 'load test'
+    @engine.parser.run "put 'not yet saved' into test.msg"
+    @engine.parser.run 'reload test'
+
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, 'reload takes no object, so nothing was reloaded'
+    assert_equal 'not yet saved', @engine.heap.root.find_child( 'test' ).find_child( 'msg' ).value
+  end
+
 end
