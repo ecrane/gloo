@@ -45,3 +45,35 @@ tests.verbs.exists [can] :
 
       exists? instance tests.verbs.exists.instance2
       refute "expected instance to not exist"
+  any_finds_an_instance [test] :
+    description [string] : With no kind, exists? finds an object instance too.
+    on_test [script] :
+      exists? tests.verbs.exists.instance
+      assert "expected exists? with no kind to find the instance"
+
+      exists? any tests.verbs.exists.instance
+      assert "expected exists? any to find the instance"
+
+      exists? tests.verbs.exists.instance2
+      refute "expected a missing instance to not exist"
+
+      exists? object tests.verbs.exists.instance
+      refute "expected object to check for a type, not an instance"
+
+tests.verbs.exists_unknown_kind [can] :
+
+  err_fired [bool] : false
+
+  on_error [script] :
+    put true into ^.err_fired
+
+  unknown_kind_is_an_error [test] :
+    description [string] : A misspelled kind is reported, not answered false.
+    on_test [script] :
+      put false into ^^.err_fired
+      exists? instanse tests.verbs.exists_unknown_kind
+      eval it = false
+      assert "expected it to be false"
+
+      eval ^^.err_fired = true
+      assert "expected an unknown kind to be an error"

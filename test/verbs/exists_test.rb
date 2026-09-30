@@ -79,4 +79,41 @@ class ExistsTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  def test_exists_with_no_kind_finds_an_instance
+    @engine.parser.run 'create q as can'
+    @engine.parser.run "create q.x as string : 'hi'"
+    @engine.parser.run 'exists? q.x'
+    assert_equal true, @engine.heap.it.value
+    @engine.parser.run 'exists? any q.x'
+    assert_equal true, @engine.heap.it.value
+    @engine.parser.run 'exists? q.nope'
+    assert_equal false, @engine.heap.it.value
+    refute @engine.error?
+  end
+
+  def test_exists_object_does_not_find_an_instance
+    @engine.parser.run 'create q as can'
+    @engine.parser.run 'exists? object q'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_exists_with_an_unknown_kind_is_a_syntax_error
+    @engine.parser.run 'create q as can'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'exists? instanse q'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, "Unknown kind 'instanse'! Use any, object, verb or instance."
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_library_check_still_changes_on_load
+    @engine.parser.run 'exists? md'
+    assert_equal false, @engine.heap.it.value
+    @engine.parser.run 'load lib md'
+    @engine.parser.run 'exists? md'
+    assert_equal true, @engine.heap.it.value
+    @engine.parser.run 'exists? object md'
+    assert_equal true, @engine.heap.it.value
+  end
+
 end

@@ -10,7 +10,7 @@ class QuestionTest < BaseEngineTest
     'exists? instance c.nope' => false,
     'exists? instance nope.deep.x' => false,
     'exists? verb nosuchverb' => false,
-    'exists? obj nosuchtype' => false,
+    'exists? object nosuchtype' => false,
     'tell ln* to resolve' => false,
     'check c.sub for contains?' => false,
     "check c.s for responds_to? ('nosuchmsg')" => false,
