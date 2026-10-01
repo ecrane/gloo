@@ -20,6 +20,8 @@ These are the gloo math operators:
 /   division
 ```
 
+An expression is worked out strictly left to right. There's no precedence and no grouping with parentheses, so `2 + 3 * 4` is `20` (`2 + 3` first, then `* 4`), not `14`. To work out one part first, put it into an object on its own line, then use that object: `put 3 * 4 into x`, then `eval 2 + x`.
+
 ## Joining Values
 
 `+` also joins strings: `"hello" + " world"` is `hello world`. When two values sit side by side with no operator between them, gloo joins them with `+` too.
