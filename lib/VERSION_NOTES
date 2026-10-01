@@ -1,3 +1,23 @@
+7.0 - 2026.10.01
+ - Error handling (and warnings) revamp.
+ - String adds index_of message.
+ - Adds container messages to access children by index and random children.
+ - 'And' becomes an official operator, a variant of '+'.
+ - Adds protection against treating it as an object or message target.
+ - Adds warnings or errors when extra parameters are added to verbs.
+ - Some operations are now correctly setting it.
+ - Fixes duplicate space in format_for_html message.
+ - Better reporting for predictable failures.
+ - Fixes issue with exists? verb not including instances as part of any option.
+ - Create verb adds bad name check.
+ - Adds recursion for file and dir loops
+	 - `each file` and `each dir` can walk a folder tree with `recursive: true`;
+	   `in` takes a leading `~`, works with or without a trailing `/`, and may
+	   include wildcards (`**/`). `ext` now ignores case.
+	 - `each file` without `ext` no longer lists folders; add
+	   `include_dirs: true` to get them back.
+
+
 6.7.2 - 2026.09.16
  - Fixes issue with logging errors in the dictionary.
 
