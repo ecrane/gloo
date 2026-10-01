@@ -14,9 +14,13 @@ tests.lang.naming [can] :
   string [string] : a type keyword as a name
   put [string] : a verb keyword as a name
 
-  # Deliberately has no name: loading reports a syntax error and
-  # creates it as unnamed_1.
+  # A fixture with a deliberately nameless object, loaded inside its
+  # test so the syntax error it reports belongs to that test.
+  nameless_file [file] : /tmp/gloo_naming_test.gloo
+  nameless_src [text] : BEGIN
+naming_fixture [container] :
   [string] : no name given
+END
 
   first_of_a_duplicate_name_wins [test] :
     description [string] : when two siblings share a name, the path always reaches the first.
@@ -47,7 +51,13 @@ tests.lang.naming [can] :
 
   declaration_with_no_name_gets_a_placeholder [test] :
     description [string] : a declaration with no name loads under the placeholder name unnamed_1.
+    expect_errors [bool] : true
     on_test [script] :
-      eval ^^.unnamed_1 = 'no name given'
+      tell ^^.nameless_file to write ( ^^.nameless_src )
+      load /tmp/gloo_naming_test.gloo
+      eval naming_fixture.unnamed_1 = 'no name given'
       assert "expected the nameless object to be reached as unnamed_1"
+
+      tell naming_fixture to unload
+      tell ^^.nameless_file to delete
 

@@ -25,6 +25,7 @@ tests.lang.exceptions [can] :
 
   confirm_throw_fires_on_exception [test] :
     description [string] : Confirm throw fires on_exception and populates exception_data, but does not fire on_error.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.exc_fired
       put false into ^^.err_fired
@@ -42,6 +43,7 @@ tests.lang.exceptions [can] :
 
   confirm_execution_continues_after_throw [test] :
     description [string] : Confirm execution continues with the next line after a throw.
+    expect_errors [bool] : true
     on_test [script] :
       throw "boom"
       eval 2 + 2
@@ -50,6 +52,7 @@ tests.lang.exceptions [can] :
 
   confirm_on_error_still_works [test] :
     description [string] : Confirm on_error still fires for a genuine gloo-level error, independent of on_exception.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.exc_fired
       put false into ^^.err_fired
@@ -64,6 +67,7 @@ tests.lang.exceptions [can] :
 
   confirm_missing_value_fires_on_error [test] :
     description [string] : Using a missing object as a value is a runtime error, but asking whether it exists is not.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       exists? instance ^^.no_such_value
@@ -81,6 +85,7 @@ tests.lang.exceptions [can] :
 
   confirm_put_of_missing_value_keeps_target [test] :
     description [string] : A put whose value uses a missing object leaves the target unchanged.
+    expect_errors [bool] : true
     on_test [script] :
       put 'keep me' into ^^.kept
       put ^^.no_such_value into ^^.kept
@@ -89,6 +94,7 @@ tests.lang.exceptions [can] :
 
   confirm_error_kind [test] :
     description [string] : error_data.kind says whether the command couldn't be understood (syntax) or couldn't be done (runtime).
+    expect_errors [bool] : true
     on_test [script] :
       nosuchverb
       eval ^^.error_data.kind = 'syntax'
@@ -100,6 +106,7 @@ tests.lang.exceptions [can] :
 
   confirm_error_location [test] :
     description [string] : error_data.location names the script and line that failed.
+    expect_errors [bool] : true
     on_test [script] :
       show 1
       show ^^.no_such_value
@@ -110,6 +117,7 @@ tests.lang.exceptions [can] :
 
   confirm_bad_value_is_a_warning [test] :
     description [string] : A value that isn't really of its type is a warning, not an error; the best guess is used.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       put 'x' into ^^.num

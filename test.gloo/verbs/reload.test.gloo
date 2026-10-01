@@ -41,6 +41,7 @@ END
 
   reload_discards_an_in_memory_edit [test] :
     description [string] : an unsaved change is thrown away by reload.
+    expect_errors [bool] : true
     on_test [script] :
       tell ^^.f to write ( ^^.v1 )
       load /tmp/gloo_reload_test.gloo

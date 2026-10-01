@@ -4,21 +4,32 @@
 
 tests.lang.declaration [can] :
 
-  # Deliberately missing the ']' after its type: loading reports a
-  # syntax error and reads the type as 'int' anyway.
+  # A fixture deliberately missing the ']' after its type, loaded inside
+  # its test so the syntax error it reports belongs to that test.
+  # Loading reads the type as 'int' anyway.
+  unclosed_file [file] : /tmp/gloo_declaration_test.gloo
+  unclosed_src [text] : BEGIN
+declaration_fixture [container] :
   unclosed [int : 7
+END
 
   closed_then_colon [int]: 8
 
   type_missing_its_closing_bracket [test] :
     description [string] : a type missing its ']' is still read as that type, with its value.
+    expect_errors [bool] : true
     on_test [script] :
-      eval ^^.unclosed = 7
+      tell ^^.unclosed_file to write ( ^^.unclosed_src )
+      load /tmp/gloo_declaration_test.gloo
+      eval declaration_fixture.unclosed = 7
       assert "expected the value 7"
 
-      put '12' into ^^.unclosed
-      eval ^^.unclosed = 12
+      put '12' into declaration_fixture.unclosed
+      eval declaration_fixture.unclosed = 12
       assert "expected it to still be an integer"
+
+      tell declaration_fixture to unload
+      tell ^^.unclosed_file to delete
 
   closed_type_followed_by_the_colon [test] :
     description [string] : a ']' followed directly by ':' is a normal declaration.

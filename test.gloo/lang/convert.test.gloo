@@ -13,6 +13,7 @@ tests.lang.convert [can] :
 
   string_to_number [test] :
     description [string] : a string is converted to the leading number for an int or decimal target.
+    expect_errors [bool] : true
     on_test [script] :
       put '3 third time' into ^^.i
       eval ^^.i = 3

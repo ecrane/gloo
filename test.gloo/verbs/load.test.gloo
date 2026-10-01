@@ -23,6 +23,7 @@ tests.verbs.load [can] :
 
   load_no_args_errors [test] :
     description [string] : load with no arguments fires on_error.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       load
@@ -31,6 +32,7 @@ tests.verbs.load [can] :
 
   load_missing_file_errors [test] :
     description [string] : load of a file that can't be found fires on_error.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       load no_such_file_xyz

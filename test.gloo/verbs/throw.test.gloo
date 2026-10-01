@@ -22,6 +22,7 @@ tests.verbs.throw [can] :
 
   default_message [test] :
     description [string] : bare throw uses the default message and execution continues.
+    expect_errors [bool] : true
     on_test [script] :
       put '' into tests.verbs.throw.caught
       eval false
@@ -35,6 +36,7 @@ tests.verbs.throw [can] :
 
   custom_message [test] :
     description [string] : throw evaluates its argument as the message.
+    expect_errors [bool] : true
     on_test [script] :
       put '' into tests.verbs.throw.caught
       throw 'boom ' + '42'

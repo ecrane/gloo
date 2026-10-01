@@ -25,11 +25,11 @@ tests.math.mult [can] :
       eval 1.5 * 5.5 = 8.25
       assert 'expected 1.5 * 5.5 = 8.25'
 
-      eval 10.5 * 20.5 = 214.5
-      assert 'expected 10.5 * 20.5 = 214.5'
+      eval 10.5 * 20.5 = 215.25
+      assert 'expected 10.5 * 20.5 = 215.25'
 
-      eval 100.5 * 200.5 = 20100.25
-      assert 'expected 100.5 * 200.5 = 20100.25'
+      eval 100.5 * 200.5 = 20150.25
+      assert 'expected 100.5 * 200.5 = 20150.25'
 
       eval 1.5 * 10.5 = 10
       refute 'expected 1.5 * 10.5 != 10'

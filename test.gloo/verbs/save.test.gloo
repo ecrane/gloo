@@ -163,6 +163,7 @@ END
 
   extracting_a_subtree_spanning_multiple_files_is_an_error [test] :
     description [string] : save {obj} to {path} refuses when obj's own subtree has declarations in more than one file.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err
       tell ^^.f to write ( ^^.fixture )
@@ -184,6 +185,7 @@ END
 
   reload_discards_unsaved_changes [test] :
     description [string] : reload throws away edits that were not saved.
+    expect_errors [bool] : true
     on_test [script] :
       tell ^^.f to write ( ^^.fixture )
       load /tmp/gloo_save_test.gloo

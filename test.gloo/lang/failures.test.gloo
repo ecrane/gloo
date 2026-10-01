@@ -34,6 +34,7 @@ tests.lang.failures [can] :
 
   invalid_json_is_an_error [test] :
     description [string] : Pretty-printing invalid JSON fires on_error, not on_exception, and it is false.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       put false into ^^.exc_fired
@@ -52,6 +53,7 @@ tests.lang.failures [can] :
 
   template_syntax_error_is_an_error [test] :
     description [string] : An erb template with a syntax error is a gloo error, and gloo keeps running.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       put false into ^^.exc_fired
@@ -66,6 +68,7 @@ tests.lang.failures [can] :
 
   not_a_date_is_an_error [test] :
     description [string] : A date message on a value that isn't a date fires on_error, and it is false.
+    expect_errors [bool] : true
     on_test [script] :
       put '' into ^^.d
       put false into ^^.err_fired
@@ -81,6 +84,7 @@ tests.lang.failures [can] :
 
   unknown_unit_is_an_error [test] :
     description [string] : Adding an amount with an unknown unit fires on_error, and it is false.
+    expect_errors [bool] : true
     on_test [script] :
       put '2026-01-01' into ^^.d
       put false into ^^.err_fired

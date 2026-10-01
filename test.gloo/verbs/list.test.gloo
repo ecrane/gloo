@@ -25,6 +25,7 @@ tests.verbs.list [can] :
 
   list_missing_target [test] :
     description [string] : listing a missing target fires on_error.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       list tests.verbs.list.no_such_thing

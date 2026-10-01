@@ -92,6 +92,7 @@ tests.objs.can_child [can] :
 
   value_at_container_child [test] :
     description [string] : child_value_at on a container child is an error, and it is false.
+    expect_errors [bool] : true
     on_test [script] :
       tell ^^.list to child_value_at ( 2 )
       eval it = false
@@ -111,6 +112,7 @@ tests.objs.can_child [can] :
 
   out_of_range [test] :
     description [string] : An out-of-range index is an error, and it is false.
+    expect_errors [bool] : true
     on_test [script] :
       tell ^^.list to child_path_at ( 3 )
       eval it = false
@@ -126,6 +128,7 @@ tests.objs.can_child [can] :
 
   random_empty [test] :
     description [string] : random_child_value on an empty container is an error, and it is false.
+    expect_errors [bool] : true
     on_test [script] :
       tell ^^.empty to random_child_value
       eval it = false

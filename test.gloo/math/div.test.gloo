@@ -28,8 +28,8 @@ tests.math.div [can] :
       eval 10.5 / 5 = 2.1
       assert 'expected 10.5 / 5 = 2.1'
 
-      eval 100.5 / 200.5 = 0.5
-      assert 'expected 100.5 / 200.5 = 0.5'
+      eval 100.5 / 201 = 0.5
+      assert 'expected 100.5 / 201 = 0.5'
 
       eval 1.5 / 10.5 = 0.1
       refute 'expected 1.5 / 10.5 != 0.1'

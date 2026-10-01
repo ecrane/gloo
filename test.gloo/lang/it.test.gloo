@@ -59,6 +59,7 @@ tests.lang.it_read_only [can] :
 
   message_to_it_is_an_error [test] :
     description [string] : Sending it a message reports an error that says what to do instead.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       eval 'abc'
@@ -71,6 +72,7 @@ tests.lang.it_read_only [can] :
 
   put_into_it_is_an_error [test] :
     description [string] : Putting a value into it is an error.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       put 'x' into it
@@ -105,6 +107,7 @@ tests.lang.it_rule [can] :
 
   failed_put_sets_it_false [test] :
     description [string] : A put whose value can't be worked out sets it to false and keeps the target.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       eval 'before'
@@ -120,6 +123,7 @@ tests.lang.it_rule [can] :
 
   put_into_missing_object_sets_it_false [test] :
     description [string] : A put into an object that doesn't exist sets it to false.
+    expect_errors [bool] : true
     on_test [script] :
       eval 'before'
       put 'x' into ^^.no_such_target
@@ -141,6 +145,7 @@ tests.lang.it_rule [can] :
 
   failed_function_sets_it_false [test] :
     description [string] : A function whose on_invoke fails sets it to false.
+    expect_errors [bool] : true
     on_test [script] :
       eval 'before'
       invoke ^^.failing
@@ -155,6 +160,7 @@ tests.lang.it_rule [can] :
 
   message_to_missing_object_sets_it_false [test] :
     description [string] : A message that can't be delivered leaves no stale value in it.
+    expect_errors [bool] : true
     on_test [script] :
       eval 'stale'
       tell ^^.no_such_obj to get_parent

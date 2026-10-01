@@ -39,6 +39,7 @@ tests.verbs.unload_no_object [can] :
 
   unload_with_an_object_unloads_nothing [test] :
     description [string] : 'unload x' reports an error, points to 'tell x to unload', and unloads nothing.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       unload tests.verbs.unload_no_object.temp

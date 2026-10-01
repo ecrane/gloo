@@ -5,15 +5,17 @@
 tests.dt.datetime [can] :
 
   d [dt] :
+  # Only the now test uses this; the others set d, and tests run in random order.
+  fresh [dt] :
 
   now [test] :
     description [string] : Get the current datetime
     on_test [script] :
-      check ^^.d for blank?
+      check ^^.fresh for blank?
       assert "expected new datetime to be blank"
 
-      tell ^^.d to now
-      check ^^.d for blank?
+      tell ^^.fresh to now
+      check ^^.fresh for blank?
       refute "expected datetime to not be blank after now"
 
   is_today [test] :

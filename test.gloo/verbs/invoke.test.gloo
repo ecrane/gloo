@@ -70,6 +70,7 @@ tests.verbs.invoke [can] :
 
   inline_invoke_error_test [test] :
     description [string] : Inline invoke( ... ) reports an error for an unresolved target, same as the standalone verb.
+    expect_errors [bool] : true
     on_test [script] :
       put false into ^^.err_fired
       show invoke( tests.verbs.invoke.no_such_function )
