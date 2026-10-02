@@ -1,3 +1,7 @@
+7.0.1 - 2026.10.02
+ - Fixes bugs exposed by changes to the gloo-test core library.
+
+
 7.0 - 2026.10.01
  - Error handling (and warnings) revamp.
  - String adds index_of message.
