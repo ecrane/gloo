@@ -446,7 +446,8 @@ module Gloo
       end
 
       # 
-      # Check to see if the value is blank.
+      # Check to see if the simple value is blank.
+      # Children aren't considered; use contains? for those.
       # 
       def msg_blank?
         val_blank = value.blank?

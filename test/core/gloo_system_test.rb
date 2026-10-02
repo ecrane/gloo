@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'minitest/mock'
 
 class GlooSystemTest < BaseEngineTest
 
@@ -151,6 +152,51 @@ class GlooSystemTest < BaseEngineTest
 
     # Assert that only 1 of these is true
     assert (is_mac || is_windows || is_linux || is_wsl)
+  end
+
+  #
+  # Ask each platform_*? message with the os gem faking the given
+  # platform; return the answers keyed by platform name.
+  #
+  def platform_answers( linux:, mac:, windows:, posix: )
+    answers = {}
+    OS.stub :linux?, linux do
+      OS.stub :mac?, mac do
+        OS.stub :windows?, windows do
+          OS.stub :posix?, posix do
+            %w[linux mac windows unix].each do |name|
+              @engine.parser.run "eval $.platform_#{name}?"
+              answers[ name ] = @engine.heap.it.value
+            end
+          end
+        end
+      end
+    end
+    return answers
+  end
+
+  #
+  # On Linux only platform_linux? and platform_unix? are true.
+  #
+  def test_platform_messages_on_linux
+    a = platform_answers( linux: true, mac: false, windows: false, posix: true )
+    assert_equal( { 'linux' => true, 'mac' => false, 'windows' => false, 'unix' => true }, a )
+  end
+
+  #
+  # On a Mac platform_linux? is false, though a Mac is POSIX.
+  #
+  def test_platform_messages_on_mac
+    a = platform_answers( linux: false, mac: true, windows: false, posix: true )
+    assert_equal( { 'linux' => false, 'mac' => true, 'windows' => false, 'unix' => true }, a )
+  end
+
+  #
+  # On Windows only platform_windows? is true.
+  #
+  def test_platform_messages_on_windows
+    a = platform_answers( linux: false, mac: false, windows: true, posix: false )
+    assert_equal( { 'linux' => false, 'mac' => false, 'windows' => true, 'unix' => false }, a )
   end
 
   def test_open_for_platform

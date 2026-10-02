@@ -246,7 +246,7 @@ module Gloo
 
       # Is the platform Linux?
       def msg_platform_linux?
-        return OS.posix?
+        return OS.linux?
       end
 
       # Is the platform Mac?
@@ -322,7 +322,8 @@ module Gloo
             'platform_windows? — Is the platform Windows?',
             'platform_unix? — Is the platform Unix?',
             'platform_linux? — Is the platform Linux?',
-            'platform_mac? — Is the platform Mac?'
+            'platform_mac? — Is the platform Mac?',
+            'platform_wsl? — Is the platform WSL (Linux on Windows)?'
           ],
           :examples => <<~EXAMPLES.strip
             > show gloo.user

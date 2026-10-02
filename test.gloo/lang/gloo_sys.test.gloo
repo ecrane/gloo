@@ -4,6 +4,9 @@
 
 tests.lang.gloo_sys [can] :
 
+  # How many of the platform_*? checks are true.
+  platforms [int] : 0
+
   get_platform_info [test] :
     description [string] : Get the platform info.
     on_test [script] :
@@ -89,16 +92,18 @@ tests.lang.gloo_sys [can] :
       assert "expected screen_cols to be greater than 0"
 
   get_platform_os [test] :
-    description [string] : Get the platform OS.
+    description [string] : Exactly one of mac, windows and linux is true, on any platform.
     on_test [script] :
-      eval $.platform_mac? = true
-      assert "expected platform_mac to be true"
+      put 0 into ^^.platforms
 
-      eval $.platform_windows? = false
-      assert "expected platform_windows to be false"
+      eval $.platform_mac?
+      if it then tell ^^.platforms to inc
 
-      eval $.platform_linux? = false
-      assert "expected platform_linux to be false"
+      eval $.platform_windows?
+      if it then tell ^^.platforms to inc
 
-      eval $.platform_wsl? = false
-      assert "expected platform_wsl to be false"
+      eval $.platform_linux?
+      if it then tell ^^.platforms to inc
+
+      eval ^^.platforms = 1
+      assert "expected exactly one of platform_mac, platform_windows and platform_linux to be true"
