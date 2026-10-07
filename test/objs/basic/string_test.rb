@@ -157,11 +157,13 @@ class StringTest < BaseEngineTest
   end
 
   def test_word_wrap_msg_default_width_is_terminal_width
+    pin_screen_cols
     o = Gloo::Objs::String.new @engine
     o.set_value( ( 'word ' * 30 ).strip )
     result = o.msg_word_wrap
     assert_equal result, o.value
     assert_equal result, @engine.heap.it.value
+    assert result.split( "\n" ).count > 1, result
     result.split( "\n" ).each do |line|
       assert line.length <= Gloo::App::Settings.cols( @engine )
     end

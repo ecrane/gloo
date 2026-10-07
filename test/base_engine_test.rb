@@ -22,6 +22,14 @@ class BaseEngineTest < BaseTest
     @engine.log.singleton_class.send( :remove_method, :warn )
   end
 
+  #
+  # Pin the screen width, so tests that wrap text don't depend on the
+  # width of the terminal running them.
+  #
+  def pin_screen_cols( cols = 80 )
+    @engine.platform.define_singleton_method( :cols ) { cols }
+  end
+
   def teardown
     @engine.stop_running
     @engine = nil

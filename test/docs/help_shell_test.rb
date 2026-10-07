@@ -228,6 +228,7 @@ class HelpShellTest < BaseEngineTest
   # the plain markdown before colorizing/paging it.
   #
   def test_wrap_markdown_for_terminal_wraps_a_long_paragraph
+    pin_screen_cols
     shell = Gloo::Docs::HelpShell.new( @engine )
     long_line = ( 'word ' * 30 ).strip
     wrapped = shell.send( :wrap_markdown_for_terminal, long_line )
@@ -249,6 +250,7 @@ class HelpShellTest < BaseEngineTest
   end
 
   def test_wrap_markdown_for_terminal_indents_bullet_continuation
+    pin_screen_cols
     shell = Gloo::Docs::HelpShell.new( @engine )
     long_bullet = "- #{( 'word ' * 30 ).strip}"
 

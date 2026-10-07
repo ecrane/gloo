@@ -94,6 +94,7 @@ class ListTest < BaseEngineTest
   # running past its edge as a single unwrapped line.
   #
   def test_list_docs_wraps_a_long_doc_line_to_terminal_width
+    pin_screen_cols
     @engine.settings.instance_variable_set( :@list_docs, true )
     @engine.parser.run 'create s as string : hi'
     long_doc = ( 'word ' * 30 ).strip
@@ -119,6 +120,7 @@ class ListTest < BaseEngineTest
   # carries the '#' prefix.
   #
   def test_list_docs_wrap_continuation_lines_have_no_hash_prefix
+    pin_screen_cols
     @engine.settings.instance_variable_set( :@list_docs, true )
     @engine.parser.run 'create s as string : hi'
     @engine.heap.root.find_child( 's' ).doc = ( 'word ' * 30 ).strip
