@@ -104,7 +104,7 @@ An extension is structured thus:
 - `ext_name_ext.rb` — the extension's entry point. Loaded and registered when `load ext ext_name` runs.
 - `src/` — the verb and/or object classes themselves, one file per class.
 - `doc/` — narrative markdown for the extension (a `README.md` at the extension root plus optional per-object/verb `.md` files under `doc/` are the convention used by the built-in extensions — see e.g. `extensions/beep/`).
-- `test/` — both Ruby unit tests (`*_test.rb`, minitest, same conventions as this project's own `test/` — see Test Suites in the root `CLAUDE.md`) and/or a gloo-language integration test (`*.test.gloo`).
+- `test/` — both Ruby unit tests (`*_test.rb`, minitest, same conventions as this project's own `test/` — see Development, Tests) and/or a gloo-language integration test (`*.test.gloo`).
 
 Be sure to load an extension (or core library) prior to loading a gloo file that includes object types defined in the extension.
 
@@ -374,7 +374,7 @@ Add `self.doc_data` to every verb/object class (see the `beep` and `stats` examp
 
 ### Testing an extension
 
-Add a Ruby unit test per verb/object class under `test/` (mirrors the conventions in the root `CLAUDE.md`'s Test Suites section — inherit from the project's `GlooTest`/`BaseEngineTest` base), and add a `*.test.gloo` integration test that loads the extension and exercises it end to end, e.g. `extensions/beep/test/beep.test.gloo`:
+Add a Ruby unit test per verb/object class under `test/` (the same conventions as the interpreter's own tests, see Development, Tests — inherit from the project's `GlooTest`/`BaseEngineTest` base), and add a `*.test.gloo` integration test that loads the extension and exercises it end to end, e.g. `extensions/beep/test/beep.test.gloo`:
 
 ```gloo
 tests [can] :
