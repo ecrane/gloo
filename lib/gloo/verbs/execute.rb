@@ -25,11 +25,11 @@ module Gloo
         cmd = expr.evaluate
         @engine.log.debug "starting cmd: #{cmd}"
 
-        if OS.mac?
+        if OS.windows?
+          system( cmd )
+        else
           pid = fork { exec( cmd ) }
           Process.wait pid
-        else
-          exec cmd
         end
 
         @engine.log.debug "done executing cmd: #{cmd}"
