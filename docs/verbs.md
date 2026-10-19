@@ -99,6 +99,12 @@ If the name can't be resolved to a file, `load` reports `File '{name}' was not f
 
 A save is a **rewrite, not a regeneration**: comments, blank lines, and the original spacing are kept, and only the values you actually changed are re-written. A declaration you never touched comes back byte-for-byte.
 
+What counts as a change is narrow: an object is changed when its value is set, or when it is created, moved (`move`, or extracted with `save … to`), or deleted (for example with `unload`); everything else is untouched and comes back exactly as written, wherever it lives. Adding, moving, or removing an object's children doesn't change the object itself: its own declaration stays as it was, and only the children's lines appear, move, or disappear.
+
+An object's doc comment goes wherever the object goes: it moves with a moved or extracted object and disappears with a deleted one.
+
+A save never loses or alters data: loading the saved files again gives back the same objects, with the same values and docs, under the same parents. The interpreter decides how a changed or new declaration is laid out; only what it says has to come back the same.
+
 `save {obj} to {path}` doesn't just write a copy — `obj` stops being declared in its old file, wherever that was. Given `app.core.settings` declared inside `app.gloo`, `save app.core.settings to config/settings` leaves `app.gloo` without a `settings` subtree and writes `config/settings.gloo` with `app.core.settings [can] : ...` at the top level (the `app`/`core` prefix is implied via nested-container shorthand, not repeated as nested declarations) plus everything `settings` owns underneath, comments included. An object with no file of its own yet (brand new, or nested under an object that's never been saved) is simply written fresh — nothing to move.
 
 If `obj`'s own subtree already has declarations spread across more than one file (the namespace-merge pattern below, applied *inside* the subtree being extracted, not just above it), extraction refuses rather than guessing which file's slice is authoritative — save each contributing file on its own first.

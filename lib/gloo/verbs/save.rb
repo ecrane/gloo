@@ -96,6 +96,10 @@ module Gloo
             'state. This is a rewrite, not a regeneration: comments, ' \
             'blank lines, and the original formatting are preserved, ' \
             'and only values that actually changed are re-written. ' \
+            'A declaration you never touched comes back byte-for-byte. ' \
+            'An object counts as changed only when its value is set or ' \
+            'it is created, moved, or deleted (its doc comment goes with ' \
+            'it); changes to its children do not change it. ' \
             'With a path, the object also stops being declared in its ' \
             'old file (if it had one) -- both files are rewritten ' \
             'together.',

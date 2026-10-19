@@ -106,6 +106,9 @@ floating comment in the file instead. When a name is declared in more
 than one loaded file, the first non-empty doc wins (same rule as the
 first value).
 
+A doc belongs to its object: when the object is moved, extracted, or
+deleted, its doc comment goes with it (see Verbs, Load & Save).
+
 `list` can show every documented object in a listed tree: turn on the
 `list_docs` setting (off by default) — see `list` and `settings` in the
 in-app help.
