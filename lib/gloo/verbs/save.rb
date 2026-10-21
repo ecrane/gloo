@@ -48,9 +48,11 @@ module Gloo
       # Run 'save {obj} to {path}'.
       #
       def run_save_to
+        return unless take_evaluated_arg
+
         name = @tokens.before_token( TO )[ 1 ]
         path = @tokens.after_token( TO )
-        unless path
+        if path.blank?
           @engine.syntax_err MISSING_PATH_ERR
           return
         end
@@ -84,13 +86,17 @@ module Gloo
           :syntax => [
             'save',
             'save {path.to.object}',
-            'save {path.to.object} to {path}'
+            'save {path.to.object} to {path}',
+            'save {path.to.object} to ( {expression} )'
           ],
           :parameters => [
             '{path.to.object} — Name of the object to save.',
             '{path} — Where to save it, relative to the project root ' \
               '(.gloo appended if omitted). Registers the mapping, so ' \
-              'a later bare save includes it.'
+              'a later bare save includes it.',
+            '( {expression} ) — Instead of a literal path, an expression ' \
+              'in parentheses: it is worked out and its value is used as ' \
+              'the path.'
           ],
           :result => 'The file(s) are updated with the latest object ' \
             'state. This is a rewrite, not a regeneration: comments, ' \
@@ -129,6 +135,7 @@ module Gloo
             > save my_obj
             > save my_obj to sub/my_obj
             > save app.core.settings to config/settings
+            > save my_obj to ( $.gloo_tmp '/my_obj' )
           EXAMPLES
         }
       end

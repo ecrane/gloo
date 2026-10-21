@@ -7,7 +7,12 @@ tests.lang.declaration [can] :
   # A fixture deliberately missing the ']' after its type, loaded inside
   # its test so the syntax error it reports belongs to that test.
   # Loading reads the type as 'int' anyway.
-  unclosed_file [file] : /tmp/gloo_declaration_test.gloo
+  unclosed_file [file] :
+
+  # Scratch files live in the gloo tmp folder ($.gloo_tmp).
+  on_load [script] :
+    put $.gloo_tmp '/gloo_declaration_test.gloo' into ^.unclosed_file
+
   unclosed_src [text] : BEGIN
 declaration_fixture [container] :
   unclosed [int : 7
@@ -20,7 +25,7 @@ END
     expect_errors [bool] : true
     on_test [script] :
       tell ^^.unclosed_file to write ( ^^.unclosed_src )
-      load /tmp/gloo_declaration_test.gloo
+      load ( ^^.unclosed_file )
       eval declaration_fixture.unclosed = 7
       assert "expected the value 7"
 

@@ -34,4 +34,44 @@ class VerbTest < BaseEngineTest
     assert_equal '', v.extra_words
   end
 
+  # ---------------------------------------------------------------------
+  #    A trailing ( expr ) as the last argument
+  # ---------------------------------------------------------------------
+
+  def test_take_evaluated_arg_without_params_changes_nothing
+    v = @engine.parser.parse_immediate 'load lib md'
+    assert v.take_evaluated_arg
+    assert_equal 3, v.tokens.token_count
+    assert_equal 'md', v.tokens.last
+  end
+
+  def test_take_evaluated_arg_adds_the_value_as_the_last_token
+    v = @engine.parser.parse_immediate "load lib ( 'm' 'd' )"
+    assert v.take_evaluated_arg
+    assert_equal 3, v.tokens.token_count
+    assert_equal 'md', v.tokens.last
+    assert_nil v.params
+  end
+
+  def test_take_evaluated_arg_works_without_spaces_in_the_parens
+    @engine.parser.run 'create n as string : md'
+    v = @engine.parser.parse_immediate 'load lib (n)'
+    assert v.take_evaluated_arg
+    assert_equal 'md', v.tokens.last
+  end
+
+  def test_take_evaluated_arg_keeps_a_value_with_spaces_as_one_token
+    v = @engine.parser.parse_immediate "load ( '/a b' '/c.gloo' )"
+    assert v.take_evaluated_arg
+    assert_equal 2, v.tokens.token_count
+    assert_equal '/a b/c.gloo', v.tokens.last
+  end
+
+  def test_take_evaluated_arg_reports_an_expression_that_fails
+    v = @engine.parser.parse_immediate 'load lib ( no_such_obj )'
+    refute v.take_evaluated_arg
+    assert @engine.error?
+    assert_equal 2, v.tokens.token_count
+  end
+
 end

@@ -289,4 +289,23 @@ class TokensTest < BaseTest
       Gloo::Core::Tokens.new( 'show 1 )' ).syntax_problem
   end
 
+  def test_with_token_adds_a_token_at_the_end
+    t = Gloo::Core::Tokens.new( 'load lib' )
+    t2 = t.with_token( 'md' )
+    assert_equal 3, t2.token_count
+    assert_equal 'md', t2.last
+  end
+
+  def test_with_token_keeps_a_token_with_spaces_whole
+    t = Gloo::Core::Tokens.new( 'load' ).with_token( '/a b/c.gloo' )
+    assert_equal 2, t.token_count
+    assert_equal '/a b/c.gloo', t.second
+  end
+
+  def test_with_token_leaves_the_original_alone
+    t = Gloo::Core::Tokens.new( 'load lib' )
+    t.with_token( 'md' )
+    assert_equal 2, t.token_count
+  end
+
 end

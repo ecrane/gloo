@@ -23,6 +23,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return @engine.heap.it.set_to( false ) unless take_evaluated_arg
+
         if @tokens.token_count == 3
           type = @tokens.second.strip.downcase
           keyword = @tokens.last
@@ -105,7 +107,10 @@ module Gloo
           :description => 'Check to see if a verb or object type has ' \
             'been defined (or loaded), or if an object instance exists ' \
             'in the heap. With no kind, any of the three counts.',
-          :syntax => [ 'exists? |any,object,verb,instance| {keyword}' ],
+          :syntax => [
+            'exists? |any,object,verb,instance| {keyword}',
+            'exists? |any,object,verb,instance| ( {expression} )'
+          ],
           :parameters => [
             "Kind of Keyword — Optional; any is the default. " \
               "any checks for a verb, an object type, or an object instance; " \
@@ -115,7 +120,10 @@ module Gloo
               "instance exists at the pathname represented by keyword. " \
               "`exists? any markdown` is identical to `exists? markdown`.",
             '{keyword} — A verb or object type keyword or keyword shortcut, ' \
-              'or the pathname to an object instance. Must be specified.'
+              'or the pathname to an object instance. Must be specified.',
+            '( {expression} ) — Instead of a literal keyword, an expression ' \
+              'in parentheses: it is worked out and its value is used as ' \
+              'the keyword or pathname.'
           ],
           :result => 'If the verb, object type or instance exists, then ' \
             'true, otherwise false. The result will be in it.',
@@ -141,6 +149,10 @@ module Gloo
             \t\tshow it # true
 
             \t\texists? instance exists.on_load
+            \t\tshow it # true
+
+            \t\t# The keyword can be worked out
+            \t\texists? object ( 'mark' 'down' )
             \t\tshow it # true
           EXAMPLES
         }

@@ -16,6 +16,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_evaluated_arg
+
         set_context if @tokens.token_count > 1
         show_context
       end
@@ -74,9 +76,12 @@ module Gloo
             "to that path. Use 'context root' to set the context back to " \
             'the root level. When context has been set, the pathname can ' \
             'start from the context container by use of the @. prefix.',
-          :syntax => [ 'context {path.to.new.context}' ],
+          :syntax => [ 'context {path.to.new.context}', 'context ( {expression} )' ],
           :parameters => [
-            '{path.to.new.context} — Optional. The path to the new context when setting the context.'
+            '{path.to.new.context} — Optional. The path to the new context when setting the context.',
+            '( {expression} ) — Instead of a literal path, an expression ' \
+              'in parentheses: it is worked out and its value is used as ' \
+              'the path to the new context.'
           ],
           :result => 'Context is optionally set. It will be set to the ' \
             'new context path when we are changing context. Context is ' \
@@ -100,6 +105,9 @@ module Gloo
                     @ context.sub
                     show @.msg
                     @ root
+
+            # The path can be worked out:
+            > context ( 'context.' 'sub' )
           EXAMPLES
         }
       end

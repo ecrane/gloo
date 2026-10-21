@@ -2,13 +2,18 @@
 # Load verb tests
 #
 # Mostly uses 'load lib' because it is self-contained (no fixture files) and
-# its effect is observable through 'exists?'. The no-objects tests write
-# a /tmp scratch file.
+# its effect is observable through 'exists?'. The no-objects and
+# computed-path tests write scratch files to $.gloo_tmp.
 #
 
 tests.verbs.load [can] :
 
-  f [file] : /tmp/gloo_load_no_objects_test.gloo
+  f [file] :
+
+  # Scratch files live in the gloo tmp folder ($.gloo_tmp).
+  on_load [script] :
+    put $.gloo_tmp '/gloo_load_no_objects_test.gloo' into ^.f
+
   comments_only [text] : BEGIN
 # This file has comments,
 
@@ -17,6 +22,14 @@ END
   load_lib_only [text] : BEGIN
 load lib md
 # and nothing else
+END
+
+  computed_name [string] : /gloo_load_computed_test.gloo
+  lib_name [string] : md
+  computed_f [file] :
+  computed_fixture [text] : BEGIN
+computed_demo [can] :
+  s [string] : hi
 END
 
   err_fired [bool] : false
@@ -58,7 +71,7 @@ END
     on_test [script] :
       put false into ^^.err_fired
       tell ^^.f to write ( ^^.comments_only )
-      load /tmp/gloo_load_no_objects_test.gloo
+      load ( ^^.f )
       tell ^^.f to delete
       eval ^^.err_fired = false
       assert "expected a comments-only file not to fire on_error"
@@ -69,7 +82,7 @@ END
     on_test [script] :
       put false into ^^.err_fired
       tell ^^.f to write ( '' )
-      load /tmp/gloo_load_no_objects_test.gloo
+      load ( ^^.f )
       tell ^^.f to delete
       eval ^^.err_fired = false
       assert "expected an empty file not to fire on_error"
@@ -80,7 +93,48 @@ END
     on_test [script] :
       put false into ^^.err_fired
       tell ^^.f to write ( ^^.load_lib_only )
-      load /tmp/gloo_load_no_objects_test.gloo
+      load ( ^^.f )
       tell ^^.f to delete
       eval ^^.err_fired = false
       assert "expected a file with only 'load lib' not to fire on_error"
+
+  load_a_computed_path [test] :
+    description [string] : load ( expr ) loads the file the expression works out to.
+    on_test [script] :
+      put $.gloo_tmp ^^.computed_name into ^^.computed_f
+      tell ^^.computed_f to write ( ^^.computed_fixture )
+      load ( $.gloo_tmp ^^.computed_name )
+      eval computed_demo.s = 'hi'
+      assert "expected load ( expr ) to load the computed path"
+      tell computed_demo to unload
+      tell ^^.computed_f to delete
+
+  load_a_path_held_in_a_file_object [test] :
+    description [string] : load ( {file obj} ) loads the path the object holds.
+    on_test [script] :
+      put $.gloo_tmp ^^.computed_name into ^^.computed_f
+      tell ^^.computed_f to write ( ^^.computed_fixture )
+      load ( ^^.computed_f )
+      eval computed_demo.s = 'hi'
+      assert "expected load ( {file obj} ) to load the path it holds"
+      tell computed_demo to unload
+      tell ^^.computed_f to delete
+
+  load_a_computed_path_from_an_unknown_object_errors [test] :
+    description [string] : load ( expr ) with an expression that can't be worked out fires on_error.
+    expect_errors [bool] : true
+    on_test [script] :
+      put false into ^^.err_fired
+      load ( no_such_obj_xyz )
+      eval ^^.err_fired = true
+      assert "expected a bad expression in load ( ... ) to fire on_error"
+
+  load_lib_with_a_computed_name [test] :
+    description [string] : load lib ( expr ) loads the library the expression names.
+    on_test [script] :
+      put false into ^^.err_fired
+      load lib ( ^^.lib_name )
+      eval ^^.err_fired = false
+      assert "expected load lib ( expr ) not to fire on_error"
+      exists? object markdown
+      assert "expected the markdown type to be registered"

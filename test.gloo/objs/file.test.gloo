@@ -2,12 +2,17 @@
 # File object tests
 #
 # The file object's value is a path.  These tests write a scratch
-# file under /tmp, exercise it, and delete it at the end.
+# file in $.gloo_tmp, exercise it, and delete it at the end.
 #
 
 tests.objs.file [can] :
 
-  f [file] : /tmp/gloo_file_test.txt
+  f [file] :
+
+  # Scratch files live in the gloo tmp folder ($.gloo_tmp).
+  on_load [script] :
+    put $.gloo_tmp '/gloo_file_test.txt' into ^.f
+
   names [file] : /Users/me/project/report.csv
 
   first [string] : first line

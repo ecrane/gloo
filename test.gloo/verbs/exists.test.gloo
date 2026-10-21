@@ -4,6 +4,9 @@
 
 tests.verbs.exists [can] :
 
+  type_start [string] : cont
+  verb_name [string] : show
+
   verb [test] :
     description [string] : Check on existance of exists verb
     on_test [script] :
@@ -59,6 +62,22 @@ tests.verbs.exists [can] :
 
       exists? object tests.verbs.exists.instance
       refute "expected object to check for a type, not an instance"
+
+  computed_name [test] :
+    description [string] : exists? ( expr ) checks the name the expression works out to.
+    on_test [script] :
+      exists? ( ^^.verb_name )
+      assert "expected show to exist"
+
+      exists? verb ( ^^.verb_name )
+      assert "expected show to exist as a verb"
+
+      exists? object ( ^^.type_start 'ainer' )
+      assert "expected container to exist as an object type"
+
+      exists? object ( ^^.type_start 'raption' )
+      refute "expected contraption to not exist"
+
 
 tests.verbs.exists_unknown_kind [can] :
 

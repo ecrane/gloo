@@ -4,6 +4,8 @@
 
 tests.verbs.context [can] :
 
+  target [string] : tests.verbs.context
+
   set_context [test] :
     description [string] : context {path} sets the context and puts the path in it.
     on_test [script] :
@@ -15,3 +17,13 @@ tests.verbs.context [can] :
       context root
       eval it = 'root'
       assert "expected context to be restored to root"
+
+  set_context_to_a_computed_path [test] :
+    description [string] : context ( expr ) sets the context to the path the expression works out to.
+    on_test [script] :
+      context ( ^^.target )
+      eval it = 'tests.verbs.context'
+      assert "expected it to be the computed context path"
+
+      # restore, so later tests run at root
+      context root

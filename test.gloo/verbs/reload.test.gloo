@@ -2,13 +2,18 @@
 # Reload message tests -- 'tell {obj} to reload' re-reads the file.
 #
 # The bare 'reload' verb restarts the engine (covered by the unit
-# tests). These exercise per-object reload against a /tmp scratch file
+# tests). These exercise per-object reload against a scratch file in $.gloo_tmp
 # that gets rewritten between load and reload.
 #
 
 tests.verbs.reload [can] :
 
-  f [file] : /tmp/gloo_reload_test.gloo
+  f [file] :
+
+  # Scratch files live in the gloo tmp folder ($.gloo_tmp).
+  on_load [script] :
+    put $.gloo_tmp '/gloo_reload_test.gloo' into ^.f
+
   v1 [text] : BEGIN
 demo [container] :
   msg [string] : original
@@ -24,7 +29,7 @@ END
     description [string] : editing the file on disk then reloading takes effect.
     on_test [script] :
       tell ^^.f to write ( ^^.v1 )
-      load /tmp/gloo_reload_test.gloo
+      load ( ^^.f )
       eval demo.msg = 'original'
       assert "sanity: loaded the first version"
 
@@ -44,7 +49,7 @@ END
     expect_errors [bool] : true
     on_test [script] :
       tell ^^.f to write ( ^^.v1 )
-      load /tmp/gloo_reload_test.gloo
+      load ( ^^.f )
 
       put 'not saved' into demo.msg
       tell demo to reload

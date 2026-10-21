@@ -116,4 +116,44 @@ class ExistsTest < BaseEngineTest
     assert_equal true, @engine.heap.it.value
   end
 
+  def test_exists_with_a_computed_name
+    @engine.parser.run 'create n as string : string'
+    @engine.parser.run 'exists? ( n )'
+    refute @engine.error?
+    assert_equal true, @engine.heap.it.value
+  end
+
+  def test_exists_object_with_a_computed_name
+    @engine.parser.run 'create n as string : str'
+    @engine.parser.run "exists? object ( n 'ing' )"
+    assert_equal true, @engine.heap.it.value
+
+    @engine.parser.run "exists? object ( n 'ange' )"
+    assert_equal false, @engine.heap.it.value
+    refute @engine.error?
+  end
+
+  def test_exists_verb_with_a_computed_name
+    @engine.parser.run 'create v as string : show'
+    @engine.parser.run 'exists? verb ( v )'
+    refute @engine.error?
+    assert_equal true, @engine.heap.it.value
+  end
+
+  def test_exists_instance_with_a_computed_path
+    @engine.parser.run 'create q as can'
+    @engine.parser.run "create q.x as string : 'hi'"
+    @engine.parser.run "create p as string : 'q.x'"
+    @engine.parser.run 'exists? instance ( p )'
+    refute @engine.error?
+    assert_equal true, @engine.heap.it.value
+  end
+
+  def test_exists_with_a_computed_name_from_an_unknown_object_is_an_error
+    @engine.parser.run 'exists? ( no_such_obj )'
+    assert @engine.error?
+    refute_equal Gloo::Verbs::Exists::WRONG_NUM_ARGS_ERR, @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

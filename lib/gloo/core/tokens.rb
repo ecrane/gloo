@@ -177,6 +177,17 @@ module Gloo
       end
 
       #
+      # A copy of these tokens with one more token added at the end,
+      # taken as is (not split on spaces or quotes). The original is
+      # left alone.
+      #
+      def with_token( token )
+        copy = dup
+        copy.append_token token
+        return copy
+      end
+
+      #
       # Get the item after a given token.
       #
       def before_token( token )
@@ -184,6 +195,15 @@ module Gloo
         return @tokens[ 0..i - 1 ] if i && @tokens && @tokens.size >= i
 
         return nil
+      end
+
+      protected
+
+      #
+      # Add a token at the end, in a new list (see with_token).
+      #
+      def append_token( token )
+        @tokens += [ token ]
       end
 
       # ---------------------------------------------------------------------

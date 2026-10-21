@@ -16,7 +16,12 @@ tests.lang.naming [can] :
 
   # A fixture with a deliberately nameless object, loaded inside its
   # test so the syntax error it reports belongs to that test.
-  nameless_file [file] : /tmp/gloo_naming_test.gloo
+  nameless_file [file] :
+
+  # Scratch files live in the gloo tmp folder ($.gloo_tmp).
+  on_load [script] :
+    put $.gloo_tmp '/gloo_naming_test.gloo' into ^.nameless_file
+
   nameless_src [text] : BEGIN
 naming_fixture [container] :
   [string] : no name given
@@ -54,7 +59,7 @@ END
     expect_errors [bool] : true
     on_test [script] :
       tell ^^.nameless_file to write ( ^^.nameless_src )
-      load /tmp/gloo_naming_test.gloo
+      load ( ^^.nameless_file )
       eval naming_fixture.unnamed_1 = 'no name given'
       assert "expected the nameless object to be reached as unnamed_1"
 

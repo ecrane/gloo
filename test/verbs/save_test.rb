@@ -97,6 +97,43 @@ class SaveTest < BaseEngineTest
     assert @engine.error?
   end
 
+  def test_save_to_a_computed_path
+    @engine.parser.run 'create fresh as can'
+    @engine.parser.run 'create fresh.s as string : hi'
+    @engine.parser.run "create d as string : #{@tmp_dir}"
+
+    @engine.parser.run "save fresh to ( d '/computed' )"
+    refute @engine.error?
+    path = File.join( @tmp_dir, 'computed.gloo' )
+    assert File.exist?( path )
+    assert_includes File.read( path ), 's [string] : hi'
+  end
+
+  def test_save_to_a_path_held_in_an_object
+    @engine.parser.run 'create fresh as can'
+    @engine.parser.run "create p as string : #{@tmp_dir}/held"
+
+    @engine.parser.run 'save fresh to ( p )'
+    refute @engine.error?
+    assert File.exist?( File.join( @tmp_dir, 'held.gloo' ) )
+  end
+
+  def test_save_to_a_computed_path_from_an_unknown_object_is_an_error
+    @engine.parser.run 'create fresh as can'
+    @engine.parser.run 'save fresh to ( no_such_obj )'
+    assert @engine.error?
+    refute_equal Gloo::Verbs::Save::MISSING_PATH_ERR, @engine.heap.error.value
+    assert_empty Dir.children( @tmp_dir )
+  end
+
+  def test_save_to_a_computed_path_that_is_blank
+    @engine.parser.run 'create fresh as can'
+    @engine.parser.run 'create p as string'
+    @engine.parser.run 'save fresh to ( p )'
+    assert @engine.error?
+    assert_equal Gloo::Verbs::Save::MISSING_PATH_ERR, @engine.heap.error.value
+  end
+
   def test_save_with_no_mapping_uses_a_default_path
     default_pn = File.join( @engine.settings.project_path, 'fresh_default.gloo' )
     refute File.exist?( default_pn ), 'test setup: nothing should be there yet'

@@ -84,6 +84,26 @@ module Gloo
       end
 
       #
+      # For a verb whose arguments are literal text (a file name, a
+      # path, a name): a trailing ( expr ) is worked out and its value
+      # added as the last argument, so the text can be computed, as in
+      # load ( $.gloo_tmp '/x.gloo' ). The parser has already split the
+      # parenthetical off into params. Returns false if the expression
+      # couldn't be worked out (already reported), true otherwise.
+      #
+      def take_evaluated_arg
+        return true unless @params
+
+        errors_before = @engine.heap.error.error_count
+        value = Gloo::Expr::Expression.new( @engine, @params.tokens ).evaluate
+        return false if @engine.heap.error.error_count > errors_before
+
+        @tokens = @tokens.with_token( value.to_s )
+        @params = nil
+        return true
+      end
+
+      #
       # Run the verb.
       #
       # We'll mark the application as not running and let the

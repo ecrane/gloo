@@ -3,6 +3,7 @@
 **Contents**
 
 - Color
+- Computed Arguments
 - Errors
 - Events
 - Function Calls
@@ -42,6 +43,28 @@ colors [can] :
 ```
 
 See also: Show.
+
+## Computed Arguments
+
+Some verbs take literal text rather than an object or an expression: a file name, a path, a name. Each of these can instead be an expression in parentheses. Gloo works out the expression and uses its value as the text:
+
+```
+load ( $.gloo_tmp '/scratch.gloo' )
+load lib ( lib_name )
+save my_obj to ( $.gloo_tmp '/my_obj' )
+context ( 'app.' section )
+exists? object ( type_name )
+```
+
+This works for `load` (a file, `ext` or `lib`), `save … to`, `context` and `exists?`. Anything not in parentheses is still taken literally, so `load common/app/*` still loads those files. A computed file name goes through the same lookup as a literal one, so wildcards, the `.gloo` extension and project-relative names work the same way.
+
+The `+` is optional when joining text, so `( $.gloo_tmp '/scratch.gloo' )` and `( $.gloo_tmp + '/scratch.gloo' )` are the same. A `[file]` or `[string]` object holding a path works too: `load ( my.file_obj )`.
+
+If the expression can't be worked out (for example, an object it names doesn't exist), that's reported as an error and the verb doesn't run.
+
+For anything else, `run ~>` works out a whole command and runs it: `run ~> 'load ' $.gloo_tmp '/x.gloo'`. Prefer the parentheses where they're available; a command built this way breaks if a path has spaces in it.
+
+See also: Load, Save, Context, Exists.
 
 ## Errors and Warnings
 

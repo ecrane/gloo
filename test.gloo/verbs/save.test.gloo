@@ -1,7 +1,7 @@
 #
 # Save verb tests -- real load -> edit -> save round trips.
 #
-# Each test writes a .gloo fixture to /tmp, loads it, does something,
+# Each test writes a .gloo fixture to $.gloo_tmp, loads it, does something,
 # saves, reads the file back, and asserts on the raw text. Every test
 # unloads its object and deletes its scratch file at the end so the
 # next one starts clean.
@@ -9,9 +9,18 @@
 
 tests.verbs.save [can] :
 
-  f [file] : /tmp/gloo_save_test.gloo
-  g [file] : /tmp/gloo_save_test_2.gloo
-  to_target [file] : /tmp/gloo_save_test_to.gloo
+  f [file] :
+  g [file] :
+  to_target [file] :
+
+  # Scratch files live in the gloo tmp folder ($.gloo_tmp).
+  on_load [script] :
+    put $.gloo_tmp '/gloo_save_test.gloo' into ^.f
+    put $.gloo_tmp '/gloo_save_test_2.gloo' into ^.g
+    put $.gloo_tmp '/gloo_save_test_to.gloo' into ^.to_target
+
+  computed_name [string] : /gloo_save_computed_to
+  computed_target [file] :
   out [string] :
   err [bool] : false
 
@@ -58,7 +67,7 @@ END
     on_test [script] :
       put false into ^^.err
       tell ^^.f to write ( ^^.fixture )
-      load /tmp/gloo_save_test.gloo
+      load ( ^^.f )
       put 'changed' into demo.msg
       save demo
       eval ^^.err = false
@@ -79,7 +88,7 @@ END
     description [string] : load then save with no change reproduces the file exactly.
     on_test [script] :
       tell ^^.f to write ( ^^.fixture )
-      load /tmp/gloo_save_test.gloo
+      load ( ^^.f )
       save demo
       tell ^^.f to read ( ^^.out )
       eval ^^.out = ^^.fixture
@@ -91,7 +100,7 @@ END
     description [string] : An unchanged save reproduces blank lines before a container's first child too.
     on_test [script] :
       tell ^^.f to write ( ^^.blank_before_first_child_fixture )
-      load /tmp/gloo_save_test.gloo
+      load ( ^^.f )
       save app
       tell ^^.f to read ( ^^.out )
       eval ^^.out = ^^.blank_before_first_child_fixture
@@ -103,7 +112,7 @@ END
     description [string] : removing a child and saving drops just that declaration.
     on_test [script] :
       tell ^^.f to write ( ^^.fixture )
-      load /tmp/gloo_save_test.gloo
+      load ( ^^.f )
       tell demo.other to unload
       save demo
       tell ^^.f to read ( ^^.out )
@@ -118,8 +127,8 @@ END
     description [string] : save {obj} to {path} writes a new file and registers it.
     on_test [script] :
       tell ^^.f to write ( ^^.fixture )
-      load /tmp/gloo_save_test.gloo
-      save demo to /tmp/gloo_save_test_to
+      load ( ^^.f )
+      save demo to ( ^^.to_target )
       check ^^.to_target for exists?
       assert "save ... to should create the target file"
       tell ^^.to_target to read ( ^^.out )
@@ -129,12 +138,28 @@ END
       tell ^^.f to delete
       tell ^^.to_target to delete
 
+  save_to_a_computed_path [test] :
+    description [string] : save {obj} to ( expr ) writes the file the expression works out to.
+    on_test [script] :
+      tell ^^.f to write ( ^^.fixture )
+      load ( ^^.f )
+      save demo to ( $.gloo_tmp ^^.computed_name )
+      put $.gloo_tmp ^^.computed_name '.gloo' into ^^.computed_target
+      check ^^.computed_target for exists?
+      assert "save ... to ( expr ) should create the computed file"
+      tell ^^.computed_target to read ( ^^.out )
+      check ^^.out for substring? ( "msg [string] : hello" )
+      assert "the computed file should hold the object"
+      tell demo to unload
+      tell ^^.f to delete
+      tell ^^.computed_target to delete
+
   extracting_a_subtree_moves_it_to_the_new_file [test] :
     description [string] : save {nested obj} to {path} moves its declaration (and its own comment) out of the old file into the new one.
     on_test [script] :
       tell ^^.f to write ( ^^.fixture )
-      load /tmp/gloo_save_test.gloo
-      save demo.other to /tmp/gloo_save_test_to
+      load ( ^^.f )
+      save demo.other to ( ^^.to_target )
       check ^^.to_target for exists?
       assert "extraction should create the target file"
 
@@ -167,13 +192,13 @@ END
     on_test [script] :
       put false into ^^.err
       tell ^^.f to write ( ^^.fixture )
-      load /tmp/gloo_save_test.gloo
+      load ( ^^.f )
       # a second file adds its own child under the same 'demo' container --
       # a namespace pattern applied inside the subtree we'll try to extract
       tell ^^.g to write ( "demo [container] :\n  extra [string] : too\n" )
-      load /tmp/gloo_save_test_2.gloo
+      load ( ^^.g )
 
-      save demo to /tmp/gloo_save_test_to
+      save demo to ( ^^.to_target )
       eval ^^.err = true
       assert "extraction should refuse a subtree spanning multiple files"
       check ^^.to_target for exists?
@@ -188,7 +213,7 @@ END
     expect_errors [bool] : true
     on_test [script] :
       tell ^^.f to write ( ^^.fixture )
-      load /tmp/gloo_save_test.gloo
+      load ( ^^.f )
       put 'not saved' into demo.msg
       eval demo.msg = 'not saved'
       assert "sanity: the edit landed"

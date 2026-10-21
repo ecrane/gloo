@@ -38,23 +38,37 @@ tests.ctrl.each [can] :
 
 #
 # Each file / each dir over a nested folder tree.
-# The tree is built under /tmp and removed at the end.
+# The tree is built in $.gloo_tmp and removed at the end. It's built
+# and removed with shell commands, so these tests need a Unix shell.
 #
 
 tests.ctrl.each_folder [can] :
 
   count [int] : 0
+  walk_name [string] : /gloo_each_walk
+  walk [string] :
 
   make_tree [system] :
-    command [string] : rm -rf /tmp/gloo_each_walk && mkdir -p /tmp/gloo_each_walk/a/deep /tmp/gloo_each_walk/.obs && touch /tmp/gloo_each_walk/top.md /tmp/gloo_each_walk/notes.txt /tmp/gloo_each_walk/a/x.md /tmp/gloo_each_walk/a/deep/Y.MD /tmp/gloo_each_walk/.obs/o.md
+    command [string] :
     get_output [bool] : false
   remove_tree [system] :
-    command [string] : rm -rf /tmp/gloo_each_walk
+    command [string] :
     get_output [bool] : false
+
+  # The tree lives in the gloo tmp folder ($.gloo_tmp); paths are
+  # quoted in the commands in case that folder has spaces.
+  on_load [script] :
+    put $.gloo_tmp ^.walk_name into ^.walk
+    put "rm -rf '" ^.walk "' && mkdir -p '" ^.walk "/a/deep' '" ^.walk "/.obs' && cd '" ^.walk "' && touch top.md notes.txt a/x.md a/deep/Y.MD .obs/o.md" into ^.make_tree.command
+    put "rm -rf '" ^.walk "'" into ^.remove_tree.command
+    put ^.walk into ^.files.in
+    put ^.walk '/**/' into ^.wild.in
+    put ^.walk into ^.top.in
+    put ^.walk into ^.dirs.in
 
   files [each] :
     file [file] :
-    in [file] : /tmp/gloo_each_walk
+    in [file] :
     ext [string] : md
     recursive [bool] : true
     do [script] :
@@ -63,7 +77,7 @@ tests.ctrl.each_folder [can] :
 
   wild [each] :
     file [file] :
-    in [file] : /tmp/gloo_each_walk/**/
+    in [file] :
     ext [string] : md
     do [script] :
       eval ^^.count + 1
@@ -71,14 +85,14 @@ tests.ctrl.each_folder [can] :
 
   top [each] :
     file [file] :
-    in [file] : /tmp/gloo_each_walk
+    in [file] :
     do [script] :
       eval ^^.count + 1
       put it into ^^.count
 
   dirs [each] :
     dir [file] :
-    in [file] : /tmp/gloo_each_walk
+    in [file] :
     recursive [bool] : true
     do [script] :
       eval ^^.count + 1

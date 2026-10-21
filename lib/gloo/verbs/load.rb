@@ -23,6 +23,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_evaluated_arg
+
         if @tokens.token_count == 2
           opt = FILE_OPT
           fn = @tokens.second
@@ -109,13 +111,18 @@ module Gloo
           :syntax => [
             'load {file_name}',
             'load ext {my_ext}',
-            'load lib {lib_name}'
+            'load lib {lib_name}',
+            'load [ext|lib] ( {expression} )'
           ],
           :parameters => [
             '{file_name} — Name of the object file that is to be loaded.',
             'reference type — By default, the type is file. File can be ' \
               'specified, but does not need to be. Use ext to load a ' \
-              'User Extension. Use lib to load a Core Library.'
+              'User Extension. Use lib to load a Core Library.',
+            '( {expression} ) — Instead of a literal name, an expression ' \
+              'in parentheses: it is worked out and its value is used as ' \
+              'the file, extension or library name. Wildcards and the ' \
+              '.gloo extension work as they do for a literal name.'
           ],
           :result => 'Objects are loaded into the heap. on_load scripts ' \
             'are run within the loaded objects.',
@@ -147,6 +154,10 @@ module Gloo
             > load my/project/file
             > load my/app/*
             > load ~/.my_app/settings.gloo
+
+            # Load a file whose name is worked out
+            > load ( $.gloo_tmp '/scratch.gloo' )
+            > load ( my.file_obj )
 
             # Load a User Extension
             > load ext my_ext
