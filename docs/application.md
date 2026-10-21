@@ -17,6 +17,7 @@ Gloo keeps its configuration, projects, and logs under a per-user home directory
 - `gloo.gloo_config` — the configuration directory (see Configuration, below)
 - `gloo.gloo_projects` — the projects directory (same as `gloo.app` when an app is running)
 - `gloo.gloo_log` — the logging directory (see Logging, below)
+- `gloo.gloo_tmp` — a folder for temporary files, such as scratch files a script or test writes and then deletes. It's `tmp` under the gloo home directory unless `tmp_path` in `gloo.yml` says otherwise (see Configuration, below), and it's created if it isn't there. Use it instead of `/tmp`, which doesn't exist on Windows.
 
 ```
 > show gloo.gloo_home
@@ -89,6 +90,12 @@ gloo:
   # Update this with the directory with your gloo projects.
   #
   project_path: /Users/my_user/gloo/projects
+
+  #
+  # Folder for temporary files, such as scratch files written by
+  # tests. Scripts get it with $.gloo_tmp.
+  #
+  tmp_path: /Users/my_user/gloo/tmp
 
   #
   # Run this script when starting up gloo.

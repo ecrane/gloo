@@ -179,6 +179,11 @@ module Gloo
         return @engine.settings.project_path
       end
 
+      # Get the Gloo tmp directory
+      def msg_gloo_tmp
+        return @engine.settings.tmp_path
+      end
+
       # The running app directory.
       def msg_app
         return @engine.settings.project_path
@@ -314,6 +319,8 @@ module Gloo
             'gloo_config — Get the gloo configuration directory.',
             'gloo_projects — Get the gloo projects directory.',
             'gloo_log — Get the gloo logging directory.',
+            'gloo_tmp — Get the gloo tmp directory, for temporary files ' \
+              '(the tmp_path setting in gloo.yml).',
             'screen_lines — Get the number of lines on screen.',
             'screen_cols — Get the number of columns on screen.',
             'platform_cpu — Get the platform CPU.',

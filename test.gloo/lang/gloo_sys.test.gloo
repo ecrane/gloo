@@ -79,6 +79,18 @@ tests.lang.gloo_sys [can] :
       eval it = ''
       refute "expected gloo_log to not be empty"
 
+  get_gloo_tmp [test] :
+    description [string] : $.gloo_tmp is a folder that exists.
+    f [file] :
+    on_test [script] :
+      eval $.gloo_tmp
+      eval it = ''
+      refute "expected gloo_tmp to not be empty"
+
+      put $.gloo_tmp into ^.f
+      check ^.f for is_dir?
+      assert "expected gloo_tmp to be an existing folder"
+
   get_screen_dims [test] :
     description [string] : Get the screen dimensions.
     i [int] :

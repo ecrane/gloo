@@ -254,6 +254,7 @@ gloo.gloo_home        # Get the gloo home directory
 gloo.gloo_config      # Get the gloo configuration directory
 gloo.gloo_projects    # Get the gloo projects directory
 gloo.gloo_log         # Get the gloo logging directory
+gloo.gloo_tmp         # Get the gloo tmp directory, for temporary files
 
 SCREEN
 gloo.screen_lines     # Get the number of lines on screen.

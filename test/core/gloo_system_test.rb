@@ -105,6 +105,22 @@ class GlooSystemTest < BaseEngineTest
     assert_equal @engine.settings.log_path, @engine.heap.it.value
   end
 
+  def test_gloo_tmp_path
+    i = @engine.parser.parse_immediate 'show $.gloo.tmp'
+    i.run
+    assert_equal @engine.settings.tmp_path, @engine.heap.it.value
+
+    # same as this
+    j = @engine.parser.parse_immediate 'show $.gloo_tmp'
+    j.run
+    assert_equal @engine.settings.tmp_path, @engine.heap.it.value
+  end
+
+  def test_gloo_tmp_in_doc_data
+    children = Gloo::Core::GlooSystem.doc_data[ :children ]
+    assert children.any? { |c| c.start_with?( 'gloo_tmp ' ) }
+  end
+
   def test_screen_lines
     i = @engine.parser.parse_immediate 'show $.screen.lines'
     i.run

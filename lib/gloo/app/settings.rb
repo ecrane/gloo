@@ -5,6 +5,7 @@
 #
 
 require 'yaml'
+require 'fileutils'
 
 module Gloo
   module App
@@ -137,9 +138,6 @@ module Gloo
         @ext_path = File.join( @user_root, 'extensions' )
         Dir.mkdir( @ext_path ) unless File.exist?( @ext_path )
 
-        @tmp_path = File.join( @user_root, 'tmp' )
-        Dir.mkdir( @tmp_path ) unless File.exist?( @tmp_path )
-
         @debug_path = File.join( @user_root, 'debug' )
         Dir.mkdir( @debug_path ) unless File.exist?( @debug_path )
       end
@@ -156,6 +154,8 @@ module Gloo
           @project_path = File.join( @user_root, 'projects' )
         end
 
+        init_tmp_path( settings[ 'gloo' ][ 'tmp_path' ] )
+
         @start_with = settings[ 'gloo' ][ 'start_with' ]
         @list_indent = settings[ 'gloo' ][ 'list_indent' ]
         @list_levels = settings[ 'gloo' ][ 'list_levels' ]
@@ -165,6 +165,16 @@ module Gloo
 
         @theme = settings[ 'gloo' ][ 'theme' ]&.strip&.downcase
         @theme = DEFAULT_THEME unless THEMES.include?( @theme )
+      end
+
+      #
+      # Set the tmp folder: the tmp_path setting if there is one (a
+      # leading ~ is expanded), or tmp under the user root. Created
+      # if it isn't there yet.
+      #
+      def init_tmp_path( path )
+        @tmp_path = path.blank? ? File.join( @user_root, 'tmp' ) : File.expand_path( path.to_s )
+        FileUtils.mkdir_p( @tmp_path ) unless File.exist?( @tmp_path )
       end
 
       #
@@ -188,6 +198,7 @@ module Gloo
       #
       def get_default_settings
         projects = File.join( @user_root, 'projects' )
+        tmp = File.join( @user_root, 'tmp' )
         str = <<~TEXT
           #
           # Gloo configuration
@@ -199,6 +210,12 @@ module Gloo
             # Update this with the directory with your gloo projects.
             #
             project_path: #{projects}
+
+            #
+            # Folder for temporary files, such as scratch files written by
+            # tests. Scripts get it with $.gloo_tmp.
+            #
+            tmp_path: #{tmp}
 
             #
             # Run this script when starting up gloo.
