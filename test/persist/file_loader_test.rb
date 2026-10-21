@@ -532,4 +532,19 @@ class FileLoaderTest < BaseEngineTest
     FileUtils.remove_entry @dir if @dir
   end
 
+  def test_found_is_true_once_an_existing_file_is_read
+    pn = @engine.persist_man.get_full_path_names( 'test' ).first
+    fl = Gloo::Persist::FileLoader.new( @engine, pn )
+    refute fl.found?, 'nothing has been read before load'
+    fl.load
+    assert fl.found?
+  end
+
+  def test_found_is_false_for_a_missing_file
+    fl = Gloo::Persist::FileLoader.new( @engine, '/tmp/gloo_no_such_file_xyz.gloo' )
+    fl.load
+    refute fl.found?
+    assert @engine.error?
+  end
+
 end

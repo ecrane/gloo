@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'tmpdir'
 
 class FileStorageTest < BaseEngineTest
 
@@ -17,6 +18,37 @@ class FileStorageTest < BaseEngineTest
     assert_same o, fs.obj
     assert_equal [ o ], fs.roots
     assert_same doc, fs.source_doc
+  end
+
+  def test_an_empty_file_warns_instead_of_erroring
+    warnings = load_scratch_file( '' )
+    refute @engine.error?, 'an empty file is not an error'
+    assert_nil @fs.obj
+    assert_equal 1, warnings.size
+    assert_includes warnings.first, Gloo::Persist::FileStorage::NO_OBJECTS_WARNING
+  end
+
+  def test_a_comments_only_file_warns_instead_of_erroring
+    warnings = load_scratch_file( "# a comment\n\n# another one\n" )
+    refute @engine.error?, 'a comments-only file is not an error'
+    assert_nil @fs.obj
+    assert_equal 1, warnings.size
+    assert_includes warnings.first, Gloo::Persist::FileStorage::NO_OBJECTS_WARNING
+  end
+
+  def test_the_warning_names_the_file
+    warnings = load_scratch_file( "# a comment\n" )
+    assert_includes warnings.first, @pn
+  end
+
+  def test_a_missing_file_is_still_an_error
+    pn = File.join( Dir.tmpdir, 'gloo_no_such_file_xyz.gloo' )
+    fs = Gloo::Persist::FileStorage.new( @engine, pn )
+    warnings = capture_warnings { fs.load }
+    assert @engine.error?
+    assert_equal Gloo::Core::NotFound.file( pn ), @engine.heap.error.value,
+                 'the not-found error should not be replaced by a vaguer one'
+    assert_empty warnings
   end
 
   def test_drop_root_removes_from_roots
@@ -47,6 +79,26 @@ class FileStorageTest < BaseEngineTest
     fs.drop_root( a )
     assert_nil fs.obj
     assert_equal [], fs.roots
+  end
+
+  def teardown
+    FileUtils.remove_entry @dir if @dir
+    super
+  end
+
+  private
+
+  #
+  # Write the given text to a scratch .gloo file, load it with a
+  # FileStorage (kept in @fs, its path in @pn), and return the
+  # warnings logged while loading.
+  #
+  def load_scratch_file( text )
+    @dir = Dir.mktmpdir
+    @pn = File.join( @dir, 'scratch.gloo' )
+    File.write( @pn, text )
+    @fs = Gloo::Persist::FileStorage.new( @engine, @pn )
+    return capture_warnings { @fs.load }
   end
 
 end

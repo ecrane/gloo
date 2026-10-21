@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'tmpdir'
 
 class LoadTest < BaseEngineTest
 
@@ -36,6 +37,19 @@ class LoadTest < BaseEngineTest
     i.run
     assert_equal 1, @engine.heap.root.child_count
     assert_equal 5, @engine.heap.it.value
+  end
+
+  def test_loading_a_comments_only_file_is_not_an_error
+    dir = Dir.mktmpdir
+    File.write( File.join( dir, 'empty.gloo' ), "# a comment\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+
+    warnings = capture_warnings { @engine.parser.run 'load empty' }
+    refute @engine.error?
+    assert_equal 0, @engine.heap.root.child_count
+    assert_equal 1, warnings.size
+  ensure
+    FileUtils.remove_entry dir if dir
   end
 
   def test_load_without_expression

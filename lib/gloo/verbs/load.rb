@@ -132,6 +132,9 @@ module Gloo
             'they merge in the heap. If two loaded files declare the ' \
             'same object with different values, the first one loaded ' \
             "wins and a warning is logged.\n\n" \
+            'A file with no objects in it (empty, comments only, or ' \
+            "only 'load lib' lines) loads nothing and logs a warning " \
+            "naming the file; it isn't an error.\n\n" \
             'A contiguous run of whole-line comments declared ' \
             'immediately above an object (same indent, no blank line ' \
             "in between) becomes that object's doc, captured as the " \

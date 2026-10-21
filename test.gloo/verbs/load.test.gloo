@@ -1,11 +1,23 @@
 #
 # Load verb tests
 #
-# Uses 'load lib' because it is self-contained (no fixture files) and
-# its effect is observable through 'exists?'.
+# Mostly uses 'load lib' because it is self-contained (no fixture files) and
+# its effect is observable through 'exists?'. The no-objects tests write
+# a /tmp scratch file.
 #
 
 tests.verbs.load [can] :
+
+  f [file] : /tmp/gloo_load_no_objects_test.gloo
+  comments_only [text] : BEGIN
+# This file has comments,
+
+# but no objects.
+END
+  load_lib_only [text] : BEGIN
+load lib md
+# and nothing else
+END
 
   err_fired [bool] : false
   on_error [script] :
@@ -39,3 +51,36 @@ tests.verbs.load [can] :
       load no_such_file_xyz
       eval ^^.err_fired = true
       assert "expected 'load' of a missing file to fire on_error"
+
+  load_comments_only_file_does_not_error [test] :
+    description [string] : a file with only comments loads with a warning, not an error.
+    expect_errors [bool] : true
+    on_test [script] :
+      put false into ^^.err_fired
+      tell ^^.f to write ( ^^.comments_only )
+      load /tmp/gloo_load_no_objects_test.gloo
+      tell ^^.f to delete
+      eval ^^.err_fired = false
+      assert "expected a comments-only file not to fire on_error"
+
+  load_empty_file_does_not_error [test] :
+    description [string] : an empty file loads with a warning, not an error.
+    expect_errors [bool] : true
+    on_test [script] :
+      put false into ^^.err_fired
+      tell ^^.f to write ( '' )
+      load /tmp/gloo_load_no_objects_test.gloo
+      tell ^^.f to delete
+      eval ^^.err_fired = false
+      assert "expected an empty file not to fire on_error"
+
+  load_lib_only_file_does_not_error [test] :
+    description [string] : a file with only a load lib line loads with a warning, not an error.
+    expect_errors [bool] : true
+    on_test [script] :
+      put false into ^^.err_fired
+      tell ^^.f to write ( ^^.load_lib_only )
+      load /tmp/gloo_load_no_objects_test.gloo
+      tell ^^.f to delete
+      eval ^^.err_fired = false
+      assert "expected a file with only 'load lib' not to fire on_error"

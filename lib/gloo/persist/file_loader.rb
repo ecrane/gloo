@@ -48,6 +48,7 @@ module Gloo
         @mech = @engine.platform.get_file_mech( @engine )
         @pn = pn
         @obj = nil
+        @found = false
         @source_doc = Gloo::Persist::Source::SourceDoc.new
         @trivia = Gloo::Persist::TriviaBuffer.new
         @body = Gloo::Persist::ScriptBodyCollector.new
@@ -67,6 +68,14 @@ module Gloo
       end
 
       #
+      # Was the file there to read? False before load, or when the
+      # file couldn't be found (already reported as an error).
+      #
+      def found?
+        return @found
+      end
+
+      #
       # Load the objects from the file.
       #
       def load
@@ -74,6 +83,7 @@ module Gloo
           @engine.err Gloo::Core::NotFound.file( @pn )
           return
         end
+        @found = true
 
         @engine.log.debug "Loading file '#{@pn}'"
         @indent_stack = IndentStack.new( @engine.heap.root, @source_doc )

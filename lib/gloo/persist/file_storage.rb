@@ -8,6 +8,8 @@ module Gloo
   module Persist
     class FileStorage
 
+      NO_OBJECTS_WARNING = 'No objects in file; nothing loaded from '.freeze
+
       attr_reader :obj, :pn, :roots, :source_doc
 
       #
@@ -50,6 +52,10 @@ module Gloo
 
       #
       # Load the object from the file.
+      # A file that has no objects (empty, comments only, or only
+      # 'load lib' lines) isn't an error, so it's reported as a
+      # warning. A file that couldn't be found was already reported
+      # by the loader.
       #
       def load
         fl = FileLoader.new( @engine, @pn )
@@ -59,8 +65,8 @@ module Gloo
         @source_doc = fl.source_doc
         if @obj
           @engine.log.debug "Loaded object: #{@obj.name}"
-        else
-          @engine.err "Error loading file at #{@pn}"
+        elsif fl.found?
+          @engine.warn "#{NO_OBJECTS_WARNING}#{@pn}"
         end
       end
 
