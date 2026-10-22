@@ -338,7 +338,7 @@ module Gloo
       # Get a list of message names that this object receives.
       #
       def self.messages
-        return %w[save reload unload blank? contains? responds_to? doc]
+        return %w[save reload unload blank? contains? responds_to? doc source_file source_dir]
       end
 
       #
@@ -490,6 +490,27 @@ module Gloo
       def msg_doc
         @engine.heap.it.set_to self.doc
         return self.doc
+      end
+
+      #
+      # The path of the file this object was loaded from, into 'it';
+      # blank if it didn't come from a file.
+      #
+      def msg_source_file
+        path = @engine.persist_man.source_file_of( self ).to_s
+        @engine.heap.it.set_to path
+        return path
+      end
+
+      #
+      # The folder of the file this object was loaded from, with no
+      # trailing slash, into 'it'; blank if it didn't come from a file.
+      #
+      def msg_source_dir
+        path = @engine.persist_man.source_file_of( self )
+        dir = path ? File.dirname( path ) : ''
+        @engine.heap.it.set_to dir
+        return dir
       end
 
 

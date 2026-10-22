@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'tmpdir'
 
 class ObjTest < BaseEngineTest
 
@@ -476,6 +477,150 @@ class ObjTest < BaseEngineTest
     assert @engine.error?
     assert_includes @engine.heap.error.value, 'Message ghost not implemented'
     assert_equal false, @engine.heap.it.value
+  end
+
+  # -------------------------------------------------------------------
+  #   source_dir / source_file: where an object was loaded from
+  # -------------------------------------------------------------------
+
+  def test_source_messages_are_on_every_object
+    @engine.parser.run 'create s as string : test'
+    s = @engine.heap.root.find_child( 's' )
+    assert s.can_receive_message?( 'source_dir' )
+    assert s.can_receive_message?( 'source_file' )
+  end
+
+  def test_source_file_of_a_root_object
+    with_source_files( 'alpha.gloo' => "alpha [can] :\n  s [string] : a\n" ) do |dir|
+      @engine.parser.run 'load alpha'
+      @engine.parser.run 'check alpha for source_file'
+      refute @engine.error?
+      assert_equal File.join( dir, 'alpha.gloo' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_dir_of_a_root_object_has_no_trailing_slash
+    with_source_files( 'alpha.gloo' => "alpha [can] :\n  s [string] : a\n" ) do |dir|
+      @engine.parser.run 'load alpha'
+      @engine.parser.run 'check alpha for source_dir'
+      refute @engine.error?
+      assert_equal dir.chomp( '/' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_file_of_a_nested_object
+    with_source_files( 'alpha.gloo' => "alpha [can] :\n  inner [can] :\n    s [string] : a\n" ) do |dir|
+      @engine.parser.run 'load alpha'
+      @engine.parser.run 'check alpha.inner.s for source_file'
+      assert_equal File.join( dir, 'alpha.gloo' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_file_of_an_object_in_a_subfolder
+    with_source_files( 'sub/beta.gloo' => "beta [can] :\n  s [string] : b\n" ) do |dir|
+      @engine.parser.run 'load sub/beta'
+      @engine.parser.run 'check beta.s for source_dir'
+      assert_equal File.join( dir, 'sub' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_file_of_a_runtime_child_of_a_loaded_object
+    # Created after loading, so no file declares it: it answers with the
+    # file of the nearest object that was declared in one.
+    with_source_files( 'alpha.gloo' => "alpha [can] :\n  s [string] : a\n" ) do |dir|
+      @engine.parser.run 'load alpha'
+      @engine.parser.run 'create alpha.added as string : later'
+      @engine.parser.run 'check alpha.added for source_file'
+      assert_equal File.join( dir, 'alpha.gloo' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_file_of_an_object_not_from_a_file_is_blank
+    @engine.parser.run 'create s as string : test'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'check s for source_file'
+    refute @engine.error?
+    assert_equal '', @engine.heap.it.value
+
+    @engine.parser.run 'check s for source_dir'
+    refute @engine.error?
+    assert_equal '', @engine.heap.it.value
+  end
+
+  def test_source_file_in_a_namespace_split_across_files
+    files = {
+      'one.gloo' => "ns [can] :\n  a [string] : from one\n",
+      'two.gloo' => "ns [can] :\n  b [string] : from two\n"
+    }
+    with_source_files( files ) do |dir|
+      @engine.parser.run 'load one'
+      @engine.parser.run 'load two'
+
+      @engine.parser.run 'check ns.a for source_file'
+      assert_equal File.join( dir, 'one.gloo' ), @engine.heap.it.value
+      @engine.parser.run 'check ns.b for source_file'
+      assert_equal File.join( dir, 'two.gloo' ), @engine.heap.it.value
+
+      # Declared in both: the first file loaded answers.
+      @engine.parser.run 'check ns for source_file'
+      assert_equal File.join( dir, 'one.gloo' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_file_with_nested_container_shorthand
+    files = {
+      'one.gloo' => "ns.first [can] :\n  a [string] : from one\n",
+      'two.gloo' => "ns.second [can] :\n  b [string] : from two\n"
+    }
+    with_source_files( files ) do |dir|
+      @engine.parser.run 'load one'
+      @engine.parser.run 'load two'
+
+      @engine.parser.run 'check ns.second for source_file'
+      assert_equal File.join( dir, 'two.gloo' ), @engine.heap.it.value
+      @engine.parser.run 'check ns.second.b for source_file'
+      assert_equal File.join( dir, 'two.gloo' ), @engine.heap.it.value
+      @engine.parser.run 'check ns for source_file'
+      assert_equal File.join( dir, 'one.gloo' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_file_of_a_file_object_is_where_it_was_declared
+    # Not the path the file object holds.
+    with_source_files( 'alpha.gloo' => "alpha [can] :\n  f [file] : /some/other/place.txt\n" ) do |dir|
+      @engine.parser.run 'load alpha'
+      @engine.parser.run 'check alpha.f for source_file'
+      assert_equal File.join( dir, 'alpha.gloo' ), @engine.heap.it.value
+    end
+  end
+
+  def test_source_file_after_unload_is_blank
+    with_source_files( 'alpha.gloo' => "alpha [can] :\n  s [string] : a\n" ) do
+      @engine.parser.run 'load alpha'
+      alpha = @engine.heap.root.find_child( 'alpha' )
+      @engine.parser.run 'tell alpha to unload'
+      alpha.send_message( 'source_file' )
+      assert_equal '', @engine.heap.it.value
+    end
+  end
+
+  private
+
+  #
+  # Write the given files (relative path => content) into a scratch
+  # project folder, point the project path at it, and yield the folder.
+  #
+  def with_source_files( files )
+    dir = Dir.mktmpdir
+    files.each do |name, content|
+      path = File.join( dir, name )
+      FileUtils.mkdir_p( File.dirname( path ) )
+      File.write( path, content )
+    end
+    @engine.settings.override_project_path( "#{dir}/" )
+    yield dir
+  ensure
+    FileUtils.remove_entry dir if dir
   end
 
 end

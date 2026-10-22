@@ -348,7 +348,7 @@ class Stats < Gloo::Core::Obj
 end
 ```
 
-`self.messages` should call `super` and append to it — the base `Gloo::Core::Obj` already contributes messages every object receives (`reload`, `unload`, `blank?`, `contains?`, `responds_to?`).
+`self.messages` should call `super` and append to it — the base `Gloo::Core::Obj` already contributes messages every object receives (`save`, `reload`, `unload`, `blank?`, `contains?`, `responds_to?`, `doc`, `source_dir`, `source_file`).
 
 Used from gloo, once loaded:
 

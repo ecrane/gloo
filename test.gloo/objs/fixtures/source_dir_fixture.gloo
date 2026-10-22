@@ -1,0 +1,6 @@
+#
+# Fixture for obj.test.gloo: loaded from the folder next to that test
+# file, found with source_dir. Not a test file itself.
+#
+source_dir_fixture [can] :
+  msg [string] : found next door

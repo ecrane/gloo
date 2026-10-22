@@ -58,6 +58,13 @@ tell {path.to.object} to {message}
 > show it
 ```
 
+`source_dir` and `source_file` are two more: they put the folder, or the full path, of the file the object was loaded from in `it` — blank if it didn't come from a file (see Language, Objects — Where an Object Came From).
+
+```gloo
+> check my.obj for source_dir
+> show it
+```
+
 ## Put
 
 `put` evaluates an expression and stores the result in an object.

@@ -15,6 +15,11 @@ tests.objs.obj [can] :
 
   no_doc [string] : "value"
 
+  # For source_dir / source_file.
+  this_file [string] : /obj.test.gloo
+  fixture_path [string] : /fixtures/source_dir_fixture.gloo
+  where [string] :
+
   obj_contains [test] :
     description [string] : Check to see if an object contains children
     on_test [script] :
@@ -70,3 +75,31 @@ tests.objs.obj [can] :
       check tests.objs.obj.no_doc for doc
       eval it = ""
       assert "expected doc to be blank for an object with no leading comment"
+
+  source_file_is_this_test_file [test] :
+    description [string] : source_file answers with the file the object was declared in.
+    on_test [script] :
+      check ^^ for source_file
+      put it into ^^.where
+      check ^^.where for ends_with? ( ^^.this_file )
+      assert "expected source_file to be this test file"
+
+  load_a_fixture_next_to_this_file [test] :
+    description [string] : source_dir finds this file's folder, so a fixture beside it can be loaded.
+    on_test [script] :
+      check ^^ for source_dir
+      put it into ^^.where
+      load ( ^^.where ^^.fixture_path )
+      eval source_dir_fixture.msg = 'found next door'
+      assert "expected the fixture next to this file to load"
+      tell source_dir_fixture to unload
+
+  source_dir_of_a_runtime_object_is_blank [test] :
+    description [string] : an object not loaded from a file has a blank source_dir.
+    on_test [script] :
+      create source_dir_runtime_obj as string : made at runtime
+      check source_dir_runtime_obj for source_dir
+      put it into ^^.where
+      check ^^.where for blank?
+      assert "expected a blank source_dir for a runtime object"
+      tell source_dir_runtime_obj to unload

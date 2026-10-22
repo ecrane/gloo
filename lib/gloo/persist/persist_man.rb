@@ -191,6 +191,25 @@ module Gloo
         return @maps.select { |fs| fs.roots.include?( root ) }
       end
 
+      #
+      # The path of the file an object was loaded from, or nil if it
+      # didn't come from one. Walks up from the object to the first one
+      # a loaded file declares, so an object created at runtime under a
+      # loaded one gets that file. When several files declare it (a
+      # namespace container), the first one loaded wins.
+      #
+      def source_file_of( obj )
+        declared = @maps.map { |fs| [ fs, declared_by( fs ) ] }
+        o = obj
+        while o && !o.root?
+          match = declared.find { |_, owned| owned.key?( o ) }
+          return match.first.pn if match
+
+          o = o.parent
+        end
+        return nil
+      end
+
 
       #
       # Get the full path and name of the file.
@@ -263,6 +282,15 @@ module Gloo
         files.each do |fs|
           fs.save( :others => owned_elsewhere( fs ), :claimed => claimed )
         end
+      end
+
+      #
+      # Every heap object fs's SourceDoc declares.
+      #
+      def declared_by( fs )
+        owned = {}.compare_by_identity
+        collect_owned( fs.source_doc&.children, owned )
+        return owned
       end
 
       #

@@ -50,7 +50,8 @@ module Gloo
           :description => 'An object with no type. A type declares ' \
             'which messages an object can receive; an untyped object ' \
             'receives only the base object messages (blank?, ' \
-            'contains?, responds_to?, reload, unload) but can hold a ' \
+            'contains?, responds_to?, doc, source_dir, source_file, ' \
+            'reload, unload) but can hold a ' \
             'value of any kind. If no type is specified when an object ' \
             'is created, it is untyped. Prefer untyped when you only ' \
             'need to hold, compare, or show a value and do not need ' \

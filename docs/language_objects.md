@@ -4,6 +4,8 @@
 
 - Object Naming
 - Nested Container Shorthand
+- Documenting an Object
+- Where an Object Came From
 - Keywords
 - Literals
 - Value Conversion
@@ -112,6 +114,38 @@ deleted, its doc comment goes with it (see Verbs, Load & Save).
 `list` can show every documented object in a listed tree: turn on the
 `list_docs` setting (off by default) — see `list` and `settings` in the
 in-app help.
+
+## Where an Object Came From
+
+Every object can say which file it was loaded from: `check {obj} for
+source_file` puts the file's full path in `it`, and `check {obj} for
+source_dir` puts that file's folder (with no trailing slash). This lets a
+script reach files stored next to it without a hard-coded path. For
+example, a test can load a fixture that sits beside its own file:
+
+```gloo
+tests.my_area [can] :
+  where [string] :
+  fixture [string] : /fixtures/sample.gloo
+
+  loads_its_fixture [test] :
+    on_test [script] :
+      check ^^ for source_dir
+      put it into ^^.where
+      load ( ^^.where ^^.fixture )
+```
+
+The answer comes from the nearest object, going up from the one asked,
+that a loaded file declares. So a nested object answers with its file,
+even when its root container (like `tests` above) is declared in many
+files. An object created at run time inside a loaded one answers with
+that one's file. When several files declare the same object (a namespace
+container), the first file loaded answers.
+
+An object that didn't come from a file (created at run time, or
+unloaded) answers blank (`''`); that isn't an error. On a `[file]`
+object, `source_file` is the `.gloo` file that declared it, not the path
+it holds.
 
 ## Keywords
 
