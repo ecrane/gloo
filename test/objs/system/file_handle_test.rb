@@ -237,15 +237,28 @@ class FileHandleTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
-  def test_read_into_an_object_also_sets_it
-    File.write( '/tmp/gloo_read_it_test.txt', 'hello' )
-    @engine.parser.run "create f as file : '/tmp/gloo_read_it_test.txt'"
+  def test_read_into_an_object_sets_it_true
+    tmp = Tempfile.new( [ 'gloo_test', '.txt' ] )
+    tmp.write( 'hello' )
+    tmp.close
+
+    @engine.parser.run "create f as file : '#{tmp.path}'"
     @engine.parser.run 'create s as string'
     @engine.parser.run 'tell f to read ( s )'
+    refute @engine.error?
     assert_equal 'hello', @engine.heap.root.find_child( 's' ).value
-    assert_equal 'hello', @engine.heap.it.value
+    assert_equal true, @engine.heap.it.value
   ensure
-    File.delete( '/tmp/gloo_read_it_test.txt' ) if File.exist?( '/tmp/gloo_read_it_test.txt' )
+    tmp.unlink
+  end
+
+  def test_read_into_an_object_from_a_missing_file_sets_it_false
+    @engine.parser.run "create f as file : '/tmp/gloo_no_such_file_xyz'"
+    @engine.parser.run 'create s as string : unchanged'
+    @engine.parser.run 'tell f to read ( s )'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+    assert_equal 'unchanged', @engine.heap.root.find_child( 's' ).value
   end
 
   def test_get_sha256_missing_file_sets_it_false

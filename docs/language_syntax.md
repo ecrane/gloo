@@ -332,6 +332,7 @@ See also: Pathname.
 
 - **A question** (`check x for exists?`, `contains?`, `starts_with?`, …) puts its answer in `it`.
 - **A command or message that works out a value** puts that value in `it` (`eval`, `put`, `show 3 + 4`) — even if it also stores it somewhere, in the object's own value (`trim`, `sub`, `format_for_html`) or in a child (`run` on an `erb`, `http_get` or `system` object also sets its `result`).
+- **A message that puts its result into a destination you name** puts its status in `it`: `true` when it worked, `false` when it didn't. With no destination, the result itself goes in `it`. So `tell f to read ( text )` puts the file's contents in `text` and `true` in `it`, while `tell f to read` puts the contents in `it`. The same goes for json `parse ( dst )` and string `split_list ( delim dst )`.
 - **A pure action** — `list`, a bare `show`, deleting, opening a file — leaves `it` alone, so a value in `it` survives it. Running a script or a loop doesn't set `it` either, though the commands inside it do.
 - **When something goes wrong** in a question or a command that would set `it`, the problem is reported and `it` is `false`. The same goes for a message that never gets to run — the object doesn't exist, or doesn't take that message — including `run` itself: `it` is `false`, so no stale value from an earlier line is left behind.
 

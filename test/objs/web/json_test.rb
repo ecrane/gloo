@@ -132,13 +132,38 @@ class JsonTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
-  def test_parse_of_invalid_json_is_an_error_and_leaves_it
+  def test_parse_sets_it_true
+    @engine.parser.run %q(create j as json : '{"a":1}')
+    @engine.parser.run 'create d as can'
+    @engine.parser.run 'tell j to parse ( d )'
+    refute @engine.error?
+    assert_equal true, @engine.heap.it.value
+    assert_equal 1, @engine.heap.root.find_child( 'd' ).find_child( 'a' ).value
+  end
+
+  def test_parse_of_invalid_json_is_an_error_and_sets_it_false
     @engine.parser.run "create j as json : '{bad'"
     @engine.parser.run 'create d as can'
     @engine.heap.it.set_to 'before'
     @engine.parser.run 'tell j to parse ( d )'
     assert_includes @engine.heap.error.value, 'Could not parse the JSON in j:'
-    assert_equal 'before', @engine.heap.it.value
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_parse_into_a_missing_destination_sets_it_false
+    @engine.parser.run %q(create j as json : '{"a":1}')
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell j to parse ( no.such.obj )'
+    assert_equal Gloo::Core::NotFound.object( 'no.such.obj' ), @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_parse_with_no_destination_sets_it_false
+    @engine.parser.run %q(create j as json : '{"a":1}')
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'tell j to parse'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
   end
 
   def test_get_value_through_a_plain_value_is_nil

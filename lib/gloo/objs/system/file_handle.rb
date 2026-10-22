@@ -74,7 +74,9 @@ module Gloo
       end
 
       #
-      # Read the contents of the file into the object.
+      # Read the contents of the file. With a destination, the contents
+      # go into it and 'it' is true; with none, the contents go in 'it'.
+      # 'it' is false if the file can't be read.
       #
       def msg_read
         return @engine.heap.it.set_to( false ) unless check_file_exists?
@@ -91,6 +93,7 @@ module Gloo
           end
 
           o.set_value data
+          return @engine.heap.it.set_to( true )
         end
         @engine.heap.it.set_to data
       end
@@ -290,7 +293,7 @@ module Gloo
             'on disk. The string value of the file object is the path ' \
             'and name of the file.',
           :messages => [
-            'read ({into.obj}) — Read the file and put the data in the specified object. If {into.obj} is not specified, the data will be in it. If {into.obj} does not exist, that is an error.',
+            'read ({into.obj}) — Read the file and put the data in the specified object; it will be true. If {into.obj} is not specified, the data will be in it. If {into.obj} does not exist, or the file can\'t be read, that is an error and it will be false.',
             'write ({from.obj}) — Write the data in {from.obj} into the file.',
             'append ({data}) — Append the given data to the file as a new line. Adds a leading newline first if the file doesn\'t already end with one.',
             'delete — Delete the file.',

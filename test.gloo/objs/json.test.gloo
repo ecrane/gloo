@@ -43,6 +43,8 @@ tests.objs.json [can] :
     description [string] : parse builds an object tree from the JSON.
     on_test [script] :
       tell ^^.payload to parse ( tests.objs.json.out )
+      eval it = true
+      assert "expected parse to put true in it"
 
       eval tests.objs.json.out.title = 'Brute Force'
       assert "expected parse to set the title"

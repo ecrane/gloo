@@ -378,7 +378,7 @@ class StringTest < BaseEngineTest
     o = @engine.parser.parse_immediate "tell s to split_list (',' dst)"
     o.run
 
-    assert_equal 3, @engine.heap.it.value
+    assert_equal true, @engine.heap.it.value
     dst = @engine.heap.root.find_child( 'dst' )
     assert_equal 3, dst.child_count
     assert_equal 'one', dst.children[ 0 ].value
@@ -425,7 +425,7 @@ class StringTest < BaseEngineTest
     assert_equal 'a', dst.children[ 0 ].value
     assert_equal 'b', dst.children[ 1 ].value
     assert_equal 'c', dst.children[ 2 ].value
-    assert_equal 3, @engine.heap.it.value
+    assert_equal true, @engine.heap.it.value
   end
 
   def test_split_list_msg_leaves_extra_existing_children_alone
@@ -445,7 +445,7 @@ class StringTest < BaseEngineTest
     assert_equal 2, dst.child_count
     assert_equal 'a', dst.children[ 0 ].value
     assert_equal 'y', dst.children[ 1 ].value
-    assert_equal 1, @engine.heap.it.value
+    assert_equal true, @engine.heap.it.value
   end
 
   def test_split_list_msg_via_alias
@@ -528,12 +528,13 @@ class StringTest < BaseEngineTest
     assert_equal '', @engine.heap.it.value
   end
 
-  def test_split_list_on_an_empty_string_sets_it_to_zero
+  def test_split_list_on_an_empty_string_sets_it_true
+    # Nothing to split, so nothing to do: that's still a success.
     o = Gloo::Objs::String.new( @engine )
     o.value = nil
     @engine.heap.it.set_to 'before'
     o.msg_split_list
-    assert_equal 0, @engine.heap.it.value
+    assert_equal true, @engine.heap.it.value
   end
 
   def format_for_html( text )

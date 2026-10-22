@@ -131,26 +131,28 @@ module Gloo
       #
       # Parse the JSON data and put it in objects.
       # The additional parameter is the path to the destination
-      # for the parsed objects.
+      # for the parsed objects. 'it' is true once they're built, or
+      # false if the destination or the JSON is bad.
       #
       def msg_parse
         if @params&.token_count&.positive?
           pn = Gloo::Core::Pn.new( @engine, @params.tokens.first )
           unless pn&.exists?
             @engine.err Gloo::Core::NotFound.object( @params.tokens.first )
-            return
+            return @engine.heap.it.set_to( false )
           end
         else
           @engine.syntax_err 'Destination path for parsed objects is required'
-          return
+          return @engine.heap.it.set_to( false )
         end
         parent = pn.resolve
 
         json = nil
-        return unless attempt( "parse the JSON in #{self.pn}", JSON::ParserError, set_it: false ) do
+        return false unless attempt( "parse the JSON in #{self.pn}", JSON::ParserError ) do
           json = JSON.parse( self.value )
         end
         self.handle_json_to_obj( json, parent )
+        return @engine.heap.it.set_to( true )
       end
 
       # ---------------------------------------------------------------------
@@ -240,7 +242,7 @@ module Gloo
           :messages => [
             'get ({path}) — Get a value from the JSON data. Example: tell myjson to get (\'title\'). The parameter is the path in JSON to the value we want. The value is put into it.',
             'set ({obj.path}) — Convert an object to an approximate JSON value. Example: tell myjson to set (my.object). The parameter is the path to the object used as the source. Note this is an approximate conversion — a gloo object can have both a simple value and be a container for child objects, which JSON can\'t represent the same way.',
-            'parse ({dst.path}) — Parse the JSON data and put values in the object specified by the parameter. Example: tell myjson to parse (path.to.dst).',
+            'parse ({dst.path}) — Parse the JSON data and put values in the object specified by the parameter; it will be true. If the destination is missing or the JSON is bad, that is an error and it will be false. Example: tell myjson to parse (path.to.dst).',
             'pretty — Make the JSON format pretty. The value of the json is changed. It will have the pretty JSON.'
           ],
           :examples => <<~EXAMPLES.strip

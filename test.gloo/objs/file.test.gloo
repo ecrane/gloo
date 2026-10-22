@@ -34,9 +34,20 @@ tests.objs.file [can] :
       refute "expected the file not to be a directory"
 
       tell ^^.f to read ( ^^.back )
+      eval it = true
+      assert "expected read into a destination to put true in it"
       eval ^^.back = 'first line'
       assert "expected read to return what was written"
 
+      tell ^^.f to delete
+
+  read_without_a_destination_puts_the_data_in_it [test] :
+    description [string] : read with no destination puts the file's contents in it.
+    on_test [script] :
+      tell ^^.f to write ( ^^.first )
+      tell ^^.f to read
+      eval it = 'first line'
+      assert "expected the file's contents in it"
       tell ^^.f to delete
 
   append_adds_a_line [test] :

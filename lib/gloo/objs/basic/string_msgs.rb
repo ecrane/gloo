@@ -57,7 +57,7 @@ module Gloo
           'split ({from} {to}) — Get the substring from index {from} up to (not including) index {to}. Indexes are 0-based; out-of-range indexes are clamped to the start or end of the string. Both parameters are required. Does not change the value of the string. It will have the substring.',
           'splitl ({index}) — Get the substring to the left of index {index} (same as split (0, {index})). A parameter is required. Does not change the value of the string. It will have the substring.',
           'splitr ({index}) — Get the substring from index {index} to the end of the string (same as split ({index}, size)). A parameter is required. Does not change the value of the string. It will have the substring.',
-          'split_list ({delim} {dst.path}) — Split the string by {delim} and put the parts into children of the container at {dst.path} (or an alias that points to one), one part per child, in order. Existing children are matched by position and have their values set; extra parts get new (untyped) children, numbered from 1; extra existing children are left alone. Both parameters are required. Does not change the value of the string. It will have the number of parts.',
+          'split_list ({delim} {dst.path}) — Split the string by {delim} and put the parts into children of the container at {dst.path} (or an alias that points to one), one part per child, in order. Existing children are matched by position and have their values set; extra parts get new (untyped) children, numbered from 1; extra existing children are left alone. Both parameters are required. Does not change the value of the string. It will be true (also when the string is empty), or false if a parameter or the target is bad.',
           'word_wrap ({width}) — Word-wrap the string to {width} columns, breaking on whitespace (never mid-word; an overlong word is left on its own line rather than broken). The {width} parameter is optional; it defaults to the terminal\'s current width. This message changes the value of the string. It will have the wrapped string.',
           'page — Show the value in a pager (less), for viewing long content a screen at a time.'
         ]
@@ -239,11 +239,12 @@ module Gloo
       # have their values set; if there are more parts than children,
       # new (untyped) children are created for the extras, numbered
       # from 1. Existing children beyond the part count are left alone.
-      # The string's own value is unchanged; the number of parts is put
-      # into 'it'.
+      # The string's own value is unchanged. 'it' is true once the parts
+      # are in place (also when there's nothing to split), or false if
+      # the parameters or the target are bad.
       #
       def msg_split_list
-        return @engine.heap.it.set_to( 0 ) unless value
+        return @engine.heap.it.set_to( true ) unless value
 
         if @params&.token_count.to_i < 2
           @engine.syntax_err MISSING_PARAM_MSG
@@ -265,9 +266,7 @@ module Gloo
           child.set_value part
         end
 
-        count = parts.count
-        @engine.heap.it.set_to count
-        return count
+        return @engine.heap.it.set_to( true )
       end
 
       #
