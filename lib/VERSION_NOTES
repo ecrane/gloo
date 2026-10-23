@@ -2,10 +2,10 @@
  - Loading an empty gloo file is now allowed and only gives a warning.
  - Adds configuration setting for tmp directory.
  - load (file, lib, ext), save … to, context and exists? accept ( expression ) in place of a literal name or path. For example, load ( $.gloo_tmp '/x.gloo' ).
-- save … to with a blank path reports the missing-path error.
-- Updates for more consistent results in `it`.
-- Get source file path and name for object.
-- Adds doc for gloo tests.
+ - save … to with a blank path reports the missing-path error.
+ - Updates for more consistent results in `it`.
+ - Get source file path and name for object.
+ - Adds doc for gloo tests.
 
 
 7.0.4 - 2026.10.19
@@ -179,7 +179,7 @@
 
 
 5.1.0 - 2026.02.15
- - Fixes issue with int * dec 
+ - Fixes issue with int * dec
  - Some code cleanup
 
 
@@ -406,4 +406,3 @@ adds tag helper for apple touch icon
 
 2.0 - 2023.05.22
  - Version 2 merges gloo-lang back into a single gloo gem.
-
