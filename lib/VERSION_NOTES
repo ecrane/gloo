@@ -1,3 +1,13 @@
+7.1 - 2026.10.23
+ - Loading an empty gloo file is now allowed and only gives a warning.
+ - Adds configuration setting for tmp directory.
+ - load (file, lib, ext), save … to, context and exists? accept ( expression ) in place of a literal name or path. For example, load ( $.gloo_tmp '/x.gloo' ).
+- save … to with a blank path reports the missing-path error.
+- Updates for more consistent results in `it`.
+- Get source file path and name for object.
+- Adds doc for gloo tests.
+
+
 7.0.4 - 2026.10.19
  - Documentation update.
 
