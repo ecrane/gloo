@@ -73,6 +73,8 @@ When specifying a file there are a couple ways to reference the gloo file to ope
 --test       - Run in Test mode
              - Runs the *.test.gloo files in the folders and files given
                (the current folder if none), using the gloo-test library.
+             - Exits with status 1 if any test failed, or errors or warnings
+               were logged that no test expected; 0 otherwise.
              - See Testing.
 --version    - Show application version
 --help       - Show the help screen

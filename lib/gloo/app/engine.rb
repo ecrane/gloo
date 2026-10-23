@@ -154,21 +154,31 @@ module Gloo
         @args.files.each { |f| @persist_man.load( f ) }
       end
 
-      # 
+      #
       # Run in gloo unit test mode.
+      # Then quit, with exit status 1 if the run failed (see run_tests),
+      # so a calling script or CI job can tell.
       #
       def run_test
         @log.debug 'Running in Test mode…'
-
-        begin
-          @lib_manager.load_lib TEST_LIB_NAME
-          TestRunner.new( self, @args.files ).run
-        rescue StandardError, ScriptError => ex
-          handle_exception ex
-        end
-
+        passed = run_tests
         @log.debug 'Tests complete.'
         quit
+        exit( 1 ) unless passed
+      end
+
+      #
+      # Load gloo-test and run the tests given on the command line.
+      # True unless the run reports that it failed, or something went
+      # wrong running it. An older gloo-test whose run doesn't report
+      # counts as passed, as it always has.
+      #
+      def run_tests
+        @lib_manager.load_lib TEST_LIB_NAME
+        return TestRunner.new( self, @args.files ).run != false
+      rescue StandardError, ScriptError => ex
+        handle_exception ex
+        return false
       end
 
       #

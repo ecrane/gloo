@@ -368,4 +368,87 @@ class EngineTest < BaseTest
     return e
   end
 
+  # ---------------------------------------------------------------------
+  #    Test mode exit status
+  # ---------------------------------------------------------------------
+
+  def test_run_test_exits_1_when_the_tests_fail
+    o = started_engine
+    o.stub :run_tests, false do
+      e = assert_raises( SystemExit ) { o.run_test }
+      assert_equal 1, e.status
+    end
+  end
+
+  def test_run_test_does_not_exit_when_the_tests_pass
+    o = started_engine
+    o.stub :run_tests, true do
+      o.run_test
+    end
+  end
+
+  def test_run_test_quits_before_exiting
+    o = started_engine
+    quit_called = false
+    o.define_singleton_method( :quit ) { quit_called = true }
+    o.stub :run_tests, false do
+      assert_raises( SystemExit ) { o.run_test }
+    end
+    assert quit_called, 'expected on_quit and the rest of quit to run first'
+  end
+
+  def test_run_tests_is_false_when_the_runner_reports_a_failure
+    o = started_engine
+    with_test_runner( o, -> { false } ) { assert_equal false, o.run_tests }
+  end
+
+  def test_run_tests_is_true_when_the_runner_reports_a_pass
+    o = started_engine
+    with_test_runner( o, -> { true } ) { assert_equal true, o.run_tests }
+  end
+
+  def test_run_tests_is_true_for_a_runner_that_does_not_report
+    # An older gloo-test returns nothing useful from run.
+    o = started_engine
+    with_test_runner( o, -> { nil } ) { assert_equal true, o.run_tests }
+  end
+
+  def test_run_tests_is_false_when_the_runner_raises
+    o = started_engine
+    o.log.quiet = true
+    with_test_runner( o, -> { raise 'boom' } ) { assert_equal false, o.run_tests }
+  end
+
+  private
+
+  #
+  # An engine started in the default (embedded) mode, quiet.
+  #
+  def started_engine
+    o = Gloo::App::Engine.new( default_context )
+    o.log.quiet = true
+    o.start
+    return o
+  end
+
+  #
+  # Run the block with TestRunner replaced by a fake whose run calls
+  # the given proc, and with o's loading of the test library stubbed
+  # out. The real TestRunner (if gloo-test is loaded) is put back after.
+  #
+  def with_test_runner( o, run_proc )
+    o.lib_manager.define_singleton_method( :load_lib ) { |*_args| true }
+    original = Object.const_defined?( :TestRunner ) ? Object.const_get( :TestRunner ) : nil
+    Object.send( :remove_const, :TestRunner ) if original
+    fake = Class.new do
+      define_method( :initialize ) { |*_args| }
+      define_method( :run ) { run_proc.call }
+    end
+    Object.const_set( :TestRunner, fake )
+    yield
+  ensure
+    Object.send( :remove_const, :TestRunner ) if Object.const_defined?( :TestRunner )
+    Object.const_set( :TestRunner, original ) if original
+  end
+
 end

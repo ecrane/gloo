@@ -40,6 +40,12 @@ Tests finished in 0.01 seconds
 
 In test mode, errors and warnings go to the log files, not the console, so the output is just the test results (see Application, Logging). The summary says when any were logged; see Errors and Warnings, below.
 
+When the run is over, gloo exits with status 0 if it passed, and 1 if any test failed or the summary reports errors or warnings that no test expected. A missing test file or folder counts too. So a script or CI job can tell a good run from a bad one:
+
+```
+gloo --test test/ && echo "all good"
+```
+
 ## Writing a Test
 
 A test file holds one root container with `[test]` objects inside it. By convention, the root is `tests`, and each file adds its own area under it with nested container shorthand (see Language, Objects), so many test files can share the `tests` root:
