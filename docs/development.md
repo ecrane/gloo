@@ -54,7 +54,7 @@ Integration tests written in gloo itself, using the `[test]` object from the `gl
 gem install gloo-test gloo-yaml gloo-md
 ```
 
-Each `*.test.gloo` file holds `[test]` objects whose `on_test` script uses `assert` and `refute`:
+Each `*.test.gloo` file holds `[test]` objects whose `on_test` script uses `assert` and `refute`. How to write them (assertions, shuffled order, `expect_errors`, `expect_fail`, scratch files and fixtures) is in Testing; this section covers only what's particular to the interpreter's own suite. A test looks like this:
 
 ```gloo
 tests [can] :

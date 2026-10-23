@@ -29,6 +29,12 @@ settings [can] :
 
 The loader runs these top-of-file `load lib` / `load ext` lines before it builds the object tree, so declarations below them can use the library's types. Only `load lib` and `load ext` are recognized this way, and only above the first object — a `load lib` in a script still runs when that script runs, as before.
 
+When working on a core library, `load lib` loads the installed gem, not the copy you're editing, so its tests quietly test the installed version. To test the edited source, run from the library's folder with `RUBYLIB` pointing at its `lib/`:
+
+```
+RUBYLIB="$(pwd)/lib" gloo --test test/
+```
+
 ### Available Core Libraries
 
 - **CLI** — Use the `gloo-cli` gem when building CLI applications.
@@ -60,7 +66,7 @@ The loader runs these top-of-file `load lib` / `load ext` lines before it builds
     > load lib md
     help> object markdown
     ```
-- **Test** — Use the `gloo-test` gem to manually include. See Test Runner for notes about the gloo test runner.
+- **Test** — Use the `gloo-test` gem to write and run gloo tests. `gloo --test` loads it for you; see Testing for how to write and run tests.
     - Library Objects: Test
     - Library Verbs: Assert, Refute
     - See also: Eval, It
@@ -374,7 +380,7 @@ Add `self.doc_data` to every verb/object class (see the `beep` and `stats` examp
 
 ### Testing an extension
 
-Add a Ruby unit test per verb/object class under `test/` (the same conventions as the interpreter's own tests, see Development, Tests — inherit from the project's `GlooTest`/`BaseEngineTest` base), and add a `*.test.gloo` integration test that loads the extension and exercises it end to end, e.g. `extensions/beep/test/beep.test.gloo`:
+Add a Ruby unit test per verb/object class under `test/` (the same conventions as the interpreter's own tests, see Development, Tests — inherit from the project's `GlooTest`/`BaseEngineTest` base), and add a `*.test.gloo` integration test that loads the extension and exercises it end to end (see Testing for how to write and run gloo tests), e.g. `extensions/beep/test/beep.test.gloo`:
 
 ```gloo
 tests [can] :

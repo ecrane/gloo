@@ -71,6 +71,9 @@ When specifying a file there are a couple ways to reference the gloo file to ope
              - Run the script in the file parameter and then quit.
              - If a file is provided as a parameter this option does not need to be specified.
 --test       - Run in Test mode
+             - Runs the *.test.gloo files in the folders and files given
+               (the current folder if none), using the gloo-test library.
+             - See Testing.
 --version    - Show application version
 --help       - Show the help screen
 ```
@@ -155,7 +158,7 @@ Debug messages are written to the log only, but other messages are also written 
 
 Only error and warning level messages are written to the error log.
 
-In test mode (`--test`), errors and warnings go to the log files only, not the console, so the test output is just the test results. An error a test expects (or one from a test file that deliberately contains a problem) is still in `error.log`.
+In test mode (`--test`), errors and warnings go to the log files only, not the console, so the test output is just the test results. An error a test expects (or one from a test file that deliberately contains a problem) is still in `error.log`. The summary at the end of a test run says how many errors and warnings were logged, and by which tests, leaving out those a test expects (`expect_errors`). See Testing.
 
 The application logs folder is in the gloo folder. When gloo is run, the log files will be created if they do not exist. To trim the logs, just delete those log files.
 
@@ -206,4 +209,4 @@ help> quit
 
 ### Narrative Docs in the Shell
 
-This page and its ten siblings (`docs/*.md` in the interpreter's source) are the same files shown by `help> doc {name}` — there's no separate doc server or web mode. A `gloo --doc` local web server was considered and put off in favor of this: one system, no separate build/serve step.
+This page and the others in `docs/` (in the interpreter's source) are the same files shown by `help> doc {name}` — there's no separate doc server or web mode. A `gloo --doc` local web server was considered and put off in favor of this: one system, no separate build/serve step.

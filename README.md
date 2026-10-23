@@ -47,7 +47,8 @@ Read in order for a guided tour of the language, top to bottom, or jump straight
 8. [Operators](docs/operators.md) — math and comparison operators
 9. [Iterators](docs/iterators.md) — each, repeat
 10. [Plugins](docs/plugins.md) — core libraries and user extensions
-11. [A Trivial Web App](docs/web_app.md) — a two-page "Hello World" built with the `gloo-web` core library
+11. [Testing](docs/testing.md) — writing and running gloo tests with `gloo-test`
+12. [A Trivial Web App](docs/web_app.md) — a two-page "Hello World" built with the `gloo-web` core library
 
 Working on gloo itself? See [Development](docs/development.md) — source layout, running the tests, and conventions.
 
