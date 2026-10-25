@@ -50,4 +50,36 @@ class CallTest < BaseEngineTest
     assert @engine.error?
   end
 
+  def test_a_failed_inline_call_in_put_sets_it_false
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run 'create x as string : unchanged'
+    @engine.parser.run 'put invoke( add 3 ) into x'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+    assert_equal 'unchanged', @engine.heap.root.find_child( 'x' ).value
+  end
+
+  def test_a_failed_inline_shortcut_call_in_put_sets_it_false
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run 'create x as string : unchanged'
+    @engine.parser.run 'put ~>( add 3 ) into x'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_value_sets_it_false_on_failure
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.heap.it.set_to 'before'
+    Gloo::Expr::Call.new( @engine, 'invoke( add 3 )' ).value
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_an_inline_arg_naming_a_missing_object_is_an_error
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run 'create x as int : 5'
+    @engine.parser.run 'put invoke( add no_such_obj 4 ) into x'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+    assert_equal 5, @engine.heap.root.find_child( 'x' ).value
+  end
+
 end

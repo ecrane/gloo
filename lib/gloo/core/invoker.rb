@@ -18,24 +18,37 @@ module Gloo
       #
       # Resolve, validate and invoke the function at the given
       # target path, with the given raw (unevaluated) arg tokens.
-      # Reports an error and returns nil for any failure - including
-      # a failure inside the function itself (see Function#invoke,
-      # which leaves `it` alone rather than setting it to an
-      # unreliable result when that happens).
+      # For any failure, reports an error, puts false in `it` and
+      # returns nil - before the call (see failed), or inside the
+      # function itself (see Function#invoke).
       #
       def self.invoke( engine, target, arg_tokens )
         if target.nil? || target.to_s.strip.empty?
           engine.syntax_err NO_TARGET_ERR
-          return nil
+          return failed( engine )
         end
 
         func = resolve_function( engine, target )
-        return nil unless func
+        return failed( engine ) unless func
 
+        # An arg that couldn't be worked out was already reported, but
+        # the function's own error tracking would clear it if the call
+        # went ahead.
+        errors_before = engine.heap.error.error_count
         args = evaluate_arg_tokens( engine, arg_tokens )
-        return nil unless params_count_ok?( engine, func, args )
+        return failed( engine ) if engine.heap.error.error_count > errors_before
+        return failed( engine ) unless params_count_ok?( engine, func, args )
 
         return invoke_function( engine, func, args )
+      end
+
+      #
+      # The function couldn't be called (the problem was already
+      # reported): put false in `it`, and return nil.
+      #
+      def self.failed( engine )
+        engine.heap.it.set_to false
+        return nil
       end
 
       #

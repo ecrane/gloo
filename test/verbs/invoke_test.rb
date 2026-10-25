@@ -75,4 +75,51 @@ class InvokeTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A failure before the function runs puts false in it
+  # ---------------------------------------------------------------------
+
+  def test_wrong_param_count_sets_it_false
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run "show 'Hi'"
+    @engine.parser.run 'invoke add 3'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_wrong_param_count_with_the_shortcut_sets_it_false
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run "show 'Hi'"
+    @engine.parser.run '~> add 3'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_unresolved_target_sets_it_false
+    @engine.parser.run "show 'Hi'"
+    @engine.parser.run 'invoke no.such.function'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_not_a_function_sets_it_false
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run "show 'Hi'"
+    @engine.parser.run 'invoke not_a_function'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_missing_target_sets_it_false
+    @engine.parser.run "show 'Hi'"
+    @engine.parser.run 'invoke'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_an_arg_naming_a_missing_object_is_an_error
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run "show 'Hi'"
+    @engine.parser.run 'invoke add no_such_obj 4'
+    assert @engine.error?
+    assert_equal Gloo::Core::NotFound.object( 'no_such_obj' ), @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+  end
+
 end

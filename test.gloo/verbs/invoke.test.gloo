@@ -90,3 +90,53 @@ tests.verbs.invoke [can] :
       show invoke( tests.verbs.invoke.greet "Bob Smith" )
       eval it = "Hi, Bob Smith"
       assert "expected it to be 'Hi, Bob Smith'"
+
+  wrong_param_count_sets_it_false [test] :
+    description [string] : invoke with the wrong number of params puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      eval 'Hi'
+      invoke tests.verbs.invoke.add 1
+      eval it = false
+      assert "expected it to be false after a failed invoke"
+
+  shortcut_wrong_param_count_sets_it_false [test] :
+    description [string] : ~> with the wrong number of params puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      eval 'Hi'
+      ~> tests.verbs.invoke.add 1
+      eval it = false
+      assert "expected it to be false after a failed ~>"
+
+  not_a_function_sets_it_false [test] :
+    description [string] : invoke of something that isn't a function puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      eval 'Hi'
+      invoke tests.verbs.invoke.total
+      eval it = false
+      assert "expected it to be false after invoking a non-function"
+
+  missing_arg_object_is_an_error [test] :
+    description [string] : an argument naming a missing object fires on_error and puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      put false into ^^.err_fired
+      eval 'Hi'
+      invoke tests.verbs.invoke.add no_such_obj_xyz 4
+      eval it = false
+      assert "expected it to be false"
+      eval ^^.err_fired = true
+      assert "expected on_error to fire for the missing argument"
+
+  inline_failure_in_put_sets_it_false [test] :
+    description [string] : a failed invoke( ... ) inside put puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 5 into ^^.total
+      put invoke( tests.verbs.invoke.add 1 ) into ^^.total
+      eval it = false
+      assert "expected it to be false"
+      eval ^^.total = 5
+      assert "expected the target to keep its value"

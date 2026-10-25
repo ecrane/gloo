@@ -57,4 +57,51 @@ class InvokerTest < BaseEngineTest
     assert_equal [], args
   end
 
+  # ---------------------------------------------------------------------
+  #    A failure before the function runs puts false in it
+  # ---------------------------------------------------------------------
+
+  def test_missing_target_sets_it_false
+    @engine.heap.it.set_to 'before'
+    Gloo::Core::Invoker.invoke( @engine, nil, [] )
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_unresolved_target_sets_it_false
+    @engine.heap.it.set_to 'before'
+    Gloo::Core::Invoker.invoke( @engine, 'no.such.function', [] )
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_target_that_is_not_a_function_sets_it_false
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.heap.it.set_to 'before'
+    Gloo::Core::Invoker.invoke( @engine, 'not_a_function', [] )
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_param_count_mismatch_sets_it_false
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.heap.it.set_to 'before'
+    Gloo::Core::Invoker.invoke( @engine, 'add', [ '3' ] )
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_an_arg_that_cannot_be_evaluated_is_an_error
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.heap.it.set_to 'before'
+    result = Gloo::Core::Invoker.invoke( @engine, 'add', [ 'no_such_obj', '4' ] )
+    assert_nil result
+    assert @engine.error?
+    assert_equal Gloo::Core::NotFound.object( 'no_such_obj' ), @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_an_arg_that_cannot_be_evaluated_does_not_run_the_function
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run 'put 99 into add.result'
+    Gloo::Core::Invoker.invoke( @engine, 'add', [ 'no_such_obj', '4' ] )
+    assert_equal 99, @engine.heap.root.find_child( 'add' ).find_child( 'result' ).value
+  end
+
 end

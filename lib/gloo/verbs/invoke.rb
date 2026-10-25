@@ -60,7 +60,8 @@ module Gloo
             '{path.to.function} — The function we want to invoke.',
             '{params} — The list of parameters to the function.'
           ],
-          :result => 'The result of the function is put into it. The ' \
+          :result => 'The result of the function is put into it; if ' \
+            'anything goes wrong, it is false. The ' \
             'inline forms (invoke(...), ~>(...)) can be used anywhere ' \
             'an expression is evaluated - show, put ... into, if, ' \
             'unless, eval, and more - and evaluate to the result ' \
@@ -69,13 +70,13 @@ module Gloo
             "#{Gloo::Core::Invoker::NO_TARGET_ERR} — No function reference was given.",
             "Object '{path.to.function}' was not found. — The path doesn't resolve to any object.",
             "#{Gloo::Core::Invoker::NOT_FUNCTION_ERR}{path.to.function} — The path resolves to an object that isn't a function.",
-            "#{Gloo::Core::Invoker::PARAM_COUNT_ERR}{path.to.function} (expected N, got N) — The number of params given doesn't match what the function declares."
+            "#{Gloo::Core::Invoker::PARAM_COUNT_ERR}{path.to.function} (expected N, got N) — The number of params given doesn't match what the function declares.",
+            "Object '{param}' was not found. — A param names an object that doesn't exist. The function isn't run."
           ],
           :notes => 'If the function itself fails during invocation ' \
-            '(its on_invoke script hits an error), it is left ' \
-            'unchanged rather than being set to an unreliable result. ' \
-            'The underlying error is whatever was reported by the ' \
-            'failure inside the function. ' \
+            '(its on_invoke script hits an error), it is false rather ' \
+            'than an unreliable result. The underlying error is ' \
+            'whatever was reported by the failure inside the function. ' \
             'Inline call params are space-separated, same as the ' \
             'standalone verb - each one is evaluated as a single ' \
             'token (a literal or object reference), not a multi-token ' \
