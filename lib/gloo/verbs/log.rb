@@ -50,11 +50,12 @@ module Gloo
       # Write to the specified logger.
       # 
       def write_to_log
-        expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
-        result = expr.evaluate
+        # A failed expression is still logged as far as it got, but it
+        # is false.
+        result, ok = evaluate_expr( @tokens.params )
         level = log_level_specified( result )
         @engine.log.write result, level
-        @engine.heap.it.set_to result
+        @engine.heap.it.set_to( ok ? result : false )
       end
 
       # 
@@ -106,7 +107,10 @@ module Gloo
               'not specified, the message is written as DEBUG level.'
           ],
           :result => 'The message is written to the log at the ' \
-            'specified level. It will contain the log message.',
+            'specified level. It will contain the log message. If the ' \
+            'expression fails, the error is reported and what was ' \
+            'worked out so far is still logged, but it is false. A ' \
+            'level that can\'t be worked out falls back to debug.',
           :notes => "Use `log clear` from the CLI to clear out both the " \
             "standard log and the error log.\n\n" \
             "> log clear",

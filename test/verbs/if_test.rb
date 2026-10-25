@@ -100,4 +100,15 @@ class IfTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  # A condition is like a loop's: if itself doesn't set it, so a failed
+  # condition leaves it alone, and the branch doesn't run.
+  def test_a_failed_condition_leaves_it_and_skips_the_branch
+    @engine.parser.run 'create ran as bool : false'
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'if no_such_obj then put true into ran'
+    assert @engine.error?
+    assert_equal 'before', @engine.heap.it.value
+    assert_equal false, @engine.heap.root.find_child( 'ran' ).value
+  end
+
 end

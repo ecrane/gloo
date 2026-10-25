@@ -56,7 +56,8 @@ class HereTest < BaseEngineTest
     @engine.parser.run 'create x as int : 3'
     @engine.parser.run 'create s as script : "show ^^^^.x"'
     @engine.parser.run 'run s'
-    assert_nil @engine.heap.it.value
+    # show of a reference that finds nothing fails, so it is false
+    assert_equal false, @engine.heap.it.value
   end
 
 end

@@ -16,10 +16,11 @@ module Gloo
       #
       def run
         if @tokens.token_count > 1
-          expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
-          result = expr.evaluate
+          # A failed expression is still shown as far as it got (a best
+          # guess, and handy when debugging), but it is false.
+          result, ok = evaluate_expr( @tokens.params )
           @engine.log.show get_formatted_string( result )
-          @engine.heap.it.set_to result
+          @engine.heap.it.set_to( ok ? result : false )
         else
           @engine.log.show ''
         end
@@ -46,14 +47,16 @@ module Gloo
       private
 
       #
-      # Get the formatted string.
+      # Get the formatted string: in the color given in the params, if
+      # any. A color that can't be worked out (already reported) shows
+      # the string plain.
       #
       def get_formatted_string( str )
         if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @engine, @params.tokens )
-          val = expr.evaluate
-          color = val.to_sym
-          return @engine.platform.get_colorized_string( str, color )
+          val, ok = evaluate_expr( @params.tokens )
+          return str unless ok && val
+
+          return @engine.platform.get_colorized_string( str, val.to_sym )
         end
         return str
       end
@@ -79,11 +82,13 @@ module Gloo
             '{target} — The object that we want to see. The target ' \
               'might be the path to an object, a literal or an ' \
               'expression to be evaluated before being shown.',
-            '{color} — Optional color for the text.'
+            '{color} — Optional color for the text. If the color can\'t be worked out, the error is reported and the text is shown plain.'
           ],
           :result => "The object's value is shown, or the literal, or " \
             'the result of the evaluated expression is shown. It will ' \
-            "contain the object's value.",
+            "contain the object's value. If the expression fails (eg. " \
+            'it names a missing object), the error is reported and ' \
+            'what was worked out so far is still shown, but it is false.',
           :examples => <<~EXAMPLES.strip,
             > show "me"
             > show "hello " "world"

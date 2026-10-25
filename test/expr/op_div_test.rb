@@ -22,7 +22,7 @@ class OpDivTest < BaseEngineTest
       @engine.heap.error.clear
       @engine.parser.run cmd
       assert_equal Gloo::Expr::Expression::DIVIDE_BY_ZERO_ERR, @engine.heap.error.value, cmd
-      assert_nil @engine.heap.it.value, cmd
+      assert_equal false, @engine.heap.it.value, cmd
     end
   end
 

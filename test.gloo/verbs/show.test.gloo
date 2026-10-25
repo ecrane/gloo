@@ -33,3 +33,35 @@ tests.verbs.show [can] :
       show 'a' + 'b'
       eval it = 'ab'
       assert "expected it to be 'ab'"
+
+  add [ƒ] :
+    on_invoke [script] :
+      put ^.params.x + ^.params.y into ^.result
+    params [can] :
+      x [int] :
+      y [int] :
+    result [int] :
+
+  failed_expression_puts_false_in_it [test] :
+    description [string] : show of an expression that fails puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      show 1 + no_such_obj_xyz
+      eval it = false
+      assert "expected it to be false after a failed expression"
+
+  failed_inline_invoke_puts_false_in_it [test] :
+    description [string] : show of an inline invoke that fails puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      show invoke( tests.verbs.show.add 1 )
+      eval it = false
+      assert "expected it to be false after a failed inline invoke"
+
+  failed_color_puts_the_value_in_it [test] :
+    description [string] : show with a color that fails still puts the value in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      show 'plain' (no_such_obj_xyz)
+      eval it = 'plain'
+      assert "expected the value in it when only the color fails"

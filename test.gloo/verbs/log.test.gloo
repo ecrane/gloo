@@ -10,3 +10,19 @@ tests.verbs.log [can] :
       log 'debug' (debug)
       eval it = 'debug'
       assert "expected it to be 'debug'"
+
+  failed_expression_puts_false_in_it [test] :
+    description [string] : log of an expression that fails puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      log 1 + no_such_obj_xyz
+      eval it = false
+      assert "expected it to be false after a failed expression"
+
+  failed_level_puts_the_value_in_it [test] :
+    description [string] : log with a level that fails still puts the value in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      log 'plain' (no_such_obj_xyz)
+      eval it = 'plain'
+      assert "expected the value in it when only the level fails"

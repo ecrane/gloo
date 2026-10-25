@@ -15,3 +15,11 @@ tests.verbs.eval [can] :
 
       eval false
       refute "expected false to be false"
+
+  failed_expression_puts_false_in_it [test] :
+    description [string] : eval of an expression that fails puts false in it.
+    expect_errors [bool] : true
+    on_test [script] :
+      eval 1 + no_such_obj_xyz
+      eval it = false
+      assert "expected it to be false after a failed expression"

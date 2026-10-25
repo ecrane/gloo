@@ -94,13 +94,24 @@ module Gloo
       def take_evaluated_arg
         return true unless @params
 
-        errors_before = @engine.heap.error.error_count
-        value = Gloo::Expr::Expression.new( @engine, @params.tokens ).evaluate
-        return false if @engine.heap.error.error_count > errors_before
+        value, ok = evaluate_expr( @params.tokens )
+        return false unless ok
 
         @tokens = @tokens.with_token( value.to_s )
         @params = nil
         return true
+      end
+
+      #
+      # Work out an expression from the given tokens. Returns the value
+      # and whether it worked: false if the expression reported a
+      # problem (already reported), in which case the value is whatever
+      # it had worked out so far.
+      #
+      def evaluate_expr( tokens )
+        errors_before = @engine.heap.error.error_count
+        value = Gloo::Expr::Expression.new( @engine, tokens ).evaluate
+        return value, @engine.heap.error.error_count == errors_before
       end
 
       #

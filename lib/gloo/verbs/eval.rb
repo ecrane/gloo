@@ -30,9 +30,8 @@ module Gloo
       #
       def run
         if @tokens.token_count > 1
-          expr = Gloo::Expr::Expression.new( @engine, @tokens.params )
-          result = expr.evaluate
-          @engine.heap.it.set_to result
+          result, ok = evaluate_expr( @tokens.params )
+          @engine.heap.it.set_to( ok ? result : false )
         else
           @engine.heap.it.set_to true
         end
@@ -61,7 +60,9 @@ module Gloo
             '{expression} — The expression that will be evaluated. The expression is optional. If not provided, eval will result in true.'
           ],
           :result => 'The result of the expression evaluation is put ' \
-            'into it. No other action is performed.',
+            'into it. No other action is performed. If the expression ' \
+            'fails (eg. it names a missing object), the error is ' \
+            'reported and it is false.',
           :examples => <<~EXAMPLES.strip,
             > eval "me"
             > eval "hello " "world"

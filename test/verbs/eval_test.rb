@@ -61,4 +61,34 @@ class EvalTest < BaseEngineTest
 
   end
 
+  # ---------------------------------------------------------------------
+  #    A failed expression puts false in it
+  # ---------------------------------------------------------------------
+
+  def test_a_missing_object_puts_false_in_it
+    @engine.heap.it.set_to 'before'
+    @engine.parser.run 'eval no_such_obj'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_a_failure_part_way_puts_false_in_it
+    @engine.parser.run 'eval 1 + no_such_obj'
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_a_failed_inline_invoke_puts_false_in_it
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run 'eval invoke( add 3 )'
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_a_successful_eval_after_a_failed_one_sets_it
+    @engine.parser.run 'eval no_such_obj'
+    @engine.parser.run 'eval 3 + 4'
+    refute @engine.error?
+    assert_equal 7, @engine.heap.it.value
+  end
+
 end
