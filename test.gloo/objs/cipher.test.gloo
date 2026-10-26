@@ -41,3 +41,30 @@ tests.objs.cipher [can] :
       tell tests.objs.cipher.b to decrypt
       eval tests.objs.cipher.b.data = ^^.plaintext
       assert "expected the second cipher to decrypt with the shared key"
+
+  # Fixed values, so the results never vary: 'hello' encrypted with key
+  # ('k' x 32) and iv ('i' x 16), and a wrong key ('0' x 32) whose
+  # garbage fails the padding check. (AES-CBC can't always tell a key is
+  # wrong: about 1 wrong key in 256 gives garbage with no error.)
+  fixed_iv [string] : aWlpaWlpaWlpaWlpaWlpaQ==
+  hello_encrypted [string] : aRyXOIIhJzBhh+BthfFstw==
+  wrong_key [string] : MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=
+  err_fired [bool] : false
+
+  on_error [script] :
+    put true into ^.err_fired
+
+  wrong_key_is_an_error [test] :
+    description [string] : decrypt with a wrong key that fails the padding check reports an error.
+    expect_errors [bool] : true
+    on_test [script] :
+      put false into ^^.err_fired
+      create tests.objs.cipher.w as cipher
+      put ^^.wrong_key into tests.objs.cipher.w.key
+      put ^^.fixed_iv into tests.objs.cipher.w.init_vector
+      put ^^.hello_encrypted into tests.objs.cipher.w.data
+      tell tests.objs.cipher.w to decrypt
+      eval it = false
+      assert "expected it to be false"
+      eval ^^.err_fired = true
+      assert "expected on_error to fire for the wrong key"

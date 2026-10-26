@@ -209,7 +209,8 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'Tool to encrypt and decrypt data.',
+          :description => 'Tool to encrypt and decrypt data, with ' \
+            'AES-256-CBC.',
           :children => [
             'key (string) — The encryption key. Base64 encoded.',
             'init_vector (string) — The initialization vector. Base64 encoded.',
@@ -218,8 +219,15 @@ module Gloo
           :messages => [
             'generate_keys — Generate an encryption key and initialization vector. The keys are base64 encoded.',
             'encrypt — Encrypt the data. The data child is changed. It will have the encrypted data.',
-            'decrypt — Decrypt the data. The data child is changed. It will have the decrypted data.'
+            'decrypt — Decrypt the data. The data child is changed. It will have the decrypted data. With the wrong key or init_vector, decrypt usually reports an error and it is false; but not always (see notes).'
           ],
+          :notes => 'AES-CBC can\'t always tell that a key is wrong. A ' \
+            'wrong key usually leaves the decrypted data with padding ' \
+            'that doesn\'t check out, which is reported as an error. But ' \
+            'about 1 time in 256 the padding happens to look right: then ' \
+            'decrypt reports nothing, and the data is garbage rather than ' \
+            'the original. To be sure the key is right, keep a value you ' \
+            'can check, such as encrypting a known word alongside the data.',
           :examples => <<~EXAMPLES.strip
             #
             # Encrypt and Decrypt a string.

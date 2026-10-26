@@ -48,10 +48,13 @@ tests.objs.int [can] :
       eval ^^.a <= 100
       assert "expected it to be less than or equal to 100"
           
+      # A random value is only checked for its range: two random values
+      # are equal now and then, so 'not equal' would fail at random.
       tell ^^.a to randomize (10000)
-      tell ^^.b to randomize (10000)
-      eval ^^.a = ^^.b
-      refute "expected them to not be equal"
+      eval ^^.a >= 0
+      assert "expected it to be greater than or equal to 0"
+      eval ^^.a < 10000
+      assert "expected it to be less than 10000"
 
   format_int [test] :
     description [string] : Format an integer

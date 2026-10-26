@@ -111,17 +111,64 @@ class CipherTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
-  def test_decrypt_with_the_wrong_key_is_an_error
-    @engine.heap.it.set_to 'before'
-    @engine.parser.run 'create c as cipher'
-    @engine.parser.run "put 'hello' into c.data"
-    @engine.parser.run 'tell c to generate_keys'
+  # ---------------------------------------------------------------------
+  #    Wrong keys, with fixed values so the results never vary
+  # ---------------------------------------------------------------------
+
+  # 'hello' encrypted with KEY ('k' x 32) and IV ('i' x 16).
+  KEY = 'a2tra2tra2tra2tra2tra2tra2tra2tra2tra2tra2s='.freeze
+  IV = 'aWlpaWlpaWlpaWlpaWlpaQ=='.freeze
+  HELLO = 'aRyXOIIhJzBhh+BthfFstw=='.freeze
+
+  # A wrong key ('0' x 32) whose garbage fails the padding check.
+  WRONG_KEY = 'MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA='.freeze
+
+  # A wrong key ('0' x 29 + '246') whose garbage happens to end in valid
+  # padding, as about 1 wrong key in 256 does.
+  LUCKY_WRONG_KEY = 'MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAyNDY='.freeze
+
+  def test_the_fixed_values_encrypt_hello
+    cipher_with( KEY, 'hello' )
     @engine.parser.run 'tell c to encrypt'
-    @engine.parser.run 'tell c to generate_keys'
+    assert_equal HELLO, @engine.heap.root.find_child( 'c' ).find_child( 'data' ).value.strip
+  end
+
+  def test_decrypt_with_the_right_key
+    cipher_with( KEY, HELLO )
+    @engine.parser.run 'tell c to decrypt'
+    refute @engine.error?
+    assert_equal 'hello', @engine.heap.it.value
+  end
+
+  def test_decrypt_with_the_wrong_key_is_usually_an_error
+    cipher_with( WRONG_KEY, HELLO )
+    @engine.heap.it.set_to 'before'
     @engine.parser.run 'tell c to decrypt'
     assert @engine.error?
     assert_includes @engine.heap.error.value.to_s, 'Could not decrypt c:'
     assert_equal false, @engine.heap.it.value
+  end
+
+  # AES-CBC can't always tell a key is wrong: here decrypt reports no
+  # error, and the data is garbage, not the original.
+  def test_decrypt_with_the_wrong_key_can_give_garbage_instead
+    cipher_with( LUCKY_WRONG_KEY, HELLO )
+    @engine.parser.run 'tell c to decrypt'
+    refute @engine.error?
+    refute_equal 'hello', @engine.heap.root.find_child( 'c' ).find_child( 'data' ).value
+  end
+
+  private
+
+  #
+  # Create cipher c with the given key, the fixed IV, and the given data.
+  #
+  def cipher_with( key, data )
+    @engine.parser.run 'create c as cipher'
+    c = @engine.heap.root.find_child( 'c' )
+    c.find_child( 'key' ).set_value key
+    c.find_child( 'init_vector' ).set_value IV
+    c.find_child( 'data' ).set_value data
   end
 
 end
