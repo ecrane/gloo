@@ -72,4 +72,19 @@ class ExecEnvTest < BaseEngineTest
     @engine.exec_env.load_location = nil
   end
 
+  def test_current_location_prefers_the_file_being_loaded_over_the_script
+    script = Struct.new( :location ).new( 'runner.go, line 1' )
+    @engine.exec_env.instance_variable_set( :@running_script, script )
+    assert_equal 'runner.go, line 1', @engine.exec_env.current_location
+
+    @engine.exec_env.load_location = 'x.gloo:3'
+    assert_equal 'x.gloo:3', @engine.exec_env.current_location
+
+    @engine.exec_env.load_location = nil
+    assert_equal 'runner.go, line 1', @engine.exec_env.current_location
+  ensure
+    @engine.exec_env.instance_variable_set( :@running_script, nil )
+    @engine.exec_env.load_location = nil
+  end
+
 end

@@ -35,13 +35,16 @@ module Gloo
       end
 
       #
-      # Where the line now running is, for error messages: the running
-      # script and its line, or the file and line being loaded.
+      # Where the line now running is, for error messages: the file and
+      # line being loaded, or the running script and its line. While a
+      # file is being read, a problem is in that file, even when a
+      # script started the load.
       #
       def current_location
+        return @load_location if @load_location
         return @running_script.location if @running_script
 
-        return @load_location
+        return nil
       end
 
       #

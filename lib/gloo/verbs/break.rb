@@ -51,11 +51,16 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'Break out of the current script, stop running.',
+          :description => 'Break out of the current script, stop running. ' \
+            'If that script is the do script of a loop (repeat, or any ' \
+            'kind of each), the whole loop ends.',
           :syntax => [ 'break' ],
           :result => 'No more commands are executed in the currently ' \
             'running script. If there are other scripts in the stack, ' \
-            'they will resume normally.',
+            'they will resume normally. In a loop\'s do script, the loop ' \
+            'ends too and runs no more passes; the script that ran the ' \
+            'loop carries on. A break in a script the do script runs ' \
+            '(eg. with run) ends only that script, not the loop.',
           :examples => <<~EXAMPLES.strip
             #
             # Break out of a script.

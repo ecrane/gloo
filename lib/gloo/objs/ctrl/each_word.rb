@@ -48,7 +48,7 @@ module Gloo
 
         str.split( ' ' ).each do |word|
           set_word word
-          @iterator_obj.run_do
+          break if @iterator_obj.run_do
         end
       end
 

@@ -23,6 +23,18 @@ tests.lang.exceptions [can] :
     kind [string] :
     location [string] :
 
+  # A scratch file with a mistake in it, for the location of an error in
+  # a loaded file.
+  broken_file [file] :
+  broken_name [string] : /gloo_exceptions_location.gloo
+  broken_src [text] : BEGIN
+broken_location_demo [can] :
+  count [int : 3
+END
+
+  on_load [script] :
+    put $.gloo_tmp ^.broken_name into ^.broken_file
+
   confirm_throw_fires_on_exception [test] :
     description [string] : Confirm throw fires on_exception and populates exception_data, but does not fire on_error.
     expect_errors [bool] : true
@@ -127,3 +139,13 @@ tests.lang.exceptions [can] :
       eval ^^.num = 0
       assert "expected the best guess, 0"
 
+  confirm_error_location_in_a_loaded_file [test] :
+    description [string] : an error in a file a script loads names that file and line, not the script.
+    expect_errors [bool] : true
+    on_test [script] :
+      tell ^^.broken_file to write ( ^^.broken_src )
+      load ( ^^.broken_file )
+      check ^^.error_data.location for ends_with? ( 'gloo_exceptions_location.gloo:2' )
+      assert "expected the location to be the loaded file and line"
+      tell broken_location_demo to unload
+      tell ^^.broken_file to delete

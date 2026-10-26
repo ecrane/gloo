@@ -14,11 +14,10 @@ module Gloo
       attr_reader :roots
 
       #
-      # Set up a ledger for the file at pn.
+      # Set up a ledger for one file's load.
       #
-      def initialize( engine, pn )
+      def initialize( engine )
         @engine = engine
-        @pn = pn
         @roots = []
         @mine = {}.compare_by_identity
       end
@@ -43,15 +42,16 @@ module Gloo
       # `value`. If another file created it and the values differ, the
       # new value is being ignored -- warn so it isn't a surprise. A
       # duplicate name inside one file is left alone (a documented
-      # "first one wins").
+      # "first one wins"). The warning's location (this file and line)
+      # comes from the load.
       #
       def clash( prior, name, value )
         return if @mine.key?( prior )
         return if value.nil? || value.to_s.strip.empty?
         return if prior.value.to_s == value.to_s
 
-        @engine.log.warn(
-          "#{@pn}: '#{name}' is already declared in another loaded file with a " \
+        @engine.warn(
+          "'#{name}' is already declared in another loaded file with a " \
           "different value (#{prior.value.inspect} kept, #{value.inspect} ignored)."
         )
       end

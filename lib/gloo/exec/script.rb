@@ -65,6 +65,13 @@ module Gloo
         @break_out = true
       end
 
+      #
+      # Did a break end this script's run?
+      #
+      def broke_out?
+        return @break_out
+      end
+
     end
   end
 end

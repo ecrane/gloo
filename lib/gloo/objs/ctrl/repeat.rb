@@ -37,13 +37,15 @@ module Gloo
       end
 
       #
-      # Run the do script once.
+      # Run the do script once. Returns true if a break in it ended the
+      # run, so the loop should stop.
       #
       def run_do
         o = find_child DO
-        return unless o
+        return false unless o
 
         Gloo::Exec::Dispatch.message( @engine, 'run', o )
+        return o.respond_to?( :broke_out? ) && o.broke_out?
       end
 
       #
@@ -98,7 +100,7 @@ module Gloo
       def msg_run
         times.times do |index|
           set_index index
-          run_do
+          break if run_do
         end
       end
 

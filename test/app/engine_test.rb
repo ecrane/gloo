@@ -332,6 +332,15 @@ class EngineTest < BaseTest
     assert_equal Gloo::Core::Error::SYNTAX, o.heap.error.kind
   end
 
+  def test_warn_goes_to_stderr
+    o = Gloo::App::Engine.new( default_context )
+    o.start
+    o.log.quiet = false
+    out, err = capture_io { o.warn 'careful' }
+    assert_equal '', out
+    assert_match 'careful', err
+  end
+
   def test_warn_logs_with_the_location_and_is_not_an_error
     o = Gloo::App::Engine.new( default_context )
     o.start

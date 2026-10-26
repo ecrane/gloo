@@ -47,7 +47,8 @@ class EachFileTest < BaseEngineTest
     fac.create_bool 'include_dirs', include_dirs, obj unless include_dirs.nil?
 
     found = []
-    obj.define_singleton_method( :run_do ) { found << find_child( 'file' ).value }
+    # run_do returns whether the do script broke out; this one never does
+    obj.define_singleton_method( :run_do ) { found << find_child( 'file' ).value; false }
     Gloo::Objs::EachFile.new( @engine, obj ).run
     return found.map { |f| f.delete_prefix( "#{@root}/" ) }
   end
@@ -138,6 +139,29 @@ class EachFileTest < BaseEngineTest
     Dir.chdir( @root ) do
       assert_equal [ 'a/x.md' ], walk( 'a', ext: 'md' )
     end
+  end
+
+  def test_break_ends_the_loop
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    4.times { |i| File.write( File.join( dir, "f#{i}.txt" ), 'x' ) }
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run "put '#{dir}' into bl.each_file.in"
+    @engine.parser.run 'tell bl.each_file to run'
+    assert_equal [ 2, 1 ], passes_and_after
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
+  private
+
+  #
+  # How many passes the each file loop's do script started, and how many
+  # got past its break (see ctrl/break_loops.gloo).
+  #
+  def passes_and_after
+    bl = @engine.heap.root.find_child( 'bl' )
+    return bl.find_child( 'passes' ).value, bl.find_child( 'after' ).value
   end
 
 end

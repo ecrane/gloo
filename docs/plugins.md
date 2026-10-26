@@ -372,7 +372,7 @@ Register it from `stats_ext.rb` with `callback.register_obj( Stats )`.
 
 ### Custom `each` iterators
 
-An extension's object can also plug into the built-in `each` verb by providing its own iterator. `extensions/git/src/each_repo.rb` shows the shape: a plain Ruby class (not a `Gloo::Core::Obj`) with `self.use_for?( iterator_obj )` — which returns `true` when the `each` loop's iterator object looks like a match (here, when it has a `repo` child) — and a `run` method that walks whatever it's iterating over, setting the loop's child value and calling `@iterator_obj.run_do` for each item. See the git extension for the full pattern; this hook only makes sense for extensions that also register a matching object type (here, `git_repo`).
+An extension's object can also plug into the built-in `each` verb by providing its own iterator. `extensions/git/src/each_repo.rb` shows the shape: a plain Ruby class (not a `Gloo::Core::Obj`) with `self.use_for?( iterator_obj )` — which returns `true` when the `each` loop's iterator object looks like a match (here, when it has a `repo` child) — and a `run` method that walks whatever it's iterating over, setting the loop's child value and calling `@iterator_obj.run_do` for each item. `run_do` returns true when a `break` in the `do` script ended it, so stop the walk then: `break if @iterator_obj.run_do`. See the git extension for the full pattern; this hook only makes sense for extensions that also register a matching object type (here, `git_repo`).
 
 ### Documenting the extension
 

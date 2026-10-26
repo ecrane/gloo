@@ -39,7 +39,8 @@ class EachDirTest < BaseEngineTest
     fac.create_bool 'recursive', recursive, obj unless recursive.nil?
 
     found = []
-    obj.define_singleton_method( :run_do ) { found << find_child( 'dir' ).value }
+    # run_do returns whether the do script broke out; this one never does
+    obj.define_singleton_method( :run_do ) { found << find_child( 'dir' ).value; false }
     Gloo::Objs::EachDir.new( @engine, obj ).run
     return found.map { |f| f.delete_prefix( "#{@root}/" ) }
   end
@@ -97,6 +98,29 @@ class EachDirTest < BaseEngineTest
     refute @engine.error?
   ensure
     ENV[ 'HOME' ] = home
+  end
+
+  def test_break_ends_the_loop
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    4.times { |i| Dir.mkdir( File.join( dir, "d#{i}" ) ) }
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run "put '#{dir}' into bl.each_dir.in"
+    @engine.parser.run 'tell bl.each_dir to run'
+    assert_equal [ 2, 1 ], passes_and_after
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
+  private
+
+  #
+  # How many passes the each dir loop's do script started, and how many
+  # got past its break (see ctrl/break_loops.gloo).
+  #
+  def passes_and_after
+    bl = @engine.heap.root.find_child( 'bl' )
+    return bl.find_child( 'passes' ).value, bl.find_child( 'after' ).value
   end
 
 end

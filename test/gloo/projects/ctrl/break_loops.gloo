@@ -1,0 +1,127 @@
+#
+# Loops whose do script breaks, for the break tests. Each do script
+# counts its passes, breaks on pass 2, and counts how often it gets
+# past the break: a break that ends the loop leaves passes 2, after 1.
+#
+bl [can] :
+  passes [int] : 0
+  after [int] : 0
+  log [string] :
+
+  rep [repeat] :
+    times [int] : 4
+    index [int] :
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      if bl.passes = 2 then break
+      put bl.after + 1 into bl.after
+
+  kids [can] :
+    a [string] : a
+    b [string] : b
+    c [string] : c
+    d [string] : d
+
+  each_child [each] :
+    child [alias] :
+    in [alias] : bl.kids
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      if bl.passes = 2 then break
+      put bl.after + 1 into bl.after
+
+  words [string] : one two three four
+
+  each_word [each] :
+    word [string] :
+    in [alias] : bl.words
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      if bl.passes = 2 then break
+      put bl.after + 1 into bl.after
+
+  lines [text] : BEGIN
+one
+two
+three
+four
+END
+
+  each_line [each] :
+    line [string] :
+    in [alias] : bl.lines
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      if bl.passes = 2 then break
+      put bl.after + 1 into bl.after
+
+  # The tests put a folder path into in.
+  each_file [each] :
+    file [file] :
+    in [file] :
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      if bl.passes = 2 then break
+      put bl.after + 1 into bl.after
+
+  each_dir [each] :
+    dir [file] :
+    in [file] :
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      if bl.passes = 2 then break
+      put bl.after + 1 into bl.after
+
+  # The script that runs a loop carries on after the loop breaks.
+  runner [script] :
+    tell bl.rep to run
+    put 'went on' into bl.log
+
+  # A break in the inner loop ends only the inner loop.
+  outer [repeat] :
+    times [int] : 3
+    index [int] :
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      tell bl.inner to run
+
+  inner [repeat] :
+    times [int] : 3
+    index [int] :
+    do [script] :
+      if bl.inner.index = 1 then break
+      put bl.after + 1 into bl.after
+
+  # A break in a script the do script runs ends only that script.
+  helper [script] :
+    if bl.via.index = 1 then break
+
+  via [repeat] :
+    times [int] : 3
+    index [int] :
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      run bl.helper
+      put bl.after + 1 into bl.after
+
+  # Grouped children: the open group still gets its on_group_end.
+  groups [can] :
+    g1 [can] :
+      kind [string] : x
+    g2 [can] :
+      kind [string] : x
+    g3 [can] :
+      kind [string] : y
+
+  grouped [each] :
+    child [alias] :
+    in [alias] : bl.groups
+    group_by [string] : kind
+    on_group_start [script] :
+      put bl.log + '<' into bl.log
+    on_group_end [script] :
+      put bl.log + '>' into bl.log
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      if bl.passes = 2 then break
+      put bl.log + 'c' into bl.log

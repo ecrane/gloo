@@ -130,7 +130,7 @@ module Gloo
           end
 
           set_child child
-          @iterator_obj.run_do
+          break if @iterator_obj.run_do
         end
 
         if group_mode && !first_time

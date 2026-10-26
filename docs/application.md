@@ -158,6 +158,8 @@ Gloo writes to the `gloo.log` and `error.log` files as well as to the console.
 
 Debug messages are written to the log only, but other messages are also written to the console unless the application is running in quiet mode.
 
+On the console, errors and warnings go to stderr, while a script's own output (`show`) goes to stdout. So the two can be redirected separately: `gloo my_script.gloo 2>/dev/null` shows just the script's output.
+
 Only error and warning level messages are written to the error log.
 
 In test mode (`--test`), errors and warnings go to the log files only, not the console, so the test output is just the test results. An error a test expects (or one from a test file that deliberately contains a problem) is still in `error.log`. The summary at the end of a test run says how many errors and warnings were logged, and by which tests, leaving out those a test expects (`expect_errors`). See Testing.

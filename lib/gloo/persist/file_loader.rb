@@ -53,7 +53,7 @@ module Gloo
         @trivia = Gloo::Persist::TriviaBuffer.new
         @body = Gloo::Persist::ScriptBodyCollector.new
         @shorthand = Gloo::Persist::ShorthandExpander.new( engine )
-        @ledger = Gloo::Persist::DeclarationLedger.new( engine, pn )
+        @ledger = Gloo::Persist::DeclarationLedger.new( engine )
         @in_block = false
         @block_value = ''
         @body_started = false

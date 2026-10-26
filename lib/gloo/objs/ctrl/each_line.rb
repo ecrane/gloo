@@ -48,7 +48,7 @@ module Gloo
 
         str.each_line do |line|
           set_line line
-          @iterator_obj.run_do
+          break if @iterator_obj.run_do
         end
       end
 

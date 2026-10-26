@@ -60,7 +60,7 @@ module Gloo
           next unless include?( f )
 
           set_file f
-          @iterator_obj.run_do
+          break if @iterator_obj.run_do
         end
       end
 

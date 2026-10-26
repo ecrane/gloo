@@ -168,13 +168,13 @@ module Gloo
 
       #
       # Write a warning message to the log.
-      # Also write to the console unless quiet.
+      # Also write to the console (on stderr, like errors) unless quiet.
       #
       def warn( msg )
         @warning_count += 1
         @logger.warn msg
         @error.warn msg
-        puts @theme.warn( msg ) if errors_to_console?
+        $stderr.puts @theme.warn( msg ) if errors_to_console?
       end
 
       #

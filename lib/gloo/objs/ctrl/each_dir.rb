@@ -58,7 +58,7 @@ module Gloo
           next unless File.directory?( f )
 
           set_dir f
-          @iterator_obj.run_do
+          break if @iterator_obj.run_do
         end
       end
 

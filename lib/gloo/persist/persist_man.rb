@@ -396,7 +396,7 @@ module Gloo
       #
       def warn_if_dirty( fs )
         saver = Gloo::Persist::FileSaver.new( @engine, fs.pn, fs.obj, fs.source_doc )
-        @engine.log.warn "#{RELOAD_DIRTY_WARNING}#{fs.pn}" if saver.dirty?
+        @engine.warn "#{RELOAD_DIRTY_WARNING}#{fs.pn}" if saver.dirty?
       end
 
     end

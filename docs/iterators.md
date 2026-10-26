@@ -9,6 +9,7 @@
 - Each Line
 - Each Word
 - Repeat
+- Ending a Loop Early
 
 ## Each
 
@@ -328,3 +329,26 @@ repeat [can] :
 ```
 
 See also: Object Base.
+
+## Ending a Loop Early
+
+`break` in a loop's `do` script ends the whole loop, not just that pass. This works for `repeat` and every kind of `each`. The script that ran the loop carries on with its next line:
+
+```gloo
+early [can] :
+  on_load [script] :
+    tell early.r to run
+    show 'after the loop'
+  r [repeat] :
+    times [int] : 5
+    index [int] :
+    do [script] :
+      if early.r.index = 2 then break
+      show early.r.index
+```
+
+This shows `0`, `1`, then `after the loop`.
+
+`break` ends the script it's written in. So in nested loops, a `break` in the inner loop's `do` ends only the inner loop, and a `break` in a script the `do` script runs (with `run`, or a function it invokes) ends only that script, not the loop. An `each` with `group_by` still runs `on_group_end` for the group that was open when the loop ended.
+
+See also: Break.

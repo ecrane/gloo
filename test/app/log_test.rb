@@ -112,10 +112,25 @@ class LogTest < BaseTest
 
   def test_errors_shown_on_the_console_by_default
     log = log_for( false )
-    assert_output( /careful/, /boom/ ) do
+    assert_output( '', /careful.*boom/m ) do
       log.warn 'careful'
       log.error 'boom'
     end
+  end
+
+  #
+  # Warnings go to stderr too, like errors, so they don't mix into a
+  # script's own output.
+  #
+  def test_warning_is_written_to_stderr
+    engine = Gloo::App::Engine.new( default_context )
+    engine.start
+    engine.log.quiet = false
+
+    out, err = capture_io { engine.log.warn 'be careful' }
+
+    assert_equal '', out
+    assert_match 'be careful', err
   end
 
   def test_counts_errors_and_warnings

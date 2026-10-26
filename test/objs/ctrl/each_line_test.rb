@@ -19,4 +19,21 @@ class EachLineTest < BaseEngineTest
     refute Gloo::Objs::EachWord.use_for?( obj )
   end
 
+  def test_break_ends_the_loop
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'tell bl.each_line to run'
+    assert_equal [ 2, 1 ], passes_and_after
+  end
+
+  private
+
+  #
+  # How many passes the each line loop's do script started, and how many
+  # got past its break (see ctrl/break_loops.gloo).
+  #
+  def passes_and_after
+    bl = @engine.heap.root.find_child( 'bl' )
+    return bl.find_child( 'passes' ).value, bl.find_child( 'after' ).value
+  end
+
 end

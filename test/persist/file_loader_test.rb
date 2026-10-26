@@ -185,6 +185,61 @@ class FileLoaderTest < BaseEngineTest
     assert_equal 'only in B', @engine.heap.root.find_child( 'app' ).find_child( 'extra' ).value
   end
 
+  def test_cross_file_redeclaration_warning_names_the_file_and_line
+    warnings = []
+    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+
+    @engine.persist_man.load 'sub/dup_a'
+    @engine.persist_man.load 'sub/dup_b'
+
+    warning = warnings.find { |w| w.include?( 'already declared' ) }
+    assert_match %r{sub/dup_b\.gloo:2: 'name' is already declared}, warning
+    assert_equal 1, warning.scan( 'dup_b.gloo' ).size, 'the path should appear once'
+  end
+
+  def test_cross_file_redeclaration_warning_goes_to_stderr
+    @engine.log.quiet = false
+    out, err = capture_io do
+      @engine.persist_man.load 'sub/dup_a'
+      @engine.persist_man.load 'sub/dup_b'
+    end
+    refute_includes out, 'already declared'
+    assert_includes err, 'already declared'
+  end
+
+  def test_cross_file_redeclaration_warning_names_the_file_when_a_script_loads_it
+    warnings = []
+    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
+
+    @engine.persist_man.load 'sub/dup_a'
+    @engine.parser.run 'create s as script : "load sub/dup_b"'
+    @engine.parser.run 'run s'
+
+    warning = warnings.find { |w| w.include?( 'already declared' ) }
+    assert_match %r{sub/dup_b\.gloo:2: 'name' is already declared}, warning
+  end
+
+  def test_an_error_in_a_file_a_script_loads_names_that_file_and_line
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    File.write( File.join( dir, 'broken.gloo' ), "broken [can] :\n  count [int : 3\n" )
+    File.write( File.join( dir, 'runner.gloo' ),
+                "runner [can] :\n  go [script] :\n    load #{dir}/broken.gloo\n    show no_such_obj\n" )
+    @engine.settings.override_project_path( "#{dir}/" )
+    @engine.persist_man.load 'runner'
+
+    errors = []
+    @engine.log.define_singleton_method( :error ) { |msg, *_| errors << msg }
+    @engine.parser.run 'run runner.go'
+
+    # the mistake is in broken.gloo, line 2, though runner.go loaded it
+    assert errors.any? { |e| e.start_with?( "#{dir}/broken.gloo:2: " ) }, errors.inspect
+    # once the load is over, the script's own lines name the script again
+    assert errors.any? { |e| e.start_with?( 'runner.go, line 2: ' ) }, errors.inspect
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
   def test_cross_file_redeclaration_with_the_same_value_does_not_warn
     warnings = []
     @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }

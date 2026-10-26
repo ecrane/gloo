@@ -75,7 +75,7 @@ Gloo makes a best guess and keeps going when it can, but it never does so silent
 - **Warning** — the command was done, but probably not the way it was meant: a value that isn't really of its type, used as a best guess (`'x' is not an integer; using 0.`), or indentation that doesn't line up. A warning is only logged; it isn't an error.
 - **Just a result** — a question whose answer is "no" is not an error at all: `exists?`, `contains?`, `substring?`, and `index_of` (which gives -1) answer in `it`.
 
-Errors are logged with where they happened in front of the message: the file and line while a file is loading (`app.gloo:12: Unknown type 'strng'; using untyped.`), or the script and its line (`app.on_load, line 3: Object 'app.nme' was not found.`). "Not found" errors always read the same way: `Object 'x' was not found.`, `File 'x' was not found.`, `Folder 'x' was not found.`, `Verb 'x' was not found.`
+Errors and warnings are logged with where they happened in front of the message: the file and line while a file is loading (`app.gloo:12: Unknown type 'strng'; using untyped.`), even when a script started the load; otherwise the script and its line (`app.on_load, line 3: Object 'app.nme' was not found.`). On the console both go to stderr, apart from a script's own output. "Not found" errors always read the same way: `Object 'x' was not found.`, `File 'x' was not found.`, `Folder 'x' was not found.`, `Verb 'x' was not found.`
 
 What happens after an error:
 

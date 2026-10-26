@@ -18,3 +18,69 @@ tests.verbs.break [can] :
       tell ^^.s to run
       eval ^^.b
       assert "expected b to be true"
+
+  # Loops whose do script breaks on its second pass.
+  passes [int] : 0
+  after [int] : 0
+
+  rep [repeat] :
+    times [int] : 4
+    index [int] :
+    do [script] :
+      put tests.verbs.break.passes + 1 into tests.verbs.break.passes
+      if tests.verbs.break.passes = 2 then break
+      put tests.verbs.break.after + 1 into tests.verbs.break.after
+
+  kids [can] :
+    a [string] : a
+    b [string] : b
+    c [string] : c
+
+  each_kid [each] :
+    child [alias] :
+    in [alias] : tests.verbs.break.kids
+    do [script] :
+      put tests.verbs.break.passes + 1 into tests.verbs.break.passes
+      if tests.verbs.break.passes = 2 then break
+      put tests.verbs.break.after + 1 into tests.verbs.break.after
+
+  inner [repeat] :
+    times [int] : 3
+    index [int] :
+    do [script] :
+      if tests.verbs.break.inner.index = 1 then break
+      put tests.verbs.break.after + 1 into tests.verbs.break.after
+
+  outer [repeat] :
+    times [int] : 2
+    index [int] :
+    do [script] :
+      tell tests.verbs.break.inner to run
+
+  break_ends_a_repeat [test] :
+    description [string] : break in a repeat's do script ends the loop.
+    on_test [script] :
+      put 0 into ^^.passes
+      put 0 into ^^.after
+      tell ^^.rep to run
+      eval ^^.passes = 2
+      assert "expected the loop to stop on the pass that broke"
+      eval ^^.after = 1
+      assert "expected only the first pass to get past the break"
+
+  break_ends_an_each [test] :
+    description [string] : break in an each's do script ends the loop.
+    on_test [script] :
+      put 0 into ^^.passes
+      put 0 into ^^.after
+      tell ^^.each_kid to run
+      eval ^^.passes = 2
+      assert "expected the loop to stop on the pass that broke"
+
+  break_ends_only_the_inner_loop [test] :
+    description [string] : break in an inner loop ends that loop, not the outer one.
+    on_test [script] :
+      put 0 into ^^.after
+      tell ^^.outer to run
+      eval ^^.after = 2
+      assert "expected each of the 2 inner loops to get past its break once"

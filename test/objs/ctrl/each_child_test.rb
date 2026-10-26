@@ -46,4 +46,28 @@ class EachChildTest < BaseEngineTest
     assert iterator.has_group_by?
   end
 
+  def test_break_ends_the_loop
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'tell bl.each_child to run'
+    assert_equal [ 2, 1 ], passes_and_after
+  end
+
+  def test_break_still_ends_the_open_group
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'tell bl.grouped to run'
+    # g1 runs, g2 breaks: group x is opened and closed; group y never starts
+    assert_equal '<c>', @engine.heap.root.find_child( 'bl' ).find_child( 'log' ).value
+  end
+
+  private
+
+  #
+  # How many passes the each child loop's do script started, and how many
+  # got past its break (see ctrl/break_loops.gloo).
+  #
+  def passes_and_after
+    bl = @engine.heap.root.find_child( 'bl' )
+    return bl.find_child( 'passes' ).value, bl.find_child( 'after' ).value
+  end
+
 end
