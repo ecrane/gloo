@@ -134,7 +134,7 @@ module Gloo
             'One of the following, whose presence determines which kind of loop this is:',
             'child (alias) — iterate a container\'s children.',
             'word (string) — iterate the words in a string.',
-            'line (string) — iterate the lines in a block of text.',
+            'line (string) — iterate the lines in a block of text. Each line comes without its line ending; a blank line is visited as an empty string.',
             'file (file) — iterate the files in a folder. Optional children: ext (string) limits to files of that extension, ignoring case; recursive (bool) walks the subfolders too; include_dirs (bool) lists folders as well as files.',
             'dir (file) — iterate the directories in a folder. Optional child: recursive (bool) walks the subfolders too.'
           ],

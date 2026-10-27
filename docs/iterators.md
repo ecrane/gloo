@@ -215,7 +215,7 @@ Iterate for each line in a text block (string).
 Children:
 
 - `line` (string)
-    - The single line of text.
+    - The single line of text, without its line ending (`\n` or `\r\n`). A blank line is still visited, as an empty string.
 - `in` (text)
     - The block of text or string.
 - `do` (script)

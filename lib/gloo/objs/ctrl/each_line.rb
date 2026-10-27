@@ -40,13 +40,14 @@ module Gloo
       # ---------------------------------------------------------------------
 
       #
-      # Run for each line.
+      # Run for each line, without its line ending (\n or \r\n). A blank
+      # line is still visited, as an empty string.
       #
       def run
         str = @iterator_obj.in_value
         return unless str
 
-        str.each_line do |line|
+        str.each_line( chomp: true ) do |line|
           set_line line
           break if @iterator_obj.run_do
         end

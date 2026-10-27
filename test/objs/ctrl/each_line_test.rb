@@ -25,7 +25,47 @@ class EachLineTest < BaseEngineTest
     assert_equal [ 2, 1 ], passes_and_after
   end
 
+  # ---------------------------------------------------------------------
+  #    Each line comes without its line ending
+  # ---------------------------------------------------------------------
+
+  def test_lines_have_no_line_ending
+    assert_equal '[one][two]', lines_seen( "one\ntwo\n" )
+  end
+
+  def test_windows_line_endings_are_removed_too
+    assert_equal '[one][two]', lines_seen( "one\r\ntwo\r\n" )
+  end
+
+  def test_a_blank_line_is_still_visited_as_empty
+    assert_equal '[one][][two]', lines_seen( "one\n\ntwo\n" )
+  end
+
+  def test_a_last_line_without_a_line_ending
+    assert_equal '[one][two]', lines_seen( "one\ntwo" )
+  end
+
+  def test_a_single_line_with_no_line_ending
+    assert_equal '[only]', lines_seen( 'only' )
+  end
+
   private
+
+  #
+  # Run an each line loop over the given text, and return what its do
+  # script saw: each line wrapped in [ ], one after another.
+  #
+  def lines_seen( text )
+    @engine.parser.run 'create seen as string'
+    @engine.parser.run 'create for as each'
+    @engine.parser.run 'tell for.word to unload'
+    @engine.parser.run 'create for.line as string'
+    for_obj = @engine.heap.root.find_child( 'for' )
+    for_obj.find_child( 'in' ).set_value text
+    for_obj.find_child( 'do' ).set_value "put seen + '[' + ^.line + ']' into seen"
+    @engine.parser.run 'tell for to run'
+    return @engine.heap.root.find_child( 'seen' ).value
+  end
 
   #
   # How many passes the each line loop's do script started, and how many

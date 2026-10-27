@@ -20,6 +20,27 @@ tests.ctrl.each [can] :
       eval ^^.count + 1
       put it into ^^.count
 
+  seen [string] :
+  lines [text] : BEGIN
+one
+
+two
+END
+
+  lns [each] :
+    line [string] :
+    in [alias] : tests.ctrl.each.lines
+    do [script] :
+      put tests.ctrl.each.seen + '[' + ^.line + ']' into tests.ctrl.each.seen
+
+  each_line_without_line_endings [test] :
+    description [string] : each line gives each line without its line ending; a blank line is empty.
+    on_test [script] :
+      put '' into ^^.seen
+      tell ^^.lns to run
+      eval ^^.seen = '[one][][two]'
+      assert "expected each line without its line ending"
+
   each_word [test] :
     description [string] : Count words with each word
     on_test [script] :
