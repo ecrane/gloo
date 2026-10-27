@@ -73,23 +73,33 @@ module Gloo
         return true
       end
 
-      # 
-      # Expand a single file path.
-      # 
+      #
+      # Expand a single file path. The .gloo extension is optional: it's
+      # added when the name doesn't end with it, for a full or ~ path
+      # and for a name in the project or gloo home.
+      #
       def expand( name )
-        # Try full path
+        # Try the name as given: a full path, or relative to the working
+        # folder (eg. gloo hello_world.gloo).
         ext_path = File.expand_path( name )
         return [ ext_path ] if self.valid?( ext_path )
 
-        # Try in user root, projects
-        full_name = "#{name}#{file_ext}"
+        full_name = name.end_with?( file_ext ) ? name : "#{name}#{file_ext}"
+
+        # A full or ~ path without the extension.
+        if name.start_with?( '~' ) || File.absolute_path?( name )
+          ext_path = File.expand_path( full_name )
+          return [ ext_path ] if self.valid?( ext_path )
+        end
+
+        # Try in projects
         pn = File.join( @engine.settings.project_path, full_name )
         return [ pn ] if self.valid?( pn )
-        
+
         # Try in user root
         pn = File.join( @engine.settings.user_root, full_name )
         return [ pn ] if self.valid?( pn )
-        
+
         return nil
       end
 

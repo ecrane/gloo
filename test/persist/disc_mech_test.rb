@@ -108,6 +108,51 @@ class DiscMechTest < BaseEngineTest
     end
   end
 
+  # ---------------------------------------------------------------------
+  #    The .gloo extension is optional, for any kind of path
+  # ---------------------------------------------------------------------
+
+  def test_expanding_a_full_path_without_the_extension
+    with_wild_dir do |dir|
+      assert_equal [ File.join( dir, 'a.gloo' ) ],
+                   Gloo::Persist::DiscMech.new( @engine ).expand( "#{dir}/a" )
+    end
+  end
+
+  def test_expanding_a_full_path_with_the_extension
+    with_wild_dir do |dir|
+      assert_equal [ File.join( dir, 'a.gloo' ) ],
+                   Gloo::Persist::DiscMech.new( @engine ).expand( "#{dir}/a.gloo" )
+    end
+  end
+
+  def test_expanding_a_home_path_without_the_extension
+    home_dir = File.join( Dir.home, 'gloo_ext_test_xyz' )
+    FileUtils.mkdir_p( home_dir )
+    File.write( File.join( home_dir, 'b.gloo' ), "b [can] :\n" )
+    assert_equal [ File.join( home_dir, 'b.gloo' ) ],
+                 Gloo::Persist::DiscMech.new( @engine ).expand( '~/gloo_ext_test_xyz/b' )
+  ensure
+    FileUtils.remove_entry( home_dir, true )
+  end
+
+  def test_expanding_a_project_name_with_the_extension
+    with_wild_dir do |dir|
+      @engine.settings.override_project_path( "#{dir}/" )
+      assert_equal [ File.join( dir, 'a.gloo' ) ],
+                   Gloo::Persist::DiscMech.new( @engine ).expand( 'a.gloo' )
+    end
+  end
+
+  def test_a_file_without_the_extension_is_never_loaded
+    # With both x and x.gloo there, x.gloo is the one.
+    with_wild_dir do |dir|
+      File.write( File.join( dir, 'a' ), "not gloo\n" )
+      assert_equal [ File.join( dir, 'a.gloo' ) ],
+                   Gloo::Persist::DiscMech.new( @engine ).expand( "#{dir}/a" )
+    end
+  end
+
   private
 
   #

@@ -86,7 +86,7 @@ If the destination doesn't exist, or the expression can't be worked out (eg. it 
 
 ## Load & Save
 
-`load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a path relative to the project folder (no extension needed) or a full path (extension required); `*` in place of a file name loads every `.gloo` file in a folder, whether the folder is relative to the project, a full path, or starts with `~` for your home folder. Anything before the `*` is the start of the file names, so `my/app/a*` loads just the files whose names start with `a`.
+`load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a path relative to the project folder, a full path, or one starting with `~` for your home folder; the `.gloo` extension is optional. `*` in place of a file name loads every `.gloo` file in a folder, wherever the folder is. Anything before the `*` is the start of the file names, so `my/app/a*` loads just the files whose names start with `a`.
 
 ```gloo
 > load my/project/config

@@ -161,3 +161,14 @@ END
       tell wild_b to unload
       tell ^^.wild_a to delete
       tell ^^.wild_b to delete
+
+  load_a_full_path_without_the_extension [test] :
+    description [string] : load of a full path finds the .gloo file without the extension being given.
+    on_test [script] :
+      put $.gloo_tmp ^^.computed_name into ^^.computed_f
+      tell ^^.computed_f to write ( ^^.computed_fixture )
+      load ( $.gloo_tmp '/gloo_load_computed_test' )
+      eval computed_demo.s = 'hi'
+      assert "expected the full path without .gloo to load"
+      tell computed_demo to unload
+      tell ^^.computed_f to delete

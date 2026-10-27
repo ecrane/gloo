@@ -115,7 +115,9 @@ module Gloo
             'load [ext|lib] ( {expression} )'
           ],
           :parameters => [
-            '{file_name} — Name of the object file that is to be loaded. ' \
+            '{file_name} — Name of the object file that is to be loaded: ' \
+              'relative to the project, a full path, or starting with ~. ' \
+              'The .gloo extension is optional. ' \
               'End it with * to load every .gloo file in a folder (a ' \
               'folder in the project, a full path, or one starting with ' \
               '~); anything before the * is the start of the file names.',

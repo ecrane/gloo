@@ -184,6 +184,36 @@ class LoadTest < BaseEngineTest
     end
   end
 
+  # ---------------------------------------------------------------------
+  #    The .gloo extension is optional, for any kind of path
+  # ---------------------------------------------------------------------
+
+  def test_load_a_full_path_without_the_extension
+    with_fixture_dir do |dir|
+      @engine.parser.run "load #{dir}/alpha"
+      refute @engine.error?
+      assert @engine.heap.root.find_child( 'alpha' )
+    end
+  end
+
+  def test_load_a_computed_full_path_without_the_extension
+    with_fixture_dir do |dir|
+      @engine.parser.run "create d as string : #{dir}"
+      @engine.parser.run "load ( d '/alpha' )"
+      refute @engine.error?
+      assert @engine.heap.root.find_child( 'alpha' )
+    end
+  end
+
+  def test_load_a_project_name_with_the_extension
+    with_fixture_dir do |dir|
+      @engine.settings.override_project_path( "#{dir}/" )
+      @engine.parser.run 'load alpha.gloo'
+      refute @engine.error?
+      assert @engine.heap.root.find_child( 'alpha' )
+    end
+  end
+
   # A library or extension stays registered for the rest of the test
   # run (see the reset-state Backlog project), so these check the name
   # that reaches the manager rather than loading it.
