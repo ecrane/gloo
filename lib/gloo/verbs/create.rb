@@ -111,7 +111,9 @@ module Gloo
             'value. Both type and value are optional when creating an object.',
           :syntax => [ 'create {new.object.path} as {type} : {value}' ],
           :parameters => [
-            '{new.object.path} — The path and name of the new object.',
+            '{new.object.path} — The path and name of the new object. ' \
+              'Like any path, it can start from the root, from here in ' \
+              'a script (^.box.new, ^^.new), or from the context (@.new).',
             '{type} — The type of the new object. Optional; if not provided the object will be untyped.',
             "{value} — The initial value for the new object. Optional; if not provided the object will have the default value for the type."
           ],
@@ -123,7 +125,7 @@ module Gloo
             "to the existing object's current value.",
           :errors => [
             "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created.",
-            "Could not create '{path}': Object '{parent.path}' was not found. — The parent container named in the path does not exist. The path is root-relative and every container above the new object must already exist. Nothing is created, and it is false.",
+            "Could not create '{path}': Object '{parent.path}' was not found. — The parent container named in the path does not exist. Every container above the new object must already exist. Nothing is created, and it is false.",
             "#{format( BAD_NAME_ERR, '{name}' )} — The name has parentheses or quotes, or there are extra words between the name and as / : — create takes a name as written. Nothing is created, and it is false."
           ],
           :examples => <<~EXAMPLES.strip

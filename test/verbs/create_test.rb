@@ -147,4 +147,71 @@ class CreateTest < BaseEngineTest
     assert @engine.heap.root.find_child( 'list' ).find_child( '3' )
   end
 
+  # ---------------------------------------------------------------------
+  #    Here (^) and context (@) paths, like every other verb
+  # ---------------------------------------------------------------------
+
+  def test_create_with_a_here_path_in_a_script
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.box as can'
+    @engine.parser.run 'create c.s as script : "create ^.box.made as int : 7"'
+    @engine.parser.run 'run c.s'
+    refute @engine.error?
+    assert_equal 7, @engine.heap.root.find_child( 'c' ).find_child( 'box' ).find_child( 'made' ).value
+  end
+
+  def test_create_a_direct_child_with_a_here_path
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.s as script : "create ^.direct as int : 3"'
+    @engine.parser.run 'run c.s'
+    refute @engine.error?
+    assert_equal 3, @engine.heap.root.find_child( 'c' ).find_child( 'direct' ).value
+  end
+
+  def test_create_with_a_two_level_here_path
+    @engine.parser.run 'create a as can'
+    @engine.parser.run 'create a.c as can'
+    @engine.parser.run 'create a.c.s as script : "create ^^.up as int : 2"'
+    @engine.parser.run 'run a.c.s'
+    refute @engine.error?
+    assert_equal 2, @engine.heap.root.find_child( 'a' ).find_child( 'up' ).value
+  end
+
+  def test_create_with_a_here_path_in_a_function
+    @engine.parser.run 'create a as can'
+    @engine.parser.run 'create a.fn as function'
+    # the function already has an (empty) on_invoke; create would leave it be
+    @engine.parser.run 'put "create ^.made as int : 4" into a.fn.on_invoke'
+    @engine.parser.run 'invoke a.fn'
+    made = @engine.heap.root.find_child( 'a' ).find_child( 'fn' ).find_child( 'made' )
+    assert made, 'expected ^.made to be created under the function'
+    assert_equal 4, made.value
+  end
+
+  def test_create_with_a_here_path_whose_parent_is_missing_names_it
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.s as script : "create ^.nope.x as int : 1"'
+    @engine.parser.run 'run c.s'
+    assert @engine.error?
+    assert_equal "Could not create '^.nope.x': #{Gloo::Core::NotFound.object( 'c.nope' )}",
+                 @engine.heap.error.value
+  end
+
+  def test_create_with_a_context_path
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'context c'
+    @engine.parser.run 'create @.x as int : 5'
+    refute @engine.error?
+    assert_equal 5, @engine.heap.root.find_child( 'c' ).find_child( 'x' ).value
+  ensure
+    @engine.parser.run 'context root'
+  end
+
+  def test_create_with_a_here_path_outside_a_script_is_an_error
+    # There's nothing for ^ to be relative to.
+    @engine.parser.run 'create ^.y as int : 1'
+    assert @engine.error?
+    assert_includes @engine.heap.error.value, Gloo::Core::NotFound.object( '^' )
+  end
+
 end

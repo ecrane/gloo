@@ -172,7 +172,12 @@ module Gloo
       # returns nil without reporting an error. A caller that needs the
       # object reports its own error.
       #
+      # A here (^) or context (@) reference is expanded first, as resolve
+      # does, so a new object's parent can be given the same way as any
+      # other path (eg. create ^.x inside a script).
+      #
       def get_parent
+        expand_refs
         o = @engine.heap.root
 
         if self.includes_path?

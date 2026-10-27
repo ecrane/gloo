@@ -367,4 +367,13 @@ class PnTest < BaseEngineTest
     refute @engine.error?
   end
 
+  def test_get_parent_expands_a_context_ref
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'context c'
+    pn = Gloo::Core::Pn.new( @engine, '@.x' )
+    assert_same @engine.heap.root.find_child( 'c' ), pn.get_parent
+  ensure
+    @engine.parser.run 'context root'
+  end
+
 end

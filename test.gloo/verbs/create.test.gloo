@@ -11,6 +11,31 @@ tests.verbs.create [can] :
       eval it = 'hello'
       assert "expected it to equal the created value"
 
+  here_box [can] :
+
+  create_with_a_here_path [test] :
+    description [string] : create takes a ^ path inside a script, like other verbs.
+    on_test [script] :
+      create ^^.here_box.made as string : 'made here'
+      eval tests.verbs.create.here_box.made = 'made here'
+      assert "expected ^^.here_box.made to be created"
+
+  create_with_a_one_level_here_path [test] :
+    description [string] : create ^.name makes a child of the script's parent (here, the test).
+    on_test [script] :
+      create ^.child_of_test as int : 3
+      eval tests.verbs.create.create_with_a_one_level_here_path.child_of_test = 3
+      assert "expected ^.child_of_test under the test"
+
+  create_with_a_context_path [test] :
+    description [string] : create takes an @ path, relative to the context.
+    on_test [script] :
+      context tests.verbs.create.here_box
+      create @.via_context as int : 5
+      context root
+      eval tests.verbs.create.here_box.via_context = 5
+      assert "expected @.via_context to be created in the context"
+
 tests.verbs.create_names [can] :
 
   err_fired [bool] : false
