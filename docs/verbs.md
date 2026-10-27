@@ -86,12 +86,13 @@ If the destination doesn't exist, or the expression can't be worked out (eg. it 
 
 ## Load & Save
 
-`load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a path relative to the project folder (no extension needed) or a full path (extension required); `*` in place of a file name loads every `.gloo` file in a folder.
+`load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a path relative to the project folder (no extension needed) or a full path (extension required); `*` in place of a file name loads every `.gloo` file in a folder, whether the folder is relative to the project, a full path, or starts with `~` for your home folder. Anything before the `*` is the start of the file names, so `my/app/a*` loads just the files whose names start with `a`.
 
 ```gloo
 > load my/project/config
 > load my/app/*
 > load ~/.my_app/settings.gloo
+> load ~/.my_app/plugins/*
 ```
 
 If the name can't be resolved to a file, `load` reports `File '{name}' was not found.` — it fires `on_error` and, when the file was named on the `gloo` command line, prints the message to stderr and exits non-zero. A bad or missing file never fails silently.

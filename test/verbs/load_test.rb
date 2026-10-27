@@ -153,6 +153,37 @@ class LoadTest < BaseEngineTest
     assert_equal Gloo::Verbs::Load::MISSING_EXPR_ERR, @engine.heap.error.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A wildcard in an absolute path
+  # ---------------------------------------------------------------------
+
+  def test_load_an_absolute_wildcard_path
+    with_fixture_dir do |dir|
+      @engine.parser.run "load #{dir}/*"
+      refute @engine.error?
+      assert @engine.heap.root.find_child( 'alpha' )
+      assert @engine.heap.root.find_child( 'beta' )
+    end
+  end
+
+  def test_load_a_computed_absolute_wildcard_path
+    with_fixture_dir do |dir|
+      @engine.parser.run "create d as string : #{dir}"
+      @engine.parser.run "load ( d '/*' )"
+      refute @engine.error?
+      assert @engine.heap.root.find_child( 'alpha' )
+      assert @engine.heap.root.find_child( 'beta' )
+    end
+  end
+
+  def test_load_an_absolute_wildcard_in_a_missing_folder_is_an_error
+    with_fixture_dir do |dir|
+      @engine.parser.run "load #{dir}/nope/*"
+      assert @engine.error?
+      assert_equal Gloo::Core::NotFound.file( "#{dir}/nope/*" ), @engine.heap.error.value
+    end
+  end
+
   # A library or extension stays registered for the rest of the test
   # run (see the reset-state Backlog project), so these check the name
   # that reaches the manager rather than loading it.

@@ -28,22 +28,30 @@ module Gloo
       end
 
       #
-      # Get all the gloo files in the folder (partial path).
+      # Get all the gloo files in the folder (partial path). The folder
+      # can end with the start of a file name, as a prefix (folder/a).
       #
       def get_all_files_in( folder )
-        pns = []
+        dir = folder_for_files( folder )
+        return Dir.glob( "#{dir}*.gloo" )
+      end
+
+      #
+      # Where to look for a folder of files: an absolute or ~ folder as
+      # given (~ expanded), anything else in the project folder, or if it
+      # isn't there, in the gloo home.
+      #
+      def folder_for_files( folder )
+        return folder.sub( '~', Dir.home ) if folder.start_with?( '~' )
+        return folder if File.absolute_path?( folder )
+
         dir = File.join( @engine.settings.project_path, folder )
+        return dir if Dir.exist?( dir )
 
-        unless Dir.exist?( dir )
-          @log.debug "Folder does not exist in project: #{folder}"
-          dir = File.join( @engine.settings.user_root, folder )
-          @log.debug "Looking in gloo home? found == #{Dir.exist?( dir )}"
-        end
-
-        Dir.glob( "#{dir}*.gloo" ).each do |f|
-          pns << f
-        end
-        return pns
+        @log.debug "Folder does not exist in project: #{folder}"
+        dir = File.join( @engine.settings.user_root, folder )
+        @log.debug "Looking in gloo home? found == #{Dir.exist?( dir )}"
+        return dir
       end
 
       # 

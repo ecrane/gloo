@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'tmpdir'
 
 class DiscMechTest < BaseEngineTest
 
@@ -70,6 +71,56 @@ class DiscMechTest < BaseEngineTest
     o = Gloo::Persist::DiscMech.new( @engine )
     pn = o.resolve_save_path( '/tmp/somewhere/thing' )
     assert_equal '/tmp/somewhere/thing.gloo', pn
+  end
+
+  # ---------------------------------------------------------------------
+  #    A wildcard folder given as an absolute or ~ path
+  # ---------------------------------------------------------------------
+
+  def test_getting_all_files_in_an_absolute_folder
+    with_wild_dir do |dir|
+      arr = Gloo::Persist::DiscMech.new( @engine ).get_all_files_in( "#{dir}/" )
+      assert_equal %w[a.gloo b.gloo], arr.map { |f| File.basename( f ) }.sort
+    end
+  end
+
+  def test_getting_files_with_a_prefix_in_an_absolute_folder
+    with_wild_dir do |dir|
+      arr = Gloo::Persist::DiscMech.new( @engine ).get_all_files_in( "#{dir}/a" )
+      assert_equal %w[a.gloo], arr.map { |f| File.basename( f ) }
+    end
+  end
+
+  def test_getting_all_files_in_a_home_folder
+    home_dir = File.join( Dir.home, 'gloo_wild_test_xyz' )
+    FileUtils.mkdir_p( home_dir )
+    File.write( File.join( home_dir, 'a.gloo' ), "a [can] :\n" )
+    File.write( File.join( home_dir, 'b.gloo' ), "b [can] :\n" )
+    arr = Gloo::Persist::DiscMech.new( @engine ).get_all_files_in( '~/gloo_wild_test_xyz/' )
+    assert_equal %w[a.gloo b.gloo], arr.map { |f| File.basename( f ) }.sort
+  ensure
+    FileUtils.remove_entry( home_dir, true )
+  end
+
+  def test_a_missing_absolute_folder_finds_nothing
+    with_wild_dir do |dir|
+      assert_equal [], Gloo::Persist::DiscMech.new( @engine ).get_all_files_in( "#{dir}/nope/" )
+    end
+  end
+
+  private
+
+  #
+  # Yield a scratch folder holding a.gloo, b.gloo and c.txt.
+  #
+  def with_wild_dir
+    dir = Dir.mktmpdir
+    File.write( File.join( dir, 'a.gloo' ), "a [can] :\n" )
+    File.write( File.join( dir, 'b.gloo' ), "b [can] :\n" )
+    File.write( File.join( dir, 'c.txt' ), "not gloo\n" )
+    yield dir
+  ensure
+    FileUtils.remove_entry dir if dir
   end
 
 end

@@ -13,6 +13,9 @@ tests.verbs.load [can] :
   # Scratch files live in the gloo tmp folder ($.gloo_tmp).
   on_load [script] :
     put $.gloo_tmp '/gloo_load_no_objects_test.gloo' into ^.f
+    put $.gloo_tmp ^.wild_name into ^.wild_dir
+    put ^.wild_dir '/wild_a.gloo' into ^.wild_a
+    put ^.wild_dir '/wild_b.gloo' into ^.wild_b
 
   comments_only [text] : BEGIN
 # This file has comments,
@@ -26,6 +29,10 @@ END
 
   computed_name [string] : /gloo_load_computed_test.gloo
   lib_name [string] : md
+  wild_name [string] : /gloo_load_wild_test
+  wild_dir [file] :
+  wild_a [file] :
+  wild_b [file] :
   computed_f [file] :
   computed_fixture [text] : BEGIN
 computed_demo [can] :
@@ -138,3 +145,19 @@ END
       assert "expected load lib ( expr ) not to fire on_error"
       exists? object markdown
       assert "expected the markdown type to be registered"
+
+  load_an_absolute_wildcard_path [test] :
+    description [string] : load {absolute folder}/* loads every .gloo file in the folder.
+    on_test [script] :
+      tell ^^.wild_dir to mkdir
+      tell ^^.wild_a to write ( 'wild_a [can] :' )
+      tell ^^.wild_b to write ( 'wild_b [can] :' )
+      load ( ^^.wild_dir '/*' )
+      exists? wild_a
+      assert "expected wild_a.gloo to be loaded"
+      exists? wild_b
+      assert "expected wild_b.gloo to be loaded"
+      tell wild_a to unload
+      tell wild_b to unload
+      tell ^^.wild_a to delete
+      tell ^^.wild_b to delete

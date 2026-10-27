@@ -115,7 +115,10 @@ module Gloo
             'load [ext|lib] ( {expression} )'
           ],
           :parameters => [
-            '{file_name} — Name of the object file that is to be loaded.',
+            '{file_name} — Name of the object file that is to be loaded. ' \
+              'End it with * to load every .gloo file in a folder (a ' \
+              'folder in the project, a full path, or one starting with ' \
+              '~); anything before the * is the start of the file names.',
             'reference type — By default, the type is file. File can be ' \
               'specified, but does not need to be. Use ext to load a ' \
               'User Extension. Use lib to load a Core Library.',
@@ -154,6 +157,7 @@ module Gloo
             > load my/project/file
             > load my/app/*
             > load ~/.my_app/settings.gloo
+            > load ~/.my_app/plugins/*
 
             # Load a file whose name is worked out
             > load ( $.gloo_tmp '/scratch.gloo' )
