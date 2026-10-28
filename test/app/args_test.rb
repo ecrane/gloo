@@ -153,4 +153,28 @@ class ArgsTest < BaseEngineTest
     refute o.single_command?
   end
 
+  def test_host_argv_is_not_read
+    with_host_argv( [ 'host_arg.gloo', '--cli' ] ) do
+      o = Gloo::App::Args.new( @engine, [ '--quiet' ] )
+      assert_empty o.files
+      assert_equal [ 'quiet' ], o.switches
+    end
+  end
+
+  def test_host_argv_does_not_change_the_mode
+    with_host_argv( [ 'host_arg.gloo' ] ) do
+      o = Gloo::App::Args.new( @engine, [ '--quiet' ] )
+      assert_equal Gloo::App::Mode::EMBED, o.detect_mode
+    end
+  end
+
+  def test_gloo_env_does_not_change_the_mode
+    saved = ENV[ 'GLOO_ENV' ]
+    ENV[ 'GLOO_ENV' ] = Gloo::App::Mode::TEST.to_s
+    o = Gloo::App::Args.new( @engine, [ '--quiet' ] )
+    assert_equal Gloo::App::Mode::EMBED, o.detect_mode
+  ensure
+    ENV[ 'GLOO_ENV' ] = saved
+  end
+
 end

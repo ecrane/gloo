@@ -1,0 +1,31 @@
+#
+# Embedded gloo tests.
+# An engine created in code by another Ruby program uses only the
+# params it's given, never that program's command line (ARGV).
+# The engine running these tests was started as the command, so the
+# check runs a separate Ruby program (a fixture) with [system].
+#
+
+tests.app.embed [can] :
+
+  # The harness, beside this file; found with source_dir.
+  harness [string] : /fixtures/embed_harness.rb
+  host_arg [string] : host_arg.gloo
+  no_files [string] : 0
+  where [string] :
+
+  run_harness [system] :
+    command [string] :
+    get_output [bool] : true
+    result [string] :
+
+  ignores_host_argv [test] :
+    description [string] : An engine created in code ignores the host program's command line.
+    on_test [script] :
+      check ^^ for source_dir
+      put it into ^^.where
+      # Paths are quoted in case the folder has spaces.
+      put "ruby '" ^^.where ^^.harness "' " ^^.host_arg into ^^.run_harness.command
+      tell ^^.run_harness to run
+      eval ^^.run_harness.result = ^^.no_files
+      assert "expected the embedded engine to be given no files"

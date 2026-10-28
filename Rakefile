@@ -2,8 +2,6 @@ require 'bundler/gem_tasks'
 require 'rake/testtask'
 
 Rake::TestTask.new(:test) do |t|
-  ENV[ 'GLOO_ENV' ] = 'TEST'
-
   t.warning = false
   t.libs << 'test'
   t.libs << 'lib'

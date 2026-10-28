@@ -1,6 +1,6 @@
 # Development
 
-How the interpreter's source is laid out, how to run its tests, and the conventions to follow when changing it. This page is for working on gloo itself; for using gloo, start with Getting Started.
+How the interpreter's source is laid out, how to run its tests, the conventions to follow when changing it, and how to run gloo from your own Ruby code. This page is for working on gloo itself or driving it from Ruby; for using gloo, start with Getting Started.
 
 **Contents**
 
@@ -8,6 +8,7 @@ How the interpreter's source is laid out, how to run its tests, and the conventi
 - Tests
 - Documentation
 - Reporting Errors
+- Running Gloo from Ruby
 
 ## Source Layout
 
@@ -40,7 +41,7 @@ There are two automated suites. Run both when making a change, and add to both: 
 
 ### Unit tests — `test/`
 
-Standard Ruby minitest tests. The layout mirrors `lib/gloo/`, one test file per class or verb: `test/<area>/<name>_test.rb`, for example `test/verbs/show_test.rb` for `lib/gloo/verbs/show.rb`. Test classes inherit from `GlooTest` (in `test/base_test.rb`).
+Standard Ruby minitest tests. The layout mirrors `lib/gloo/`, one test file per class or verb: `test/<area>/<name>_test.rb`, for example `test/verbs/show_test.rb` for `lib/gloo/verbs/show.rb`. Test classes inherit from `BaseTest` (in `test/base_test.rb`), or from `BaseEngineTest` (in `test/base_engine_test.rb`) for a test that needs a started engine in `@engine`.
 
 ```
 rake test
@@ -98,3 +99,22 @@ Gloo reports every problem in a way scripts can see (see Language, Syntax, Error
 - A question whose answer is "no" is just a result, not an error.
 
 Don't use `@engine.log.error` or `@engine.log.warn` for these; they only write to the log, and scripts can't see them. Build "not found" messages with `Gloo::Core::NotFound` (for example `NotFound.object( name )`) so they always read the same way.
+
+## Running Gloo from Ruby
+
+Gloo can be started from another Ruby program, such as a test harness or an app that runs gloo commands. Create the engine with the params gloo should see — the same words you would type after `gloo` on the command line:
+
+```ruby
+require 'gloo'
+
+context = Gloo::App::EngineContext.new( [] )
+engine = Gloo::App::Engine.new( context )
+engine.start
+
+engine.process_cmd "create greeting as string : 'hello'"
+engine.process_cmd 'show greeting'
+```
+
+Only those params are used. The Ruby program's own command line (`ARGV`) is never read, so running `ruby harness.rb some_file.gloo` doesn't make gloo load `some_file.gloo`. Pass anything gloo should see explicitly. Only the `gloo` command itself (`Gloo.run`) reads the command line.
+
+With no file and no mode switch, the engine runs in Embedded mode (`--embed`): `start` sets the engine up and returns without loading or running anything, and your code drives it from there, for example with `process_cmd`.

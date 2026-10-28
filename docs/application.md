@@ -31,6 +31,8 @@ gloo [global option] [file]
 
 Running gloo with a file specified will run that file. Once that file is done, gloo will quit. However, by specifying `--cli`, once the file has finished, gloo will remain open in CLI mode.
 
+Gloo can also be started from another Ruby program; see Development, Running Gloo from Ruby.
+
 If a file named on the command line can't be found (a typo, the wrong folder, a missing `.gloo` extension on a full path), gloo prints `File '{name}' was not found.` to stderr and exits with a non-zero status. Any other load or run error also exits non-zero — including syntax errors in a file that otherwise loaded (gloo keeps loading past them, reporting each with its file and line) — so a shell script calling gloo can tell a failed run from a clean one.
 
 When specifying a file there are a couple ways to reference the gloo file to open:
@@ -76,6 +78,11 @@ When specifying a file there are a couple ways to reference the gloo file to ope
              - Exits with status 1 if any test failed, or errors or warnings
                were logged that no test expected; 0 otherwise.
              - See Testing.
+--embed      - Run in Embedded mode
+             - Start the engine and return, for a Ruby program that drives
+               gloo itself.
+             - This is the default when gloo is created in code with no file
+               or mode. See Development, Running Gloo from Ruby.
 --version    - Show application version
 --help       - Show the help screen
 ```

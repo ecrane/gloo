@@ -41,6 +41,15 @@ class EngineTest < BaseTest
     assert o.args
   end
 
+  def test_engine_created_in_code_ignores_host_argv
+    with_host_argv( [ 'host_arg.gloo' ] ) do
+      o = Gloo::App::Engine.new( default_context )
+      assert_empty o.args.files
+      o.start
+      assert_equal Gloo::App::Mode::EMBED, o.mode
+    end
+  end
+
   def test_that_the_running_engine_has_a_parser
     o = Gloo::App::Engine.new( default_context )
     o.start

@@ -12,7 +12,6 @@ module Gloo
     class Args
 
       QUIET = 'quiet'.freeze
-      GLOO_ENV = 'GLOO_ENV'.freeze
 
       attr_reader :switches, :files, :app_path, :command_tokens
 
@@ -26,8 +25,9 @@ module Gloo
         @app_path = nil
         @command_tokens = []
 
+        # Only the params given; the host process's ARGV is read by
+        # Gloo.run, when gloo is run as the command.
         params.each { |o| process_one_arg( o ) }
-        ARGV.each { |o| process_one_arg( o ) }
       end
 
       #
@@ -117,9 +117,7 @@ module Gloo
       # Then finally use the default: embedded mode.
       #
       def detect_mode
-        mode = if ENV[ GLOO_ENV ] == Gloo::App::Mode::TEST.to_s
-                 Mode::TEST
-               elsif app?
+        mode = if app?
                  Mode::APP
                elsif version?
                  Mode::VERSION
