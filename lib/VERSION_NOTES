@@ -1,3 +1,12 @@
+7.1.2 - 2026.10.28
+ - Fixes bug with create verb and ^.here reference.
+ - Behaviour change: an each over lines gives each line without its line ending.
+ - Load with * now works for a full path or a ~ folder, not just a folder in the project.
+ - Load no longer needs the .gloo extension for a full or ~ path.
+ - Clean run of gloo from a different ruby process (or test).
+ - Fixes looking for each child with a group by.
+
+
 7.1.1 - 2026.10.26
  - Fixes issues with the value in it after a failed command.
  - Warnings go to stderr, like errors.
