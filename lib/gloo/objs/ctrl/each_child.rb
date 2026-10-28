@@ -116,20 +116,24 @@ module Gloo
 
         o = Gloo::Objs::Alias.resolve_alias( @engine, o )
         o.children.each do |child|
+          new_group = false
           if group_mode
             group_value = group_by_value( child )
             if last_group != group_value
               last_group = group_value
+              new_group = true
+              # The ending group's end runs while child is still its last child.
               if first_time
                 first_time = false
               else
                 run_on_group_end
               end
-              run_on_group_start
             end
           end
 
           set_child child
+          # The new group's start runs once child is its first child.
+          run_on_group_start if new_group
           break if @iterator_obj.run_do
         end
 

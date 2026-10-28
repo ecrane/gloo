@@ -1,0 +1,32 @@
+#
+# A grouped each child, for the group tests. on_group_start and
+# on_group_end log the id of the child they see: each group should
+# start with its first child and end with its last.
+#
+gc [can] :
+  starts [string] :
+  ends [string] :
+
+  items [can] :
+    a [can] :
+      id [string] : a
+      kind [string] : x
+    b [can] :
+      id [string] : b
+      kind [string] : x
+    c [can] :
+      id [string] : c
+      kind [string] : y
+    d [can] :
+      id [string] : d
+      kind [string] : y
+
+  grouped [each] :
+    child [alias] :
+    in [alias] : gc.items
+    group_by [string] : kind
+    on_group_start [script] :
+      put gc.starts + gc.grouped.child.id into gc.starts
+    on_group_end [script] :
+      put gc.ends + gc.grouped.child.id into gc.ends
+    do [script] :

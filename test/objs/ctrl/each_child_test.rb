@@ -59,6 +59,18 @@ class EachChildTest < BaseEngineTest
     assert_equal '<c>', @engine.heap.root.find_child( 'bl' ).find_child( 'log' ).value
   end
 
+  def test_group_start_sees_the_groups_first_child
+    @engine.parser.run 'load ctrl/group_child'
+    @engine.parser.run 'tell gc.grouped to run'
+    assert_equal 'ac', @engine.heap.root.find_child( 'gc' ).find_child( 'starts' ).value
+  end
+
+  def test_group_end_sees_the_groups_last_child
+    @engine.parser.run 'load ctrl/group_child'
+    @engine.parser.run 'tell gc.grouped to run'
+    assert_equal 'bd', @engine.heap.root.find_child( 'gc' ).find_child( 'ends' ).value
+  end
+
   private
 
   #

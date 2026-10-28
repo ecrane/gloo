@@ -158,3 +158,54 @@ tests.ctrl.each_folder [can] :
       eval ^^.count = 2
       assert "expected a and a/deep"
       tell ^^.remove_tree to run
+
+#
+# Each child with group_by: on_group_start sees the group's first
+# child and on_group_end its last. Each start and end logs the id of
+# the child it sees.
+#
+
+tests.ctrl.each_group [can] :
+
+  starts [string] :
+  ends [string] :
+
+  items [can] :
+    a [can] :
+      id [string] : a
+      kind [string] : x
+    b [can] :
+      id [string] : b
+      kind [string] : x
+    c [can] :
+      id [string] : c
+      kind [string] : y
+    d [can] :
+      id [string] : d
+      kind [string] : y
+
+  grouped [each] :
+    child [alias] :
+    in [alias] : tests.ctrl.each_group.items
+    group_by [string] : kind
+    on_group_start [script] :
+      put tests.ctrl.each_group.starts + tests.ctrl.each_group.grouped.child.id into tests.ctrl.each_group.starts
+    on_group_end [script] :
+      put tests.ctrl.each_group.ends + tests.ctrl.each_group.grouped.child.id into tests.ctrl.each_group.ends
+    do [script] :
+
+  group_start_sees_first_child [test] :
+    description [string] : on_group_start sees the first child of the new group.
+    on_test [script] :
+      put '' into ^^.starts
+      tell ^^.grouped to run
+      eval ^^.starts = 'ac'
+      assert "expected each group to start with its first child"
+
+  group_end_sees_last_child [test] :
+    description [string] : on_group_end sees the last child of the group that's ending.
+    on_test [script] :
+      put '' into ^^.ends
+      tell ^^.grouped to run
+      eval ^^.ends = 'bd'
+      assert "expected each group to end with its last child"
