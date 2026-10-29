@@ -46,17 +46,43 @@ class EachChildTest < BaseEngineTest
     assert iterator.has_group_by?
   end
 
-  def test_break_ends_the_loop
+  def test_break_skips_the_rest_of_the_pass
     @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'put 2 into bl.skip_on'
+    @engine.parser.run 'tell bl.each_child to run'
+    assert_equal [ 4, 3 ], passes_and_after
+  end
+
+  def test_break_loop_ends_the_loop
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'put 2 into bl.end_on'
     @engine.parser.run 'tell bl.each_child to run'
     assert_equal [ 2, 1 ], passes_and_after
   end
 
-  def test_break_still_ends_the_open_group
+  def test_break_loop_still_closes_the_open_group
     @engine.parser.run 'load ctrl/break_loops'
     @engine.parser.run 'tell bl.grouped to run'
     # g1 runs, g2 breaks: group x is opened and closed; group y never starts
     assert_equal '<c>', @engine.heap.root.find_child( 'bl' ).find_child( 'log' ).value
+  end
+
+  def test_break_loop_in_on_group_start_is_an_error
+    @engine.parser.run 'load ctrl/break_loops'
+    errors = capture_errors { @engine.parser.run 'tell bl.start_breaks to run' }
+    assert_equal 2, errors.size
+    assert_includes errors.first, 'Could not break loop: not in a loop.'
+    # the loop goes on
+    assert_equal 3, @engine.heap.root.find_child( 'bl' ).find_child( 'passes' ).value
+  end
+
+  def test_break_loop_in_on_group_end_is_an_error
+    @engine.parser.run 'load ctrl/break_loops'
+    errors = capture_errors { @engine.parser.run 'tell bl.end_breaks to run' }
+    assert_equal 2, errors.size
+    assert_includes errors.first, 'Could not break loop: not in a loop.'
+    # the loop goes on
+    assert_equal 3, @engine.heap.root.find_child( 'bl' ).find_child( 'passes' ).value
   end
 
   def test_group_start_sees_the_groups_first_child

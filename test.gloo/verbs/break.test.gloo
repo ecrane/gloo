@@ -8,7 +8,7 @@ tests.verbs.break [can] :
 
   s [script] :
     if ^.b  then break
-        
+
     # Should not get here
     put false into ^.b
 
@@ -19,16 +19,27 @@ tests.verbs.break [can] :
       eval ^^.b
       assert "expected b to be true"
 
-  # Loops whose do script breaks on its second pass.
+  # The last error, for the break loop errors.
+  on_error [script] :
+  error_data [can] :
+    message [string] :
+
+  not_in_a_loop [string] : Could not break loop: not in a loop.
+
+  # Loops whose do script breaks on one pass: skip_on for a plain
+  # break, end_on for break loop (0 never breaks).
   passes [int] : 0
   after [int] : 0
+  skip_on [int] : 0
+  end_on [int] : 0
 
   rep [repeat] :
     times [int] : 4
     index [int] :
     do [script] :
       put tests.verbs.break.passes + 1 into tests.verbs.break.passes
-      if tests.verbs.break.passes = 2 then break
+      if tests.verbs.break.passes = tests.verbs.break.skip_on then break
+      if tests.verbs.break.passes = tests.verbs.break.end_on then break loop
       put tests.verbs.break.after + 1 into tests.verbs.break.after
 
   kids [can] :
@@ -41,14 +52,15 @@ tests.verbs.break [can] :
     in [alias] : tests.verbs.break.kids
     do [script] :
       put tests.verbs.break.passes + 1 into tests.verbs.break.passes
-      if tests.verbs.break.passes = 2 then break
+      if tests.verbs.break.passes = tests.verbs.break.skip_on then break
+      if tests.verbs.break.passes = tests.verbs.break.end_on then break loop
       put tests.verbs.break.after + 1 into tests.verbs.break.after
 
   inner [repeat] :
     times [int] : 3
     index [int] :
     do [script] :
-      if tests.verbs.break.inner.index = 1 then break
+      if tests.verbs.break.inner.index = 1 then break loop
       put tests.verbs.break.after + 1 into tests.verbs.break.after
 
   outer [repeat] :
@@ -57,30 +69,111 @@ tests.verbs.break [can] :
     do [script] :
       tell tests.verbs.break.inner to run
 
-  break_ends_a_repeat [test] :
-    description [string] : break in a repeat's do script ends the loop.
+  # The form the apps use to skip an item: unless ... do break.
+  skipped [string] :
+  skip_b [each] :
+    child [alias] :
+    in [alias] : tests.verbs.break.kids
+    do [script] :
+      check tests.verbs.break.skip_b.child for starts_with?( 'b' )
+      unless it = false do break
+      put tests.verbs.break.skipped + tests.verbs.break.skip_b.child into tests.verbs.break.skipped
+
+  # break loop is only valid directly in a loop's do script.
+  lone [script] :
+    break loop
+
+  loop_helper [script] :
+    break loop
+
+  via_loop [repeat] :
+    times [int] : 2
+    index [int] :
+    do [script] :
+      put tests.verbs.break.passes + 1 into tests.verbs.break.passes
+      run tests.verbs.break.loop_helper
+
+  break_skips_the_rest_of_a_repeat_pass [test] :
+    description [string] : break in a repeat's do script skips to the next pass.
     on_test [script] :
       put 0 into ^^.passes
       put 0 into ^^.after
+      put 0 into ^^.end_on
+      put 2 into ^^.skip_on
+      tell ^^.rep to run
+      eval ^^.passes = 4
+      assert "expected every pass to run"
+      eval ^^.after = 3
+      assert "expected only the pass that broke to stop early"
+
+  break_skips_the_rest_of_an_each_pass [test] :
+    description [string] : break in an each's do script skips to the next child.
+    on_test [script] :
+      put 0 into ^^.passes
+      put 0 into ^^.after
+      put 0 into ^^.end_on
+      put 2 into ^^.skip_on
+      tell ^^.each_kid to run
+      eval ^^.after = 2
+      assert "expected every child but the one that broke to get past it"
+
+  unless_do_break_skips_an_item [test] :
+    description [string] : unless ... do break in an each skips that item, as the apps use it.
+    on_test [script] :
+      put '' into ^^.skipped
+      tell ^^.skip_b to run
+      eval ^^.skipped = 'ac'
+      assert "expected b to be skipped and c still reached"
+
+  break_loop_ends_a_repeat [test] :
+    description [string] : break loop in a repeat's do script ends the loop.
+    on_test [script] :
+      put 0 into ^^.passes
+      put 0 into ^^.after
+      put 0 into ^^.skip_on
+      put 2 into ^^.end_on
       tell ^^.rep to run
       eval ^^.passes = 2
       assert "expected the loop to stop on the pass that broke"
       eval ^^.after = 1
       assert "expected only the first pass to get past the break"
 
-  break_ends_an_each [test] :
-    description [string] : break in an each's do script ends the loop.
+  break_loop_ends_an_each [test] :
+    description [string] : break loop in an each's do script ends the loop.
     on_test [script] :
       put 0 into ^^.passes
       put 0 into ^^.after
+      put 0 into ^^.skip_on
+      put 2 into ^^.end_on
       tell ^^.each_kid to run
       eval ^^.passes = 2
       assert "expected the loop to stop on the pass that broke"
 
-  break_ends_only_the_inner_loop [test] :
-    description [string] : break in an inner loop ends that loop, not the outer one.
+  break_loop_ends_only_the_inner_loop [test] :
+    description [string] : break loop in an inner loop ends that loop, not the outer one.
     on_test [script] :
       put 0 into ^^.after
       tell ^^.outer to run
       eval ^^.after = 2
       assert "expected each of the 2 inner loops to get past its break once"
+
+  break_loop_outside_a_loop_is_an_error [test] :
+    description [string] : break loop in a script that isn't a loop's do is an error.
+    expect_errors [bool] : true
+    on_test [script] :
+      put '' into ^^.error_data.message
+      run ^^.lone
+      eval ^^.error_data.message = ^^.not_in_a_loop
+      assert "expected the not-in-a-loop error"
+
+  break_loop_in_a_helper_is_an_error [test] :
+    description [string] : break loop in a script the do runs is an error, and the loop goes on.
+    expect_errors [bool] : true
+    on_test [script] :
+      put '' into ^^.error_data.message
+      put 0 into ^^.passes
+      tell ^^.via_loop to run
+      eval ^^.error_data.message = ^^.not_in_a_loop
+      assert "expected the not-in-a-loop error"
+      eval ^^.passes = 2
+      assert "expected the loop to go on"

@@ -141,11 +141,25 @@ class EachFileTest < BaseEngineTest
     end
   end
 
-  def test_break_ends_the_loop
+  def test_break_skips_the_rest_of_the_pass
     require 'tmpdir'
     dir = Dir.mktmpdir
     4.times { |i| File.write( File.join( dir, "f#{i}.txt" ), 'x' ) }
     @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'put 2 into bl.skip_on'
+    @engine.parser.run "put '#{dir}' into bl.each_file.in"
+    @engine.parser.run 'tell bl.each_file to run'
+    assert_equal [ 4, 3 ], passes_and_after
+  ensure
+    FileUtils.remove_entry dir if dir
+  end
+
+  def test_break_loop_ends_the_loop
+    require 'tmpdir'
+    dir = Dir.mktmpdir
+    4.times { |i| File.write( File.join( dir, "f#{i}.txt" ), 'x' ) }
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'put 2 into bl.end_on'
     @engine.parser.run "put '#{dir}' into bl.each_file.in"
     @engine.parser.run 'tell bl.each_file to run'
     assert_equal [ 2, 1 ], passes_and_after

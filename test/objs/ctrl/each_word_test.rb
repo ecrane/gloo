@@ -15,8 +15,16 @@ class EachWordTest < BaseEngineTest
     refute Gloo::Objs::EachLine.use_for?( obj )
   end
 
-  def test_break_ends_the_loop
+  def test_break_skips_the_rest_of_the_pass
     @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'put 2 into bl.skip_on'
+    @engine.parser.run 'tell bl.each_word to run'
+    assert_equal [ 4, 3 ], passes_and_after
+  end
+
+  def test_break_loop_ends_the_loop
+    @engine.parser.run 'load ctrl/break_loops'
+    @engine.parser.run 'put 2 into bl.end_on'
     @engine.parser.run 'tell bl.each_word to run'
     assert_equal [ 2, 1 ], passes_and_after
   end

@@ -23,6 +23,18 @@ class BaseEngineTest < BaseTest
   end
 
   #
+  # Collect the errors logged while the block runs.
+  #
+  def capture_errors
+    errors = []
+    @engine.log.define_singleton_method( :error ) { |msg, *| errors << msg }
+    yield
+    return errors
+  ensure
+    @engine.log.singleton_class.send( :remove_method, :error )
+  end
+
+  #
   # Pin the screen width, so tests that wrap text don't depend on the
   # width of the terminal running them.
   #

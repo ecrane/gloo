@@ -115,15 +115,15 @@ module Gloo
       def msg_run
         s = Gloo::Exec::Script.new( @engine, self )
         s.run
-        @broke_out = s.broke_out?
+        @broke_loop = s.broke_loop?
       end
 
       #
-      # Did a break end this script's last run? A loop uses this to
-      # stop when its do script breaks.
+      # Did a break loop end this script's last run? A loop uses this
+      # to stop when its do script says break loop.
       #
-      def broke_out?
-        return @broke_out == true
+      def broke_loop?
+        return @broke_loop == true
       end
 
       # ---------------------------------------------------------------------

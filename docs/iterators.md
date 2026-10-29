@@ -9,7 +9,7 @@
 - Each Line
 - Each Word
 - Repeat
-- Ending a Loop Early
+- Skipping an Item or Ending a Loop
 
 ## Each
 
@@ -330,9 +330,26 @@ repeat [can] :
 
 See also: Object Base.
 
-## Ending a Loop Early
+## Skipping an Item or Ending a Loop
 
-`break` in a loop's `do` script ends the whole loop, not just that pass. This works for `repeat` and every kind of `each`. The script that ran the loop carries on with its next line:
+`break` ends the script it's written in. In a loop's `do` script, that skips the rest of this pass, and the loop goes on with the next item. This works for `repeat` and every kind of `each`:
+
+```gloo
+skip [can] :
+  on_load [script] :
+    tell skip.r to run
+    show 'after the loop'
+  r [repeat] :
+    times [int] : 5
+    index [int] :
+    do [script] :
+      if skip.r.index = 2 then break
+      show skip.r.index
+```
+
+This shows `0`, `1`, `3`, `4`, then `after the loop`.
+
+`break loop` ends the whole loop. The script that ran the loop carries on with its next line:
 
 ```gloo
 early [can] :
@@ -343,12 +360,12 @@ early [can] :
     times [int] : 5
     index [int] :
     do [script] :
-      if early.r.index = 2 then break
+      if early.r.index = 2 then break loop
       show early.r.index
 ```
 
 This shows `0`, `1`, then `after the loop`.
 
-`break` ends the script it's written in. So in nested loops, a `break` in the inner loop's `do` ends only the inner loop, and a `break` in a script the `do` script runs (with `run`, or a function it invokes) ends only that script, not the loop. An `each` with `group_by` still runs `on_group_end` for the group that was open when the loop ended.
+`break loop` is only valid directly in a loop's `do` script. In nested loops, a `break loop` in the inner loop's `do` ends only the inner loop. Anywhere else — a script the `do` script runs (with `run`, or a function it invokes), a loop's `on_group_start` or `on_group_end`, or a script that isn't in a loop — it's an error (`Could not break loop: not in a loop.`) and nothing stops. To end a loop from a helper, have the helper set a flag and check it in the `do` script. An `each` with `group_by` still runs `on_group_end` for the group that was open when the loop ended.
 
 See also: Break.

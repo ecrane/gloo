@@ -1,19 +1,26 @@
 #
 # Loops whose do script breaks, for the break tests. Each do script
-# counts its passes, breaks on pass 2, and counts how often it gets
-# past the break: a break that ends the loop leaves passes 2, after 1.
+# counts its passes and how many get past the break. A test sets the
+# pass to break on: skip_on for a plain break, which skips the rest of
+# that pass (4 passes, 3 after), or end_on for break loop, which ends
+# the loop (2 passes, 1 after).
 #
 bl [can] :
   passes [int] : 0
   after [int] : 0
   log [string] :
 
+  # The pass to break on; 0 never breaks.
+  skip_on [int] : 0
+  end_on [int] : 0
+
   rep [repeat] :
     times [int] : 4
     index [int] :
     do [script] :
       put bl.passes + 1 into bl.passes
-      if bl.passes = 2 then break
+      if bl.passes = bl.skip_on then break
+      if bl.passes = bl.end_on then break loop
       put bl.after + 1 into bl.after
 
   kids [can] :
@@ -27,7 +34,8 @@ bl [can] :
     in [alias] : bl.kids
     do [script] :
       put bl.passes + 1 into bl.passes
-      if bl.passes = 2 then break
+      if bl.passes = bl.skip_on then break
+      if bl.passes = bl.end_on then break loop
       put bl.after + 1 into bl.after
 
   words [string] : one two three four
@@ -37,7 +45,8 @@ bl [can] :
     in [alias] : bl.words
     do [script] :
       put bl.passes + 1 into bl.passes
-      if bl.passes = 2 then break
+      if bl.passes = bl.skip_on then break
+      if bl.passes = bl.end_on then break loop
       put bl.after + 1 into bl.after
 
   lines [text] : BEGIN
@@ -52,7 +61,8 @@ END
     in [alias] : bl.lines
     do [script] :
       put bl.passes + 1 into bl.passes
-      if bl.passes = 2 then break
+      if bl.passes = bl.skip_on then break
+      if bl.passes = bl.end_on then break loop
       put bl.after + 1 into bl.after
 
   # The tests put a folder path into in.
@@ -61,7 +71,8 @@ END
     in [file] :
     do [script] :
       put bl.passes + 1 into bl.passes
-      if bl.passes = 2 then break
+      if bl.passes = bl.skip_on then break
+      if bl.passes = bl.end_on then break loop
       put bl.after + 1 into bl.after
 
   each_dir [each] :
@@ -69,15 +80,17 @@ END
     in [file] :
     do [script] :
       put bl.passes + 1 into bl.passes
-      if bl.passes = 2 then break
+      if bl.passes = bl.skip_on then break
+      if bl.passes = bl.end_on then break loop
       put bl.after + 1 into bl.after
 
-  # The script that runs a loop carries on after the loop breaks.
+  # The script that runs a loop carries on after break loop ends it.
   runner [script] :
+    put 2 into bl.end_on
     tell bl.rep to run
     put 'went on' into bl.log
 
-  # A break in the inner loop ends only the inner loop.
+  # break loop in the inner loop ends only the inner loop.
   outer [repeat] :
     times [int] : 3
     index [int] :
@@ -89,10 +102,10 @@ END
     times [int] : 3
     index [int] :
     do [script] :
-      if bl.inner.index = 1 then break
+      if bl.inner.index = 1 then break loop
       put bl.after + 1 into bl.after
 
-  # A break in a script the do script runs ends only that script.
+  # A plain break in a script the do script runs ends only that script.
   helper [script] :
     if bl.via.index = 1 then break
 
@@ -104,7 +117,24 @@ END
       run bl.helper
       put bl.after + 1 into bl.after
 
-  # Grouped children: the open group still gets its on_group_end.
+  # break loop in a script the do script runs is an error: it's only
+  # valid directly in a loop's do script. The loop goes on.
+  loop_helper [script] :
+    if bl.via_loop.index = 1 then break loop
+
+  via_loop [repeat] :
+    times [int] : 3
+    index [int] :
+    do [script] :
+      put bl.passes + 1 into bl.passes
+      run bl.loop_helper
+      put bl.after + 1 into bl.after
+
+  # break loop outside any loop is an error.
+  lone [script] :
+    break loop
+
+  # Grouped children: break loop still closes the open group.
   groups [can] :
     g1 [can] :
       kind [string] : x
@@ -123,5 +153,24 @@ END
       put bl.log + '>' into bl.log
     do [script] :
       put bl.passes + 1 into bl.passes
-      if bl.passes = 2 then break
+      if bl.passes = 2 then break loop
       put bl.log + 'c' into bl.log
+
+  # break loop in a group script is an error; the loop goes on.
+  start_breaks [each] :
+    child [alias] :
+    in [alias] : bl.groups
+    group_by [string] : kind
+    on_group_start [script] :
+      break loop
+    do [script] :
+      put bl.passes + 1 into bl.passes
+
+  end_breaks [each] :
+    child [alias] :
+    in [alias] : bl.groups
+    group_by [string] : kind
+    on_group_end [script] :
+      break loop
+    do [script] :
+      put bl.passes + 1 into bl.passes

@@ -16,6 +16,7 @@ module Gloo
         @engine = engine
         @obj = obj
         @break_out = false
+        @break_loop = false
         @line = 0
       end
 
@@ -59,10 +60,12 @@ module Gloo
       end
 
       # 
-      # Stop running this script.
+      # Stop running this script. With loop, also end the loop whose
+      # do script this is (break loop).
       # 
-      def break_out
+      def break_out( loop: false )
         @break_out = true
+        @break_loop = loop
       end
 
       #
@@ -70,6 +73,13 @@ module Gloo
       #
       def broke_out?
         return @break_out
+      end
+
+      #
+      # Did a break loop end this script's run, so its loop should end?
+      #
+      def broke_loop?
+        return @break_loop
       end
 
     end
