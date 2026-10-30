@@ -245,7 +245,7 @@ class FileSaverTest < BaseEngineTest
     saver = Gloo::Persist::FileSaver.new( @engine, out_path, o )
     saver.save
 
-    assert_equal "fresh [container] : \n\ts [string] : hi\n", File.read( out_path )
+    assert_equal "fresh [container] :\n  s [string] : hi\n", File.read( out_path )
   end
 
   def test_getting_simple_object
@@ -268,7 +268,7 @@ class FileSaverTest < BaseEngineTest
 
     fs = Gloo::Persist::FileSaver.new( @engine, '', nil )
     str = fs.get_obj c
-    assert_equal "c [container] : \n\ts [string] : one\n", str
+    assert_equal "c [container] :\n  s [string] : one\n", str
   end
 
   def test_getting_a_script_with_multiple_lines
@@ -278,7 +278,7 @@ class FileSaverTest < BaseEngineTest
 
     fs = Gloo::Persist::FileSaver.new( @engine, '', nil )
     str = fs.get_obj o
-    assert_equal "s [script] :\n\tshow 2 + 3\n\tshow 1 + 2\n", str
+    assert_equal "s [script] :\n  show 2 + 3\n  show 1 + 2\n", str
   end
 
   def test_getting_a_multiline_string_value_as_begin_end_block
@@ -286,17 +286,13 @@ class FileSaverTest < BaseEngineTest
       { :name => 't', :type => 'str', :value => "line one\nline two" } )
 
     fs = Gloo::Persist::FileSaver.new( @engine, '', nil )
-    str = fs.get_obj o
-    assert_equal "t [string] : BEGIN\n\tline one\n\tline two\nEND\n", str
-  end
-
-  def test_tabs
-    fs = Gloo::Persist::FileSaver.new( @engine, '', nil )
-
-    assert_equal '', fs.tabs
-    assert_equal '', fs.tabs( 0 )
-    assert_equal "\t", fs.tabs( 1 )
-    assert_equal "\t\t", fs.tabs( 2 )
+    warnings = capture_warnings { @str = fs.get_obj o }
+    # The lines are the value, so they're written exactly; with no final
+    # newline the value can't be written exactly, so it gets one, and a
+    # warning.
+    assert_equal "t [string] : BEGIN\nline one\nline two\nEND\n", @str
+    assert_equal 1, warnings.size
+    assert_includes warnings.first, "Could not save 't' exactly: a block value always ends with a newline."
   end
 
 end

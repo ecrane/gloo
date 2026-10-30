@@ -1,0 +1,4 @@
+# Café — ünïcödé and emoji 🎉
+non_ascii [can] :
+  greeting [string] : héllo wörld 👋
+  ok [bool] : true

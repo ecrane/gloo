@@ -1,0 +1,7 @@
+#
+# A leading comment block, then a directive.
+#
+load lib yaml
+
+directive [can] :
+  cfg [string] : x

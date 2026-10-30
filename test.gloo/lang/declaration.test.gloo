@@ -41,3 +41,22 @@ END
     on_test [script] :
       eval ^^.closed_then_colon = 8
       assert "expected the value 8"
+
+  # A fixture beside this file whose lines mix tabs and spaces, on one
+  # line and from line to line: a tab counts as two spaces.
+  mixed_indent_path [string] : /fixtures/mixed_indent.gloo
+  where [string] :
+
+  a_tab_and_spaces_on_one_line_add_up [test] :
+    description [string] : a tab plus two spaces is two levels deep, in either order.
+    on_test [script] :
+      check ^^ for source_dir
+      put it into ^^.where
+      load ( ^^.where ^^.mixed_indent_path )
+      tell mixed_indent_fixture.a to count
+      eval it = 2
+      assert "expected x and y under a"
+      eval mixed_indent_fixture.b = 3
+      assert "expected b beside a"
+      tell mixed_indent_fixture to unload
+

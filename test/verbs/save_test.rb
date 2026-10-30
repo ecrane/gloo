@@ -172,7 +172,7 @@ class SaveTest < BaseEngineTest
 
     extracted = File.read( "#{path}.gloo" )
     assert_includes extracted, 'app.core.settings [can] :'
-    assert_includes extracted, "\ttheme [string] : dark"
+    assert_includes extracted, "  theme [string] : dark"
     assert_includes extracted, '# the theme setting'
 
     src = File.read( File.join( @tmp_dir, 'src.gloo' ) )

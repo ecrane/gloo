@@ -1,0 +1,4 @@
+mixed [can] :
+	a [can] :
+	  x [int] : 1
+	b [int] : 2

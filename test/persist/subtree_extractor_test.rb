@@ -50,7 +50,7 @@ class SubtreeExtractorTest < BaseEngineTest
     assert_same fs, source_fs
     assert_equal 'app.core.settings', node.name
     assert_equal '', node.raw_indent
-    assert_equal '# the theme setting', node.leading_doc
+    assert_equal "# the theme setting\n", node.leading_doc
 
     # removed from the old file's SourceDoc -- 'settings' node is gone,
     # 'other' is untouched
@@ -72,8 +72,9 @@ class SubtreeExtractorTest < BaseEngineTest
 
     theme_node = node.children.first
     assert_equal 'theme', theme_node.name
-    assert_equal "\t", theme_node.raw_indent
-    assert_equal "\t# the theme", theme_node.leading_doc
+    # the file's own step in (2 spaces) is kept
+    assert_equal '  ', theme_node.raw_indent
+    assert_equal "  # the theme\n", theme_node.leading_doc
   end
 
   def test_drops_the_extracted_root_from_the_source_files_roots

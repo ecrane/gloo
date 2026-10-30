@@ -1,0 +1,5 @@
+mixed_indent_fixture [can] :
+	a [can] :
+	  x [int] : 1
+  	y [int] : 2
+	b [int] : 3

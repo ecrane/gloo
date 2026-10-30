@@ -1,0 +1,7 @@
+mix [can] :
+  x [int] : 1
+
+mix.b [can] :
+  y [int] : 2
+
+mix.b.c.d [string] : deep

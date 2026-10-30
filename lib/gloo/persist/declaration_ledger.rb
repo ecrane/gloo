@@ -3,8 +3,8 @@
 #
 # Tracks what a single file declares as it loads: its top-level
 # objects (for save resolution), and every object it created -- so a
-# re-declaration of a name an earlier file already used can be
-# flagged, since in that case the second value is silently dropped.
+# re-declaration of a name already used, in an earlier file or earlier
+# in this one, can be flagged when its value is ignored.
 #
 
 module Gloo
@@ -39,19 +39,19 @@ module Gloo
 
       #
       # `prior` already existed when this file declared `name` with
-      # `value`. If another file created it and the values differ, the
-      # new value is being ignored -- warn so it isn't a surprise. A
-      # duplicate name inside one file is left alone (a documented
-      # "first one wins"). The warning's location (this file and line)
-      # comes from the load.
+      # `value`: the line names the same object, and its value is
+      # ignored (the first declaration wins). When the ignored value is
+      # different, warn so it isn't a surprise -- whether the first
+      # declaration was in another file or earlier in this one. The
+      # warning's location (this file and line) comes from the load.
       #
       def clash( prior, name, value )
-        return if @mine.key?( prior )
         return if value.nil? || value.to_s.strip.empty?
         return if prior.value.to_s == value.to_s
 
+        where = @mine.key?( prior ) ? 'above' : 'in another loaded file'
         @engine.warn(
-          "'#{name}' is already declared in another loaded file with a " \
+          "'#{name}' is already declared #{where} with a " \
           "different value (#{prior.value.inspect} kept, #{value.inspect} ignored)."
         )
       end

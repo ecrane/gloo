@@ -222,3 +222,206 @@ END
       assert "reload should restore the on-disk value"
       tell demo to unload
       tell ^^.f to delete
+
+  # -------------------------------------------------------------------
+  #   Lossless save (7.2): an untouched declaration is written back
+  #   exactly; a changed one changes only its own line.
+  # -------------------------------------------------------------------
+
+  body_fixture [text] : BEGIN
+lossless_body [can] :
+  n [int] : 0
+  s [script] :
+    put 1 into ^.n
+
+    # a comment inside the body
+    put ^.n + 1 into ^.n  # an inline comment
+    put ^.n + \
+      2 into ^.n
+  after [string] : after
+END
+
+  directive_fixture [text] : BEGIN
+#
+# A comment block above the directive.
+#
+load lib yaml
+
+lossless_lib [can] :
+  cfg [yaml] :
+END
+
+  untyped_fixture [text] : BEGIN
+lossless_untyped [can] :
+  plain : no type given
+END
+
+  untyped_changed [text] : BEGIN
+lossless_untyped [can] :
+  plain : changed
+END
+
+  same_name_fixture [text] : BEGIN
+lossless_same [can] :
+  a [string] : First A
+  a [string] : Second A
+END
+
+  same_name_changed [text] : BEGIN
+lossless_same [can] :
+  a [string] : Changed
+  a [string] : Second A
+END
+
+  shorthand_fixture [text] : BEGIN
+lossless_short [can] :
+  x [int] : 1
+
+lossless_short.b [can] :
+  y [int] : 2
+END
+
+  style_fixture [text] : BEGIN
+lossless_style [can] :
+  n [int] : 1
+END
+
+  style_changed [text] : BEGIN
+lossless_style [can] :
+  n [int] : 1
+  k [int] : 5
+END
+
+  # A text value's fixture has its own BEGIN/END blocks, so it can't be
+  # a text block here: it's a file beside this one.
+  text_fixture [file] :
+  text_saved [file] :
+  text_src [string] :
+  text_want [string] :
+  where [string] :
+
+  utf8_fixture [text] : BEGIN
+# Café — ünïcödé 🎉
+lossless_utf8 [can] :
+  greeting [string] : héllo wörld 👋
+END
+
+  untouched_script_body_round_trips [test] :
+    description [string] : blank lines, comments and a continuation in a script body survive a save.
+    on_test [script] :
+      tell ^^.f to write ( ^^.body_fixture )
+      load ( ^^.f )
+      tell lossless_body.s to run
+      eval lossless_body.n = 4
+      assert "sanity: the body ran, continuation and all"
+      put 0 into lossless_body.n
+      save lossless_body
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.body_fixture
+      assert "expected the body exactly as written"
+      tell lossless_body to unload
+      tell ^^.f to delete
+
+  directive_stays_below_its_comments [test] :
+    description [string] : a load lib directive stays where it was written.
+    on_test [script] :
+      tell ^^.f to write ( ^^.directive_fixture )
+      load ( ^^.f )
+      save lossless_lib
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.directive_fixture
+      assert "expected the directive below the comment block"
+      tell lossless_lib to unload
+      tell ^^.f to delete
+
+  untyped_stays_untyped [test] :
+    description [string] : an untyped declaration is saved without a type, changed or not.
+    on_test [script] :
+      tell ^^.f to write ( ^^.untyped_fixture )
+      load ( ^^.f )
+      save lossless_untyped
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.untyped_fixture
+      assert "expected the untouched declaration exactly as written"
+      put 'changed' into lossless_untyped.plain
+      save lossless_untyped
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.untyped_changed
+      assert "expected only the value to change"
+      tell lossless_untyped to unload
+      tell ^^.f to delete
+
+  an_edit_changes_only_the_first_same_name_line [test] :
+    description [string] : the first declaration holds the value; a later same-name line is kept as written.
+    expect_errors [bool] : true
+    on_test [script] :
+      tell ^^.f to write ( ^^.same_name_fixture )
+      load ( ^^.f )
+      put 'Changed' into lossless_same.a
+      save lossless_same
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.same_name_changed
+      assert "expected Second A to stay"
+      tell lossless_same to unload
+      tell ^^.f to delete
+
+  a_shorthand_child_is_written_once [test] :
+    description [string] : a container plus shorthand into it saves exactly as written.
+    on_test [script] :
+      tell ^^.f to write ( ^^.shorthand_fixture )
+      load ( ^^.f )
+      save lossless_short
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.shorthand_fixture
+      assert "expected the shorthand child not to be written again"
+      tell lossless_short to unload
+      tell ^^.f to delete
+
+  a_new_child_follows_the_files_style [test] :
+    description [string] : a new object is written with the file's indentation and type spelling.
+    on_test [script] :
+      tell ^^.f to write ( ^^.style_fixture )
+      load ( ^^.f )
+      create lossless_style.k as integer : 5
+      save lossless_style
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.style_changed
+      assert "expected two spaces and [int]"
+      tell lossless_style to unload
+      tell ^^.f to delete
+
+  appending_to_text_does_not_indent_it [test] :
+    description [string] : a changed text value is written exactly, so saving it twice adds nothing.
+    on_test [script] :
+      check ^^ for source_dir
+      put it into ^^.where
+      put ^^.where '/fixtures/lossless_text.gloo' into ^^.text_fixture
+      put ^^.where '/fixtures/lossless_text_saved.gloo' into ^^.text_saved
+      tell ^^.text_fixture to read ( ^^.text_src )
+      tell ^^.text_saved to read ( ^^.text_want )
+      tell ^^.f to write ( ^^.text_src )
+      load ( ^^.f )
+      put lossless_text.log + lossless_text.entry into lossless_text.log
+      save lossless_text
+      put lossless_text.log + lossless_text.entry into lossless_text.log
+      save lossless_text
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.text_want
+      assert "expected the lines with no added indentation"
+      tell lossless_text to unload
+      tell ^^.f to delete
+
+  utf8_round_trips [test] :
+    description [string] : non-ASCII text loads and saves exactly.
+    on_test [script] :
+      tell ^^.f to write ( ^^.utf8_fixture )
+      load ( ^^.f )
+      eval lossless_utf8.greeting = 'héllo wörld 👋'
+      assert "expected the value as written"
+      save lossless_utf8
+      tell ^^.f to read ( ^^.out )
+      eval ^^.out = ^^.utf8_fixture
+      assert "expected the file exactly as written"
+      tell lossless_utf8 to unload
+      tell ^^.f to delete
+

@@ -28,13 +28,24 @@ module Gloo
       end
 
       #
-      # Save the object to the file. batch, when given, lets a
-      # multi-file namespace round-trip -- see PersistMan#save_batch and
-      # FileSaver.
+      # Save the object to the file. batch, when given, carries the
+      # SaveIndex shared by a save of several files -- see
+      # PersistMan#save_batch and FileSaver. Returns the source document
+      # for what was written.
       #
       def save( batch = nil )
         fs = FileSaver.new( @engine, @pn, @obj, @source_doc, batch )
-        fs.save
+        return fs.save
+      end
+
+      #
+      # The file was just saved: keep the source document for what was
+      # written, with each declaration remembering its object's place and
+      # value as saved.
+      #
+      def saved( doc )
+        @source_doc = doc
+        doc.obj_nodes.each( &:remember )
       end
 
       #

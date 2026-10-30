@@ -119,10 +119,10 @@ class FileLoaderTest < BaseEngineTest
 
     demo = doc.roots.first
     assert_equal 'demo', demo.name
-    assert_equal "#\n# leading doc comment for demo\n#", demo.leading_doc
+    assert_equal "#\n# leading doc comment for demo\n#\n", demo.leading_doc
 
     msg_node = demo.children.find { |n| n.is_a?( Gloo::Persist::Source::ObjNode ) && n.name == 'msg' }
-    assert_equal '  # leading doc for msg', msg_node.leading_doc
+    assert_equal "  # leading doc for msg\n", msg_node.leading_doc
 
     # the detached comment floats as its own node, followed by a blank
     # line node, both ahead of 'other' -- which gets no leading_doc.
@@ -250,15 +250,31 @@ class FileLoaderTest < BaseEngineTest
     assert_equal [], warnings.select { |w| w.include?( 'already declared' ) }
   end
 
-  def test_same_file_duplicate_name_does_not_warn
-    warnings = []
-    @engine.log.define_singleton_method( :warn ) { |msg| warnings << msg }
-
-    @engine.persist_man.load 'sub/intra_dup'
+  def test_same_file_duplicate_name_with_a_different_value_warns
+    warnings = capture_warnings { @engine.persist_man.load 'sub/intra_dup' }
 
     assert_equal 'first', @engine.heap.root.find_child( 'holder' ).find_child( 'd' ).value
-    assert_equal [], warnings.select { |w| w.include?( 'already declared' ) },
-                 'a documented first-wins duplicate inside one file should be silent'
+    dups = warnings.select { |w| w.include?( 'already declared' ) }
+    assert_equal 1, dups.size
+    assert_includes dups.first, "'d' is already declared above with a different value " \
+                                '("first" kept, "second" ignored).'
+  end
+
+  def test_same_file_duplicate_name_with_the_same_value_does_not_warn
+    warnings = capture_warnings { load_text "h [can] :\n  d [string] : same\n  d [string] : same\n" }
+    assert_equal [], warnings.select { |w| w.include?( 'already declared' ) }
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_a_container_declared_twice_in_one_file_merges_without_a_warning
+    warnings = capture_warnings { load_text "h [can] :\n  box [can] :\n    x [int] : 1\n  box [can] :\n    y [int] : 2\n" }
+    assert_equal [], warnings.select { |w| w.include?( 'already declared' ) }
+    box = Gloo::Core::Pn.new( @engine, 'h.box' ).resolve
+    assert_equal %w[x y], box.children.map( &:name )
+    assert_equal 1, @engine.heap.root.find_child( 'h' ).children.size
+  ensure
+    FileUtils.remove_entry @dir if @dir
   end
 
   def test_nested_container_shorthand_builds_the_chain
@@ -355,7 +371,7 @@ class FileLoaderTest < BaseEngineTest
       doc = @engine.persist_man.maps.last.source_doc
       directive = doc.children.find { |n| n.is_a?( Gloo::Persist::Source::DirectiveNode ) }
       assert directive
-      assert_equal 'load lib yaml', directive.raw
+      assert_equal "load lib yaml\n", directive.raw
     ensure
       Gloo::Persist::FileLoader.send( :define_method, :run_lib_directive, dm )
     end
@@ -600,6 +616,93 @@ class FileLoaderTest < BaseEngineTest
     fl.load
     refute fl.found?
     assert @engine.error?
+  end
+
+
+  # -------------------------------------------------------------------
+  #   Lossless load (7.2)
+  # -------------------------------------------------------------------
+
+  def test_saving_leaves_a_bracket_with_a_space_before_it_as_written
+    load_text "a [can] :\n  sql [string ] : BEGIN\nselect 1\nEND\n"
+    @engine.parser.run 'save a'
+    assert_equal "a [can] :\n  sql [string ] : BEGIN\nselect 1\nEND\n",
+      File.read( File.join( @dir, 't.gloo' ) )
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_source_text_is_the_file
+    text = "# top\n\na [can] :\n  s [script] :\n    show 1 \\\n      + 2\n\n    # note\n  t [text] : BEGIN\nx \\\ny\n  END\n# end"
+    load_text text
+    assert_equal text, @engine.persist_man.maps.last.source_doc.text
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_a_tab_and_spaces_on_one_line_add_up
+    load_text "v [can] :\n\ta [can] :\n\t  x [int] : 1\n  \ty [int] : 2\n\tb [int] : 3\n"
+    v = @engine.heap.root.find_child( 'v' )
+    assert_equal %w[a b], v.children.map( &:name )
+    assert_equal %w[x y], v.find_child( 'a' ).children.map( &:name )
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_odd_leftover_spaces_round_down
+    loader = Gloo::Persist::FileLoader.new( @engine, 'none' )
+    assert_equal 1, loader.tab_count( '   x' )
+    assert_equal 2, loader.tab_count( "\t   x" )
+    assert_equal 0, loader.tab_count( ' x' )
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_a_backslash_in_a_block_does_not_join_lines
+    load_text "a [can] :\n  t [text] : BEGIN\none \\\ntwo\nEND\n  n [int] : 1\n"
+    a = @engine.heap.root.find_child( 'a' )
+    assert_equal "one \\\ntwo\n", a.find_child( 't' ).value
+    assert_equal 1, a.find_child( 'n' ).value
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_a_begin_with_no_end_runs_to_the_end_of_the_file
+    warnings = capture_warnings { load_text "a [can] :\n  t [text] : BEGIN\none\ntwo\n" }
+    assert_equal "one\ntwo\n", @engine.heap.root.find_child( 'a' ).find_child( 't' ).value
+    assert warnings.any? { |w| w.include?( 'BEGIN block has no END' ) }
+    assert_equal "a [can] :\n  t [text] : BEGIN\none\ntwo\n", @engine.persist_man.maps.last.source_doc.text
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_utf8_is_read_as_utf8_whatever_the_locale
+    was = Encoding.default_external
+    Encoding.default_external = Encoding::US_ASCII
+    load_text "a [can] :\n  s [string] : caf\u00e9 \u{1F389}\n"
+    assert_equal "caf\u00e9 \u{1F389}", @engine.heap.root.find_child( 'a' ).find_child( 's' ).value
+  ensure
+    Encoding.default_external = was
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_bytes_that_are_not_utf8_load_with_a_warning_and_save_back_as_they_were
+    require 'tmpdir'
+    @dir = Dir.mktmpdir
+    bytes = "a [can] :\n  x [string] : caf\xE9\n  y [string] : fine\n".b
+    File.binwrite( File.join( @dir, 't.gloo' ), bytes )
+    @engine.settings.override_project_path( "#{@dir}/" )
+    warnings = capture_warnings { @engine.persist_man.load 't' }
+
+    a = @engine.heap.root.find_child( 'a' )
+    assert_equal "caf\uFFFD", a.find_child( 'x' ).value
+    assert_equal 'fine', a.find_child( 'y' ).value
+    assert warnings.any? { |w| w.include?( 'not valid UTF-8' ) }
+
+    @engine.parser.run 'save a'
+    assert_equal bytes, File.binread( File.join( @dir, 't.gloo' ) )
+  ensure
+    FileUtils.remove_entry @dir if @dir
   end
 
 end

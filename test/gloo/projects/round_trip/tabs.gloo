@@ -1,0 +1,8 @@
+tabs [can] :
+	a [string] : one
+	s [script] :
+		show 1
+
+		show 2
+	c [can] :
+		d [int] : 4

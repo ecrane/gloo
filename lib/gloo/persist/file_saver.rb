@@ -4,16 +4,20 @@
 # Helper class used to save an object to a file.
 #
 # Given a Source::SourceDoc (captured at load time), this is a
-# rewriter, not a regenerator: trivia (comments, blank lines,
-# directives) is emitted verbatim, and a declaration's raw text is
-# kept as-is unless the live object's value has actually changed --
-# only then is the value re-rendered, via the object's own
-# serialize_value. Deleted objects drop out; objects created since
-# load are rendered fresh and appended.
+# rewriter, not a regenerator. Comments, blank lines and directives are
+# written back exactly as read. A declaration whose object is still in
+# its place is written back exactly too, unless it holds the object's
+# value and the value changed: then its head is kept and the value is
+# written again. A declaration whose object was deleted or moved away
+# is dropped. A new object, or one moved in, is written after the last
+# child of its parent's first declaration, in the file's style.
+#
+# The save builds a new source document for what it writes, so the
+# file can be saved again (and checked for changes) the same way.
 #
 # With no SourceDoc at all (the object was never loaded from a file),
-# this falls back to plain regeneration from the heap, so saving a
-# brand-new in-memory object still works.
+# the file is written from the heap, so saving a brand-new in-memory
+# object still works.
 #
 
 module Gloo
@@ -22,17 +26,10 @@ module Gloo
 
       #
       # Set up a file saver. source_doc is optional -- when given, the
-      # save rewrites it in place; otherwise the file is regenerated
-      # from the heap.
-      #
-      # For a multi-file namespace to round-trip, batch carries two sets
-      # (PersistMan#save_batch builds them):
-      #  - :others -- objects declared by *other* loaded files'
-      #    SourceDocs; this saver leaves them out even though they're
-      #    live children of a container it shares.
-      #  - :claimed -- a set shared across the whole save batch; a
-      #    brand-new object no file owns is written by the first saver to
-      #    reach it, which adds it here so the rest skip it.
+      # save rewrites it; otherwise the file is written from the heap.
+      # batch, when given, carries the SaveIndex shared by every file in
+      # one save (PersistMan#save_batch builds it); without one, the
+      # saver indexes every loaded file itself.
       #
       def initialize( engine, pn, obj, source_doc = nil, batch = nil )
         @engine = engine
@@ -40,256 +37,191 @@ module Gloo
         @pn = pn
         @obj = obj
         @source_doc = source_doc
-        @others = batch && batch[ :others ]
-        @claimed = batch && batch[ :claimed ]
+        @index = batch && batch[ :index ]
       end
 
       #
-      # Save the object to the file.
+      # Save the object to the file. Returns the source document for
+      # what was written.
       #
       def save
-        data = @source_doc ? rewrite : regenerate
-        @mech.write( @pn, data )
+        doc = render
+        @mech.write( @pn, doc.text )
+        return doc
       end
 
       #
-      # Get string of tabs for indentation.
-      #
-      def tabs( indent = 0 )
-        return "\t" * indent
-      end
-
-      #
-      # Would saving now actually change anything on disk? True if any
-      # known declaration's value no longer matches its raw source, or
-      # its object was deleted. (Doesn't detect a brand-new object with
-      # no source node of its own -- an approximation, not a guarantee,
-      # good enough to warn before a reload discards changes.)
+      # Would saving now actually change anything on disk?
       #
       def dirty?
         return false unless @source_doc
 
-        return any_dirty?( @source_doc.children, @engine.heap.root )
+        return render.text != @source_doc.text
       end
 
       #
-      # Convert an object to textual representation from scratch, with
-      # no source text to preserve. This is a recursive function, and
-      # is also reused by the rewriter for any object created since
-      # load (which has no source node of its own to rewrite).
+      # The text for an object and everything under it, written from
+      # scratch in the default style (indent is the depth of its
+      # declaration).
       #
       def get_obj( obj, indent = 0 )
-        t = tabs( indent )
-        str = "#{t}#{obj.name} [#{obj.type_display}]#{obj.serialize_value( indent )}\n"
-        obj.children.each do |child|
-          str << get_obj( child, indent + 1 )
-        end
-        return str
+        @index = SaveIndex.new( @engine, [] )
+        @writer = DeclarationWriter.new( @engine, FileStyle.new( @engine ) )
+        @unit = FileStyle::DEFAULT_UNIT
+        return unplaced( obj, FileStyle::DEFAULT_UNIT * indent ).text
+      end
+
+      #
+      # A source node for an object and everything under it, written
+      # from scratch in the default style, at the top of a file, with
+      # the given name (a dotted path when it's written into a file of
+      # its own).
+      #
+      def new_node( obj, name = obj.name )
+        @index = SaveIndex.new( @engine, [] )
+        @writer = DeclarationWriter.new( @engine, FileStyle.new( @engine ) )
+        @unit = FileStyle::DEFAULT_UNIT
+        @index.claim( obj )
+        return unplaced( obj, '', name )
+      end
+
+      #
+      # The source document for what a save would write.
+      #
+      def render
+        return regenerate unless @source_doc
+
+        @index ||= SaveIndex.new( @engine, @engine.persist_man.maps )
+        style = FileStyle.new( @engine, @source_doc )
+        @writer = DeclarationWriter.new( @engine, style )
+        @unit = style.unit
+        doc = Source::SourceDoc.new
+        doc.no_final_newline = @source_doc.no_final_newline
+        render_nodes( @source_doc.children, doc.children )
+        return doc
       end
 
       private
 
       #
-      # Regenerate the whole file from the heap (the pre-Source::SourceDoc
-      # behavior), used when there's no source text to rewrite.
+      # A document for a file written from scratch: the object and
+      # everything under it.
       #
       def regenerate
-        return get_obj( @obj )
+        doc = Source::SourceDoc.new
+        doc.children << new_node( @obj )
+        return doc
       end
 
       #
-      # Does any node in the given list represent a change from what's
-      # on disk -- its object gone from live_parent's children (an
-      # untracked deletion counts too), or its value changed?
+      # Write one level of source nodes into out: comments, blank lines
+      # and directives as they are; each standing declaration (with
+      # anything new under it); and after a dotted declaration, any new
+      # children of the containers it names.
       #
-      def any_dirty?( nodes, live_parent )
-        nodes.any? do |node|
-          next false unless node.is_a?( Source::ObjNode )
-
-          _top, leaf = locate( node, live_parent )
-          next true unless leaf
-          next true unless value_unchanged?( node )
-
-          any_dirty?( node.children, leaf )
-        end
-      end
-
-      # ---------------------------------------------------------------------
-      #    Rewrite (Source::SourceDoc-driven)
-      # ---------------------------------------------------------------------
-
-      #
-      # Rewrite the file from its source document: known declarations
-      # are patched in place, deleted ones dropped, and anything new
-      # appended.
-      #
-      def rewrite
-        return render_children( @source_doc.children, @engine.heap.root, 0 )
-      end
-
-      #
-      # Render one level of source nodes against the live children of
-      # live_parent: trivia passes through untouched; a declaration
-      # whose object is still present is patched in place; one whose
-      # object is gone is dropped; anything in live_parent.children
-      # with no matching source node is new and gets rendered fresh
-      # (unless another file owns it -- see #owned).
-      #
-      def render_children( nodes, live_parent, indent )
-        str = ''
-        seen = []
+      def render_nodes( nodes, out )
         nodes.each do |node|
-          if node.is_a?( Source::ObjNode )
-            top, leaf = locate( node, live_parent )
-            next unless leaf
+          unless node.is_a?( Source::ObjNode )
+            out << node
+            next
+          end
+          next unless @index.standing?( node )
 
-            seen << top
-            str << render_obj_node( node, indent )
-          else
-            str << render_trivia( node )
+          out << render_obj_node( node )
+          @index.shorthand_targets( node ).each do |parent, prefix|
+            @index.unplaced_children( parent ).each do |child|
+              out << unplaced( child, node.raw_indent, "#{prefix}.#{child.name}" )
+            end
           end
         end
+      end
 
-        ( live_parent.children - seen ).each do |child|
-          next unless write_new_child?( child )
+      #
+      # One standing declaration: written as it was unless it holds a
+      # value that changed; its children the same way; then, if this is
+      # where its object's new children go, those.
+      #
+      def render_obj_node( node )
+        copy = node.detached( own_text( node ) )
+        render_nodes( node.children, copy.children )
+        return copy unless node.obj && writes_children_of?( node )
 
-          str << get_obj( child, indent )
+        indent = child_indent( copy )
+        at = after_last_declaration( copy.children )
+        @index.unplaced_children( node.obj ).each do |child|
+          copy.children.insert( at, unplaced( child, indent ) )
+          at += 1
         end
-        return str
+        return copy
       end
 
       #
-      # A live child with no source node at this level. Write it unless
-      # another file owns it, or another file in this batch already
-      # wrote it as a brand-new object. A genuinely new object is
-      # written here and claimed.
+      # Where a new child goes in a list of nodes: after the last
+      # declaration, ahead of any comments and blank lines that follow
+      # it (they lead into what comes next).
       #
-      def write_new_child?( child )
-        return false if @others&.key?( child )
-        return false if @claimed&.key?( child )
-
-        @claimed[ child ] = true if @claimed
-        return true
+      def after_last_declaration( nodes )
+        last = nodes.rindex { |n| n.is_a?( Source::ObjNode ) }
+        return last ? last + 1 : 0
       end
 
       #
-      # Resolve a source node against the live tree under live_parent.
-      # A plain name is a direct child; a dotted name (nested container
-      # shorthand, page.core.users.list) walks the chain. Returns
-      # [top-level object to mark as handled, the node's own object],
-      # or [nil, nil] if the node's object is no longer there.
+      # The declaration's own text: as read (with any head gloo had to
+      # guess at written as understood), or written again if it holds
+      # its object's value and the value changed.
       #
-      def locate( node, live_parent )
-        return [ nil, nil ] unless node.obj
+      def own_text( node )
+        fixed = node.repaired
+        return fixed.raw unless node.obj && @index.holder?( node ) && node.changed?
 
-        segments = node.name.split( '.' )
-        if segments.length == 1
-          return live_parent.children.include?( node.obj ) ? [ node.obj, node.obj ] : [ nil, nil ]
+        return @writer.changed_text( fixed )
+      end
+
+      #
+      # Is this declaration where its object's new children are written?
+      #
+      def writes_children_of?( node )
+        fs, target, prefix = @index.writer_for( node.obj )
+        return fs&.source_doc.equal?( @source_doc ) && target.equal?( node ) && prefix.nil?
+      end
+
+      #
+      # The indentation for a new child of a declaration: its last
+      # child's, or one step in from it.
+      #
+      def child_indent( node )
+        last = node.children.reverse.find { |c| c.is_a?( Source::ObjNode ) }
+        return last ? last.raw_indent : "#{node.raw_indent}#{@unit}"
+      end
+
+      #
+      # A node for an object no standing declaration places, and
+      # everything under it: a moved object keeps its first declaration
+      # (and doc) at the new indentation; a new one is written from
+      # scratch. name is how it's written (a dotted path for a shorthand
+      # line).
+      #
+      def unplaced( obj, indent, name = obj.name )
+        node = moved_node( obj, indent, name ) || @writer.new_node( obj, indent, name )
+        obj.children.each do |child|
+          next if @index.placed?( child ) || !@index.claim( child )
+
+          node.children << unplaced( child, "#{indent}#{@unit}" )
         end
-
-        top = live_parent.find_child( segments.first )
-        return [ nil, nil ] unless top
-
-        leaf = top
-        segments[ 1..-1 ].each do |seg|
-          leaf = leaf.find_child( seg )
-          return [ nil, nil ] unless leaf
-        end
-        return leaf.equal?( node.obj ) ? [ top, leaf ] : [ nil, nil ]
+        return node
       end
 
       #
-      # A comment, blank line, or top-of-file directive -- passed
-      # through exactly as read.
+      # The first declaration of a moved object, at its new place.
       #
-      def render_trivia( node )
-        return "#{node.raw}\n"
-      end
+      def moved_node( obj, indent, name )
+        _fs, first = @index.entries_for( obj ).first
+        return nil unless first
 
-      #
-      # One declaration whose object is still live: its leading_doc (if
-      # any) and its own line are kept (name/type/indent never change
-      # once declared), its value is kept raw or re-rendered depending
-      # on whether it changed, and its children are rewritten the same
-      # way, one level deeper.
-      #
-      def render_obj_node( node, indent )
-        str = node.leading_doc ? "#{node.leading_doc}\n" : ''
-        str << "#{node.raw_indent}#{node.name} [#{node.raw_type}]#{declaration_tail( node, indent )}\n"
-        str << render_children( node.children, node.obj, indent + 1 )
-        return str
-      end
-
-      #
-      # The text that follows "name [type]" on the declaration line:
-      # the raw source, unless the live value no longer matches it.
-      #
-      def declaration_tail( node, indent )
-        return raw_declaration_tail( node ) if value_unchanged?( node )
-
-        return node.obj.serialize_value( indent )
-      end
-
-      #
-      # Reproduce the original declaration's value text exactly as it
-      # was read. raw_tail is the declaration line's own exact tail
-      # (eg. " : BEGIN" or " :"); a begin_end/body style has further
-      # raw content following it.
-      #
-      def raw_declaration_tail( node )
-        case node.block_style
-        when :begin_end
-          return "#{node.raw_tail}\n#{node.raw_value}#{node.raw_end_indent}END"
-        when :body
-          return node.raw_value.to_s.empty? ? node.raw_tail : "#{node.raw_tail}\n#{node.raw_value}"
-        else
-          return node.raw_tail
-        end
-      end
-
-      # ---------------------------------------------------------------------
-      #    Has the value actually changed since load?
-      # ---------------------------------------------------------------------
-
-      #
-      # Does the live object's value still match what raw_value would
-      # produce? A script body is compared line by line (raw comments
-      # excluded, since they were never run); everything else is
-      # compared by re-running the raw text through the same set_value
-      # conversion the loader used, and comparing the result.
-      #
-      def value_unchanged?( node )
-        return false unless node.obj
-        return body_value_unchanged?( node ) if node.block_style == :body
-
-        trial = node.obj.class.new( @engine )
-        # Only a comparison: any bad-value warning was given on load.
-        @engine.without_warnings { trial.set_value( node.raw_value ) }
-        return trial.value == node.obj.value
-      rescue
-        return false
-      end
-
-      #
-      # A script body's raw text, minus its comment lines (never
-      # executed) and with each line stripped, should equal the live
-      # object's own command lines.
-      #
-      def body_value_unchanged?( node )
-        raw_lines = node.raw_value.to_s.split( "\n" )
-        executable = raw_lines.reject { |l| l.strip.start_with?( '#' ) }.map( &:strip )
-        return executable == current_script_lines( node.obj )
-      end
-
-      #
-      # The live object's command lines, whatever form its value is
-      # currently in.
-      #
-      def current_script_lines( obj )
-        return obj.value if obj.value_is_array?
-        return [] if obj.value_is_blank?
-
-        return [ obj.value.to_s.strip ]
+        node = first.detached( first.changed? ? @writer.changed_text( first ) : first.raw )
+        node.rename( name ) unless name == node.name
+        node.reindent( indent )
+        return node
       end
 
     end

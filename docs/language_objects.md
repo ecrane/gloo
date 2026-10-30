@@ -15,18 +15,19 @@
 Object names are single words (no spaces) and conform to the following:
 
 - Spaces in names are not allowed.
-- Names should be unique within their context.
-    - Note that there is no technical restriction. Multiple objects with the same name in the same context can exist, but there's no way to reference objects past the first one with the given name.
+- A name is unique within its container.
+    - Declaring a name again, in the same file or another one, names the same object: its children are added to the first one's, and its value is ignored (with a warning when it's different). `create` with a name that's already there leaves the object as it is, and `move` won't move an object into a container that already has its name.
 - Names can be capitalized or lower case.
-    - But names with different cases are not treated as unique.
+    - But names with different cases are not different names: `a` and `A` are the same object.
 - Names can contain numbers and special characters.
 
 ```gloo
 #
 # Example of object naming.
 #
-# NOTE that the second 'a' and the 'A' objects are not reachable.
-# 'naming.a' will always reach the 'First A' string.
+# NOTE that the second 'a' and the 'A' lines name the same object as
+# the first: 'naming.a' is 'First A', and loading warns that the other
+# two values are ignored.
 #
 naming [container] :
   on_load [script] :
@@ -35,8 +36,8 @@ naming [container] :
     show naming.1
   msg!$% [string] : Naming stuff
   a [string] : First A
-  a [string] : Second A is not reachable
-  A [string] : Capital A is not reachable
+  a [string] : Second A
+  A [string] : Capital A
   1 [string] : One
 ```
 

@@ -1,0 +1,8 @@
+same_name [can] :
+  a [string] : First A
+  a [string] : Second A
+  A [string] : Capital
+  box [can] :
+    x [int] : 1
+  box [can] :
+    y [int] : 2

@@ -113,11 +113,29 @@ An object's doc comment goes wherever the object goes: it moves with a moved or 
 
 A save never loses or alters data: loading the saved files again gives back the same objects, with the same values and docs, under the same parents. The interpreter decides how a changed or new declaration is laid out; only what it says has to come back the same.
 
+How a change is written:
+
+- A changed declaration keeps its name, type and spacing as written (an untyped `plain : old` stays untyped); only its value is written again.
+- A new object goes after the last child of its parent's first declaration, indented like its neighbours, with its type spelled the way the file spells it (`[int]` in a file of `[int]`s), so it looks like the rest of the file. A new child of a container that only exists through a dotted name (`page.core.users [can] :` makes `page` and `core`) is written as a dotted line too: `page.core.x [string] : v`.
+- A moved object takes its first declaration and its doc comment with it, at its new depth. Moving it into another file's container saves that file too.
+- An object deleted and then created again is a new object: it's written where new objects go, without the old doc comment.
+- A new top-level object isn't added to an existing file, so a bare `save` leaves it out and warns, naming it (`Not saved (no file yet): notes. Use save notes.`). `save {obj}` writes it to a file of its own, which later saves include.
+- A file that doesn't end with a line break still doesn't after a save.
+
+An object can be declared on more than one line — the same name twice in one container, or in more than one file (see Language, Objects, Object Naming). It's one object: its first declaration holds its value, so a change rewrites only that line, and the later lines stay exactly as written. Deleting or moving the object takes all of its lines with it, in every file, so a reload doesn't bring it back.
+
+A few things can't be written back exactly; save writes the closest thing and, for a value, warns `Could not save '{path}' exactly: {why}.`:
+
+- A multi-line value is written as a `BEGIN` … `END` block, its lines exactly as they are (a block's lines are its value, so they're not indented to match). A block value always ends with a line break, so a value without one gains it; a line that is just `END` would end the block early; and bytes that aren't UTF-8 are written as they are.
+- A value ending in `\` or `BEGIN` is written as a block, since on the line it would be read as a continuation or a block start.
+- A changed script body is written from its commands, at its original indentation; the comments and blank lines inside it are lost. (An untouched one is kept exactly.)
+- A declaration gloo had to guess at when loading — no name (`[int] : 3` loads as `unnamed_1`) or a missing `]` (`b [int : 3`) — is written as gloo understood it.
+
 `save {obj} to {path}` doesn't just write a copy — `obj` stops being declared in its old file, wherever that was. Given `app.core.settings` declared inside `app.gloo`, `save app.core.settings to config/settings` leaves `app.gloo` without a `settings` subtree and writes `config/settings.gloo` with `app.core.settings [can] : ...` at the top level (the `app`/`core` prefix is implied via nested-container shorthand, not repeated as nested declarations) plus everything `settings` owns underneath, comments included. An object with no file of its own yet (brand new, or nested under an object that's never been saved) is simply written fresh — nothing to move.
 
 If `obj`'s own subtree already has declarations spread across more than one file (the namespace-merge pattern below, applied *inside* the subtree being extracted, not just above it), extraction refuses rather than guessing which file's slice is authoritative — save each contributing file on its own first.
 
-Several files can contribute to one container — declare `app [container] :` in each and add different children. They merge in the heap, and each file's save only rewrites its own declarations. If two files declare the *same* object with different values, the first one loaded wins and `load` logs a warning.
+Several files can contribute to one container — declare `app [container] :` in each and add different children. They merge in the heap, and each file's save only rewrites its own declarations; a new child of `app` goes into the file with `app`'s first declaration (the first loaded). If two files declare the *same* object with different values, the first one loaded wins and `load` logs a warning — the same as two declarations in one file.
 
 An object can also save itself: `tell config to save`.
 

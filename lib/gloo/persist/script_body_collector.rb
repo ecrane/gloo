@@ -36,15 +36,16 @@ module Gloo
       end
 
       #
-      # One line while a body might be open. line_tabs is its
+      # One line while a body might be open. line is the line as read
+      # (continuations joined), raw its exact source text, line_tabs its
       # indentation (ignored for a blank line, which is always kept).
-      # Returns true if the line was consumed as body content, or
-      # false if it closed the body and still needs to be dispatched
-      # normally by the caller.
+      # Returns true if the line was consumed as body content, or false
+      # if it closed the body and still needs to be dispatched normally
+      # by the caller.
       #
-      def handle_line( line, line_tabs )
+      def handle_line( line, raw, line_tabs )
         if line.strip.empty?
-          @lines << chomped( line )
+          keep( raw )
           return true
         end
 
@@ -53,7 +54,8 @@ module Gloo
           return false
         end
 
-        add_line( line )
+        keep( raw )
+        @obj.add_line( line ) unless line.strip.start_with?( '#' )
         return true
       end
 
@@ -69,14 +71,14 @@ module Gloo
       private
 
       #
-      # Record one real body line: kept verbatim for the source model;
-      # added as a runnable command only if it isn't a comment (a
-      # comment inside a script body is documentation, not something
-      # to execute).
+      # Keep one body line's exact text: on the node's own text, and in
+      # the body's raw value. A comment line is kept but isn't added as a
+      # command (a comment inside a script body is documentation, not
+      # something to execute).
       #
-      def add_line( line )
-        @lines << chomped( line )
-        @obj.add_line( line ) unless line.strip.start_with?( '#' )
+      def keep( raw )
+        @node.raw << raw
+        @lines << raw.chomp( "\n" )
       end
 
       #
@@ -88,13 +90,6 @@ module Gloo
         @node.block_style = :body unless @lines.empty?
         @node = nil
         @obj = nil
-      end
-
-      #
-      # A line's raw text with its trailing newline removed.
-      #
-      def chomped( line )
-        return line.chomp( "\n" )
       end
 
     end

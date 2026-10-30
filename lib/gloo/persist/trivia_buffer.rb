@@ -29,16 +29,16 @@ module Gloo
       end
 
       #
-      # Buffer one comment line. raw is the full source line (minus
-      # its trailing newline); tabs is its indentation level.
+      # Buffer one comment line. raw is the full source line, with its
+      # line ending; tabs is its indentation level.
       #
       def push_comment( raw, tabs )
         @pending << { :kind => :comment, :raw => raw, :tabs => tabs }
       end
 
       #
-      # Buffer one blank line. raw is its exact source text (may be
-      # non-empty if it had trailing whitespace) -- a blank line always
+      # Buffer one blank line. raw is its exact source text, with its
+      # line ending and any trailing whitespace -- a blank line always
       # breaks a comment run's association with whatever declaration
       # follows, the same as it always has.
       #
@@ -61,8 +61,8 @@ module Gloo
       #
       # If the run since the last blank (or the whole run, if it has no
       # blank in it) is one or more comment lines all at the same
-      # indent as line_tabs, claim it as a leading_doc (raw,
-      # newline-joined). Anything before that -- an earlier blank, and
+      # indent as line_tabs, claim it as a leading_doc (the raw lines,
+      # line endings included). Anything before that -- an earlier blank, and
       # whatever preceded it -- floats into children first, in order,
       # since a blank always breaks the association. If the trailing
       # run doesn't qualify (wrong indent, or empty), it floats into
@@ -74,7 +74,7 @@ module Gloo
         flush_list( before, children )
 
         if after.any? && after.last[ :tabs ] == line_tabs
-          doc = after.map { |t| t[ :raw ] }.join( "\n" )
+          doc = after.map { |t| t[ :raw ] }.join
           @pending = []
           return doc
         end

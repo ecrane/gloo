@@ -1,0 +1,16 @@
+#
+# A script body with blank lines, comments, an inline comment and a
+# continuation line.
+#
+body [can] :
+  n [int] : 0
+  on_load [script] :
+    put 1 into ^.n
+
+    # a comment line inside the body
+    put ^.n + 1 into ^.n  # an inline comment
+    put ^.n + \
+      2 into ^.n
+
+
+  after [string] : after the body

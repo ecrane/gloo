@@ -60,4 +60,13 @@ class SourceDocTest < BaseEngineTest
     assert_nil doc.extract( o )
   end
 
+
+  def test_text_leaves_off_a_missing_final_newline
+    doc = Gloo::Persist::Source::SourceDoc.new
+    doc.children << Gloo::Persist::Source::CommentNode.new( +'# last' )
+    doc.missing_final_newline!
+    assert_equal "# last\n", doc.children.first.raw
+    assert_equal '# last', doc.text
+  end
+
 end

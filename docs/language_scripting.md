@@ -9,7 +9,9 @@
 
 ## Gloo Script Files
 
-Gloo scripts are stored in regular text files with the `.gloo` extension.
+Gloo scripts are stored in regular text files with the `.gloo` extension. A file is UTF-8, whatever the locale gloo runs in (cron and launchd, for example, give a process a plain ASCII locale). A line with bytes that aren't UTF-8 still loads, with a warning: those bytes read as `�` (U+FFFD), and the file keeps them, so saving it doesn't change them.
+
+Indentation is what puts an object under another: one level deeper is a tab or two spaces. They can be mixed, from line to line or on one line (a tab and two spaces is two levels).
 
 Conventions:
 
@@ -85,7 +87,7 @@ constants [can] :
 
 ## Line Continuation
 
-In gloo scripting, a line continuation is done by ending a line with a backslash (`\`). Logical lines can be split across multiple physical lines of text in scripts. A line break is otherwise an indication of a new statement.
+In gloo scripting, a line continuation is done by ending a line with a backslash (`\`). Logical lines can be split across multiple physical lines of text in scripts. A line break is otherwise an indication of a new statement. Inside a `BEGIN` … `END` block a backslash is just a character: the block's lines are its value, exactly as written.
 
 ```gloo
 #

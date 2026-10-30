@@ -13,12 +13,19 @@ module Gloo
         attr_reader :raw
 
         #
-        # Set up a blank line node. raw is the full source line, minus
-        # its trailing newline (may be non-empty if the blank line had
-        # trailing whitespace -- preserved rather than normalized).
+        # Set up a blank line node. raw is the full source line with its
+        # line ending (none on a file's last line if the file doesn't end
+        # with one); any trailing whitespace on the blank line is kept.
         #
         def initialize( raw = '' )
           @raw = raw
+        end
+
+        #
+        # The node's exact source text.
+        #
+        def text
+          return @raw
         end
 
       end

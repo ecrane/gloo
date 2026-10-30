@@ -14,6 +14,7 @@ module Gloo
 
       PATH_EXISTS_ERR = 'Will not overwrite a file not already saved there: '.freeze
       RELOAD_DIRTY_WARNING = 'Reloading will discard unsaved changes in: '.freeze
+      NOT_SAVED_WARNING = 'Not saved (no file yet): '.freeze
 
       #
       # Constructor for the persistence manager.
@@ -33,10 +34,25 @@ module Gloo
       end
 
       #
-      # Save every open file.
+      # Save every open file. A new top-level object has no file to go
+      # in, so it isn't saved; warn, naming each one.
       #
       def save_all
         save_batch( @maps )
+        warn_unsaved_roots
+      end
+
+      #
+      # Warn about top-level objects no file declares (made since load),
+      # which a bare save leaves out.
+      #
+      def warn_unsaved_roots
+        index = Gloo::Persist::SaveIndex.new( @engine, @maps )
+        names = @engine.heap.root.children.reject { |o| index.placed?( o ) }.map( &:name )
+        return if names.empty?
+
+        how = names.size == 1 ? "save #{names.first}" : 'save {name} for each'
+        @engine.warn "#{NOT_SAVED_WARNING}#{names.join( ', ' )}. Use #{how}."
       end
 
       #
@@ -271,17 +287,47 @@ module Gloo
       end
 
       #
-      # Save a set of files as one batch so a multi-file namespace
-      # round-trips: each file only rewrites the declarations its own
-      # SourceDoc holds and leaves other files' declarations alone; a
-      # brand-new object no file owns is written once, by the first file
-      # in the batch to reach it.
+      # Save a set of files as one batch, with one index of what every
+      # loaded file declares: each file writes back its own declarations
+      # and leaves other files' alone, and a new or moved object is
+      # written once, by the file its parent's first declaration is in.
+      # A file an object moved into is saved too, so the object isn't
+      # dropped from one file without being written to another. Each
+      # file then keeps a source document for what was written.
       #
       def save_batch( files )
-        claimed = {}.compare_by_identity
+        index = Gloo::Persist::SaveIndex.new( @engine, @maps )
+        files = with_move_targets( files, index )
+        saved = files.map { |fs| [ fs, fs.save( :index => index ) ] }
+        saved.each { |fs, doc| fs.saved( doc ) }
+      end
+
+      #
+      # The files to save, plus any file an object declared in one of
+      # them has moved into.
+      #
+      def with_move_targets( files, index )
+        all = files.dup
         files.each do |fs|
-          fs.save( :others => owned_elsewhere( fs ), :claimed => claimed )
+          next unless fs.source_doc
+
+          fs.source_doc.obj_nodes.each do |node|
+            next if index.standing?( node ) || !attached?( node.obj )
+
+            target, = index.writer_for( node.obj.parent )
+            all << target if target && !all.include?( target )
+          end
         end
+        return all
+      end
+
+      #
+      # Is the object attached to a parent (it was moved, not deleted)?
+      #
+      def attached?( obj )
+        return false unless obj&.parent
+
+        return obj.parent.children.any? { |c| c.equal?( obj ) }
       end
 
       #
@@ -290,20 +336,6 @@ module Gloo
       def declared_by( fs )
         owned = {}.compare_by_identity
         collect_owned( fs.source_doc&.children, owned )
-        return owned
-      end
-
-      #
-      # Every heap object declared by some loaded file's SourceDoc
-      # other than fs.
-      #
-      def owned_elsewhere( fs )
-        owned = {}.compare_by_identity
-        @maps.each do |other|
-          next if other.equal?( fs )
-
-          collect_owned( other.source_doc&.children, owned )
-        end
         return owned
       end
 
@@ -362,7 +394,7 @@ module Gloo
       def save_new( obj, pn )
         @engine.event_manager.on_save obj
         fs = Gloo::Persist::FileStorage.new( @engine, pn, root_of( obj ) )
-        fs.save
+        fs.saved( fs.save )
         @maps << fs
       end
 

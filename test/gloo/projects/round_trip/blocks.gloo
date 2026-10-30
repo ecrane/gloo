@@ -1,0 +1,13 @@
+blocks [can] :
+  col0 [text] : BEGIN
+first
+  second, indented
+END
+  indented [text] : BEGIN
+    four spaces in
+    and again
+    END
+  ends_in_backslash [text] : BEGIN
+a line ending in a backslash \
+the next line
+END

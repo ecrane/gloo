@@ -1,0 +1,7 @@
+untyped [can] :
+  plain : no type given
+  sql : BEGIN
+select *
+  from t
+END
+  empty :

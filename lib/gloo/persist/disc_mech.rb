@@ -104,10 +104,14 @@ module Gloo
       end
 
       #
-      # Read in the contents of a single file.
+      # Read in the contents of a single file, as UTF-8 whatever the
+      # locale: a .gloo file is UTF-8 (under LANG=C, a plain read would
+      # take every non-ASCII character as an invalid byte). Bytes that
+      # aren't valid UTF-8 are kept as they are; the loader warns about
+      # them.
       #
       def read( file )
-        return File.read( file )
+        return File.binread( file ).force_encoding( Encoding::UTF_8 )
       end
 
       #
@@ -123,11 +127,12 @@ module Gloo
         return File.join( @engine.settings.project_path, full_name )
       end
 
-      # 
-      # Write data to the file.
-      # 
+      #
+      # Write data to the file, byte for byte (no conversion for the
+      # locale).
+      #
       def write( pn, data )
-        File.write( pn, data )
+        File.binwrite( pn, data )
       end
 
     end

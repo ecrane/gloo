@@ -1,0 +1,7 @@
+lossless_text [can] :
+  log [text] : BEGIN
+Started.
+END
+  entry [text] : BEGIN
+Saved.
+END

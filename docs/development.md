@@ -78,6 +78,16 @@ Use plain `ruby`, not `bundle exec`. The Gemfile doesn't include `gloo-test` or 
 
 The same command runs the gloo tests of core libraries and extensions; add their `test/` folders to the list of paths.
 
+### Round-trip check
+
+Saving a file that was loaded and not changed must give back the same bytes. `test/persist/round_trip_test.rb` checks that for every `.gloo` file in `test.gloo/` and `test/gloo/projects/` (add a fixture to `test/gloo/projects/round_trip/` for a new construct). To check other folders, such as apps:
+
+```
+rake "round_trip[~/gloo/app,~/dev/gloo_apps]"
+```
+
+It copies each file to a scratch folder, loads it without running any scripts or `load lib` lines, saves it, and lists the files that came back different with their first changed line. The originals are never written.
+
 ## Documentation
 
 The narrative documentation is the set of flat pages in `docs/`, linked from the README. Two conventions keep them readable both on GitHub and in a terminal:

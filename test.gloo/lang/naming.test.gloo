@@ -4,9 +4,6 @@
 
 tests.lang.naming [can] :
 
-  dup [string] : first
-  dup [string] : second
-
   Alpha [string] : mixed case
 
   1 [string] : numeric name
@@ -18,9 +15,24 @@ tests.lang.naming [can] :
   # test so the syntax error it reports belongs to that test.
   nameless_file [file] :
 
+  # A fixture that declares one name twice, loaded inside its tests so
+  # the warning about the ignored value belongs to them.
+  dup_file [file] :
+
   # Scratch files live in the gloo tmp folder ($.gloo_tmp).
   on_load [script] :
     put $.gloo_tmp '/gloo_naming_test.gloo' into ^.nameless_file
+    put $.gloo_tmp '/gloo_naming_dup_test.gloo' into ^.dup_file
+
+  dup_src [text] : BEGIN
+dup_fixture [container] :
+  dup [string] : first
+  dup [string] : second
+  box [container] :
+    x [string] : ex
+  box [container] :
+    y [string] : why
+END
 
   nameless_src [text] : BEGIN
 naming_fixture [container] :
@@ -28,10 +40,36 @@ naming_fixture [container] :
 END
 
   first_of_a_duplicate_name_wins [test] :
-    description [string] : when two siblings share a name, the path always reaches the first.
+    description [string] : a second declaration of a name is the same object; the first value wins.
+    expect_errors [bool] : true
     on_test [script] :
-      eval ^^.dup = 'first'
-      assert "expected the first 'dup' to be the one reached"
+      tell ^^.dup_file to write ( ^^.dup_src )
+      load ( ^^.dup_file )
+      eval dup_fixture.dup = 'first'
+      assert "expected the first value to win"
+
+      tell dup_fixture to count
+      eval it = 2
+      assert "expected one 'dup' and one 'box', not four objects"
+
+      tell dup_fixture to unload
+      tell ^^.dup_file to delete
+
+  a_container_declared_twice_merges [test] :
+    description [string] : a container declared twice is one container with the children of both.
+    expect_errors [bool] : true
+    on_test [script] :
+      tell ^^.dup_file to write ( ^^.dup_src )
+      load ( ^^.dup_file )
+      tell dup_fixture.box to count
+      eval it = 2
+      assert "expected x and y in the one box"
+
+      eval dup_fixture.box.y = 'why'
+      assert "expected the second declaration's child to be there"
+
+      tell dup_fixture to unload
+      tell ^^.dup_file to delete
 
   path_lookup_is_case_insensitive [test] :
     description [string] : a pathname segment matches a name regardless of case.

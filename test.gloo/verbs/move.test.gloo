@@ -16,3 +16,42 @@ tests.verbs.move [can] :
       assert "expected a to be in t"
       exists? instance tests.verbs.move.c.a
       refute "expected a not to be in c"
+
+  # A name is unique in its container: a move onto a taken name, or
+  # inside itself, is refused.
+  taken [container] :
+    a [string] : moving
+  dst [container] :
+    a [string] : already here
+  outer [container] :
+    inner [container] :
+  msg [string] :
+
+  on_error [script] :
+  error_data [can] :
+    message [string] :
+
+  moving_onto_a_taken_name_is_refused [test] :
+    description [string] : A move into a container with a child of the same name is an error; nothing moves.
+    expect_errors [bool] : true
+    on_test [script] :
+      move ^^.taken.a to ^^.dst
+      eval it = false
+      assert "expected it to be false"
+      eval ^^.dst.a = 'already here'
+      assert "expected the child already there to be untouched"
+      exists? instance ^^.taken.a
+      assert "expected the object not to have moved"
+      put ^^.error_data.message into ^^.msg
+      check ^^.msg for starts_with? ( 'Could not move' )
+      assert "expected a could-not-move error"
+
+  moving_inside_itself_is_refused [test] :
+    description [string] : A move into the object's own child is an error; nothing moves.
+    expect_errors [bool] : true
+    on_test [script] :
+      move ^^.outer to ^^.outer.inner
+      eval it = false
+      assert "expected it to be false"
+      exists? instance ^^.outer.inner
+      assert "expected outer to still be in place"

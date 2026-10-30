@@ -10,8 +10,10 @@ class ObjNodeTest < BaseEngineTest
     assert_equal :inline, n.block_style
     assert_nil n.raw_value
     assert_nil n.leading_doc
-    assert_nil n.trailing_comment
     assert_nil n.obj
+    assert_equal '', n.raw
+    assert_nil n.home
+    assert_nil n.repaired_head
     assert_equal [], n.children
   end
 
@@ -85,6 +87,77 @@ class ObjNodeTest < BaseEngineTest
   def test_doc_does_not_dedent_when_a_line_has_no_extra_indent
     n = node_with_doc( "# Summary line.\n#   - detail one" )
     assert_equal "Summary line.\n  - detail one", n.doc
+  end
+
+
+  def test_text_is_the_doc_the_declaration_and_its_children
+    n = Gloo::Persist::Source::ObjNode.new( :name => 'a', :raw_type => 'can' )
+    n.leading_doc = "# doc\n"
+    n.raw = "a [can] :\n"
+    child = Gloo::Persist::Source::ObjNode.new( :name => 'b', :raw_type => 'int' )
+    child.raw = "  b [int] : 1\n"
+    n.children << child
+    n.children << Gloo::Persist::Source::BlankNode.new( "\n" )
+    assert_equal "# doc\na [can] :\n  b [int] : 1\n\n", n.text
+  end
+
+  def test_remember_in_place_and_changed
+    can = @engine.factory.create_can( 'c', @engine.heap.root )
+    o = @engine.factory.create_int( 'x', 1, can )
+    n = Gloo::Persist::Source::ObjNode.new( :name => 'x', :raw_type => 'int' )
+    n.obj = o
+    n.remember
+    assert n.in_place?
+    refute n.changed?
+    o.set_value( 2 )
+    assert n.changed?
+    can.remove_child( o )
+    refute n.in_place?
+  end
+
+  def test_a_snapshot_is_not_changed_by_a_change_in_place
+    s = Gloo::Objs::Script.new( @engine )
+    s.set_array_value [ 'show 1' ]
+    @engine.heap.root.add_child( s )
+    n = Gloo::Persist::Source::ObjNode.new( :name => 's', :raw_type => 'script' )
+    n.obj = s
+    n.remember
+    s.value << 'show 2'
+    assert n.changed?
+  end
+
+  def test_rename_and_reindent
+    n = Gloo::Persist::Source::ObjNode.new( :name => 'b', :raw_type => 'script' )
+    n.raw_indent = '    '
+    n.head = '    b [script]'
+    n.leading_doc = "    # doc\n"
+    n.raw = "    b [script] :\n      show 1\n\n"
+    n.block_style = :body
+    n.rename( 'a.b' )
+    n.reindent( '' )
+    assert_equal "# doc\n", n.leading_doc
+    assert_equal "a.b [script] :\n  show 1\n\n", n.raw
+    assert_equal 'a.b [script]', n.head
+  end
+
+  def test_reindent_leaves_block_content_and_lines_up_end
+    n = Gloo::Persist::Source::ObjNode.new( :name => 't', :raw_type => 'text' )
+    n.raw_indent = '  '
+    n.block_style = :begin_end
+    n.raw = "  t [text] : BEGIN\n  keep\nthis\n  END\n"
+    n.reindent( "\t\t" )
+    assert_equal "\t\tt [text] : BEGIN\n  keep\nthis\n\t\tEND\n", n.raw
+  end
+
+  def test_detached_has_no_children_and_leaves_the_node_alone
+    n = Gloo::Persist::Source::ObjNode.new( :name => 'a', :raw_type => 'can' )
+    n.raw = "a [can] :\n"
+    n.children << Gloo::Persist::Source::BlankNode.new( "\n" )
+    copy = n.detached( "a [can] : x\n" )
+    assert_equal [], copy.children
+    assert_equal "a [can] : x\n", copy.raw
+    assert_equal "a [can] :\n", n.raw
+    assert_equal 1, n.children.size
   end
 
 end

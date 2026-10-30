@@ -19,11 +19,53 @@ module Gloo
 
         attr_reader :children
 
+        # A file whose last line has no line ending: every node's text
+        # ends with one anyway (so new text can follow any node), and
+        # the document leaves the last one off.
+        attr_accessor :no_final_newline
+
         #
         # Set up an empty source document.
         #
         def initialize
           @children = []
+          @no_final_newline = false
+        end
+
+        #
+        # The file's exact text: every node's text, in order. Right
+        # after a load this is the file, byte for byte.
+        #
+        def text
+          str = @children.map( &:text ).join
+          str = str.delete_suffix( "\n" ) if @no_final_newline
+          return str
+        end
+
+        #
+        # Note that the file's last line had no line ending, and give it
+        # one in the node that holds it (see no_final_newline).
+        #
+        def missing_final_newline!
+          leaf = last_text_node( @children )
+          return unless leaf
+
+          leaf.raw << "\n"
+          @no_final_newline = true
+        end
+
+        #
+        # Every object declaration in the document, at any depth, in
+        # file order.
+        #
+        def obj_nodes( nodes = @children, found = [] )
+          nodes.each do |node|
+            next unless node.is_a?( Source::ObjNode )
+
+            found << node
+            obj_nodes( node.children, found )
+          end
+          return found
         end
 
         #
@@ -50,6 +92,18 @@ module Gloo
         end
 
         private
+
+        #
+        # The node whose text comes last in the file: the last node, or
+        # its last child (at any depth) if it has children.
+        #
+        def last_text_node( nodes )
+          last = nodes.last
+          return nil unless last
+          return last unless last.is_a?( Source::ObjNode ) && last.children.any?
+
+          return last_text_node( last.children )
+        end
 
         #
         # Depth-first search of nodes (and their children) for the one

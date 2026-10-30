@@ -14,12 +14,12 @@ class TriviaBufferTest < BaseEngineTest
 
   def test_take_leading_doc_claims_a_matching_comment_run
     b = buffer
-    b.push_comment( '# one', 1 )
-    b.push_comment( '# two', 1 )
+    b.push_comment( "# one\n", 1 )
+    b.push_comment( "# two\n", 1 )
 
     children = []
     doc = b.take_leading_doc( 1, children )
-    assert_equal "# one\n# two", doc
+    assert_equal "# one\n# two\n", doc
     assert_equal [], children
   end
 

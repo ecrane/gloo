@@ -1,0 +1,2 @@
+no_newline [can] :
+  last [string] : no newline at the end

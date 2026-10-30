@@ -87,4 +87,40 @@ class MoveTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+
+  def test_moving_onto_a_taken_name_is_an_error_and_nothing_moves
+    @engine.parser.run 'create a as can'
+    @engine.parser.run 'create a.b as can'
+    @engine.parser.run 'create c as can'
+    @engine.parser.run "create c.B as string : other"
+    @engine.parser.run 'move a.b to c'
+
+    assert_equal "Could not move 'a.b': 'c' already has a child named 'b'.", @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+    assert_equal %w[b], @engine.heap.root.find_child( 'a' ).children.map( &:name )
+    assert_equal %w[B], @engine.heap.root.find_child( 'c' ).children.map( &:name )
+  end
+
+  def test_moving_into_itself_is_an_error_and_nothing_moves
+    @engine.parser.run 'create p as can'
+    @engine.parser.run 'create p.q as can'
+    @engine.parser.run 'move p to p.q'
+
+    assert_equal "Could not move 'p': it can't go inside itself.", @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+    assert_same @engine.heap.root, @engine.heap.root.find_child( 'p' ).parent
+    @engine.parser.run 'move p to p'
+    assert_equal "Could not move 'p': it can't go inside itself.", @engine.heap.error.value
+  end
+
+  def test_moving_to_the_parent_it_is_in_does_nothing
+    @engine.parser.run 'create c as can'
+    @engine.parser.run 'create c.a as string'
+    @engine.parser.run 'create c.b as string'
+    @engine.parser.run 'move c.a to c'
+
+    refute @engine.error?
+    assert_equal %w[a b], @engine.heap.root.find_child( 'c' ).children.map( &:name )
+  end
+
 end

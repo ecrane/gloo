@@ -105,7 +105,14 @@ module Gloo
             'A declaration you never touched comes back byte-for-byte. ' \
             'An object counts as changed only when its value is set or ' \
             'it is created, moved, or deleted (its doc comment goes with ' \
-            'it); changes to its children do not change it. ' \
+            'it); changes to its children do not change it. A changed ' \
+            'declaration keeps its name, type and spacing; only its ' \
+            'value is written again. A new object goes after the last ' \
+            "child of its parent's first declaration, in the file's " \
+            'indentation and type spellings. An object declared on more ' \
+            'than one line has its value on the first: a change rewrites ' \
+            'only that line, and deleting or moving it takes all its ' \
+            'lines. ' \
             'With a path, the object also stops being declared in its ' \
             'old file (if it had one) -- both files are rewritten ' \
             'together.',
@@ -122,7 +129,16 @@ module Gloo
               'container from nested-container shorthand; extract a ' \
               'child that does, or a shallower ancestor that does.'
           ],
-          :notes => 'An object can also be told to save itself: ' \
+          :notes => 'A value that cannot be written exactly (a block ' \
+            'value with no final line break, a line that is just END, ' \
+            'bytes that are not UTF-8) is written as closely as possible, ' \
+            "with a warning: Could not save '{path}' exactly: {why}. A " \
+            'changed script body loses the comments and blank lines ' \
+            'inside it. A new top-level object has no file yet: a bare ' \
+            'save leaves it out and warns (Not saved (no file yet): ' \
+            '{name}.); save {name} gives it a file of its own. ' \
+            'See doc verbs, Load & Save. ' \
+            'An object can also be told to save itself: ' \
             '`tell my_obj to save`. When several files contribute to ' \
             'one container (the namespace pattern), each file save only ' \
             "rewrites that file's own declarations. Extraction (save " \

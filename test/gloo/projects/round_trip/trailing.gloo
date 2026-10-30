@@ -1,0 +1,8 @@
+trailing [can] :  
+  s [string] : two trailing spaces  
+  blank_with_spaces [string] : x
+   
+  t [string] : y
+
+# trailing comment block at the end
+

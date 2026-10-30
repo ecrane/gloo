@@ -46,11 +46,13 @@ module Gloo
         return err( SPANS_MULTIPLE_FILES_ERR ) if owners.count > 1
 
         source_fs = owners.first
-        node = source_fs ? remove_node( obj, source_fs ) : fresh_node( obj )
+        return [ fresh_node( obj ), nil ] unless source_fs
+
+        node = remove_node( obj, source_fs )
         return err( NO_OWN_DECLARATION_ERR ) unless node
 
-        node.name = dotted_name( obj )
-        reindent( node, 0 )
+        node.rename( dotted_name( obj ) )
+        node.reindent( '' )
         return [ node, source_fs ]
       end
 
@@ -110,13 +112,12 @@ module Gloo
 
       #
       # obj has no file of its own (never loaded, or created at
-      # runtime since) -- build a plain node with no raw text of its
-      # own. FileSaver renders it fresh from the live object, the same
-      # way it already does for any brand-new child.
+      # runtime since) -- write it, and everything under it, from
+      # scratch, named by its dotted path.
       #
       def fresh_node( obj )
-        node = Source::ObjNode.new( :name => obj.name, :raw_type => obj.type_display )
-        node.obj = obj
+        node = FileSaver.new( @engine, nil, obj ).new_node( obj, dotted_name( obj ) )
+        Source::SourceDoc.new.obj_nodes( [ node ] ).each( &:remember )
         return node
       end
 
@@ -148,35 +149,6 @@ module Gloo
           o = o.parent
         end
         return names.join( '.' )
-      end
-
-      #
-      # Recompute raw_indent (and, for a BEGIN/END node, raw_end_indent
-      # to match) from scratch for the moved node and every descendant
-      # ObjNode. Their old indentation depth described nesting inside
-      # the file they came from; here obj itself is depth 0, in a
-      # brand-new file. Floating trivia (a blank line or comment not
-      # attached as some declaration's leading_doc) travels along
-      # unindented-adjusted -- purely cosmetic, since indentation never
-      # affects how a comment/blank line is recognized on reload.
-      #
-      def reindent( node, depth )
-        new_indent = "\t" * depth
-        node.raw_indent = new_indent
-        node.raw_end_indent = new_indent if node.block_style == :begin_end
-        node.leading_doc = reindent_doc( node.leading_doc, new_indent ) if node.leading_doc
-        node.children.each do |child|
-          reindent( child, depth + 1 ) if child.is_a?( Source::ObjNode )
-        end
-      end
-
-      #
-      # Re-indent a raw leading_doc's lines to new_indent, replacing
-      # whatever leading whitespace each '#'-prefixed line had in the
-      # file it came from.
-      #
-      def reindent_doc( raw, new_indent )
-        return raw.split( "\n" ).map { |line| "#{new_indent}#{line.lstrip}" }.join( "\n" )
       end
 
     end

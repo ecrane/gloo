@@ -13,9 +13,15 @@ module Gloo
       TO = 'to'.freeze
       MISSING_SRC_ERR = 'Object to move was not specified!'.freeze
       MISSING_DST_ERR = "'Move' must include 'to' parent object!".freeze
+      NAME_TAKEN_ERR = "Could not move '%s': '%s' already has a child named '%s'.".freeze
+      INSIDE_ITSELF_ERR = "Could not move '%s': it can't go inside itself.".freeze
 
       #
       # Run the verb.
+      # A name is unique in its container, so an object can't move into
+      # one that already has a child with its name; nor can it move
+      # inside itself. Moving it to the parent it's already in does
+      # nothing.
       #
       def run
         dst = lookup_dst
@@ -23,6 +29,9 @@ module Gloo
 
         o = lookup_obj
         return unless o
+        return if dst.equal?( o.parent )
+        return refuse( format( INSIDE_ITSELF_ERR, o.pn ) ) if inside?( dst, o )
+        return refuse( format( NAME_TAKEN_ERR, o.pn, dst.pn, o.name ) ) if dst.contains_child?( o.name )
 
         o.parent.remove_child o
         dst.add_child o
@@ -47,6 +56,28 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
+
+      #
+      # Report why the object can't be moved; nothing moves, and it is
+      # false.
+      #
+      def refuse( msg )
+        @engine.err msg
+        @engine.heap.it.set_to false
+      end
+
+      #
+      # Is dst the object itself, or somewhere under it?
+      #
+      def inside?( dst, obj )
+        o = dst
+        while o
+          return true if o.equal?( obj )
+
+          o = o.parent
+        end
+        return false
+      end
 
       #
       # Lookup the object that we're moving.
@@ -97,18 +128,26 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'Move an object to a new parent.',
+          :description => 'Move an object to a new parent. A name is unique ' \
+            'in its container, so the new parent must not already have a ' \
+            'child with the same name.',
           :syntax => [ 'move {path.to.object} to {new.parent}' ],
           :parameters => [
             '{path.to.object} — The object that we want to move.',
             '{new.parent} — The new location for the object.'
           ],
-          :result => 'The object will now be in the new location.',
+          :result => 'The object will now be in the new location. Moving it ' \
+            'to the parent it is already in does nothing. A pure action: it ' \
+            'is left alone, unless the move is refused.',
           :errors => [
             "#{MISSING_SRC_ERR} The {path.to.object} is not specified.",
             "Object '{path.to.object}' was not found. — The {path.to.object} cannot be resolved.",
             "#{MISSING_DST_ERR} The {new.parent} is not specified.",
-            "Object '{new.parent}' was not found. — The {new.parent} cannot be resolved."
+            "Object '{new.parent}' was not found. — The {new.parent} cannot be resolved.",
+            "#{format( NAME_TAKEN_ERR, '{path.to.object}', '{new.parent}', '{name}' )} — " \
+              'The new parent already has a child with that name. Nothing moves, and it is false.',
+            "#{format( INSIDE_ITSELF_ERR, '{path.to.object}' )} — The new parent is the " \
+              'object itself or something under it. Nothing moves, and it is false.'
           ],
           :examples => <<~EXAMPLES.strip
             can [can] :
