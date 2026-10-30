@@ -60,3 +60,20 @@ END
       assert "expected b beside a"
       tell mixed_indent_fixture to unload
 
+  # Spaces just inside the brackets are allowed.
+  spaced_int [ int ] : 5
+  spaced_after [int ]: 6
+  spaced_text [text ] : BEGIN
+one
+END
+
+  spaces_inside_the_brackets_are_allowed [test] :
+    description [string] : a space just inside a type's brackets doesn't change the type.
+    on_test [script] :
+      eval ^^.spaced_int = 5
+      assert "expected [ int ] to be an integer 5"
+      eval ^^.spaced_after + 1 = 7
+      assert "expected [int ]: to be an integer 6"
+      check ^^.spaced_text for starts_with? ( 'one' )
+      assert "expected [text ] to read its block"
+

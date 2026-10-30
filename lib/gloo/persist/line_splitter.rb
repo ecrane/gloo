@@ -11,6 +11,8 @@ module Gloo
 
       BEGIN_BLOCK = 'BEGIN'.freeze
       END_BLOCK = 'END'.freeze
+      # A type in brackets with whitespace inside them: '[ int ]', '[int ]'.
+      SPACED_TYPE = /\A\[[ \t]*([^\s\]]+)[ \t]*\]/.freeze
 
       attr_reader :obj, :raw_tail, :missing_bracket
 
@@ -77,7 +79,7 @@ module Gloo
       # count.
       #
       def detect_type
-        @line = @line[ @idx + 1..-1 ]
+        @line = close_up_spaced_type( @line[ @idx + 1..-1 ] )
         @idx = @line.index( ' ' )
 
         if @line[ 0 ] == ':'
@@ -93,6 +95,19 @@ module Gloo
         @type = @type[ 0..-2 ] if @type[ -1 ] == ']'
         close = @line.index( ']' )
         @raw_tail = close ? @line[ close + 1..-1 ] : ''
+      end
+
+      #
+      # Spaces just inside the brackets ('[ int ]', '[string ]') don't
+      # change the type: with one type word and only whitespace around
+      # it, read the brackets as if written closed up ('[int]'). The
+      # rest of the line is untouched, so raw_tail is exactly as written.
+      #
+      def close_up_spaced_type( line )
+        match = SPACED_TYPE.match( line )
+        return line unless match
+
+        return "[#{match[ 1 ]}]#{match.post_match}"
       end
 
       #

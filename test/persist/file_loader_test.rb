@@ -623,6 +623,26 @@ class FileLoaderTest < BaseEngineTest
   #   Lossless load (7.2)
   # -------------------------------------------------------------------
 
+  def test_spaces_inside_the_brackets_are_not_an_error
+    load_text "r [can] :\n  n [ int ] : 5\n  m [int ]: 6\n  sql [string ] : BEGIN\nselect 1\nEND\n"
+    refute @engine.error?
+    r = @engine.heap.root.find_child( 'r' )
+    assert_equal [ 'integer', 5 ], [ r.find_child( 'n' ).type_display, r.find_child( 'n' ).value ]
+    assert_equal [ 'integer', 6 ], [ r.find_child( 'm' ).type_display, r.find_child( 'm' ).value ]
+    assert_equal "select 1\n", r.find_child( 'sql' ).value
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
+  def test_a_changed_value_keeps_the_spaced_brackets_as_written
+    load_text "r [can] :\n  n [ int ] : 5\n"
+    @engine.parser.run 'put 7 into r.n'
+    @engine.parser.run 'save r'
+    assert_equal "r [can] :\n  n [ int ] : 7\n", File.read( File.join( @dir, 't.gloo' ) )
+  ensure
+    FileUtils.remove_entry @dir if @dir
+  end
+
   def test_saving_leaves_a_bracket_with_a_space_before_it_as_written
     load_text "a [can] :\n  sql [string ] : BEGIN\nselect 1\nEND\n"
     @engine.parser.run 'save a'

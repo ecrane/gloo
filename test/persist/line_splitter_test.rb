@@ -89,4 +89,41 @@ class LineSplitterTest < BaseEngineTest
     refute o.missing_bracket
   end
 
+
+  def test_a_space_before_the_closing_bracket
+    o = Gloo::Persist::LineSplitter.new( '  sql [string ] : BEGIN', 0 )
+    assert_equal [ 'sql', 'string', 'BEGIN' ], o.split
+    refute o.missing_bracket
+    assert_equal ' : BEGIN', o.raw_tail
+  end
+
+  def test_spaces_on_both_sides_of_the_type
+    o = Gloo::Persist::LineSplitter.new( 'n [ int ] : 5', 0 )
+    assert_equal [ 'n', 'int', '5' ], o.split
+    refute o.missing_bracket
+    assert_equal ' : 5', o.raw_tail
+  end
+
+  def test_a_spaced_type_followed_by_the_colon
+    o = Gloo::Persist::LineSplitter.new( 'm [int ]: 6', 0 )
+    assert_equal [ 'm', 'int', '6' ], o.split
+    refute o.missing_bracket
+    assert_equal ': 6', o.raw_tail
+  end
+
+  def test_a_spaced_type_with_no_value
+    o = Gloo::Persist::LineSplitter.new( 'c [ can ] :', 0 )
+    n, t, = o.split
+    assert_equal [ 'c', 'can' ], [ n, t ]
+    refute o.missing_bracket
+  end
+
+  def test_more_than_one_word_in_the_brackets_is_still_a_missing_bracket
+    o = Gloo::Persist::LineSplitter.new( 's [string : a ] b', 0 )
+    _n, t, v = o.split
+    assert o.missing_bracket
+    assert_equal 'string', t
+    assert_equal 'a ] b', v
+  end
+
 end

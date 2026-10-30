@@ -13,6 +13,8 @@ Gloo scripts are stored in regular text files with the `.gloo` extension. A file
 
 Indentation is what puts an object under another: one level deeper is a tab or two spaces. They can be mixed, from line to line or on one line (a tab and two spaces is two levels).
 
+An object is declared as `name [type] : value`. Spaces just inside the brackets don't matter: `[ int ]` and `[int ]` are `[int]`.
+
 Conventions:
 
 - Script files are small and composable.
