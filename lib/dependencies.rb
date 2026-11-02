@@ -23,7 +23,10 @@ end
 #
 # Now that we have the first with some key dependencies
 # at the top, we'll require them.
+# require_relative skips RubyGems' require hook, which
+# would otherwise search the installed gems for each file
+# (about 0.4 s of startup).
 #
 files.each do |ruby_file|
-  require ruby_file
+  require_relative ruby_file
 end
