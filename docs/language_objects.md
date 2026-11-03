@@ -122,19 +122,23 @@ Every object can say which file it was loaded from: `check {obj} for
 source_file` puts the file's full path in `it`, and `check {obj} for
 source_dir` puts that file's folder (with no trailing slash). This lets a
 script reach files stored next to it without a hard-coded path. For
-example, a test can load a fixture that sits beside its own file:
+example, a script can read a data file that sits beside its own file:
 
 ```gloo
-tests.my_area [can] :
+report [can] :
   where [string] :
-  fixture [string] : /fixtures/sample.gloo
+  data [file] :
+  rows [string] :
 
-  loads_its_fixture [test] :
-    on_test [script] :
-      check ^^ for source_dir
-      put it into ^^.where
-      load ( ^^.where ^^.fixture )
+  on_load [script] :
+    check ^ for source_dir
+    put it into ^.where
+    put ^.where '/data/rows.txt' into ^.data
+    tell ^.data to read ( ^.rows )
 ```
+
+(A `load` doesn't need this: a relative name already looks next to the
+loading file first. See Application, Script Mode and App Mode.)
 
 The answer comes from the nearest object, going up from the one asked,
 that a loaded file declares. So a nested object answers with its file,

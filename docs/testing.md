@@ -166,24 +166,21 @@ A test that's meant to fail, such as one that shows an assertion really does fai
       tell ^^.scratch to delete
 ```
 
-**Fixtures.** A file the tests read but never change can be kept next to the test file, for example in a `fixtures` folder. Name it something other than `*.test.gloo`, so it isn't run as a test. `check ^^ for source_dir` gives the folder of the test file (see Language, Objects, Where an Object Came From):
+**Fixtures.** A file the tests read but never change can be kept next to the test file, for example in a `fixtures` folder. Name it something other than `*.test.gloo`, so it isn't run as a test. A relative `load` looks next to the test file first (see Application, Script Mode and App Mode), so the fixture loads by its plain name:
 
 ```gloo
 tests.files [can] :
 
-  where [string] :
-  fixture [string] : /fixtures/sample.gloo
-
   loads_its_fixture [test] :
     description [string] : A fixture next to this file can be loaded.
     on_test [script] :
-      check ^^ for source_dir
-      put it into ^^.where
-      load ( ^^.where ^^.fixture )
+      load fixtures/sample
       eval sample.name = 'from the fixture'
       assert "expected the fixture to load"
       tell sample to unload
 ```
+
+For anything else that needs the test file's folder, such as the path of a data file to read or a program to run, `check ^^ for source_dir` gives it (see Language, Objects, Where an Object Came From).
 
 **Broken source on purpose.** To test how gloo handles a mistake in a file, such as a missing `]` or a declaration with no name, don't put the mistake in the test file itself. It would be reported while the file loads, outside any test. Instead, keep the broken source in a `[text]` object, write it to a scratch file inside the test, and load it there. The problem then belongs to that test, which sets `expect_errors`:
 

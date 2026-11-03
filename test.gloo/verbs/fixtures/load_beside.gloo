@@ -1,0 +1,6 @@
+#
+# Loaded by load.test.gloo with a plain relative name, from the
+# folder beside that test file. Not a test file itself.
+#
+load_beside_demo [can] :
+  s [string] : beside

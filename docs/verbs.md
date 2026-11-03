@@ -86,10 +86,10 @@ If the destination doesn't exist, or the expression can't be worked out (eg. it 
 
 ## Load & Save
 
-`load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a path relative to the project folder, a full path, or one starting with `~` for your home folder; the `.gloo` extension is optional. `*` in place of a file name loads every `.gloo` file in a folder, wherever the folder is. Anything before the `*` is the start of the file names, so `my/app/a*` loads just the files whose names start with `a`.
+`load` reads a `.gloo` file into the heap and runs its `on_load` script. Give a relative name, a full path, or one starting with `~` for your home folder; the `.gloo` extension is optional. A relative name is looked for next to the file the loading script came from, in the projects folder, and in the gloo home; in App mode the app folder comes first (see Application, Script Mode and App Mode, for the order in each mode). `*` in place of a file name loads every `.gloo` file in a folder, found the same way. Anything before the `*` is the start of the file names, so `my/app/a*` loads just the files whose names start with `a`.
 
 ```gloo
-> load my/project/config
+> load parts/config
 > load my/app/*
 > load ~/.my_app/settings.gloo
 > load ~/.my_app/plugins/*

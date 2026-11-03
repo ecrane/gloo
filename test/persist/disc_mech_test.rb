@@ -153,7 +153,113 @@ class DiscMechTest < BaseEngineTest
     end
   end
 
+  # ---------------------------------------------------------------------
+  #    Looking in a list of folders (the load verb's order)
+  # ---------------------------------------------------------------------
+
+  def test_expanding_in_folders_takes_the_first_folder_that_has_it
+    with_folders( %w[one two] ) do |one, two|
+      File.write( File.join( one, 'x.gloo' ), "x [can] :\n" )
+      File.write( File.join( two, 'x.gloo' ), "x [can] :\n" )
+      assert_equal [ File.join( two, 'x.gloo' ) ], mech.expand( 'x', [ two, one ] )
+    end
+  end
+
+  def test_expanding_in_folders_moves_on_when_a_folder_does_not_have_it
+    with_folders( %w[one two] ) do |one, two|
+      File.write( File.join( two, 'x.gloo' ), "x [can] :\n" )
+      assert_equal [ File.join( two, 'x.gloo' ) ], mech.expand( 'x.gloo', [ one, two ] )
+    end
+  end
+
+  def test_expanding_in_folders_finds_a_path_inside_a_folder
+    with_folders( %w[one] ) do |one|
+      Dir.mkdir( File.join( one, 'lib' ) )
+      File.write( File.join( one, 'lib', 'x.gloo' ), "x [can] :\n" )
+      assert_equal [ File.join( one, 'lib', 'x.gloo' ) ], mech.expand( 'lib/x', [ one ] )
+    end
+  end
+
+  def test_expanding_in_folders_ignores_the_working_folder
+    with_folders( %w[one two] ) do |one, two|
+      File.write( File.join( one, 'x.gloo' ), "x [can] :\n" )
+      Dir.chdir( one ) { assert_nil mech.expand( 'x.gloo', [ two ] ) }
+    end
+  end
+
+  def test_expanding_a_full_path_ignores_the_folders
+    with_folders( %w[one two] ) do |one, two|
+      File.write( File.join( one, 'x.gloo' ), "x [can] :\n" )
+      assert_equal [ File.join( one, 'x.gloo' ) ], mech.expand( File.join( one, 'x' ), [ two ] )
+    end
+  end
+
+  def test_expanding_in_folders_finds_nothing_when_no_folder_has_it
+    with_folders( %w[one] ) do |one|
+      assert_nil mech.expand( 'x', [ one ] )
+    end
+  end
+
+  def test_files_in_folders_come_from_the_first_folder_that_has_them
+    with_folders( %w[one two] ) do |one, two|
+      [ one, two ].each do |d|
+        Dir.mkdir( File.join( d, 'lib' ) )
+        File.write( File.join( d, 'lib', 'x.gloo' ), "x [can] :\n" )
+      end
+      assert_equal [ File.join( two, 'lib', 'x.gloo' ) ], mech.get_all_files_in( 'lib/', [ two, one ] )
+    end
+  end
+
+  def test_files_in_folders_skip_a_folder_with_no_gloo_files
+    with_folders( %w[one two] ) do |one, two|
+      Dir.mkdir( File.join( one, 'lib' ) )
+      Dir.mkdir( File.join( two, 'lib' ) )
+      File.write( File.join( two, 'lib', 'x.gloo' ), "x [can] :\n" )
+      assert_equal [ File.join( two, 'lib', 'x.gloo' ) ], mech.get_all_files_in( 'lib/', [ one, two ] )
+    end
+  end
+
+  def test_files_with_a_prefix_in_a_relative_folder
+    # Before, a prefix (lib/a*) only ever looked in the gloo home.
+    with_folders( %w[one] ) do |one|
+      Dir.mkdir( File.join( one, 'lib' ) )
+      File.write( File.join( one, 'lib', 'a.gloo' ), "a [can] :\n" )
+      File.write( File.join( one, 'lib', 'b.gloo' ), "b [can] :\n" )
+      assert_equal [ File.join( one, 'lib', 'a.gloo' ) ], mech.get_all_files_in( 'lib/a', [ one ] )
+    end
+  end
+
+  def test_files_in_folders_finds_nothing_when_no_folder_has_them
+    with_folders( %w[one] ) do |one|
+      assert_equal [], mech.get_all_files_in( 'lib/', [ one ] )
+    end
+  end
+
+  def test_default_folders_are_the_project_then_the_gloo_home
+    assert_equal [ @engine.settings.project_path, @engine.settings.user_root ],
+                 mech.default_folders
+  end
+
   private
+
+  #
+  # A DiscMech for the test engine.
+  #
+  def mech
+    return Gloo::Persist::DiscMech.new( @engine )
+  end
+
+  #
+  # Yield scratch folders with the given names, as full paths (real
+  # paths, so they compare equal to the expanded ones gloo returns).
+  #
+  def with_folders( names )
+    root = File.realpath( Dir.mktmpdir )
+    dirs = names.map { |n| File.join( root, n ).tap { |d| Dir.mkdir( d ) } }
+    yield( *dirs )
+  ensure
+    FileUtils.remove_entry root if root
+  end
 
   #
   # Yield a scratch folder holding a.gloo, b.gloo and c.txt.

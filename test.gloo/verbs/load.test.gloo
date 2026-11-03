@@ -172,3 +172,21 @@ END
       assert "expected the full path without .gloo to load"
       tell computed_demo to unload
       tell ^^.computed_f to delete
+
+  # A relative name looks next to the loading file first; these scripts
+  # are declared in this file, so fixtures/ is the folder beside it.
+  load_a_file_beside_this_one [test] :
+    description [string] : A relative load finds a file next to the file the script came from.
+    on_test [script] :
+      load fixtures/load_beside
+      eval load_beside_demo.s = 'beside'
+      assert "expected fixtures/load_beside.gloo to load from beside this file"
+      tell load_beside_demo to unload
+
+  load_a_prefix_beside_this_one [test] :
+    description [string] : A relative wildcard with a file name prefix finds the files next to the loading file.
+    on_test [script] :
+      load fixtures/load_beside*
+      eval load_beside_demo.s = 'beside'
+      assert "expected fixtures/load_beside*.gloo to load from beside this file"
+      tell load_beside_demo to unload

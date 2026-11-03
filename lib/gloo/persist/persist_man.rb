@@ -103,8 +103,13 @@ module Gloo
       # a missing/unresolvable file is reported via engine.err rather
       # than failing silently.
       #
-      def load( name )
-        pns = get_full_path_names name
+      # A relative name is looked for in the given folders, in order
+      # (the load verb passes search_folders). Without them (a file
+      # named on the command line, the app's start file) it's looked
+      # for as given, then in the project folder and gloo home.
+      #
+      def load( name, folders = nil )
+        pns = get_full_path_names( name, folders )
         if pns.nil? || pns.empty?
           @engine.err( Gloo::Core::NotFound.file( name ) ) unless name.to_s.strip.empty?
           return false
@@ -228,16 +233,50 @@ module Gloo
 
 
       #
-      # Get the full path and name of the file.
+      # Get the full path and name of the file, looking for a relative
+      # name in the given folders (see load).
       #
-      def get_full_path_names( name )
+      def get_full_path_names( name, folders = nil )
         return nil if name.strip.empty?
 
         if name.strip[ -1 ] == '*'
-          return @mech.get_all_files_in( name[ 0..-2 ] )
+          return @mech.get_all_files_in( name[ 0..-2 ], folders )
         else
-          return @mech.expand( name )
+          return @mech.expand( name, folders )
         end
+      end
+
+      #
+      # Where the load verb looks for a relative name, in order.
+      # In App mode the app folder comes first, so an app's names
+      # mean the same thing in every one of its files. Otherwise the
+      # folder next to the loading file comes first, then the projects
+      # folder (the project_path setting). The gloo home is last.
+      #
+      def search_folders
+        near = near_folder
+        project = @engine.settings.project_path
+        home = @engine.settings.user_root
+        folders = if @engine.mode == Gloo::App::Mode::APP
+                    [ project, near, home ]
+                  else
+                    [ near, project, home ]
+                  end
+        return folders.compact.uniq
+      end
+
+      #
+      # The folder "next to" the line now running: the folder of the
+      # file the running script came from (the same folder source_dir
+      # gives). A command typed at the prompt has no file, so it's the
+      # working folder. A script that didn't come from a file has none.
+      #
+      def near_folder
+        script = @engine.exec_env.running_script
+        return Dir.pwd unless script
+
+        path = source_file_of( script.obj )
+        return path ? File.dirname( path ) : nil
       end
 
       #

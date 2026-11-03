@@ -244,7 +244,160 @@ class LoadTest < BaseEngineTest
     refute @engine.error?
   end
 
+  # ---------------------------------------------------------------------
+  #    Where a relative load looks
+  # ---------------------------------------------------------------------
+
+  def test_a_script_loads_next_to_its_file_first
+    with_load_tree do |near, _project|
+      @engine.parser.run "load #{near}/main"
+      assert_equal 'near', x_value
+    end
+  end
+
+  def test_a_script_falls_back_to_the_projects_folder
+    with_load_tree do |near, _project|
+      FileUtils.rm_r( File.join( near, 'lib' ) )
+      @engine.parser.run "load #{near}/main"
+      assert_equal 'project', x_value
+    end
+  end
+
+  def test_a_script_does_not_look_in_the_working_folder
+    with_load_tree do |near, project|
+      FileUtils.rm_r( File.join( near, 'lib' ) )
+      FileUtils.rm_r( File.join( project, 'lib' ) )
+      elsewhere = File.join( File.dirname( near ), 'elsewhere' )
+      write_x( elsewhere, 'working' )
+      Dir.chdir( elsewhere ) { @engine.parser.run "load #{near}/main" }
+      assert_nil @engine.heap.root.find_child( 'x' )
+    end
+  end
+
+  def test_in_app_mode_the_app_folder_comes_first
+    with_load_tree do |near, _project|
+      @engine.define_singleton_method( :mode ) { Gloo::App::Mode::APP }
+      @engine.parser.run "load #{near}/main"
+      assert_equal 'project', x_value
+    end
+  end
+
+  def test_in_app_mode_a_script_falls_back_to_next_to_its_file
+    with_load_tree do |near, project|
+      FileUtils.rm_r( File.join( project, 'lib' ) )
+      @engine.define_singleton_method( :mode ) { Gloo::App::Mode::APP }
+      @engine.parser.run "load #{near}/main"
+      assert_equal 'near', x_value
+    end
+  end
+
+  def test_a_script_run_from_elsewhere_loads_next_to_its_own_file
+    with_load_tree do |near, _project|
+      File.write( File.join( near, 'tools.gloo' ), "tools [can] :\n  get_x [script] : load lib/x\n" )
+      @engine.parser.run "load #{near}/tools"
+      @engine.parser.run 'run tools.get_x'
+      assert_equal 'near', x_value
+    end
+  end
+
+  def test_a_script_not_from_a_file_skips_next_to_it
+    with_load_tree do |near, _project|
+      @engine.parser.run 'create get_x as script'
+      @engine.parser.run "put 'load lib/x' into get_x"
+      Dir.chdir( near ) { @engine.parser.run 'run get_x' }
+      assert_equal 'project', x_value
+    end
+  end
+
+  def test_a_typed_command_loads_from_the_working_folder_first
+    with_load_tree do |near, _project|
+      Dir.chdir( near ) { @engine.parser.run 'load lib/x' }
+      assert_equal 'near', x_value
+    end
+  end
+
+  def test_a_script_loads_a_folder_next_to_its_file
+    with_load_tree( 'load lib/*' ) do |near, _project|
+      @engine.parser.run "load #{near}/main"
+      assert_equal 'near', x_value
+    end
+  end
+
+  def test_a_script_loads_a_computed_name_next_to_its_file
+    with_load_tree( "load ( 'lib/' 'x' )" ) do |near, _project|
+      @engine.parser.run "load #{near}/main"
+      assert_equal 'near', x_value
+    end
+  end
+
+  def test_search_folders_for_a_script_start_next_to_its_file
+    with_load_tree( 'show 1' ) do |near, project|
+      @engine.parser.run "load #{near}/main"
+      script = @engine.heap.root.find_child( 'main' ).find_child( 'on_load' )
+      folders = with_running_script( script ) { @engine.persist_man.search_folders }
+      assert_equal [ near, project, @engine.settings.user_root ], folders
+    end
+  end
+
+  def test_search_folders_in_app_mode_start_with_the_app_folder
+    with_load_tree( 'show 1' ) do |near, project|
+      @engine.parser.run "load #{near}/main"
+      @engine.define_singleton_method( :mode ) { Gloo::App::Mode::APP }
+      script = @engine.heap.root.find_child( 'main' ).find_child( 'on_load' )
+      folders = with_running_script( script ) { @engine.persist_man.search_folders }
+      assert_equal [ project, near, @engine.settings.user_root ], folders
+    end
+  end
+
+  def test_search_folders_for_a_typed_command_start_with_the_working_folder
+    folders = @engine.persist_man.search_folders
+    assert_equal [ Dir.pwd, @engine.settings.project_path, @engine.settings.user_root ], folders
+  end
+
   private
+
+  #
+  # Yield two scratch folders, near and project, each with lib/x.gloo
+  # declaring x.v as the folder's name. near also has main.gloo, whose
+  # on_load runs the given line. The projects folder is set to project.
+  #
+  def with_load_tree( line = 'load lib/x' )
+    root = File.realpath( Dir.mktmpdir )
+    near = File.join( root, 'near' )
+    project = File.join( root, 'project' )
+    write_x( near, 'near' )
+    write_x( project, 'project' )
+    File.write( File.join( near, 'main.gloo' ), "main [can] :\n  on_load [script] : #{line}\n" )
+    @engine.settings.override_project_path( project )
+    yield near, project
+  ensure
+    FileUtils.remove_entry root if root
+  end
+
+  #
+  # Write folder/lib/x.gloo, declaring x.v with the given value.
+  #
+  def write_x( folder, value )
+    FileUtils.mkdir_p( File.join( folder, 'lib' ) )
+    File.write( File.join( folder, 'lib', 'x.gloo' ), "x [can] :\n  v [string] : #{value}\n" )
+  end
+
+  #
+  # The value of x.v, or nil if x wasn't loaded.
+  #
+  def x_value
+    return @engine.heap.root.find_child( 'x' )&.find_child( 'v' )&.value
+  end
+
+  #
+  # Run the block as if the given script object were running.
+  #
+  def with_running_script( obj )
+    @engine.exec_env.push_script( Gloo::Exec::Script.new( @engine, obj ) )
+    return yield
+  ensure
+    @engine.exec_env.pop_script
+  end
 
   #
   # Yield a scratch folder holding alpha.gloo and beta.gloo, each with

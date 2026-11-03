@@ -63,12 +63,15 @@ module Gloo
         return KEYWORD_SHORT
       end
 
-      # 
-      # Load a gloo file
-      # 
+      #
+      # Load a gloo file. A relative name is looked for in the
+      # persist manager's search folders (next to this file, the
+      # app or projects folder, the gloo home).
+      #
       def load_gloo_file( fn )
         @engine.log.debug "Getting ready to load gloo file: #{fn}"
-        @engine.persist_man.load fn
+        pm = @engine.persist_man
+        pm.load( fn, pm.search_folders )
       end
 
       # 
@@ -98,16 +101,17 @@ module Gloo
         {
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
-          :description => 'Load an object file. There are two ways to ' \
-            'specify the file. Give either the full path and file name ' \
-            'or use a relative path from the gloo project folder. For ' \
-            'the latter, the extension is not needed. For the former, ' \
-            'the file extension is necessary. Using * instead of a file ' \
-            'name will load all gloo files in the folder. When using the ' \
-            '--app option, the file is loaded from the application ' \
-            'folder, but if not found there, the loader will also look ' \
-            'in the gloo root folder. The load verb is also used to ' \
-            'import an extension or library at runtime.',
+          :description => 'Load an object file. Give a full path, one ' \
+            'starting with ~, or a relative name; the .gloo extension is ' \
+            'optional. A relative name is looked for in a few places, in ' \
+            'order. In App mode (--app): the app folder, then next to the ' \
+            'file the loading script came from, then the gloo home. ' \
+            'Otherwise: next to the loading file, then the projects ' \
+            'folder (the project_path setting), then the gloo home. A ' \
+            'command typed at the prompt has no file, so the working ' \
+            'folder stands in for it. Using * instead of a file name ' \
+            'loads all gloo files in the folder. The load verb is also ' \
+            'used to import an extension or library at runtime.',
           :syntax => [
             'load {file_name}',
             'load ext {my_ext}',
@@ -116,11 +120,12 @@ module Gloo
           ],
           :parameters => [
             '{file_name} — Name of the object file that is to be loaded: ' \
-              'relative to the project, a full path, or starting with ~. ' \
+              'a relative name (see the description for where it is ' \
+              'looked for), a full path, or starting with ~. ' \
               'The .gloo extension is optional. ' \
-              'End it with * to load every .gloo file in a folder (a ' \
-              'folder in the project, a full path, or one starting with ' \
-              '~); anything before the * is the start of the file names.',
+              'End it with * to load every .gloo file in a folder, found ' \
+              'the same way; the first place with matching files is ' \
+              'used. Anything before the * is the start of the file names.',
             'reference type — By default, the type is file. File can be ' \
               'specified, but does not need to be. Use ext to load a ' \
               'User Extension. Use lib to load a Core Library.',
@@ -136,8 +141,8 @@ module Gloo
             "#{UNKNOWN_OPT_ERR} — The reference type given isn't file, ext, or lib.",
             "#{WRONG_NUM_ARGS_ERR} — load expects 2 or 3 arguments (the verb, an optional reference type, and the file/ext/lib name).",
             'File not found: {name} — The file name given could not be ' \
-              'resolved to a gloo file (checked as a full path, and ' \
-              'relative to the project and gloo root folders).'
+              'resolved to a gloo file in any of the places it is ' \
+              'looked for.'
           ],
           :notes => 'Several files can contribute to one container: ' \
             'declare it in each file and add different children, and ' \
@@ -156,7 +161,8 @@ module Gloo
             'is declared in more than one loaded file, the first ' \
             'non-empty doc wins, same as the first value.',
           :examples => <<~EXAMPLES.strip
-            > load my/project/file
+            # Next to this file (or the app folder, in App mode)
+            > load parts/helpers
             > load my/app/*
             > load ~/.my_app/settings.gloo
             > load ~/.my_app/plugins/*

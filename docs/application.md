@@ -5,6 +5,7 @@
 - The Gloo Home Directory
 - Running Gloo
 - Modes
+- Script Mode and App Mode
 - Configuration
 - Logging
 - Help
@@ -48,11 +49,11 @@ When specifying a file there are a couple ways to reference the gloo file to ope
         ```
 - By Project
     - Use the path within the project folder.
-    - Do not include the `.gloo` or other file extension.
+    - The `.gloo` extension can be left off.
     - The location of the project folder is part of the configuration.
     - For example:
         ```
-        gloo my_project/file.gloo
+        gloo my_project/file
         ```
 
 ## Modes
@@ -88,6 +89,44 @@ When specifying a file there are a couple ways to reference the gloo file to ope
 --version    - Show application version
 --help       - Show the help screen
 ```
+
+## Script Mode and App Mode
+
+Gloo runs a file in one of two ways, and they're meant for different things.
+
+**Script mode** (`gloo path/to/file.gloo`) is a transaction: gloo loads the file, runs its `on_load`, and quits. Use it for a job that does something and finishes.
+
+**App mode** (`gloo --app path/to/folder`) is a process: gloo loads the folder's `start.gloo`, and the app stays up — a shell taking commands, a web server, a connection — until it's told to stop. The folder is the app's root: `gloo.app` is that folder, and words after it on the command line are a command for the app, not files to load.
+
+The two also differ in what the **project folder** is. In App mode it's the app's folder. Otherwise it's where you keep your projects: the `project_path` setting (see Configuration), `~/gloo/projects` unless you change it, and `gloo.gloo_projects`.
+
+### Where a Relative Load Looks
+
+A `load` with a full path, or one starting with `~`, loads that file. A relative name is looked for in a few places, in order, and the first place that has it wins:
+
+| Mode | Looks in, in order |
+|---|---|
+| App mode | the app folder → next to the loading file → the gloo home |
+| Script and Test modes | next to the loading file → the projects folder → the gloo home |
+| A command typed at the prompt | the working folder → the projects folder → the gloo home (in App mode: the app folder → the working folder → the gloo home) |
+
+"Next to the loading file" is the folder of the file the running script was declared in — the folder `check {obj} for source_dir` gives for it. A script declared in one file and run from another still looks next to its own file. A script that didn't come from a file (one created while gloo runs) skips this step. A command typed at the prompt has no file, so the working folder stands in for it; a load inside a file never depends on where gloo was started.
+
+A folder load (`load parts/*`) is looked for the same way, and the first place with matching `.gloo` files is used. The gloo home comes last in every mode, so files kept there (such as a `common` folder shared by several apps) can be loaded from anywhere.
+
+For example, a small project:
+
+```
+report/
+  start.gloo      # on_load: load parts/*
+  parts/
+    totals.gloo
+    format.gloo
+```
+
+Run as a script (`gloo report/start.gloo`), `load parts/*` finds `report/parts` next to `start.gloo`, whatever folder gloo was started from. Run as an app (`gloo --app report`), it finds the same folder as part of the app. Inside an app, a name means the same thing in every file: `load parts/format` gets `report/parts/format.gloo` whichever of the app's files says it.
+
+Files named on the command line are found differently: as given (from the working folder), then in the projects folder, then in the gloo home (see Running Gloo, above).
 
 ## Configuration
 
