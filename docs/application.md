@@ -35,6 +35,8 @@ Gloo can also be started from another Ruby program; see Development, Running Glo
 
 If a file named on the command line can't be found (a typo, the wrong folder, a missing `.gloo` extension on a full path), gloo prints `File '{name}' was not found.` to stderr and exits with a non-zero status. Any other load or run error also exits non-zero — including syntax errors in a file that otherwise loaded (gloo keeps loading past them, reporting each with its file and line) — so a shell script calling gloo can tell a failed run from a clean one.
 
+The exit status covers the whole run, not just its last line: gloo exits with status 1 if any error, or any Ruby exception, happened at any point while the files were loading or running, and 0 otherwise. An error still counts when an `on_error` or `on_exception` handler ran for it, because a handler reports the problem, it doesn't undo it. Warnings don't count. This applies when gloo runs files (Script mode); App and CLI modes don't set an exit status, and Test mode has its own (see the `--test` option below).
+
 When specifying a file there are a couple ways to reference the gloo file to open:
 
 - By Path

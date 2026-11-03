@@ -1,0 +1,34 @@
+#
+# Exit status of a script run.
+# `gloo file.gloo` exits 1 if anything went wrong at any point in the
+# run, not just on its last line. The engine running these tests was
+# started in Test mode, so the check runs gloo again with [system],
+# on a fixture beside this file.
+#
+
+tests.app.exit_status [can] :
+
+  # The interpreter and the fixture, both found from source_dir.
+  run_rb [string] : /../../lib/run.rb
+  fixture [string] : /fixtures/exit_after_error.gloo
+  quiet [string] : --quiet
+  # The fixture's error output isn't part of these tests' output.
+  discard [string] : > /dev/null 2>&1
+  where [string] :
+
+  run_gloo [system] :
+    command [string] :
+    get_output [bool] : false
+    result [bool] :
+
+  error_then_success_exits_1 [test] :
+    description [string] : A run with an error on an earlier line exits non-zero, though its last line works.
+    on_test [script] :
+      check ^^ for source_dir
+      put it into ^^.where
+      # Paths are quoted in case the folder has spaces.
+      put "ruby '" ^^.where ^^.run_rb "' " ^^.quiet " '" ^^.where ^^.fixture "' " ^^.discard into ^^.run_gloo.command
+      tell ^^.run_gloo to run
+      # result is false when the command exits non-zero.
+      eval ^^.run_gloo.result
+      refute "expected the run to exit non-zero"

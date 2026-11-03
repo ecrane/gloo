@@ -17,7 +17,7 @@ module Gloo
       # 
       TEST_LIB_NAME = 'test'
 
-      attr_reader :settings, :log, :running_app
+      attr_reader :settings, :log, :running_app, :run_error_count
       attr_reader :args, :mode, :running, :platform,
                   :dictionary, :parser, :heap, :factory,
                   :ext_manager, :lib_manager
@@ -43,6 +43,7 @@ module Gloo
 
         @handling_exception = false
         @handling_error = false
+        @run_error_count = 0
         @log.debug 'engine intialized...'
       end
 
@@ -136,15 +137,14 @@ module Gloo
 
       #
       # Run files specified on the CLI.
-      # Then quit, with a non-zero exit code if any file failed to
-      # load (missing, unresolvable, or errored on load) so that a
-      # calling shell script can tell a bad run from a good one.
+      # Then quit, with exit status 1 if anything went wrong at any
+      # point in the run (see run_failed?), so that a calling shell
+      # script can tell a bad run from a good one.
       #
       def run_files
         load_files
-        failed = error?
         quit
-        exit( 1 ) if failed
+        exit( 1 ) if run_failed?
       end
 
       # 
@@ -338,6 +338,16 @@ module Gloo
       end
 
       #
+      # Did anything go wrong since the engine started: an error or
+      # a Ruby exception, whether or not on_error or on_exception
+      # handled it? A handler reports, it doesn't undo the failure.
+      # Warnings don't count.
+      #
+      def run_failed?
+        return @run_error_count.positive?
+      end
+
+      #
       # Report an error.
       # Write it to the log and set the heap error value. Always logged;
       # runs the on_error script (if any) unless we're already inside
@@ -356,6 +366,7 @@ module Gloo
         @log.error( location ? "#{location}: #{msg}" : msg )
         return unless @heap
 
+        @run_error_count += 1
         @heap.error.set_to msg, kind, location
 
         return if @handling_error
@@ -433,6 +444,7 @@ module Gloo
         backtrace = format_backtrace( ex )
         @log.error ex.message
         @log.backtrace backtrace
+        @run_error_count += 1
 
         return if @handling_exception
 

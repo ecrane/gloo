@@ -1,0 +1,9 @@
+#
+# Run by exit_status.test.gloo as `gloo` would run it: an error, then
+# a line that works. The run must still exit 1.
+#
+a [can] :
+  n [int] : 0
+  on_load [script] :
+    show no.such.object
+    put 1 into a.n

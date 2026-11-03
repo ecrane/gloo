@@ -437,7 +437,158 @@ class EngineTest < BaseTest
     with_test_runner( o, -> { raise 'boom' } ) { assert_equal false, o.run_tests }
   end
 
+  # ---------------------------------------------------------------------
+  #    Script mode exit status
+  # ---------------------------------------------------------------------
+
+  def test_run_failed_after_an_error
+    o = started_engine
+    o.err 'something went wrong'
+    assert o.run_failed?
+  end
+
+  def test_run_failed_stays_after_a_later_success
+    o = started_engine
+    o.err 'something went wrong'
+    o.process_cmd 'create n as integer : 1'
+    refute o.error?, 'the later command cleared the last error'
+    assert o.run_failed?
+  end
+
+  def test_run_failed_after_a_syntax_error
+    o = started_engine
+    o.syntax_err 'could not understand'
+    assert o.run_failed?
+  end
+
+  def test_run_failed_after_an_exception
+    o = started_engine
+    o.handle_exception raised( 'boom' )
+    assert o.run_failed?
+  end
+
+  def test_run_not_failed_after_a_warning
+    o = started_engine
+    o.warn 'a best guess'
+    refute o.run_failed?
+  end
+
+  def test_run_not_failed_when_clean
+    refute started_engine.run_failed?
+  end
+
+  def test_err_before_start_does_not_count_toward_the_run
+    o = Gloo::App::Engine.new( default_context )
+    o.log.quiet = true
+    o.err 'something went wrong'
+    assert_equal 0, o.run_error_count
+  end
+
+  def test_script_exits_1_for_an_error_then_success
+    assert_equal 1, script_exit_status( <<~GLOO )
+      a [can] :
+        on_load [script] :
+          show no.such.object
+          put 1 into a.n
+        n [int] : 0
+    GLOO
+  end
+
+  def test_script_exits_1_for_success_then_an_error
+    assert_equal 1, script_exit_status( <<~GLOO )
+      a [can] :
+        on_load [script] :
+          put 1 into a.n
+          show no.such.object
+        n [int] : 0
+    GLOO
+  end
+
+  def test_script_exits_1_for_an_error_on_error_handled
+    assert_equal 1, script_exit_status( <<~GLOO )
+      a [can] :
+        hits [int] : 0
+        on_error [script] : put a.hits + 1 into a.hits
+        on_load [script] :
+          show no.such.object
+          put 1 into a.n
+        n [int] : 0
+    GLOO
+  end
+
+  def test_script_exits_1_for_an_exception
+    assert_equal 1, script_exit_status( <<~GLOO )
+      a [can] :
+        on_load [script] :
+          throw 'boom'
+          put 1 into a.n
+        n [int] : 0
+    GLOO
+  end
+
+  def test_script_exits_1_for_an_exception_on_exception_handled
+    assert_equal 1, script_exit_status( <<~GLOO )
+      a [can] :
+        hits [int] : 0
+        on_exception [script] : put a.hits + 1 into a.hits
+        on_load [script] :
+          throw 'boom'
+          put 1 into a.n
+        n [int] : 0
+    GLOO
+  end
+
+  def test_script_exits_0_with_only_a_warning
+    assert_equal 0, script_exit_status( <<~GLOO )
+      a [can] :
+        n [int] : 0
+        on_load [script] : put 'abc' into a.n
+    GLOO
+  end
+
+  def test_script_exits_0_when_clean
+    assert_equal 0, script_exit_status( <<~GLOO )
+      a [can] :
+        n [int] : 0
+        on_load [script] : put 1 into a.n
+    GLOO
+  end
+
+  #
+  # Only Script mode sets an exit status: the run failed, but start
+  # returns instead of raising SystemExit (which would fail the test).
+  #
+  def test_app_mode_does_not_exit_after_an_error
+    Dir.mktmpdir do |root|
+      File.write( File.join( root, 'start.gloo' ),
+        "a [can] :\n  on_load [script] : show no.such.object\n" )
+      o = Gloo::App::Engine.new(
+        Gloo::App::EngineContext.new(
+          [ '--app', root, '--quiet', 'status' ], nil, nil, default_user_root ) )
+      capture_io { o.start }
+      assert o.run_failed?
+    end
+  end
+
   private
+
+  #
+  # Run the given gloo source as a file in Script mode, the way
+  # `gloo file.gloo` does, and get the exit status it ends with.
+  #
+  def script_exit_status( source )
+    Dir.mktmpdir do |root|
+      path = File.join( root, 'run.gloo' )
+      File.write( path, source )
+      o = Gloo::App::Engine.new(
+        Gloo::App::EngineContext.new(
+          [ path, '--quiet' ], nil, nil, default_user_root ) )
+      capture_io { o.start }
+      return 0
+    rescue SystemExit => e
+      return e.status
+    end
+  end
 
   #
   # An engine started in the default (embedded) mode, quiet.
