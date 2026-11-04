@@ -99,6 +99,8 @@ If the name can't be resolved to a file, `load` reports `File '{name}' was not f
 
 `save` writes loaded objects back to their files. With no argument it saves every open file; with an object it saves the file (or files) that object's tree came from; with `to {path}` it **extracts** — moves the object (and its descendants) out of whichever file currently owns them, into a new file, under their full dotted path.
 
+A new file — `save {obj} to {path}`, or `save {obj}` for a top-level object with no file yet (named after the object) — goes where a relative `load` would look first: in App mode the app folder; otherwise next to the file the saving script came from, or the working folder for a command typed at the prompt (see Application, Script Mode and App Mode). A script that didn't come from a file saves into the projects folder. A full path, or one starting with `~`, is used as given. An object that's already loaded always saves back to its own file.
+
 ```gloo
 > save                        # every open file
 > save config                 # just config's file

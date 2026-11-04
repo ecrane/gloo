@@ -135,15 +135,112 @@ class SaveTest < BaseEngineTest
   end
 
   def test_save_with_no_mapping_uses_a_default_path
-    default_pn = File.join( @engine.settings.project_path, 'fresh_default.gloo' )
-    refute File.exist?( default_pn ), 'test setup: nothing should be there yet'
+    # Typed at the prompt: the working folder.
+    Dir.chdir( File.realpath( @tmp_dir ) ) do
+      @engine.parser.run 'create fresh_default as can'
+      @engine.parser.run 'save fresh_default'
+      refute @engine.error?
+      assert File.exist?( File.join( Dir.pwd, 'fresh_default.gloo' ) )
+    end
+  end
 
-    @engine.parser.run 'create fresh_default as can'
-    @engine.parser.run 'save fresh_default'
-    refute @engine.error?
-    assert File.exist?( default_pn )
-  ensure
-    File.delete( default_pn ) if default_pn && File.exist?( default_pn )
+  # -------------------------------------------------------------------
+  #   Where a new file saved with a relative name goes
+  # -------------------------------------------------------------------
+
+  def test_a_script_saves_to_a_relative_name_next_to_its_file
+    with_save_tree( 'save fresh to notes' ) do |near, project|
+      @engine.parser.run "load #{near}/main"
+      refute @engine.error?
+      assert File.exist?( File.join( near, 'notes.gloo' ) )
+      refute File.exist?( File.join( project, 'notes.gloo' ) )
+    end
+  end
+
+  def test_a_script_saves_to_a_relative_path_next_to_its_file
+    with_save_tree( 'save fresh to sub/notes' ) do |near, _project|
+      FileUtils.mkdir_p( File.join( near, 'sub' ) )
+      @engine.parser.run "load #{near}/main"
+      refute @engine.error?
+      assert File.exist?( File.join( near, 'sub', 'notes.gloo' ) )
+    end
+  end
+
+  def test_a_script_saves_a_new_root_next_to_its_file
+    with_save_tree( 'save fresh' ) do |near, project|
+      @engine.parser.run "load #{near}/main"
+      refute @engine.error?
+      assert File.exist?( File.join( near, 'fresh.gloo' ) )
+      refute File.exist?( File.join( project, 'fresh.gloo' ) )
+    end
+  end
+
+  def test_telling_a_new_root_to_save_from_a_script_goes_next_to_its_file
+    with_save_tree( 'tell fresh to save' ) do |near, _project|
+      @engine.parser.run "load #{near}/main"
+      refute @engine.error?
+      assert File.exist?( File.join( near, 'fresh.gloo' ) )
+    end
+  end
+
+  def test_in_app_mode_a_relative_save_goes_in_the_app_folder
+    with_save_tree( 'save fresh to notes' ) do |near, project|
+      @engine.define_singleton_method( :mode ) { Gloo::App::Mode::APP }
+      @engine.parser.run "load #{near}/main"
+      refute @engine.error?
+      assert File.exist?( File.join( project, 'notes.gloo' ) )
+      refute File.exist?( File.join( near, 'notes.gloo' ) )
+    end
+  end
+
+  def test_a_script_not_from_a_file_saves_in_the_projects_folder
+    with_save_tree( 'show 1' ) do |_near, project|
+      Dir.chdir( File.dirname( project ) ) do
+        @engine.parser.run 'create fresh as can'
+        @engine.parser.run 'create s as script'
+        @engine.parser.run "put 'save fresh to notes' into s"
+        @engine.parser.run 'run s'
+        refute @engine.error?
+        assert File.exist?( File.join( project, 'notes.gloo' ) )
+        refute File.exist?( File.join( Dir.pwd, 'notes.gloo' ) )
+      end
+    end
+  end
+
+  def test_a_typed_save_to_a_relative_name_goes_in_the_working_folder
+    with_save_tree( 'show 1' ) do |near, project|
+      Dir.chdir( near ) do
+        @engine.parser.run 'create fresh as can'
+        @engine.parser.run 'save fresh to notes'
+        refute @engine.error?
+        assert File.exist?( File.join( near, 'notes.gloo' ) )
+        refute File.exist?( File.join( project, 'notes.gloo' ) )
+      end
+    end
+  end
+
+  def test_a_loaded_object_still_saves_to_its_own_file
+    with_save_tree( "put 'changed' into other.s\n    save other" ) do |near, project|
+      elsewhere = File.join( File.dirname( project ), 'elsewhere' )
+      FileUtils.mkdir_p( elsewhere )
+      File.write( File.join( elsewhere, 'other.gloo' ), "other [can] :\n  s [string] : hi\n" )
+      @engine.parser.run "load #{elsewhere}/other"
+      @engine.parser.run "load #{near}/main"
+      refute @engine.error?
+      assert_includes File.read( File.join( elsewhere, 'other.gloo' ) ), 's [string] : changed'
+      refute File.exist?( File.join( near, 'other.gloo' ) )
+    end
+  end
+
+  def test_save_to_a_tilde_path_goes_in_the_home_folder
+    home = File.realpath( @tmp_dir )
+    with_home( home ) do
+      @engine.parser.run 'create fresh as can'
+      @engine.parser.run 'save fresh to ~/tilde_notes'
+      refute @engine.error?
+      assert File.exist?( File.join( home, 'tilde_notes.gloo' ) )
+      refute File.exist?( File.join( @engine.settings.project_path, '~' ) )
+    end
   end
 
   # -------------------------------------------------------------------
@@ -306,6 +403,37 @@ class SaveTest < BaseEngineTest
     assert @engine.error?
     refute File.exist?( '/tmp/gloo_it_save.gloo' )
     assert_equal 'abc', @engine.heap.it.value
+  end
+
+  private
+
+  #
+  # Yield two scratch folders, near and project. near has main.gloo,
+  # whose on_load creates a new root, fresh, and then runs the given
+  # line(s). The projects folder is set to project.
+  #
+  def with_save_tree( line )
+    root = File.realpath( Dir.mktmpdir )
+    near = File.join( root, 'near' )
+    project = File.join( root, 'project' )
+    FileUtils.mkdir_p( [ near, project ] )
+    File.write( File.join( near, 'main.gloo' ),
+                "main [can] :\n  on_load [script] :\n    create fresh as can\n    #{line}\n" )
+    @engine.settings.override_project_path( project )
+    yield near, project
+  ensure
+    FileUtils.remove_entry root if root
+  end
+
+  #
+  # Run the block with HOME set to the given folder, so ~ means it.
+  #
+  def with_home( folder )
+    old = ENV.fetch( 'HOME', nil )
+    ENV['HOME'] = folder
+    yield
+  ensure
+    ENV['HOME'] = old
   end
 
 end

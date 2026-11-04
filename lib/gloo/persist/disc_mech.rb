@@ -140,15 +140,17 @@ module Gloo
 
       #
       # Resolve a path to save a new (not-yet-existing) file to, given
-      # a name or relative path -- same convention as expand (relative
-      # to the project root, .gloo appended if missing), but without
-      # requiring the file to already exist.
+      # a name or relative path, with .gloo appended if missing. Unlike
+      # expand, the file doesn't have to exist. A full path is used as
+      # given and a ~ path is expanded. A relative name goes in the
+      # given folder (the first place a load would look, see
+      # PersistMan#save_folder), or the project folder if none is given.
       #
-      def resolve_save_path( name )
+      def resolve_save_path( name, folder = nil )
         full_name = name.end_with?( file_ext ) ? name : "#{name}#{file_ext}"
-        return full_name if full_name.start_with?( '/' )
+        return File.expand_path( absolute_folder( full_name ) ) if absolute?( full_name )
 
-        return File.join( @engine.settings.project_path, full_name )
+        return File.expand_path( File.join( folder || @engine.settings.project_path, full_name ) )
       end
 
       #

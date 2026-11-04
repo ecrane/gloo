@@ -73,6 +73,24 @@ class DiscMechTest < BaseEngineTest
     assert_equal '/tmp/somewhere/thing.gloo', pn
   end
 
+  def test_resolve_save_path_joins_the_given_folder
+    o = Gloo::Persist::DiscMech.new( @engine )
+    pn = o.resolve_save_path( 'sub/thing', '/tmp/near' )
+    assert_equal '/tmp/near/sub/thing.gloo', pn
+  end
+
+  def test_resolve_save_path_ignores_the_folder_for_a_full_path
+    o = Gloo::Persist::DiscMech.new( @engine )
+    pn = o.resolve_save_path( '/tmp/somewhere/thing', '/tmp/near' )
+    assert_equal '/tmp/somewhere/thing.gloo', pn
+  end
+
+  def test_resolve_save_path_expands_tilde
+    o = Gloo::Persist::DiscMech.new( @engine )
+    pn = o.resolve_save_path( '~/thing', '/tmp/near' )
+    assert_equal File.join( Dir.home, 'thing.gloo' ), pn
+  end
+
   # ---------------------------------------------------------------------
   #    A wildcard folder given as an absolute or ~ path
   # ---------------------------------------------------------------------

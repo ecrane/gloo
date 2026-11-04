@@ -66,7 +66,7 @@ module Gloo
         return unless obj
 
         fs_list = find_file_storages( obj )
-        return save_new( obj, @mech.resolve_save_path( root_of( obj ).name ) ) if fs_list.empty?
+        return save_new( obj, @mech.resolve_save_path( root_of( obj ).name, save_folder ) ) if fs_list.empty?
 
         @engine.event_manager.on_save obj
         save_batch( fs_list )
@@ -88,7 +88,7 @@ module Gloo
         obj = resolve_for_save( name )
         return unless obj
 
-        pn = @mech.resolve_save_path( path )
+        pn = @mech.resolve_save_path( path, save_folder )
         mapped = @maps.find { |fs| fs.pn == pn }
         return save_mapped( obj, mapped, pn ) if mapped
         return @engine.err( "#{PATH_EXISTS_ERR}#{pn}" ) if @mech.exist?( pn )
@@ -263,6 +263,17 @@ module Gloo
                     [ near, project, home ]
                   end
         return folders.compact.uniq
+      end
+
+      #
+      # Where a new file saved with a relative name goes: the first
+      # place a relative load looks (see search_folders). That's the
+      # app folder in App mode; otherwise next to the saving script's
+      # file, or the working folder for a command typed at the prompt,
+      # or the projects folder for a script that didn't come from a file.
+      #
+      def save_folder
+        return search_folders.first
       end
 
       #

@@ -425,3 +425,39 @@ END
       tell lossless_utf8 to unload
       tell ^^.f to delete
 
+
+  # -------------------------------------------------------------------
+  #   Where a new file saved with a relative name goes (7.2): next to
+  #   the saving script's file. These scripts are declared in this
+  #   file, so that's the folder this file is in.
+  # -------------------------------------------------------------------
+
+  beside_target [file] :
+
+  save_to_a_relative_name_beside_this_file [test] :
+    description [string] : save {obj} to {relative name} writes the file next to the file the script came from.
+    on_test [script] :
+      check ^^ for source_dir
+      put it '/fixtures/save_beside.gloo' into ^^.beside_target
+      create save_beside_demo as can
+      create save_beside_demo.s as string : beside
+      save save_beside_demo to fixtures/save_beside
+      check ^^.beside_target for exists?
+      assert "expected fixtures/save_beside.gloo beside this file"
+      tell ^^.beside_target to read ( ^^.out )
+      check ^^.out for substring? ( "s [string] : beside" )
+      assert "expected the saved object in the file"
+      tell save_beside_demo to unload
+      tell ^^.beside_target to delete
+
+  save_a_new_root_beside_this_file [test] :
+    description [string] : save of a top-level object with no file yet writes it next to the file the script came from.
+    on_test [script] :
+      check ^^ for source_dir
+      put it '/save_beside_root.gloo' into ^^.beside_target
+      create save_beside_root as can
+      save save_beside_root
+      check ^^.beside_target for exists?
+      assert "expected save_beside_root.gloo beside this file"
+      tell save_beside_root to unload
+      tell ^^.beside_target to delete

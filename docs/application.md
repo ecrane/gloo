@@ -128,6 +128,8 @@ Run as a script (`gloo report/start.gloo`), `load parts/*` finds `report/parts` 
 
 Files named on the command line are found differently: as given (from the working folder), then in the projects folder, then in the gloo home (see Running Gloo, above).
 
+A new file saved with a relative name (`save notes to lists/notes`, or `save notes` for a top-level object that has no file yet) goes in the first place a load would look: the app folder in App mode, otherwise next to the saving script's file, or the working folder for a command typed at the prompt. A script that didn't come from a file saves into the projects folder. So a script that saves `lists/notes` can load it back with `load lists/notes`.
+
 ## Configuration
 
 When gloo runs, it looks for a configuration file which it expects to find in `~/gloo/config/`. If there is no `gloo.yml` file in that directory, one will be created and default values added.

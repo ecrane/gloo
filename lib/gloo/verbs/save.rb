@@ -91,8 +91,13 @@ module Gloo
           ],
           :parameters => [
             '{path.to.object} — Name of the object to save.',
-            '{path} — Where to save it, relative to the project root ' \
-              '(.gloo appended if omitted). Registers the mapping, so ' \
+            '{path} — Where to save it: a full path, one starting ' \
+              'with ~, or a relative name (.gloo appended if omitted). ' \
+              'A relative name goes in the first place a relative load ' \
+              'looks: the app folder in App mode; otherwise next to the ' \
+              "saving script's file (the projects folder for a script " \
+              'that did not come from a file), or the working folder for ' \
+              'a command typed at the prompt. Registers the mapping, so ' \
               'a later bare save includes it.',
             '( {expression} ) — Instead of a literal path, an expression ' \
               'in parentheses: it is worked out and its value is used as ' \
@@ -136,7 +141,8 @@ module Gloo
             'changed script body loses the comments and blank lines ' \
             'inside it. A new top-level object has no file yet: a bare ' \
             'save leaves it out and warns (Not saved (no file yet): ' \
-            '{name}.); save {name} gives it a file of its own. ' \
+            '{name}.); save {name} gives it a file of its own, named ' \
+            'after it and placed the same way as a relative path. ' \
             'See doc verbs, Load & Save. ' \
             'An object can also be told to save itself: ' \
             '`tell my_obj to save`. When several files contribute to ' \

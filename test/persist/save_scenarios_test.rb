@@ -313,7 +313,8 @@ class SaveScenariosTest < BaseEngineTest
 
   def test_once_saved_a_new_top_level_object_is_an_open_file
     load_file 'a', "app [can] :\n"
-    gloo 'create notes as can', 'save notes'
+    # Typed at the prompt, a new file goes in the working folder.
+    Dir.chdir( @dir ) { gloo 'create notes as can', 'save notes' }
     warnings = capture_warnings { gloo 'save' }
     assert_equal [], warnings
     assert File.exist?( path( 'notes' ) )
