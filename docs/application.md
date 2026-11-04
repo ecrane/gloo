@@ -98,6 +98,8 @@ Gloo runs a file in one of two ways, and they're meant for different things.
 
 **App mode** (`gloo --app path/to/folder`) is a process: gloo loads the folder's `start.gloo`, and the app stays up — a shell taking commands, a web server, a connection — until it's told to stop. The folder is the app's root: `gloo.app` is that folder, and words after it on the command line are a command for the app, not files to load.
 
+An app only runs in App mode. If an app's `start.gloo` is run as a script by mistake, starting a shell (gloo-cli) or a web server (gloo-web) is an error that says how to run it, for example `Could not start the shell: an app runs in App mode. Run it with 'gloo --app ~/gloo/app/notes'.`, and gloo exits with status 1.
+
 The two also differ in what the **project folder** is. In App mode it's the app's folder. Otherwise it's where you keep your projects: the `project_path` setting (see Configuration), `~/gloo/projects` unless you change it, and `gloo.gloo_projects`.
 
 ### Where a Relative Load Looks
