@@ -15,6 +15,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_path_arg( 1 )
+
         levels = determine_levels
         target = self.determine_target
         indent = self.determine_indent
@@ -185,9 +187,13 @@ module Gloo
             'setting is on, any listed object that has a doc (the ' \
             'comment block declared immediately above it in its source ' \
             'file) shows it too.',
-          :syntax => [ 'list {path.to.object}' ],
+          :syntax => [
+            'list {path.to.object}',
+            'list ( {expression} )'
+          ],
           :parameters => [
-            '{path.to.object} — Optional path to object that will be listed. When no path is provided, the current context is used.'
+            '{path.to.object} — Optional path to object that will be listed. When no path is provided, the current context is used.',
+            Gloo::Core::Verb::COMPUTED_PATH_DOC
           ],
           :result => 'Object and children are listed out in the CLI. ' \
             'Doc lines are included when the list_docs setting is on.',
@@ -198,6 +204,7 @@ module Gloo
             > list
             > list my.container
             > list root
+            > list ( 'app.' section )
           EXAMPLES
         }
       end

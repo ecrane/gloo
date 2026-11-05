@@ -15,13 +15,15 @@ module Gloo
       NO_NAME_ERR = 'Object name is missing!'.freeze
       BAD_NAME_CHARS = /[()"']/.freeze
       BAD_NAME_ERR = "'%s' isn't a name! To create an object at a " \
-        'computed path, put the path into an alias, then create ' \
-        'the alias: create slot* as string.'.freeze
+        'computed path, put the whole path in parentheses: ' \
+        "create ( 'list.' n ) as string.".freeze
 
       #
       # Run the verb.
       #
       def run
+        return @engine.heap.it.set_to( false ) unless take_path_arg( 1 )
+
         name = @tokens.second
         type = @tokens.after_token( AS )
         value = @tokens.after_token( VAL )
@@ -109,12 +111,16 @@ module Gloo
           :shortcut => KEYWORD_SHORT,
           :description => 'Create a new object of given type with given ' \
             'value. Both type and value are optional when creating an object.',
-          :syntax => [ 'create {new.object.path} as {type} : {value}' ],
+          :syntax => [
+            'create {new.object.path} as {type} : {value}',
+            'create ( {expression} ) as {type} : {value}'
+          ],
           :parameters => [
             '{new.object.path} — The path and name of the new object. ' \
               'Like any path, it can start from the root, from here in ' \
               'a script (^.box.new, ^^.new), or from the context (@.new).',
             '{type} — The type of the new object. Optional; if not provided the object will be untyped.',
+            Gloo::Core::Verb::COMPUTED_PATH_DOC,
             "{value} — The initial value for the new object. Optional; if not provided the object will have the default value for the type."
           ],
           :result => "If nothing exists at the path, a new object is " \
@@ -126,13 +132,16 @@ module Gloo
           :errors => [
             "#{NO_NAME_ERR} — The name of the object was not specified and the object cannot be created.",
             "Could not create '{path}': Object '{parent.path}' was not found. — The parent container named in the path does not exist. Every container above the new object must already exist. Nothing is created, and it is false.",
-            "#{format( BAD_NAME_ERR, '{name}' )} — The name has parentheses or quotes, or there are extra words between the name and as / : — create takes a name as written. Nothing is created, and it is false."
+            "#{format( BAD_NAME_ERR, '{name}' )} — The name has quotes or a stray parenthesis, or there are extra words between the name and as / : — a name is taken as written; to compute one, put the whole path in parentheses. Nothing is created, and it is false."
           ],
           :examples => <<~EXAMPLES.strip
             # Basic examples of creating an object from the gloo shell:
             > create x as integer : 1
             > create s : "abc"
             > create t
+
+            # Create at a path worked out at runtime:
+            > create ( 'list.' n ) as string
 
             # Example of creating an object with an alias:
             a [can] :

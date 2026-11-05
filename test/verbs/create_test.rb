@@ -100,15 +100,18 @@ class CreateTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
-  def test_a_parenthesised_name_is_an_error_and_creates_nothing
+  def test_a_parenthesised_name_creates_at_the_computed_path
+    @engine.parser.run 'create list as can'
     @engine.parser.run 'create n as int : 3'
-    @engine.heap.it.set_to 'before'
     @engine.parser.run 'create ( "list." + n ) as string : four'
-    assert @engine.error?
-    assert_includes @engine.heap.error.value, %q('( "list." + n )' isn't a name!)
-    assert_includes @engine.heap.error.value, 'put the path into an alias'
-    assert_equal false, @engine.heap.it.value
-    assert_nil @engine.heap.root.find_child( '(' )
+    refute @engine.error?
+    assert_equal 'four', @engine.heap.root.find_child( 'list' ).find_child( '3' ).value
+  end
+
+  def test_a_bad_name_points_to_the_parenthesised_form
+    @engine.parser.run 'create list as can'
+    @engine.parser.run 'create list.(n) as string'
+    assert_includes @engine.heap.error.value, "put the whole path in parentheses"
   end
 
   def test_extra_words_after_the_name_are_an_error
@@ -212,6 +215,24 @@ class CreateTest < BaseEngineTest
     @engine.parser.run 'create ^.y as int : 1'
     assert @engine.error?
     assert_includes @engine.heap.error.value, Gloo::Core::NotFound.object( '^' )
+  end
+
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_create_at_a_computed_path_with_no_type
+    @engine.parser.run 'create list as can'
+    @engine.parser.run "create ( 'list.' 'x' )"
+    refute @engine.error?
+    assert @engine.heap.root.find_child( 'list' ).find_child( 'x' )
+  end
+
+  def test_a_value_group_is_not_taken_as_the_name
+    @engine.parser.run "create v as string : 'other'"
+    @engine.parser.run 'create x as string : ( v )'
+    assert @engine.heap.root.find_child( 'x' )
+    assert_nil @engine.heap.root.find_child( 'other' )
   end
 
 end

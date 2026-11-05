@@ -18,6 +18,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_path_arg( 1 )
+
         msg = @tokens.after_token( FOR )
 
         unless msg
@@ -67,10 +69,14 @@ module Gloo
             'state while tell is used to trigger an action. Using the ' \
             'verb that matches intent makes the code read like ' \
             'natural communication.',
-          :syntax => [ 'check {path.to.object} for {condition_message}' ],
+          :syntax => [
+            'check {path.to.object} for {condition_message}',
+            'check ( {expression} ) for {condition_message}'
+          ],
           :parameters => [
             '{path.to.object} — The object that we want to send a condition_message to.',
-            '{message} — The condition_message to send.'
+            '{message} — The condition_message to send.',
+            Gloo::Core::Verb::COMPUTED_PATH_DOC
           ],
           :result => 'The result depends on the message that is sent, but ' \
             'by convention the result of the check will be in it.',

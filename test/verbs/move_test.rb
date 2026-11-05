@@ -123,4 +123,20 @@ class MoveTest < BaseEngineTest
     assert_equal %w[a b], @engine.heap.root.find_child( 'c' ).children.map( &:name )
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_move_computed_object_to_computed_parent
+    @engine.parser.run 'create a as can'
+    @engine.parser.run 'create a.x as int : 3'
+    @engine.parser.run 'create b as can'
+    @engine.parser.run "create src as string : 'a.x'"
+    @engine.parser.run "create dst as string : 'b'"
+    @engine.parser.run 'move ( src ) to ( dst )'
+    refute @engine.error?
+    assert_nil @engine.heap.root.find_child( 'a' ).find_child( 'x' )
+    assert_equal 3, @engine.heap.root.find_child( 'b' ).find_child( 'x' ).value
+  end
+
 end

@@ -95,7 +95,12 @@ module Gloo
           :messages => [
             'resolve — Check to see if the object referenced exists. Sets it to true or false.'
           ],
-          :notes => 'The alias also reflects (forwards) the messages of the object it points to.',
+          :notes => 'The alias also reflects (forwards) the messages of the object it points to. ' \
+            'For a path built and used on one line, a computed path needs no alias: ' \
+            "create ( 'list.' n ) as string. Putting an alias in parentheses adds a step: " \
+            '( ln ) follows the alias and uses its target\'s value as the path, while ' \
+            '( ln* ) uses the path the alias holds, the same as ln. ' \
+            'See doc language_syntax, Computed Arguments.',
           :examples => <<~EXAMPLES.strip
             #
             # Alias object.

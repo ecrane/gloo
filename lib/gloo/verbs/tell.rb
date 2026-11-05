@@ -19,6 +19,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_path_arg( 1 )
+
         msg = @tokens.after_token( TO )
 
         unless msg
@@ -67,10 +69,14 @@ module Gloo
             'or change state, while check is used to investigate ' \
             'state. Using the verb that matches intent makes the ' \
             'code read like natural communication.',
-          :syntax => [ 'tell {path.to.object} to {message}' ],
+          :syntax => [
+            'tell {path.to.object} to {message}',
+            'tell ( {expression} ) to {message}'
+          ],
           :parameters => [
             '{path.to.object} — The object that we want to send a message to.',
-            '{message} — The message to send.'
+            '{message} — The message to send.',
+            Gloo::Core::Verb::COMPUTED_PATH_DOC
           ],
           :result => 'The result depends on the message that is sent.',
           :errors => [
@@ -82,6 +88,7 @@ module Gloo
             > tell the.script to run
             > tell my.str to up
             > tell the.container to count
+            > tell ( 'jobs.' name ) to run
           EXAMPLES
           :notes => <<~NOTES.strip
             tell and check send the same message the same way — the two

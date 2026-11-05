@@ -308,4 +308,16 @@ class TokensTest < BaseTest
     assert_equal 2, t.token_count
   end
 
+  def test_with_tokens_replaced_puts_one_token_in_place_of_a_range
+    t = Gloo::Core::Tokens.new( 'tell ( p ) to run' )
+    t2 = t.with_tokens_replaced( 1, 3, 'a b.c' )
+    assert_equal [ 'tell', 'a b.c', 'to', 'run' ], t2.tokens
+  end
+
+  def test_with_tokens_replaced_leaves_the_original_alone
+    t = Gloo::Core::Tokens.new( 'tell ( p ) to run' )
+    t.with_tokens_replaced( 1, 3, 'x' )
+    assert_equal %w[tell ( p ) to run], t.tokens
+  end
+
 end

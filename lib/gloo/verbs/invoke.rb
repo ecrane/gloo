@@ -19,6 +19,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_path_arg( 1 )
+
         target = @tokens.token_count > 1 ? @tokens.second : nil
         arg_tokens = @tokens.token_count > 1 ? @tokens.params[ 1..-1 ] : []
 
@@ -53,12 +55,15 @@ module Gloo
           :description => 'Invoke a function. Set it to the result of the function.',
           :syntax => [
             'invoke {path.to.function} {params}',
+            'invoke ( {expression} ) {params}',
             'invoke( {path.to.function} {params} )  — inline, usable inside any expression',
             '~>( {path.to.function} {params} )      — inline, shortcut spelling'
           ],
           :parameters => [
             '{path.to.function} — The function we want to invoke.',
-            '{params} — The list of parameters to the function.'
+            '{params} — The list of parameters to the function.',
+            Gloo::Core::Verb::COMPUTED_PATH_DOC + ' Leave a space after invoke: invoke( … ) with no ' \
+              'space is the inline call form.'
           ],
           :result => 'The result of the function is put into it; if ' \
             'anything goes wrong, it is false. The ' \

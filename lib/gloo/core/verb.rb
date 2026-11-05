@@ -13,6 +13,13 @@ module Gloo
 
       attr_reader :tokens, :params
 
+      BLANK_PATH_ERR = "Object path '( %s )' is blank.".freeze
+      COMPUTED_PATH_DOC = '( {expression} ) — Instead of a literal ' \
+        'path, an expression in parentheses: it is worked out and its ' \
+        'value is used as the path, as if it had been typed there. The ' \
+        "fixed part is quoted text: ( 'list.' n ). See doc " \
+        'language_syntax, Computed Arguments.'.freeze
+
       #
       # Set up the verb.
       #
@@ -100,6 +107,108 @@ module Gloo
         @tokens = @tokens.with_token( value.to_s )
         @params = nil
         return true
+      end
+
+      #
+      # For a verb whose argument at the given position is an object
+      # path: a ( expr ) group there is worked out, and its value put
+      # back as one token, so the path can be computed, as in
+      # put 1 into ( 'counts.' key ). The verb then reads its arguments
+      # as usual. The position is a token index (1 for the word after
+      # the verb), or a keyword, meaning the token after it ('into').
+      #
+      # The group is either mid-line, in the tokens (tell ( t ) to run),
+      # or, when the path is the last argument, already split off by
+      # the parser into params (put 1 into ( x )). A trailing group
+      # after some other argument (tell t to run ( 1 )) is left alone.
+      # Returns false if the expression couldn't be worked out (already
+      # reported), true otherwise.
+      #
+      def take_path_arg( position )
+        return true unless @tokens.respond_to?( :token_count )
+
+        i = path_arg_index( position )
+        return true unless i
+
+        return take_trailing_path_arg if i == @tokens.token_count
+
+        last = path_group_end( i )
+        return true unless last
+
+        text = path_group_text( i, last )
+        value, ok = evaluate_expr( Gloo::Core::Tokens.new( text ).tokens )
+        return false unless ok && path_value_given?( value, text )
+
+        @tokens = @tokens.with_tokens_replaced( i, last, value.to_s )
+        return true
+      end
+
+      #
+      # The token index of the path argument at the given position:
+      # an index as given, or the one after a keyword. Nil if the
+      # keyword isn't there.
+      #
+      def path_arg_index( position )
+        return position if position.is_a?( Integer )
+
+        i = @tokens.index_of( position )
+        return i ? i + 1 : nil
+      end
+
+      #
+      # The path is the last argument and has no token: if the parser
+      # split a trailing group off into params, that's the path. Work
+      # it out and add it as the last token.
+      #
+      def take_trailing_path_arg
+        return true unless @params.respond_to?( :tokens )
+
+        value, ok = evaluate_expr( @params.tokens )
+        return false unless ok && path_value_given?( value, @params.tokens.join( ' ' ) )
+
+        @tokens = @tokens.with_token( value.to_s )
+        @params = nil
+        return true
+      end
+
+      #
+      # A worked-out path must have some text; blank is reported (the
+      # group's text, as written, names it) and the verb doesn't run.
+      #
+      def path_value_given?( value, text )
+        return true unless value.to_s.strip.empty?
+
+        @engine.err format( BLANK_PATH_ERR, text.strip )
+        return false
+      end
+
+      #
+      # If the token at index i opens a group, the index of the token
+      # that closes it; nil if it doesn't open one or never closes. A
+      # group can be written ( p ), (p) or ('a.' b), so parentheses are
+      # counted in each token; a quoted token is text and isn't counted.
+      #
+      def path_group_end( i )
+        return nil unless @tokens.at( i )&.start_with?( '(' )
+
+        depth = 0
+        ( i...@tokens.token_count ).each do |j|
+          token = @tokens.at( j )
+          next if Gloo::Core::Tokens::QUOTE_CHARS.include?( token[ 0 ] )
+
+          depth += token.count( '(' ) - token.count( ')' )
+          return j if depth <= 0
+        end
+        return nil
+      end
+
+      #
+      # The text inside the group from token first to token last, with
+      # its outer parentheses taken off.
+      #
+      def path_group_text( first, last )
+        text = ( first..last ).map { |j| @tokens.at( j ) }.join( ' ' )
+        return text.strip[ 1..-2 ]
       end
 
       #

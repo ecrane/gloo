@@ -188,6 +188,16 @@ module Gloo
       end
 
       #
+      # A copy of these tokens with the tokens from first to last
+      # (indexes, inclusive) replaced by one token.
+      #
+      def with_tokens_replaced( first, last, token )
+        copy = dup
+        copy.replace_tokens( first, last, token )
+        return copy
+      end
+
+      #
       # Get the item after a given token.
       #
       def before_token( token )
@@ -204,6 +214,14 @@ module Gloo
       #
       def append_token( token )
         @tokens += [ token ]
+      end
+
+      #
+      # Replace the tokens from first to last with one token, in a new
+      # list (see with_tokens_replaced).
+      #
+      def replace_tokens( first, last, token )
+        @tokens = @tokens[ 0...first ] + [ token ] + @tokens[ last + 1..-1 ]
       end
 
       # ---------------------------------------------------------------------

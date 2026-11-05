@@ -163,4 +163,24 @@ class ListTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_list_a_computed_object
+    @engine.log.quiet = false
+    @engine.parser.run 'create box as can'
+    @engine.parser.run 'create box.inner as int'
+    @engine.parser.run "create p as string : 'box'"
+    out, = capture_io { @engine.parser.run 'list ( p )' }
+    refute @engine.error?
+    # box's own child is shown: the list is of box, not of the context.
+    assert_includes out, 'inner'
+  end
+
+  def test_list_a_missing_computed_object_names_the_worked_out_path
+    @engine.parser.run "list ( 'no.' 'where' )"
+    assert_equal "Object 'no.where' was not found.", @engine.heap.error.value
+  end
+
 end

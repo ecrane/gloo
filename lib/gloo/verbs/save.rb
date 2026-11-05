@@ -17,6 +17,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_path_arg( 1 )
+
         name = @tokens.second
         return if name && Gloo::Core::Pn.new( @engine, name ).it_target_err?( 'saved' )
         return @engine.persist_man.save name unless @tokens.index_of( TO )
@@ -86,11 +88,13 @@ module Gloo
           :syntax => [
             'save',
             'save {path.to.object}',
+            'save ( {expression} )',
             'save {path.to.object} to {path}',
             'save {path.to.object} to ( {expression} )'
           ],
           :parameters => [
             '{path.to.object} — Name of the object to save.',
+            "save ( {expression} ) — The object to save, worked out: #{Gloo::Core::Verb::COMPUTED_PATH_DOC.sub( '( {expression} ) — ', '' )}",
             '{path} — Where to save it: a full path, one starting ' \
               'with ~, or a relative name (.gloo appended if omitted). ' \
               'A relative name goes in the first place a relative load ' \

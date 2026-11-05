@@ -405,6 +405,30 @@ class SaveTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_save_a_computed_object_to_a_computed_path
+    @engine.parser.run 'create fresh as can'
+    @engine.parser.run "create o as string : 'fresh'"
+    @engine.parser.run "create d as string : #{@tmp_dir}"
+    @engine.parser.run "save ( o ) to ( d '/computed_obj' )"
+    refute @engine.error?
+    assert File.exist?( File.join( @tmp_dir, 'computed_obj.gloo' ) )
+  end
+
+  def test_save_a_computed_object_saves_only_that_object
+    @engine.parser.run 'create fresh as can'
+    @engine.parser.run "create o as string : 'fresh'"
+    Dir.chdir( File.realpath( @tmp_dir ) ) do
+      @engine.parser.run 'save ( o )'
+      refute @engine.error?
+      assert File.exist?( File.join( Dir.pwd, 'fresh.gloo' ) )
+      refute File.exist?( File.join( Dir.pwd, 'o.gloo' ) )
+    end
+  end
+
   private
 
   #

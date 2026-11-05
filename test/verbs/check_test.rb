@@ -59,4 +59,16 @@ class CheckTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_check_a_computed_object
+    @engine.parser.run 'create s as string'
+    @engine.parser.run "create p as string : 's'"
+    @engine.parser.run 'check ( p ) for blank?'
+    refute @engine.error?
+    assert_equal true, @engine.heap.it.value
+  end
+
 end

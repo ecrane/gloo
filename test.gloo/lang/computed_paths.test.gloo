@@ -1,0 +1,98 @@
+#
+# Computed object paths: a ( … ) group where a verb expects an object
+# path is worked out, and its value is used as the path.
+#
+
+tests.lang.computed_paths [can] :
+
+  #
+  # The quote-rotation example (svt/data/quote.gloo), with ( … ) in
+  # place of an alias: each pass builds the next slot's path, relative
+  # to this container, creates it and fills it.
+  #
+  quotes [can] :
+  i [int] : 0
+  file [string] :
+  add_quote [script] :
+    tell ^.i to inc
+    create ( '^.quotes.' ^.i ) as string
+    put ^.file into ( '^.quotes.' ^.i )
+
+  builds_paths_at_runtime [test] :
+    description [string] : create and put take a path built at runtime, relative to the script.
+    on_test [script] :
+      put 0 into ^^.i
+      put 'first.md' into ^^.file
+      run ^^.add_quote
+      put 'second.md' into ^^.file
+      run ^^.add_quote
+      eval ^^.quotes.1 = 'first.md'
+      assert "expected quotes.1 to hold the first file"
+      eval ^^.quotes.2 = 'second.md'
+      assert "expected quotes.2 to hold the second file"
+      tell ^^.quotes.1 to unload
+      tell ^^.quotes.2 to unload
+
+  count [int] : 0
+  target [string] : tests.lang.computed_paths.count
+
+  tell_a_computed_object [test] :
+    description [string] : tell ( expr ) sends the message to the object at the worked-out path.
+    on_test [script] :
+      put 0 into ^^.count
+      tell ( ^^.target ) to inc
+      eval ^^.count = 1
+      assert "expected the object named by target to be incremented"
+
+  #
+  # Aliases. ln points at a.s, and a.s holds the path of other.place.
+  # ( ln ) follows the alias and uses a.s's value as a path: a second
+  # hop. ( ln* ) uses the alias's own value, the path a.s.
+  #
+  a [can] :
+    s [string] :
+  other [can] :
+    place [string] :
+  ln [alias] :
+  a_s_path [string] : tests.lang.computed_paths.a.s
+  place_path [string] : tests.lang.computed_paths.other.place
+
+  set_up_alias [script] :
+    put ^.a_s_path into ^.ln*
+    put ^.place_path into ^.a.s
+    put '' into ^.other.place
+
+  put_into_an_alias_goes_to_its_target [test] :
+    description [string] : put x into ln puts x into the alias's target, a.s.
+    on_test [script] :
+      run ^^.set_up_alias
+      put 'x' into ^^.ln
+      eval ^^.a.s = 'x'
+      assert "expected a.s to get the value"
+
+  put_into_a_parenthesised_alias_takes_a_second_hop [test] :
+    description [string] : put x into ( ln ) uses the target's value as the path, so x goes into other.place.
+    on_test [script] :
+      run ^^.set_up_alias
+      put 'x' into ( ^^.ln )
+      eval ^^.other.place = 'x'
+      assert "expected other.place to get the value"
+      eval ^^.a.s = ^^.place_path
+      assert "expected a.s to be unchanged"
+
+  put_into_a_parenthesised_alias_star_matches_the_alias [test] :
+    description [string] : put x into ( ln* ) uses the alias's own value, a.s, the same as put x into ln.
+    on_test [script] :
+      run ^^.set_up_alias
+      put 'x' into ( ^^.ln* )
+      eval ^^.a.s = 'x'
+      assert "expected a.s to get the value"
+
+  put_into_an_alias_star_retargets_it [test] :
+    description [string] : put path into ln* points the alias somewhere else, as before.
+    on_test [script] :
+      run ^^.set_up_alias
+      put ^^.place_path into ^^.ln*
+      put 'y' into ^^.ln
+      eval ^^.other.place = 'y'
+      assert "expected the retargeted alias to put into other.place"

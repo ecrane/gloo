@@ -79,14 +79,13 @@ The `random_` messages pick with replacement, so two calls can give the same chi
 
 ### Building a numbered list
 
-To add children one at a time — say, while walking a folder — create each one through an alias. Point the alias at the next numbered path, then create the object there, and put its value in:
+To add children one at a time — say, while walking a folder — work out the next numbered path, create the object there, and put its value in:
 
 ```gloo
 names [can] :
   words [string] : red green blue
   list [can] :
   next [int] : 0
-  slot [alias] :
 
   add_each [each] :
     word [string] :
@@ -94,16 +93,17 @@ names [can] :
     do [script] :
       tell names.list to count
       put it + 1 into names.next
-      put 'names.list.' + names.next into names.slot*
-      create names.slot* as string
-      put ^.word into names.slot
+      create ( 'names.list.' names.next ) as string
+      put ^.word into ( 'names.list.' names.next )
 
   on_load [script] :
     tell names.add_each to run
     tell names.list to show_key_value_table
 ```
 
-The children are named `1`, `2`, `3`, the same way `split_list` names them, so `child_value_at ( 0 )` is the child named `1`. The `*` after the alias refers to the alias itself rather than what it points to (see `alias` in the in-app help), so `put … into names.slot*` changes where it points and `create names.slot*` creates the object there.
+The children are named `1`, `2`, `3`, the same way `split_list` names them, so `child_value_at ( 0 )` is the child named `1`. `( 'names.list.' names.next )` is a computed path: gloo works out the expression and uses its value as the path (see Language, Syntax, Computed Arguments). The fixed part is quoted because it's text.
+
+Older code does the same through an alias: `put 'names.list.' + names.next into names.slot*` points the alias at the path (the `*` refers to the alias itself rather than what it points to), then `create names.slot* as string` and `put ^.word into names.slot`. That still works.
 
 ## Integer
 

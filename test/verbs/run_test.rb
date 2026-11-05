@@ -54,4 +54,18 @@ class RunTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_run_a_computed_script
+    @engine.parser.run 'create n as int : 0'
+    @engine.parser.run 'create s as script'
+    @engine.parser.run %q(put 'put 4 into n' into s)
+    @engine.parser.run "create p as string : 's'"
+    @engine.parser.run 'run ( p )'
+    refute @engine.error?
+    assert_equal 4, @engine.heap.root.find_child( 'n' ).value
+  end
+
 end

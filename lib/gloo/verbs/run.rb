@@ -18,6 +18,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return unless take_path_arg( 1 )
+
         if @tokens.token_count < 2
           @engine.syntax_err MISSING_EXPR_ERR
           return
@@ -85,12 +87,14 @@ module Gloo
             'same as sending a run message to the object.',
           :syntax => [
             'run {path.to.object}',
+            'run ( {expression} )',
             'run ~> {expression}'
           ],
           :parameters => [
             '{path.to.object} — Reference to the object which will be ' \
               'run. The object must be a runnable object such as a script.',
-            '{expression} — Evaluate the expression and run it.'
+            '{expression} — Evaluate the expression and run it.',
+            Gloo::Core::Verb::COMPUTED_PATH_DOC
           ],
           :result => 'The result depends on the object that is run.',
           :errors => [
@@ -101,6 +105,9 @@ module Gloo
 
             > create s as script : "show 3 + 4"
             > run s
+
+            # Run the script at a path worked out at runtime:
+            > run ( 'jobs.' name )
 
             # Run a script in an evaluated expression:
             > create s as string : "show 3 + 4"

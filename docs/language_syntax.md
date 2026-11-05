@@ -62,6 +62,52 @@ The `+` is optional when joining text, so `( $.gloo_tmp '/scratch.gloo' )` and `
 
 If the expression can't be worked out (for example, an object it names doesn't exist), that's reported as an error and the verb doesn't run.
 
+### Computed Object Paths
+
+Where a verb expects an object path, a parenthesized expression works the same way: gloo works it out, and its value is used as the path, exactly as if it had been typed there.
+
+```gloo
+create ( 'quotes.' ^.i ) as string
+put ^.file into ( 'quotes.' ^.i )
+tell ( target ) to run
+move ( src ) to ( dst )
+```
+
+This works for `tell` and `check` (the object), `put … into`, `create` (the name), `move` (both the object and the new parent), `list`, `run`, `invoke` (the function) and `save` (the object).
+
+Without parentheses you get the object; with them, the path its value holds. If `target` is a string holding `app.jobs.nightly`, `tell target to run` sends `run` to the string itself, while `tell ( target ) to run` runs `app.jobs.nightly`. Think of `( target )` as an inline alias: for one line, it does what an alias holding `target`'s value would, and nothing is stored.
+
+- The fixed part of a path is text, so quote it: `( 'quotes.' ^.i )`. Without the quotes, `( quotes. ^.i )` would read `quotes.` as an object.
+- A built path can be relative, and it's resolved the same way as when typed: `( '^.quotes.' ^.i )` starts from the running script's parent, `( '@.' name )` from the context.
+- A value that isn't text is turned into text first, so `( i )` with `i` = 3 means the object named `3`.
+- A computed path that names nothing is handled exactly as the same typed path would be: `create` creates it, `put` and `tell` report it isn't there, and the message names the worked-out path (`Object 'quotes.3' was not found.`), not the expression.
+- A path that works out to blank is an error, `Object path '( p )' is blank.`, and the verb doesn't run.
+
+Parentheses anywhere else keep their meaning. In `tell ( s ) to starts_with? ( 'he' )` the first group is the object and the second is the message's parameters. A group after `create`'s `:` is the value, not the name. `invoke( f )` with no space is an inline function call (see Function Calls); `invoke ( f )`, with a space, is a computed path. `redirect` doesn't take a computed path: a group after it is its `(hard)` option.
+
+#### Computed Paths and Aliases
+
+An alias is a pointer you keep: declared once, saved with the file, used from many places. A computed path is a one-off, built and used on one line. Before computed paths, building a path at runtime meant pointing an alias at it first:
+
+```gloo
+put 'quotes.' ^.i into ^.slot*
+create ^.slot* as string
+put ^.file into ^.slot
+```
+
+That still works; `create ( 'quotes.' ^.i ) as string` and `put ^.file into ( 'quotes.' ^.i )` do the same without the alias.
+
+Putting an alias inside the parentheses is new, and it adds a step. Working out an alias follows it to its target and gives the target's value, and that value is then used as the path. With `ln` pointing at `a.s`, and `a.s` holding the text `other.place`:
+
+| Written | Goes into |
+|---|---|
+| `put x into ln` | `a.s` — the alias forwards to its target |
+| `put x into ( ln )` | `other.place` — the target's value, used as a path: a second hop |
+| `put x into ( ln* )` | `a.s` — the alias's own value, the path it holds; the same as `put x into ln` |
+| `put x into ln*` | the alias itself, which now points somewhere else |
+
+So `( ln )` is only what you want when the alias's target holds a path. To mean "where the alias points", leave the parentheses off, or use `( ln* )`.
+
 For anything else, `run ~>` works out a whole command and runs it: `run ~> 'load ' $.gloo_tmp '/x.gloo'`. Prefer the parentheses where they're available; a command built this way breaks if a path has spaces in it.
 
 See also: Load, Save, Context, Exists.

@@ -18,6 +18,8 @@ module Gloo
       # Run the verb.
       #
       def run
+        return @engine.heap.it.set_to( false ) unless take_path_arg( INTO )
+
         value = fetch_value_tokens
         return @engine.heap.it.set_to( false ) if value.nil?
 
@@ -111,10 +113,14 @@ module Gloo
           :shortcut => KEYWORD_SHORT,
           :description => 'Put a value into an object. ' \
             'The value is the result of an expression.',
-          :syntax => [ 'put {expression} into {dst.path}' ],
+          :syntax => [
+            'put {expression} into {dst.path}',
+            'put {expression} into ( {expression} )'
+          ],
           :parameters => [
             '{expression} — The expression that is evaluated.',
-            '{dst.path} — The path to the destination object.'
+            '{dst.path} — The path to the destination object.',
+            Gloo::Core::Verb::COMPUTED_PATH_DOC
           ],
           :result => 'The destination object has the result of the ' \
             'evaluated expression. It will also be set into it. If ' \
@@ -132,6 +138,7 @@ module Gloo
             > put 123 into x
             > put 3 + 5 into x
             > put TRUE into flag
+            > put 5 into ( 'counts.' fruit )
           EXAMPLES
         }
       end

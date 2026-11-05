@@ -59,4 +59,38 @@ class TellTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_tell_a_computed_object
+    @engine.parser.run 'create n as int : 1'
+    @engine.parser.run "create p as string : 'n'"
+    @engine.parser.run 'tell ( p ) to inc'
+    refute @engine.error?
+    assert_equal 2, @engine.heap.root.find_child( 'n' ).value
+  end
+
+  def test_tell_a_computed_object_with_message_params
+    @engine.parser.run 'create s as string : hello'
+    @engine.parser.run "create p as string : 's'"
+    @engine.parser.run "tell ( p ) to starts_with? ( 'he' )"
+    refute @engine.error?
+    assert_equal true, @engine.heap.it.value
+  end
+
+  def test_tell_a_missing_computed_object_names_the_worked_out_path
+    @engine.parser.run "tell ( 'no.' 'where' ) to run"
+    assert_equal "Object 'no.where' was not found.", @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_tell_a_computed_object_whose_expression_fails
+    @engine.parser.run 'create n as int : 1'
+    @engine.parser.run 'tell ( no_such_obj ) to inc'
+    assert @engine.error?
+    refute_includes @engine.heap.error.value, "'('"
+    assert_equal 1, @engine.heap.root.find_child( 'n' ).value
+  end
+
 end

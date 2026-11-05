@@ -24,6 +24,8 @@ module Gloo
       # nothing.
       #
       def run
+        return unless take_path_arg( 1 ) && take_path_arg( TO )
+
         dst = lookup_dst
         return if dst.nil?
 
@@ -131,10 +133,14 @@ module Gloo
           :description => 'Move an object to a new parent. A name is unique ' \
             'in its container, so the new parent must not already have a ' \
             'child with the same name.',
-          :syntax => [ 'move {path.to.object} to {new.parent}' ],
+          :syntax => [
+            'move {path.to.object} to {new.parent}',
+            'move ( {expression} ) to ( {expression} )'
+          ],
           :parameters => [
             '{path.to.object} — The object that we want to move.',
-            '{new.parent} — The new location for the object.'
+            '{new.parent} — The new location for the object.',
+            "#{Gloo::Core::Verb::COMPUTED_PATH_DOC} Either or both can be computed."
           ],
           :result => 'The object will now be in the new location. Moving it ' \
             'to the parent it is already in does nothing. A pure action: it ' \

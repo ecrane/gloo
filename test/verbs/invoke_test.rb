@@ -122,4 +122,22 @@ class InvokeTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_invoking_a_computed_function_with_params
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run "create p as string : 'add'"
+    @engine.parser.run 'invoke ( p ) 3 4'
+    assert_equal 7, @engine.heap.it.value
+  end
+
+  def test_invoking_a_computed_function_without_params
+    @engine.parser.run 'load ctrl/invoke'
+    @engine.parser.run "create p as string : 'f'"
+    @engine.parser.run 'invoke ( p )'
+    assert_equal 7, @engine.heap.it.value
+  end
+
 end

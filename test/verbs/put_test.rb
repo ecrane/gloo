@@ -129,4 +129,51 @@ class PutTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  # ---------------------------------------------------------------------
+  #    A computed object path: ( expr )
+  # ---------------------------------------------------------------------
+
+  def test_put_into_a_computed_path
+    @engine.parser.run 'create counts as can'
+    @engine.parser.run 'create counts.apples as int'
+    @engine.parser.run "create k as string : 'apples'"
+    @engine.parser.run "put 5 into ( 'counts.' k )"
+    refute @engine.error?
+    assert_equal 5, @engine.heap.root.find_child( 'counts' ).find_child( 'apples' ).value
+  end
+
+  def test_put_into_a_path_held_in_an_object
+    @engine.parser.run 'create x as int'
+    @engine.parser.run "create p as string : 'x'"
+    @engine.parser.run 'put 7 into ( p )'
+    assert_equal 7, @engine.heap.root.find_child( 'x' ).value
+    assert_equal 'x', @engine.heap.root.find_child( 'p' ).value
+  end
+
+  def test_put_into_a_relative_computed_path
+    @engine.parser.run 'create box as can'
+    @engine.parser.run 'create box.slots as can'
+    @engine.parser.run 'create box.slots.2 as int'
+    @engine.parser.run 'create box.i as int : 2'
+    @engine.parser.run 'create box.go as script'
+    @engine.parser.run %q(put "put 9 into ( '^.slots.' ^.i )" into box.go)
+    @engine.parser.run 'run box.go'
+    refute @engine.error?
+    assert_equal 9, @engine.heap.root.find_child( 'box' ).find_child( 'slots' ).find_child( '2' ).value
+  end
+
+  def test_put_into_a_missing_computed_path_names_the_worked_out_path
+    @engine.parser.run "put 1 into ( 'no.' 'where' )"
+    assert_includes @engine.heap.error.value, 'no.where'
+    refute_includes @engine.heap.error.value, '('
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_put_into_a_blank_computed_path
+    @engine.parser.run 'create b as string'
+    @engine.parser.run 'put 1 into ( b )'
+    assert_equal "Object path '( b )' is blank.", @engine.heap.error.value
+    assert_equal false, @engine.heap.it.value
+  end
+
 end
