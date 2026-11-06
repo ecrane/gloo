@@ -95,4 +95,25 @@ class BooleanTest < BaseEngineTest
     refute @engine.error?
   end
 
+  # Any number but zero is true, decimals included.
+  def test_a_decimal_is_true_unless_zero
+    assert_equal true, Gloo::Objs::Boolean.coerse_to_bool( 2.5 )
+    assert_equal true, Gloo::Objs::Boolean.coerse_to_bool( -0.1 )
+    assert_equal false, Gloo::Objs::Boolean.coerse_to_bool( 0.0 )
+  end
+
+  # to_bool is the one rule for conditions: it converts, and warns
+  # about text that is neither true nor false.
+  def test_to_bool_converts_and_warns_about_other_text
+    warnings = capture_warnings do
+      assert_equal true, Gloo::Objs::Boolean.to_bool( @engine, 'True' )
+      assert_equal false, Gloo::Objs::Boolean.to_bool( @engine, 'f' )
+      assert_equal false, Gloo::Objs::Boolean.to_bool( @engine, '' )
+      assert_equal false, Gloo::Objs::Boolean.to_bool( @engine, nil )
+      assert_equal true, Gloo::Objs::Boolean.to_bool( @engine, 3 )
+      assert_equal false, Gloo::Objs::Boolean.to_bool( @engine, 'abc' )
+    end
+    assert_equal [ "'abc' is not true or false; using false." ], warnings
+  end
+
 end

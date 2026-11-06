@@ -33,3 +33,44 @@ tests.verbs.if [can] :
       eval false
       if false do eval false else eval true
       assert "expected else to run after a 'do' action"
+
+  #
+  # Conditions use the [bool] rule for what counts as true.
+  #
+  s [string] :
+  ran [string] :
+
+  the_text_true_is_true [test] :
+    description [string] : The text 'true' in a condition counts as true.
+    on_test [script] :
+      put 'true' into ^^.s
+      put '' into ^^.ran
+      if ^^.s then put 'then' into ^^.ran
+      eval ^^.ran = 'then'
+      assert "expected the text true to run then"
+
+  blank_is_false [test] :
+    description [string] : A blank value is false, so else runs.
+    on_test [script] :
+      put '' into ^^.s
+      if ^^.s then put 'then' into ^^.ran else put 'else' into ^^.ran
+      eval ^^.ran = 'else'
+      assert "expected blank to run else"
+
+  other_text_is_false [test] :
+    description [string] : Text that is neither true nor false is false, with a warning.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 'abc' into ^^.s
+      if ^^.s then put 'then' into ^^.ran else put 'else' into ^^.ran
+      eval ^^.ran = 'else'
+      assert "expected other text to run else"
+
+  failed_condition_runs_neither [test] :
+    description [string] : A condition that reports an error abandons the line; else doesn't run.
+    expect_errors [bool] : true
+    on_test [script] :
+      put '' into ^^.ran
+      if no.such.obj then put 'then' into ^^.ran else put 'else' into ^^.ran
+      eval ^^.ran = ''
+      assert "expected neither branch to run"

@@ -1,0 +1,100 @@
+#
+# Until loop tests: do, then done, until done is true.
+#
+
+tests.ctrl.until [can] :
+
+  count [int] : 0
+  answer [string] :
+
+  # A one-line done: its result is in it.
+  up [until] :
+    do [script] : tell ^^.count to inc
+    done [script] : eval ^^.count > 4
+
+  runs_until_done [test] :
+    description [string] : The loop runs do until done's result is true.
+    on_test [script] :
+      put 0 into ^^.count
+      tell ^^.up to run
+      eval ^^.count = 5
+      assert "expected the loop to stop once count passed 4"
+
+  runs_at_least_once [test] :
+    description [string] : done is checked after each pass, so do runs once even when done is already true.
+    on_test [script] :
+      put 10 into ^^.count
+      tell ^^.up to run
+      eval ^^.count = 11
+      assert "expected do to run once"
+
+  # done follows the [bool] rule.
+  by_text [until] :
+    max [int] : 3
+    do [script] : tell ^^.count to inc
+    done [script] : eval ^^.answer
+
+  text_true_ends_it [test] :
+    description [string] : The text true in done counts as true.
+    on_test [script] :
+      put 0 into ^^.count
+      put 'true' into ^^.answer
+      tell ^^.by_text to run
+      eval ^^.count = 1
+      assert "expected the text true to end the loop"
+
+  # index and max.
+  capped [until] :
+    index [int] :
+    max [int] : 3
+    do [script] : tell ^^.count to inc
+    done [script] : eval false
+
+  index_counts_from_zero [test] :
+    description [string] : index holds the current pass, counting from 0.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 0 into ^^.count
+      tell ^^.capped to run
+      eval ^^.capped.index = 2
+      assert "expected index 2 on the third pass"
+
+  max_reached_is_an_error [test] :
+    description [string] : Reaching max ends the loop with an error, and it is false.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 0 into ^^.count
+      tell ^^.capped to run
+      refute "expected it to be false"
+      eval ^^.count = 3
+      assert "expected max passes"
+
+  # An error in done ends the loop.
+  bad_done [until] :
+    do [script] : tell ^^.count to inc
+    done [script] : eval no.such.obj = 1
+
+  error_in_done_ends_it [test] :
+    description [string] : An error in done ends the loop after that pass.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 0 into ^^.count
+      tell ^^.bad_done to run
+      eval ^^.count = 1
+      assert "expected one pass"
+
+  # break loop ends the loop.
+  early [until] :
+    index [int] :
+    do [script] :
+      tell ^^.count to inc
+      if ^.index = 2 then break loop
+    done [script] : eval false
+
+  break_loop_ends_it [test] :
+    description [string] : break loop in do ends the loop.
+    on_test [script] :
+      put 0 into ^^.count
+      tell ^^.early to run
+      eval ^^.count = 3
+      assert "expected break loop on the third pass"

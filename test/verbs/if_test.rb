@@ -111,4 +111,39 @@ class IfTest < BaseEngineTest
     assert_equal false, @engine.heap.root.find_child( 'ran' ).value
   end
 
+  # Conditions use the [bool] rule: the text true counts as true.
+  def test_the_text_true_is_true
+    @engine.parser.run "create s as string : 'true'"
+    @engine.parser.run "if s then put 'yes' into s"
+    assert_equal 'yes', @engine.heap.root.find_child( 's' ).value
+  end
+
+  # A blank value is false, without a warning.
+  def test_blank_is_false
+    warnings = capture_warnings do
+      @engine.parser.run 'create s as string'
+      @engine.parser.run "if s then put 'then' into s else put 'else' into s"
+    end
+    assert_equal 'else', @engine.heap.root.find_child( 's' ).value
+    assert_empty warnings
+  end
+
+  # Other text is false, with a warning.
+  def test_other_text_is_false_with_a_warning
+    warnings = capture_warnings do
+      @engine.parser.run "create s as string : 'abc'"
+      @engine.parser.run "if s then put 'then' into s else put 'else' into s"
+    end
+    assert_equal 'else', @engine.heap.root.find_child( 's' ).value
+    assert_equal [ "'abc' is not true or false; using false." ], warnings
+  end
+
+  # A failed condition abandons the line: else doesn't run either.
+  def test_a_failed_condition_skips_else_too
+    @engine.parser.run 'create ran as bool : false'
+    @engine.parser.run 'if no_such_obj then put true into ran else put true into ran'
+    assert @engine.error?
+    assert_equal false, @engine.heap.root.find_child( 'ran' ).value
+  end
+
 end

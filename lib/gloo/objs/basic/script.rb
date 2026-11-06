@@ -115,7 +115,9 @@ module Gloo
           :name => KEYWORD,
           :shortcut => KEYWORD_SHORT,
           :description => 'An executable script — a set of commands to ' \
-            'be run. A command line may end with an inline `# ...` ' \
+            'be run. A single command can go on the same line, after the ' \
+            ':, as in done [script] : eval x > 100; more go on the lines ' \
+            'below. A command line may end with an inline `# ...` ' \
             'comment; it is ignored when the line runs but kept when ' \
             'the file is saved.',
           :messages => [

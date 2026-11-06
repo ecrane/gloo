@@ -9,6 +9,7 @@
 - Each Line
 - Each Word
 - Repeat
+- Until
 - Skipping an Item or Ending a Loop
 
 ## Each
@@ -330,9 +331,73 @@ repeat [can] :
 
 See also: Object Base.
 
+## Until
+
+Run a script again and again until a condition is true. Use `repeat` when you know how many times; use `until` when you know when to stop.
+
+Each pass runs `do`, then `done`. The loop ends when `done`'s result — whatever is in `it` when it finishes — is true. `done` is checked after each pass, so `do` always runs at least once.
+
+Children:
+
+- `do` (script)
+    - The action to perform on each pass.
+- `done` (script)
+    - Required. Run after each pass; the loop ends when its result is true. True and false follow the same rule as `if` (see Language Syntax, What Counts as True).
+- `index` (integer)
+    - Optional. The current pass, counting from `0`.
+- `max` (integer)
+    - Optional. The most passes to run. Without it (or with `0`) there is no limit.
+
+Messages:
+
+- `run` — Run the loop until `done` is true.
+
+`done` is usually one line — a question or an `eval`, whose answer lands in `it`:
+
+```gloo
+count [can] :
+  x [int] : 0
+  up [until] :
+    do [script] : tell count.x to inc
+    done [script] : eval count.x > 100
+  on_load [script] :
+    tell count.up to run
+    show count.x
+```
+
+This shows `101`.
+
+With no `max`, a loop whose `done` never comes true runs until it's stopped — an `until` doesn't call itself, so it can't run out of room the way a script that runs itself can. Give it a `max` when you know a sensible limit: reaching it is an error (`Could not finish until loop count.up: done wasn't true after 1000 passes.`), and `it` is `false`.
+
+```gloo
+pick [can] :
+  tries [int] : 0
+  found [bool] : false
+  try [until] :
+    max [int] : 5
+    index [int] :
+    do [script] :
+      tell pick.tries to inc
+      if pick.tries = 3 then put true into pick.found
+    done [script] : eval pick.found
+  on_load [script] :
+    tell pick.try to run
+    show 'found on pass ' pick.try.index
+```
+
+This shows `found on pass 2`.
+
+Errors:
+
+- No `done` script, or a blank one: `Could not run until loop {path}: it has no done script.` Nothing runs.
+- An error in `done` ends the loop: whether it's done can't be known, so it stops rather than repeat the error. `it` is `false`.
+- An error in `do` doesn't end the loop; the next pass may work.
+
+See also: Object Base, Repeat, If.
+
 ## Skipping an Item or Ending a Loop
 
-`break` ends the script it's written in. In a loop's `do` script, that skips the rest of this pass, and the loop goes on with the next item. This works for `repeat` and every kind of `each`:
+`break` ends the script it's written in. In a loop's `do` script, that skips the rest of this pass, and the loop goes on with the next item. This works for `repeat`, `until` and every kind of `each`:
 
 ```gloo
 skip [can] :

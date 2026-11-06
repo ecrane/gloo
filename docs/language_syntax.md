@@ -12,6 +12,7 @@
 - It
 - Operators
 - Pathname
+- What Counts as True
 
 ## Color
 
@@ -417,7 +418,7 @@ example [can] :
     show it
 ```
 
-See also: Pathname.
+See also: Pathname, What Counts as True.
 
 ## Operators
 
@@ -467,3 +468,36 @@ on_load [script] : show a.b.c
 ```
 
 See also: Context, Object Naming.
+
+## What Counts as True
+
+A condition — the value after `if` or `unless`, or the result of an `until` loop's `done` script — is true or false by one rule, the same one a `[bool]` uses when a value is put into it:
+
+| Value | Counts as |
+|---|---|
+| `true` | true |
+| `false` | false |
+| a number other than `0` (`5`, `-1`, `2.5`) | true |
+| `0` | false |
+| the text `true` or `t` (any case) | true |
+| the text `false` or `f` (any case) | false |
+| blank, or no value | false |
+| any other text | false, with a warning |
+
+Any other text is almost always a mistake — a value used as if it were a question — so it's false, and gloo warns: `'abc' is not true or false; using false.` To ask whether something has a value, ask it: `check name for blank?`, then `unless it then …`.
+
+`unless` is the exact opposite of `if`: `unless x do …` runs exactly when `if x then …` wouldn't. A condition that can't be worked out (it names an object that doesn't exist, say) is an error, and the line is abandoned: neither the command nor `else` runs.
+
+```gloo
+truth [can] :
+  name [string] :
+  on_load [script] :
+    if ^.name then show 'has a name' else show 'no name'
+    put 'Ann' into ^.name
+    check ^.name for blank?
+    unless it then show 'has a name now'
+```
+
+This shows `no name`, then `has a name now`.
+
+See also: It, If, Unless, Until, Boolean.

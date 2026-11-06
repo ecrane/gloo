@@ -65,12 +65,14 @@ module Gloo
       end
 
       #
-      # Is the object the do script of a loop (a repeat or an each)?
+      # Is the object the do script of a loop (a repeat, an each or an
+      # until)?
       #
       def loop_do?( obj )
         parent = obj&.parent
         return false unless parent.is_a?( Gloo::Objs::Repeat ) ||
-                            parent.is_a?( Gloo::Objs::Each )
+                            parent.is_a?( Gloo::Objs::Each ) ||
+                            parent.is_a?( Gloo::Objs::Until )
 
         return parent.find_child( Gloo::Objs::Each::DO ).equal?( obj )
       end
@@ -114,8 +116,8 @@ module Gloo
           :syntax => [ 'break', 'break loop' ],
           :parameters => [
             'loop — Optional. Also end the loop whose do script this is. ' \
-            'Only valid directly in a loop\'s do script (repeat, or any ' \
-            'kind of each).'
+            'Only valid directly in a loop\'s do script (repeat, until, ' \
+            'or any kind of each).'
           ],
           :result => 'No more commands are executed in the currently ' \
             'running script. If there are other scripts in the stack, ' \

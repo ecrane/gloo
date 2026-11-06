@@ -1,0 +1,63 @@
+#
+# Until loops for the until tests. Each do script counts its passes
+# in ul.passes; a test resets it and sets what done looks for.
+#
+ul [can] :
+  passes [int] : 0
+  after [int] : 0
+  stop_at [int] : 3
+  answer [string] :
+
+  # Runs until passes reaches stop_at.
+  plain [until] :
+    do [script] : tell ul.passes to inc
+    done [script] : eval ul.passes = ul.stop_at
+
+  # Has an index and a max.
+  capped [until] :
+    index [int] :
+    max [int] : 4
+    do [script] : tell ul.passes to inc
+    done [script] : eval ul.passes = ul.stop_at
+
+  # A max of 0 is no limit.
+  zero_max [until] :
+    max [int] : 0
+    do [script] : tell ul.passes to inc
+    done [script] : eval ul.passes = ul.stop_at
+
+  # done's result is whatever answer holds (text, for the [bool] rule).
+  by_text [until] :
+    max [int] : 3
+    do [script] : tell ul.passes to inc
+    done [script] : eval ul.answer
+
+  # An error in done ends the loop.
+  bad_done [until] :
+    do [script] : tell ul.passes to inc
+    done [script] : eval no.such.obj = 1
+
+  # An error in do doesn't.
+  bad_do [until] :
+    do [script] :
+      tell ul.passes to inc
+      show no.such.obj
+    done [script] : eval ul.passes = ul.stop_at
+
+  no_done [until] :
+    do [script] : tell ul.passes to inc
+
+  blank_done [until] :
+    do [script] : tell ul.passes to inc
+    done [script] :
+
+  # break skips the rest of the pass; break loop ends the loop.
+  skip_on [int] : 0
+  end_on [int] : 0
+  breaks [until] :
+    do [script] :
+      tell ul.passes to inc
+      if ul.passes = ul.skip_on then break
+      if ul.passes = ul.end_on then break loop
+      tell ul.after to inc
+    done [script] : eval ul.passes = 4

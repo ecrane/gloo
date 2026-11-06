@@ -28,7 +28,11 @@ module Gloo
         @then = @tokens.expr_after( SEPARATORS, ELSE )
         @else = @tokens.expr_after( ELSE )
 
-        if evals_true( value )
+        truth = evals_true( value )
+        # A condition that reported an error abandons the line.
+        return if truth.nil?
+
+        if truth
           run_then
         else
           run_else unless @else.blank?
@@ -72,18 +76,14 @@ module Gloo
       end
 
       #
-      # Does the given value evalute to true?
+      # Does the given value evalute to true? The [bool] rule decides
+      # (see Boolean.to_bool). Nil if working it out reported an error.
       #
       def evals_true( value )
-        eval_result = false
-        if value.count.positive?
-          expr = Gloo::Expr::Expression.new( @engine, value )
-          result = expr.evaluate
-          eval_result = true if result == true
-          eval_result = true if result.is_a?( Numeric ) && result != 0
-        end
+        result, ok = evaluate_expr( value )
+        return nil unless ok
 
-        return eval_result
+        return Gloo::Objs::Boolean.to_bool( @engine, result )
       end
 
       #
@@ -137,6 +137,11 @@ module Gloo
             "#{MISSING_EXPR_ERR} — No expression is provided as parameter to the verb.",
             'Other errors depend on the command that is run.'
           ],
+          :notes => 'What counts as true follows the [bool] rule: true, a ' \
+            'number other than 0, and the text true or t are true; anything ' \
+            'else is false (blank quietly, other text with a warning). See ' \
+            'doc language_syntax, What Counts as True. A condition that ' \
+            'reports an error abandons the line: neither command runs.',
           :examples => <<~EXAMPLES.strip
             #
             # If statement example

@@ -13,6 +13,7 @@ module Gloo
       TRUE = 'true'.freeze
       FALSE = 'false'.freeze
       BOOLEAN_STRINGS = [ TRUE, FALSE, 't', 'f' ].freeze
+      BAD_VALUE_WARN = "'%s' is not true or false; using false.".freeze
 
       #
       # The name of the object type.
@@ -32,10 +33,17 @@ module Gloo
       # Set the value with any necessary type conversions.
       #
       def set_value( new_value )
-        self.value = Gloo::Objs::Boolean.coerse_to_bool( new_value )
-        return unless Gloo::Objs::Boolean.bad_value?( new_value )
+        self.value = Gloo::Objs::Boolean.to_bool( @engine, new_value )
+      end
 
-        @engine.warn "'#{new_value}' is not true or false; using #{self.value}."
+      #
+      # Convert a value to true or false, warning about text that is
+      # neither. The one rule for what counts as true: for a [bool]'s
+      # value and for every condition (if, unless, until).
+      #
+      def self.to_bool( engine, value )
+        engine.warn format( BAD_VALUE_WARN, value ) if bad_value?( value )
+        return coerse_to_bool( value )
       end
 
       #
@@ -63,8 +71,9 @@ module Gloo
           return false if new_value.strip.downcase == FALSE
           return true if new_value.strip.downcase == 't'
           return false if new_value.strip.downcase == 'f'
-        elsif new_value.class.name == 'Integer'
-          return new_value.zero? ? false : true
+        elsif new_value.is_a?( ::Numeric )
+          # Any number but zero is true, decimals included.
+          return !new_value.zero?
         end
 
         return new_value == true
@@ -147,7 +156,7 @@ module Gloo
             'true — Set the boolean to true.',
             'false — Set the boolean to false.'
           ],
-          :notes => 'Recognized values are true, false, t and f (in any case), and integers (0 is false). Any other string is false, with a warning: "\'maybe\' is not true or false; using false." A blank value is false.',
+          :notes => 'Recognized values are true, false, t and f (in any case), and numbers (0 is false; any other number, decimals included, is true). Any other string is false, with a warning: "\'maybe\' is not true or false; using false." A blank value is false. Conditions (if, unless, until) use the same rule; see doc language_syntax, What Counts as True.',
           :examples => <<~EXAMPLES.strip
             b [can] :
               flag [boolean] : true

@@ -31,6 +31,23 @@ hello [can] :
   on_load [script] : show 'hello world'
 ```
 
+### One-Line Scripts
+
+A script with a single command can be written on one line, after the `:`, like the `on_load` above. Its lines go on the lines below when there are more than one:
+
+```gloo
+total [can] :
+  x [int] : 150
+  big [bool] :
+  over_100 [script] : eval ^.x > 100
+  on_load [script] :
+    run ^.over_100
+    put it into ^.big
+    show ^.big
+```
+
+This shows `true`. Running a script doesn't set `it` itself, but its commands do, so a script whose last command works out a value leaves that value in `it` — the one-line `over_100` is a question you can run. This is how an `until` loop's `done` script gives its answer (see Iterators, Until).
+
 ## Comments
 
 A line whose first non-blank character is `#` is a comment. Whole-line comments

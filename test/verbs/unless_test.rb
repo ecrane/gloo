@@ -111,4 +111,37 @@ class UnlessTest < BaseEngineTest
     assert_equal false, @engine.heap.root.find_child( 'ran' ).value
   end
 
+  # unless is the exact opposite of if: a blank value is false, so the
+  # command runs.
+  def test_blank_runs_the_command
+    @engine.parser.run 'create s as string'
+    @engine.parser.run "unless s do put 'do' into s else put 'else' into s"
+    assert_equal 'do', @engine.heap.root.find_child( 's' ).value
+  end
+
+  # Other text is false, with a warning, so the command runs.
+  def test_other_text_runs_the_command_with_a_warning
+    warnings = capture_warnings do
+      @engine.parser.run "create s as string : 'abc'"
+      @engine.parser.run "unless s do put 'do' into s else put 'else' into s"
+    end
+    assert_equal 'do', @engine.heap.root.find_child( 's' ).value
+    assert_equal [ "'abc' is not true or false; using false." ], warnings
+  end
+
+  # The text true is true, so else runs.
+  def test_the_text_true_runs_else
+    @engine.parser.run "create s as string : 'true'"
+    @engine.parser.run "unless s do put 'do' into s else put 'else' into s"
+    assert_equal 'else', @engine.heap.root.find_child( 's' ).value
+  end
+
+  # A failed condition abandons the line: else doesn't run either.
+  def test_a_failed_condition_skips_else_too
+    @engine.parser.run 'create ran as bool : false'
+    @engine.parser.run 'unless no_such_obj do put true into ran else put true into ran'
+    assert @engine.error?
+    assert_equal false, @engine.heap.root.find_child( 'ran' ).value
+  end
+
 end
