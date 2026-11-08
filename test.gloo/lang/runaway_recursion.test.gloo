@@ -1,0 +1,44 @@
+#
+# Runaway recursion: a script that runs itself with no end is reported
+# as an error, once, and the run carries on.
+#
+
+tests.lang.runaway_recursion [can] :
+
+  n [int] : 0
+  after [int] : 0
+  errs [int] : 0
+
+  again [script] :
+    tell ^.n to inc
+    run ^.again
+    tell ^.after to inc
+
+  f [ƒ] :
+    on_invoke [script] : invoke ^^.f
+
+  is_reported_and_the_test_carries_on [test] :
+    description [string] : A script that runs itself is stopped with an error, it is false, and the next line runs.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 0 into ^^.n
+      run ^^.again
+      refute "expected it to be false"
+      eval ^^.n > 100
+      assert "expected the script to have run itself many times first"
+
+  unwinds_the_whole_run [test] :
+    description [string] : No line after a script's own run runs on the way back up.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 0 into ^^.after
+      run ^^.again
+      eval ^^.after = 0
+      assert "expected no line after the recursive run to run"
+
+  a_function_invoking_itself [test] :
+    description [string] : A function that invokes itself is stopped the same way.
+    expect_errors [bool] : true
+    on_test [script] :
+      invoke ^^.f
+      refute "expected it to be false"

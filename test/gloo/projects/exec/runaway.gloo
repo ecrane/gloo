@@ -1,0 +1,31 @@
+#
+# Scripts that run themselves with no end, for the runaway recursion
+# tests. again counts how deep it got (n) and how many lines after its
+# own run ran on the way back up (after: should stay 0).
+#
+rr [can] :
+  n [int] : 0
+  after [int] : 0
+  errors [int] : 0
+  carried_on [bool] : false
+
+  again [script] :
+    tell rr.n to inc
+    run rr.again
+    tell rr.after to inc
+
+  # Two scripts that run each other.
+  ping [script] : run rr.pong
+  pong [script] : run rr.ping
+
+  # A function that invokes itself.
+  f [ƒ] :
+    on_invoke [script] : invoke rr.f
+
+  # Runs again; when it is the outermost script (eg. run like on_load),
+  # only the line that started it is abandoned and it carries on.
+  starter [script] :
+    run rr.again
+    put true into rr.carried_on
+
+  on_error [script] : tell rr.errors to inc

@@ -27,7 +27,18 @@ module Gloo
       #
       def run
         @engine.exec_env.push_script self
+        begin
+          run_lines
+        ensure
+          # Also when something unwinds the run (runaway recursion).
+          @engine.exec_env.pop_script
+        end
+      end
 
+      #
+      # Run the script's lines, until the end or a break.
+      #
+      def run_lines
         if @obj.value.is_a? String
           @line = 1
           @engine.parser.run @obj.value
@@ -39,8 +50,6 @@ module Gloo
             @engine.parser.run line
           end
         end
-
-        @engine.exec_env.pop_script
       end
 
       #

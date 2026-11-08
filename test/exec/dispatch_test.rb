@@ -73,4 +73,18 @@ class DispatchTest < BaseEngineTest
     assert_equal 'abc', @engine.heap.it.value
   end
 
+  # Something that unwinds the whole run (runaway recursion) still pops
+  # the action off the stack.
+  def test_the_action_stack_pops_when_the_run_unwinds
+    @engine.parser.run 'create s as script : "show 1"'
+    o = @engine.heap.root.find_child( 's' )
+    unwind = Gloo::Exec::RunawayRecursion.new( 's', 1, nil )
+    o.define_singleton_method( :msg_run ) { raise unwind }
+
+    assert_raises( Gloo::Exec::RunawayRecursion ) do
+      Gloo::Exec::Dispatch.message( @engine, 'run', o )
+    end
+    assert_equal 0, @engine.exec_env.actions.size
+  end
+
 end

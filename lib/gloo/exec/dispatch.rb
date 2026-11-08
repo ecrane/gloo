@@ -48,9 +48,13 @@ module Gloo
       #
       def self.action( engine, action )
         engine.exec_env.push_action action
-        engine.log.debug "Sending message #{action.msg} to #{action.to.name}"
-        action.dispatch
-        engine.exec_env.pop_action
+        begin
+          engine.log.debug "Sending message #{action.msg} to #{action.to.name}"
+          action.dispatch
+        ensure
+          # Also when something unwinds the run (runaway recursion).
+          engine.exec_env.pop_action
+        end
       end
 
     end

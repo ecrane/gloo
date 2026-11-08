@@ -27,10 +27,36 @@ module Gloo
           # from a missing gem) isn't a StandardError, and would
           # otherwise stop gloo altogether.
           engine.handle_exception( ex )
+        rescue SystemStackError
+          runaway( engine, runaway_recursion( engine ) )
+        rescue Gloo::Exec::RunawayRecursion => ex
+          runaway( engine, ex )
         ensure
           engine.exec_env.verbs.pop
         end
         engine.heap.error.clear_if_no_errors
+      end
+
+      #
+      # Ruby ran out of stack: scripts ran inside each other with no
+      # end. Note the deepest script, and how deep.
+      #
+      def self.runaway_recursion( engine )
+        env = engine.exec_env
+        pn = env.running_script&.obj&.pn
+        return Gloo::Exec::RunawayRecursion.new( pn, env.scripts.size, env.current_location )
+      end
+
+      #
+      # Runaway recursion unwinds the whole run, so it's reported once:
+      # by the outermost verb, whose line is abandoned like any failed
+      # line. Every verb inside passes it on.
+      #
+      def self.runaway( engine, ex )
+        raise ex unless engine.exec_env.verbs.size == 1
+
+        engine.err ex.message, location: ex.location
+        engine.heap.it.set_to false
       end
 
       #

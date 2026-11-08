@@ -66,4 +66,84 @@ class RunnerTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  # A script that runs itself with no end is reported once, as an
+  # error naming how deep it got, and gloo keeps going.
+  def test_runaway_recursion_is_reported_once
+    errors = capture_errors { run_runaway 'run rr.again' }
+    assert_equal 1, errors.size
+    assert_match( /Could not run rr\.again: scripts ran \d+ deep, one inside another \(runaway recursion\?\)\./, errors.first )
+    assert @engine.error?
+    assert_equal false, @engine.heap.it.value
+    @engine.parser.run 'show 2 + 2'
+    assert_equal 4, @engine.heap.it.value
+  end
+
+  # It unwinds the whole run: no line after a script's own run runs on
+  # the way back up.
+  def test_runaway_recursion_unwinds_the_whole_run
+    run_runaway 'run rr.again'
+    assert rr_value( 'n' ) > 100
+    assert_equal 0, rr_value( 'after' )
+  end
+
+  # on_error runs once, not once per level.
+  def test_runaway_recursion_runs_on_error_once
+    run_runaway 'run rr.again'
+    assert_equal 1, rr_value( 'errors' )
+  end
+
+  # It unwinds to the outermost line: in a script that no verb started
+  # (like on_load, run by an event), that line is abandoned and the
+  # script carries on.
+  def test_runaway_recursion_abandons_the_outermost_line
+    @engine.parser.run 'load exec/runaway'
+    starter = @engine.heap.root.find_child( 'rr' ).find_child( 'starter' )
+    Gloo::Exec::Script.new( @engine, starter ).run
+    assert_equal true, rr_value( 'carried_on' )
+  end
+
+  # Typed at the prompt, the typed line is the outermost: everything it
+  # ran is abandoned.
+  def test_runaway_recursion_abandons_everything_the_typed_line_ran
+    run_runaway 'run rr.starter'
+    assert_equal false, rr_value( 'carried_on' )
+  end
+
+  def test_scripts_running_each_other_are_caught
+    errors = capture_errors { run_runaway 'run rr.ping' }
+    assert_equal 1, errors.size
+    assert_includes errors.first, 'runaway recursion'
+  end
+
+  def test_a_function_invoking_itself_is_caught
+    errors = capture_errors { run_runaway 'invoke rr.f' }
+    assert_equal 1, errors.size
+    assert_includes errors.first, 'runaway recursion'
+  end
+
+  # Every run stack is empty again afterwards.
+  def test_runaway_recursion_leaves_the_stacks_empty
+    run_runaway 'run rr.again'
+    env = @engine.exec_env
+    assert_equal [ 0, 0, 0, 0 ], [ env.verbs.size, env.actions.size, env.scripts.size, env.here.size ]
+    assert_nil env.running_script
+  end
+
+  private
+
+  #
+  # Load the runaway scripts and run the given command.
+  #
+  def run_runaway( cmd )
+    @engine.parser.run 'load exec/runaway'
+    @engine.parser.run cmd
+  end
+
+  #
+  # A value in the runaway container.
+  #
+  def rr_value( name )
+    return @engine.heap.root.find_child( 'rr' ).find_child( name ).value
+  end
+
 end

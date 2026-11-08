@@ -59,4 +59,18 @@ class ScriptTest < BaseEngineTest
     assert_equal 'c.s, line 2', @engine.heap.error.location
   end
 
+  # Something that unwinds the whole run (runaway recursion) still pops
+  # the script off the stack.
+  def test_the_script_stack_pops_when_the_run_unwinds
+    o = Gloo::Objs::Script.new @engine
+    o.set_value( 'show 1' )
+    unwind = Gloo::Exec::RunawayRecursion.new( 's', 1, nil )
+    @engine.parser.define_singleton_method( :run ) { |*| raise unwind }
+
+    s = Gloo::Exec::Script.new( @engine, o )
+    assert_raises( Gloo::Exec::RunawayRecursion ) { s.run }
+    assert_equal 0, @engine.exec_env.scripts.size
+    assert_nil @engine.exec_env.running_script
+  end
+
 end
