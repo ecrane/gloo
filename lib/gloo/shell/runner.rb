@@ -31,6 +31,7 @@ module Gloo
       QUIT_NAME = 'quit'.freeze
       QUIT_DESCRIPTION = 'Quit the application'.freeze
       QUIT_METHOD = 'cmd_quit'.freeze
+      QUIT_HINT = "Use 'quit' to leave.".freeze
 
       #
       # Initialize the shell runner.
@@ -296,22 +297,48 @@ module Gloo
       def repl
         setup_completion
 
-        while !@context.done && ( line = Readline.readline( prompt, true ) )
+        until @context.done
+          line = read_line
+          next if line == :interrupted
+          break unless line
+
           tokens = line.strip.split( ' ' )
           if tokens.empty?
             handle_empty_command
             next
           end
 
-          result = traverse( @root, tokens )
+          # Ctrl-C stops the command and comes back to this prompt.
+          @engine.run_interruptible { run_tokens( tokens ) }
+        end
+      end
 
-          if result[ :node ]
-            run_before_action
-            execute_command( result[ :node ], tokens, result[ :parent ] )
-            run_after_action
-          else
-            handle_unknown_command
-          end
+      #
+      # Read a line at the prompt: nil at the end of input, or
+      # :interrupted if Ctrl-C dropped the line (with the hint, if
+      # nothing had been typed).
+      #
+      def read_line
+        return Readline.readline( prompt, true )
+      rescue Interrupt
+        typed = Readline.respond_to?( :line_buffer ) ? Readline.line_buffer.to_s : ''
+        @engine.interrupted_at_prompt( typed, @include_quit ? QUIT_HINT : nil )
+        return :interrupted
+      end
+
+      #
+      # Find and run the command for the given tokens, with the before
+      # and after actions.
+      #
+      def run_tokens( tokens )
+        result = traverse( @root, tokens )
+
+        if result[ :node ]
+          run_before_action
+          execute_command( result[ :node ], tokens, result[ :parent ] )
+          run_after_action
+        else
+          handle_unknown_command
         end
       end
 

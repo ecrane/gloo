@@ -44,6 +44,14 @@ module Gloo
         return response
       end
 
+      #
+      # What had been typed at the prompt when it was last left: after
+      # Ctrl-C, empty if nothing had been typed.
+      #
+      def line_typed
+        return Reline.line_buffer.to_s
+      end
+
       # 
       # Prompt for multiline input.
       # 

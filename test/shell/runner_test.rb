@@ -198,4 +198,62 @@ class ShellRunnerTest < BaseEngineTest
     assert_nil result[ :parent ]
   end
 
+  # Ctrl-C at the empty prompt: the hint, and the shell carries on.
+  def test_ctrl_c_at_an_empty_prompt_shows_the_hint
+    r = Gloo::Shell::Runner.new( @engine, include_quit: true )
+    shown = with_readline( [ Interrupt, nil ], buffer: '' ) { r.start }
+    assert_equal [ "Use 'quit' to leave." ], shown
+  end
+
+  def test_ctrl_c_with_text_typed_shows_nothing
+    r = Gloo::Shell::Runner.new( @engine, include_quit: true )
+    shown = with_readline( [ Interrupt, nil ], buffer: 'ver' ) { r.start }
+    assert_empty shown
+  end
+
+  # Ctrl-C during a command stops it and comes back to the prompt.
+  def test_ctrl_c_during_a_command_comes_back_to_the_prompt
+    r = Gloo::Shell::Runner.new( @engine )
+    r.add_command_node( { name: 'spin', description: '', method: 'cmd_spin' } )
+    r.add_command_node( { name: 'go', description: '', method: 'cmd_go' } )
+    def r.cmd_spin( _obj, _context )
+      raise Interrupt
+    end
+    def r.cmd_go( _obj, _context )
+      @went = true
+    end
+    warnings = capture_warnings do
+      with_readline( [ 'spin', 'go', nil ], buffer: '' ) { r.start }
+    end
+    assert_equal [ 'Stopped by Ctrl-C.' ], warnings
+    assert r.instance_variable_get( :@went )
+  end
+
+  private
+
+  #
+  # Run the block with Readline answering each of the answers in turn
+  # (an exception class is raised, as Ctrl-C raises Interrupt), and
+  # line_buffer giving the buffer. Returns what was shown.
+  #
+  def with_readline( answers, buffer: '' )
+    shown = []
+    @engine.log.define_singleton_method( :show ) { |msg, *| shown << msg }
+    rl = Readline.singleton_class
+    rl.alias_method( :__readline, :readline )
+    rl.alias_method( :__line_buffer, :line_buffer )
+    rl.define_method( :readline ) do |*|
+      a = answers.shift
+      a.is_a?( Class ) ? raise( a ) : a
+    end
+    rl.define_method( :line_buffer ) { buffer }
+    yield
+    return shown
+  ensure
+    rl.alias_method( :readline, :__readline )
+    rl.alias_method( :line_buffer, :__line_buffer )
+    rl.send( :remove_method, :__readline, :__line_buffer )
+    @engine.log.singleton_class.send( :remove_method, :show )
+  end
+
 end

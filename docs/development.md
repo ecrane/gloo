@@ -47,6 +47,12 @@ Standard Ruby minitest tests. The layout mirrors `lib/gloo/`, one test file per 
 rake test
 ```
 
+A few tests are slow — they drive real gloo through a terminal, for example to send it a real Ctrl-C — and are skipped unless `GLOO_SLOW_TESTS` is set. Run them before a release, or after changing how gloo reads input:
+
+```
+GLOO_SLOW_TESTS=1 rake test
+```
+
 ### Gloo tests — `test.gloo/`
 
 Integration tests written in gloo itself, using the `[test]` object from the `gloo-test` core library. The suite also loads the `gloo-yaml` and `gloo-md` core libraries, so install all three first:

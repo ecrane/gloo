@@ -17,6 +17,13 @@ module Gloo
       # 
       TEST_LIB_NAME = 'test'
 
+      # Ctrl-C: what's shown, and the exit status after it (the shell
+      # convention for a run stopped by SIGINT).
+      INTERRUPTED_MSG = 'Stopped by Ctrl-C'.freeze
+      QUIT_CUT_SHORT_MSG = 'Quit cut short by Ctrl-C'.freeze
+      QUIT_HINT = "Use 'quit' to stop running gloo.".freeze
+      INTERRUPTED_EXIT = 130
+
       attr_reader :settings, :log, :running_app, :run_error_count
       attr_reader :args, :mode, :running, :platform,
                   :dictionary, :parser, :heap, :factory,
@@ -44,6 +51,8 @@ module Gloo
         @handling_exception = false
         @handling_error = false
         @run_error_count = 0
+        @interrupted = false
+        @interrupt_location = nil
         @log.debug 'engine intialized...'
       end
 
@@ -142,8 +151,11 @@ module Gloo
       # script can tell a bad run from a good one.
       #
       def run_files
-        load_files
+        # Ctrl-C stops the run; at a terminal, stay at the gloo prompt
+        # to look at what ran.
+        self.loop if !run_interruptible { load_files } && interactive?
         quit
+        exit( INTERRUPTED_EXIT ) if interrupted?
         exit( 1 ) if run_failed?
       end
 
@@ -161,9 +173,11 @@ module Gloo
       #
       def run_test
         @log.debug 'Running in Test mode…'
-        passed = run_tests
+        passed = false
+        run_interruptible { passed = run_tests }
         @log.debug 'Tests complete.'
         quit
+        exit( INTERRUPTED_EXIT ) if interrupted?
         exit( 1 ) unless passed
       end
 
@@ -185,17 +199,21 @@ module Gloo
       # Run in interactive mode.
       #
       def run
-        # Open default file(s)
-        self.open_start_file
+        started = run_interruptible do
+          # Open default file(s)
+          self.open_start_file
 
-        # Open any files specifed in args
-        load_files
+          # Open any files specifed in args
+          load_files
+        end
 
         unless @mode == Mode::SCRIPT || @args.quiet? || @args.single_command?
-          self.loop
+          # Stopped by Ctrl-C with no one at a terminal: don't wait for input.
+          self.loop if started || interactive?
         end
 
         quit
+        exit( INTERRUPTED_EXIT ) if interrupted?
       end
 
       #
@@ -239,8 +257,14 @@ module Gloo
       #
       def loop
         while @running
-          @last_cmd = @platform.prompt.ask
-          process_cmd
+          begin
+            @last_cmd = @platform.prompt.ask
+          rescue Interrupt
+            # Ctrl-C at the prompt: the line is dropped.
+            interrupted_at_prompt( @platform.prompt.line_typed )
+            next
+          end
+          run_interruptible { process_cmd }
         end
       end
 
@@ -273,15 +297,81 @@ module Gloo
       # Do any clean up and quit.
       #
       def quit
-        if app_running?
-          @log.debug 'stopping running app...'
-          stop_running_app
+        begin
+          if app_running?
+            @log.debug 'stopping running app...'
+            stop_running_app
+          end
+
+          @log.debug 'triggering on_quit events...'
+          @event_manager.on_quit
+        rescue Interrupt
+          # Ctrl-C while quitting: stop quitting and leave now.
+          @log.warn interrupt_msg( QUIT_CUT_SHORT_MSG )
+          exit( INTERRUPTED_EXIT )
         end
 
-        @log.debug 'triggering on_quit events...'
-        @event_manager.on_quit
-
         @log.info 'Gloo engine is quitting...'
+      end
+
+
+      # ---------------------------------------------------------------------
+      #    Ctrl-C
+      # ---------------------------------------------------------------------
+
+      #
+      # Run the block; if Ctrl-C stops it, say so and carry on. Returns
+      # false if it was stopped.
+      #
+      def run_interruptible
+        yield
+        return true
+      rescue Interrupt
+        interrupted
+        return false
+      end
+
+      #
+      # Ctrl-C stopped something that was running. It isn't an error (no
+      # on_error, not a failed run), but it's never silent: a warning,
+      # with where it stopped. A later quit exits with 130.
+      #
+      def interrupted
+        @interrupted = true
+        @log.warn interrupt_msg( INTERRUPTED_MSG )
+      end
+
+      #
+      # Ctrl-C at a prompt with nothing running: the line is dropped. If
+      # nothing had been typed, say how to leave (the hint; nil for
+      # none). A core library's own prompt (a shell, a menu) passes its
+      # own hint.
+      #
+      def interrupted_at_prompt( line_typed, hint = QUIT_HINT )
+        @interrupt_location = nil
+        @log.show hint if hint && line_typed.to_s.empty?
+      end
+
+      #
+      # Note where Ctrl-C stopped the run, the first (deepest) time it's
+      # seen on its way up (see Runner).
+      #
+      def note_interrupt_location
+        @interrupt_location ||= @exec_env&.current_location
+      end
+
+      #
+      # Did Ctrl-C stop something during this run?
+      #
+      def interrupted?
+        return @interrupted
+      end
+
+      #
+      # Is someone at a terminal to type at a prompt?
+      #
+      def interactive?
+        return $stdin.tty?
       end
 
 
@@ -461,6 +551,16 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
+
+      #
+      # The Ctrl-C message, with where it stopped if known; the location
+      # is used once.
+      #
+      def interrupt_msg( msg )
+        location = @interrupt_location
+        @interrupt_location = nil
+        return location ? "#{msg}: #{location}." : "#{msg}."
+      end
 
       #
       # Resolve the start_with setting to a loadable name/path.

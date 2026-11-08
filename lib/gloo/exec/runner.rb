@@ -31,6 +31,11 @@ module Gloo
           runaway( engine, runaway_recursion( engine ) )
         rescue Gloo::Exec::RunawayRecursion => ex
           runaway( engine, ex )
+        rescue Interrupt
+          # Ctrl-C: note where it stopped, and let it unwind the run to
+          # whatever is waiting for it (see Engine#run_interruptible).
+          engine.note_interrupt_location
+          raise
         ensure
           engine.exec_env.verbs.pop
         end

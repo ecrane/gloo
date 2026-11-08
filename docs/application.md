@@ -6,6 +6,7 @@
 - Running Gloo
 - Modes
 - Script Mode and App Mode
+- Stopping with Ctrl-C
 - Configuration
 - Logging
 - Help
@@ -36,7 +37,7 @@ Gloo can also be started from another Ruby program; see Development, Running Glo
 
 If a file named on the command line can't be found (a typo, the wrong folder, a missing `.gloo` extension on a full path), gloo prints `File '{name}' was not found.` to stderr and exits with a non-zero status. Any other load or run error also exits non-zero — including syntax errors in a file that otherwise loaded (gloo keeps loading past them, reporting each with its file and line) — so a shell script calling gloo can tell a failed run from a clean one.
 
-The exit status covers the whole run, not just its last line: gloo exits with status 1 if any error, or any Ruby exception, happened at any point while the files were loading or running, and 0 otherwise. An error still counts when an `on_error` or `on_exception` handler ran for it, because a handler reports the problem, it doesn't undo it. Warnings don't count. This applies when gloo runs files (Script mode); App and CLI modes don't set an exit status, and Test mode has its own (see the `--test` option below).
+The exit status covers the whole run, not just its last line: gloo exits with status 1 if any error, or any Ruby exception, happened at any point while the files were loading or running, and 0 otherwise. An error still counts when an `on_error` or `on_exception` handler ran for it, because a handler reports the problem, it doesn't undo it. Warnings don't count. This applies when gloo runs files (Script mode); App and CLI modes don't set an exit status, and Test mode has its own (see the `--test` option below). In any mode, a run that Ctrl-C stopped exits with 130 (see Stopping with Ctrl-C).
 
 When specifying a file there are a couple ways to reference the gloo file to open:
 
@@ -131,6 +132,19 @@ Run as a script (`gloo report/start.gloo`), `load parts/*` finds `report/parts` 
 Files named on the command line are found differently: as given (from the working folder), then in the projects folder, then in the gloo home (see Running Gloo, above).
 
 A new file saved with a relative name (`save notes to lists/notes`, or `save notes` for a top-level object that has no file yet) goes in the first place a load would look: the app folder in App mode, otherwise next to the saving script's file, or the working folder for a command typed at the prompt. A script that didn't come from a file saves into the projects folder. So a script that saves `lists/notes` can load it back with `load lists/notes`.
+
+## Stopping with Ctrl-C
+
+Ctrl-C stops whatever is running and gives you a clean prompt. It isn't a way to leave gloo — `quit` is.
+
+- **A script** (`gloo file.gloo`, at a terminal): Ctrl-C stops the run and leaves you at the gloo prompt, with everything that was loaded and done so far still there to look at. `quit` then leaves.
+- **At a prompt** — gloo's own, a web app's (the same prompt), a gloo-cli shell's or a menu's: Ctrl-C during a command stops it and gives you that same prompt back. At an empty prompt it says how to leave, for example `Use 'quit' to stop running gloo.`; with something typed, the line is dropped.
+- **With no one at a terminal** (gloo run by cron or launchd, or with its input piped in) and in Test mode: Ctrl-C stops the run, runs `on_quit`, and exits.
+- **While gloo is quitting** (`on_quit`, or a web app's `on_stop`): Ctrl-C stops the rest of the quitting, and gloo exits at once, with a warning, `Quit cut short by Ctrl-C: {where}.`
+
+Ctrl-C isn't an error: it doesn't run `on_error`, and `it` keeps whatever the last finished line put there. But it's never silent: when it stops something, gloo says where, `Stopped by Ctrl-C: app.sync.do, line 2.`, and logs it as a warning, since the work it stopped may be half done. What already ran stays done.
+
+After Ctrl-C has stopped something, gloo exits with status 130 when it ends (the usual status for a program stopped by Ctrl-C), so a shell script that ran it can tell.
 
 ## Configuration
 

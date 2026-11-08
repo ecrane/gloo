@@ -29,6 +29,11 @@ module Gloo
         @engine.exec_env.push_script self
         begin
           run_lines
+        rescue Interrupt
+          # Ctrl-C between verbs (eg. while a line is parsed): note this
+          # script as where it stopped, before it's popped.
+          @engine.note_interrupt_location
+          raise
         ensure
           # Also when something unwinds the run (runaway recursion).
           @engine.exec_env.pop_script
