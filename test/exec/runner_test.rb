@@ -92,21 +92,31 @@ class RunnerTest < BaseEngineTest
     assert_equal 1, rr_value( 'errors' )
   end
 
-  # It unwinds to the outermost line: in a script that no verb started
-  # (like on_load, run by an event), that line is abandoned and the
-  # script carries on.
-  def test_runaway_recursion_abandons_the_outermost_line
+  # It unwinds to the line that started the recursion: that line is
+  # abandoned, and the script it's in carries on.
+  def test_runaway_recursion_abandons_the_line_that_started_it
+    run_runaway 'run rr.starter'
+    assert_equal true, rr_value( 'carried_on' )
+  end
+
+  # The same when the starting script was run by an event, like on_load.
+  def test_runaway_recursion_in_a_script_an_event_ran
     @engine.parser.run 'load exec/runaway'
     starter = @engine.heap.root.find_child( 'rr' ).find_child( 'starter' )
     Gloo::Exec::Script.new( @engine, starter ).run
     assert_equal true, rr_value( 'carried_on' )
   end
 
-  # Typed at the prompt, the typed line is the outermost: everything it
-  # ran is abandoned.
-  def test_runaway_recursion_abandons_everything_the_typed_line_ran
-    run_runaway 'run rr.starter'
-    assert_equal false, rr_value( 'carried_on' )
+  # The recursion starts at the first script that runs again: for two
+  # scripts that run each other, the line that ran the first of them.
+  def test_recursion_start_is_the_first_script_that_repeats
+    env = @engine.exec_env
+    %w[ a b c ].each { |n| @engine.parser.run "create #{n} as script" }
+    a, b, c = %w[ a b c ].map { |n| @engine.heap.root.find_child( n ) }
+    [ a, b, c, b, c ].each { |o| env.scripts.push( Gloo::Exec::Script.new( @engine, o ) ) }
+    assert_equal 1, Gloo::Exec::Runner.recursion_start( env )
+  ensure
+    env.scripts.clear_stack
   end
 
   def test_scripts_running_each_other_are_caught

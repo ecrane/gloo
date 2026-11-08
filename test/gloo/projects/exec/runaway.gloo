@@ -22,8 +22,8 @@ rr [can] :
   f [ƒ] :
     on_invoke [script] : invoke rr.f
 
-  # Runs again; when it is the outermost script (eg. run like on_load),
-  # only the line that started it is abandoned and it carries on.
+  # Runs again: the line that started the recursion is abandoned, and
+  # starter carries on.
   starter [script] :
     run rr.again
     put true into rr.carried_on
