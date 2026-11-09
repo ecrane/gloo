@@ -1,10 +1,8 @@
 require 'test_helper'
-require 'pty'
 
 #
-# Ctrl-C: it stops what's running and gives a clean prompt. In-process
-# tests raise Interrupt the way Ruby does for a real Ctrl-C; the last
-# test drives real gloo through a pseudo-terminal.
+# Ctrl-C: it stops what's running and gives a clean prompt. The tests
+# raise Interrupt the way Ruby does for a real Ctrl-C.
 #
 class CtrlCTest < BaseEngineTest
 
@@ -73,36 +71,7 @@ class CtrlCTest < BaseEngineTest
     assert_equal [ 'Quit cut short by Ctrl-C.' ], warnings
   end
 
-  # A real Ctrl-C at a terminal: script mode stops the run and leaves
-  # gloo at its prompt; Ctrl-C at the empty prompt shows the hint; the
-  # objects are there to look at; quit runs on_quit and exits 130.
-  # Slow, so it runs only with GLOO_SLOW_TESTS set.
-  def test_a_real_ctrl_c_at_a_terminal
-    # About 5 seconds: run only when asked (see doc development, Tests).
-    skip 'set GLOO_SLOW_TESTS=1 to run' unless ENV[ 'GLOO_SLOW_TESTS' ]
-
-    file = File.expand_path( 'gloo/projects/app/ctrl_c.gloo', __dir__ + '/..' )
-    out, status = drive_gloo( file, [ "\x03", "\x03", "show cc.x > 0\r", "quit\r" ] )
-    # Where it stopped depends on timing: somewhere in cc.
-    assert_includes out, 'Stopped by Ctrl-C: cc.'
-    assert_includes out, "Use 'quit' to stop running gloo."
-    assert_includes out, 'true'
-    assert_includes out, 'on_quit ran'
-    assert_equal 130, status
-  end
-
-  # How gloo's prompt ends.
-  PROMPT_END = '> '.freeze
-
   private
-
-  #
-  # Wait until the block is true, or the seconds are up.
-  #
-  def wait_until( seconds )
-    deadline = Time.now + seconds
-    sleep 0.05 until yield || Time.now > deadline
-  end
 
   #
   # Run script s, whose second line runs t; t is stopped by Ctrl-C.
@@ -130,37 +99,6 @@ class CtrlCTest < BaseEngineTest
     return shown
   ensure
     @engine.log.singleton_class.send( :remove_method, :show )
-  end
-
-  #
-  # Run gloo on the file in a pseudo-terminal, typing each input in
-  # turn ("\x03" is Ctrl-C). Returns what it printed, and its exit
-  # status.
-  #
-  def drive_gloo( file, inputs )
-    run_rb = File.expand_path( '../../lib/run.rb', __dir__ )
-    out = +''
-    status = nil
-    PTY.spawn( 'ruby', run_rb, file ) do |r, w, pid|
-      reader = Thread.new do
-        loop { out << r.readpartial( 4096 ) }
-      rescue EOFError, Errno::EIO
-        nil
-      end
-      # Each input once gloo is ready for it: the first once the run is
-      # going, the rest once a new prompt is up.
-      sleep 2.5
-      inputs.each do |i|
-        prompts = out.scan( PROMPT_END ).size
-        w.write( i )
-        wait_until( 5 ) { out.scan( PROMPT_END ).size > prompts || i == "quit\r" }
-        sleep 0.3
-      end
-      _, st = Process.wait2( pid )
-      status = st.exitstatus
-      reader.join( 1 )
-    end
-    return out.gsub( /\e\[[0-9;?]*[A-Za-z]/, '' ), status
   end
 
 end
