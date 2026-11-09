@@ -39,4 +39,12 @@ class StringToIntegerTest < BaseEngineTest
     %w[x 12abc 3.7].each { |v| refute o.valid?( v, nil ), v }
   end
 
+  # Typed values use the same spellings as literals.
+  def test_valid_matches_the_literal_spellings
+    o = Gloo::Convert::StringToInteger.new
+    %w[ 007 +5 -12 ].each { |s| assert o.valid?( s, nil ), s }
+    assert o.valid?( ' 42 ', nil )
+    %w[ 5. 1_000 2.5 ].each { |s| refute o.valid?( s, nil ), s }
+  end
+
 end

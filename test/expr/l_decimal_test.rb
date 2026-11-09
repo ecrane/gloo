@@ -42,4 +42,25 @@ class LDecimalTest < BaseTest
     assert_equal '10.0', e.to_s
   end
 
+  # Every way of writing a decimal reads as one.
+  def test_decimal_spellings
+    %w[ 2.50 0.0000001 1.0e3 2e-5 1E3 .5 -.5 +2.5 -2.50 ].each do |s|
+      assert Gloo::Expr::LDecimal.decimal?( s ), "expected #{s} to be a decimal"
+    end
+  end
+
+  # Not decimals: a path start, separators, hex, and plain integers.
+  def test_not_decimal_spellings
+    %w[ 5. 1,000 1_000 0x1A 1.2.3 e5 1e - . 7 +5 ].each do |s|
+      refute Gloo::Expr::LDecimal.decimal?( s ), "expected #{s} not to be a decimal"
+    end
+  end
+
+  # A number a decimal can hold: a decimal or an integer.
+  def test_number
+    assert Gloo::Expr::LDecimal.number?( '2.50' )
+    assert Gloo::Expr::LDecimal.number?( '7' )
+    refute Gloo::Expr::LDecimal.number?( 'abc' )
+  end
+
 end

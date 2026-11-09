@@ -57,3 +57,46 @@ tests.lang.literal [can] :
       put FALSE into ^^.b
       eval ^^.b = false
       assert "expected FALSE to parse"
+
+  decimal_spellings [test] :
+    description [string] : trailing zeros, a leading dot, an exponent and a tiny value are all decimals.
+    on_test [script] :
+      eval 2.50 * 2
+      put it into ^^.d
+      eval ^^.d = 5.0
+      assert "expected 2.50 to be a decimal"
+
+      eval .5 + 0
+      put it into ^^.d
+      eval ^^.d = 0.5
+      assert "expected .5 to be a decimal"
+
+      eval 1.0e3 + 0
+      put it into ^^.d
+      eval ^^.d = 1000.0
+      assert "expected 1.0e3 to be a decimal"
+
+      eval 0.0000001 * 10000000
+      put it into ^^.d
+      eval ^^.d > 0.99
+      assert "expected 0.0000001 to be a decimal"
+
+  integer_spellings [test] :
+    description [string] : leading zeros and a leading plus are integers; 007 is 7, not octal.
+    on_test [script] :
+      eval 007 + 1
+      put it into ^^.i
+      eval ^^.i = 8
+      assert "expected 007 to be 7"
+
+      eval +5 + 0
+      put it into ^^.i
+      eval ^^.i = 5
+      assert "expected +5 to be 5"
+
+  decimal_at_load [test] :
+    description [string] : a typed decimal written with trailing zeros loads without a warning.
+    on_test [script] :
+      put '2.50' into ^^.d
+      eval ^^.d = 2.5
+      assert "expected '2.50' to go into a decimal as 2.5"

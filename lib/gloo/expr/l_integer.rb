@@ -8,14 +8,17 @@ module Gloo
   module Expr
     class LInteger < Gloo::Core::Literal
 
+      # An integer as written: an optional sign, then digits. Leading
+      # zeros are fine (007 is 7, never octal).
+      PATTERN = /\A[-+]?\d+\z/
+
       #
       # Is the given token an integer?
       #
       def self.integer?( token )
         return true if token.is_a? Integer
 
-        s = token.strip
-        return s.to_i.to_s == s
+        return PATTERN.match?( token.strip )
       end
 
       #

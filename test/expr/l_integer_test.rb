@@ -36,4 +36,14 @@ class LIntegerTest < BaseTest
     assert_equal '100', e.to_s
   end
 
+  # Leading zeros and a leading plus are integers; 007 is 7, not octal.
+  def test_integer_spellings
+    %w[ 007 +5 -12 0 ].each do |s|
+      assert Gloo::Expr::LInteger.integer?( s ), "expected #{s} to be an integer"
+    end
+    %w[ 5. 1,000 1_000 0x1A 2.0 ].each do |s|
+      refute Gloo::Expr::LInteger.integer?( s ), "expected #{s} not to be an integer"
+    end
+  end
+
 end

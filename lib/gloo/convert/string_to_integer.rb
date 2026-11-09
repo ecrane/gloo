@@ -18,10 +18,11 @@ module Gloo
       end
 
       #
-      # Is the value really an integer? A blank value is no value (0).
+      # Is the value really an integer, written the way an integer
+      # literal is (see LInteger)? A blank value is no value (0).
       #
       def valid?( value, _result )
-        return value.blank? || value.match?( /\A\s*[-+]?\d+\s*\z/ )
+        return value.blank? || Gloo::Expr::LInteger.integer?( value )
       end
 
     end

@@ -29,4 +29,25 @@ class StringToDecimalTest < BaseEngineTest
     %w[x 1,5 1.5.5].each { |v| refute o.valid?( v, nil ), v }
   end
 
+  # Typed values use the same spellings as literals.
+  def test_valid_matches_the_literal_spellings
+    o = Gloo::Convert::StringToDecimal.new
+    %w[ 2.50 .5 1.0e3 7 007 +5 ].each { |s| assert o.valid?( s, nil ), s }
+    %w[ 5. 1_000 0x1A abc ].each { |s| refute o.valid?( s, nil ), s }
+  end
+
+  # Hex was taken as valid, then read as 0.0 without a warning.
+  def test_hex_warns
+    warnings = capture_warnings do
+      @engine.parser.run 'create x as decimal'
+      @engine.parser.run "put '0x1A' into x"
+    end
+    assert_equal 1, warnings.size
+  end
+
+  def test_trailing_zeros_at_load
+    @engine.parser.run 'create d as decimal : 2.50'
+    assert_equal 2.5, @engine.heap.root.find_child( 'd' ).value
+  end
+
 end

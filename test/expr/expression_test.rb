@@ -154,4 +154,21 @@ class ExpressionTest < BaseEngineTest
     assert_equal 1, @engine.heap.error.error_count
   end
 
+  # In an expression, every spelling works out to its value.
+  def test_decimal_spellings
+    { '2.50 * 2' => 5.0, '1.0e3 + 0' => 1000.0, '.5 + 0' => 0.5,
+      '0.0000001 * 10' => 0.000001, '-.5 + 1' => 0.5 }.each do |expr, value|
+      @engine.parser.run "eval #{expr}"
+      assert_in_delta value, @engine.heap.it.value, 1e-12, expr
+      refute @engine.error?, expr
+    end
+  end
+
+  def test_integer_spellings
+    @engine.parser.run 'eval 007 + 1'
+    assert_equal 8, @engine.heap.it.value
+    @engine.parser.run 'eval +5 + 0'
+    assert_equal 5, @engine.heap.it.value
+  end
+
 end

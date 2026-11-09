@@ -16,16 +16,13 @@ module Gloo
       end
 
       #
-      # Is the value really a decimal number? A blank value is no
-      # value (0.0).
+      # Is the value really a decimal number, written the way a decimal
+      # literal is (see LDecimal)? A blank value is no value (0.0).
       #
       def valid?( value, _result )
         return true if value.blank?
 
-        Float( value.strip )
-        return true
-      rescue ArgumentError
-        return false
+        return Gloo::Expr::LDecimal.number?( value )
       end
 
     end

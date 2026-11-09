@@ -180,7 +180,11 @@ The following rules apply to literal values:
       `"say \"hi\""` is the string `say "hi"`.
 - Numbers
     - Integer and decimal numbers need no delimiters.
+    - An integer is digits with an optional sign: `42`, `-7`, `+5`. Leading zeros are fine — `007` is `7`, never octal.
+    - A decimal has a fraction or an exponent: `3.12`, `2.50`, `.5`, `-.5`, `1.0e3`, `2e-5`, `0.0000001`.
     - To refer to a decimal with no fractional value, include `.0` to indicate a decimal value.
+    - Not numbers: `5.` (it reads as the start of a path, like `'list.'`), `1,000`, `1_000`, `0x1A`. A bare word that isn't a number is an object's name.
+    - A typed value follows the same rule: `put '2.50' into d` or `d [decimal] : 2.50` is `2.5`; text that isn't written as a number is a best guess, with a warning (see Value Conversion).
 - Booleans
     - Can be `TRUE` or `FALSE`
     - Note that the text is case insensitive.
