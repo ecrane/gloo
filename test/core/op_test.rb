@@ -88,21 +88,47 @@ class OpTest < BaseTest
     assert_same Gloo::Expr::OpLteq, o.class
   end
 
-def test_promote_two_integers_stays_integers
-  assert_equal [ 1, 2 ], Gloo::Expr::OpPlus.new.promote( 1, 2 )
-  assert_kind_of Integer, Gloo::Expr::OpPlus.new.promote( 1, 2 ).first
-end
+  def test_promote_two_integers_stays_integers
+    assert_equal [ 1, 2 ], Gloo::Expr::OpPlus.new.promote( 1, 2 )
+    assert_kind_of Integer, Gloo::Expr::OpPlus.new.promote( 1, 2 ).first
+  end
 
-def test_promote_integer_and_decimal_gives_decimals
-  assert_equal [ 1.0, 2.5 ], Gloo::Expr::OpPlus.new.promote( 1, 2.5 )
-  assert_equal [ 2.5, 1.0 ], Gloo::Expr::OpPlus.new.promote( 2.5, 1 )
-  Gloo::Expr::OpPlus.new.promote( 1, 2.5 ).each { |n| assert_kind_of Float, n }
-end
+  def test_promote_integer_and_decimal_gives_decimals
+    assert_equal [ 1.0, 2.5 ], Gloo::Expr::OpPlus.new.promote( 1, 2.5 )
+    assert_equal [ 2.5, 1.0 ], Gloo::Expr::OpPlus.new.promote( 2.5, 1 )
+    Gloo::Expr::OpPlus.new.promote( 1, 2.5 ).each { |n| assert_kind_of Float, n }
+  end
 
-def test_promote_is_nil_unless_both_are_numbers
-  assert_nil Gloo::Expr::OpPlus.new.promote( 1, "2" )
-  assert_nil Gloo::Expr::OpPlus.new.promote( "1", 2 )
-  assert_nil Gloo::Expr::OpPlus.new.promote( true, 2 )
-end
+  def test_promote_is_nil_unless_both_are_numbers
+    assert_nil Gloo::Expr::OpPlus.new.promote( 1, "2" )
+    assert_nil Gloo::Expr::OpPlus.new.promote( "1", 2 )
+    assert_nil Gloo::Expr::OpPlus.new.promote( true, 2 )
+  end
+
+  def test_compare_text_ignores_case_first
+    op = Gloo::Expr::OpLt.new
+    assert_equal( -1, op.compare_text( "abc", "abd" ) )
+    assert_equal( -1, op.compare_text( "apple", "Banana" ) )
+    assert_equal 1, op.compare_text( "b", "A" )
+  end
+
+  def test_compare_text_puts_capital_first_on_a_tie
+    op = Gloo::Expr::OpLt.new
+    assert_equal( -1, op.compare_text( "A", "a" ) )
+    assert_equal( -1, op.compare_text( "Banana", "banana" ) )
+    assert_equal 1, op.compare_text( "banana", "Banana" )
+  end
+
+  def test_compare_text_is_equal_only_when_exact
+    op = Gloo::Expr::OpLt.new
+    assert_equal 0, op.compare_text( "x", "x" )
+    refute_equal 0, op.compare_text( "x", "X" )
+  end
+
+  def test_compare_text_is_nil_unless_both_are_strings
+    op = Gloo::Expr::OpLt.new
+    assert_nil op.compare_text( "5", 10 )
+    assert_nil op.compare_text( 5, "10" )
+  end
 
 end

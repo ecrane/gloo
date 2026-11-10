@@ -71,6 +71,24 @@ module Gloo
         return [ left.to_f, right.to_f ]
       end
 
+      #
+      # Compare two strings in dictionary order, the rule the
+      # ordering operators (< > <= >=) use for text with text.
+      # Case is ignored first; only on a tie does a capital come
+      # first, so 'apple' < 'Banana' < 'banana'.
+      # Equal only when the strings are exactly the same, as with =.
+      # Returns -1, 0 or 1, or nil unless both are strings.
+      #
+      def compare_text( left, right )
+        return nil unless left.is_a?( String ) && right.is_a?( String )
+
+        cmp = left.downcase <=> right.downcase
+        return cmp unless cmp.zero?
+
+        # Same letters; character codes put the capital first.
+        return left <=> right
+      end
+
     end
   end
 end

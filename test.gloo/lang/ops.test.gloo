@@ -150,3 +150,48 @@ tests.lang.ops [can] :
 
       eval 1 >= 1.5
       refute "expected 1 to not be greater than or equal to 1.5"
+
+  confirm_text_less_than [test] :
+    description [string] : Text is compared in dictionary order with < and <=.
+    on_test [script] :
+      eval 'abc' < 'abd'
+      assert "expected 'abc' < 'abd'"
+
+      eval 'B' < 'a'
+      refute "expected 'B' to not be less than 'a'"
+
+      eval 'A' < 'a'
+      assert "expected 'A' < 'a' (capital first on a tie)"
+
+      eval 'apple' < 'Banana'
+      assert "expected 'apple' < 'Banana'"
+
+      eval 'x' <= 'x'
+      assert "expected 'x' <= 'x'"
+
+      eval 'abd' <= 'abc'
+      refute "expected 'abd' to not be less than or equal to 'abc'"
+
+  confirm_text_greater_than [test] :
+    description [string] : Text is compared in dictionary order with > and >=.
+    on_test [script] :
+      eval 'abd' > 'abc'
+      assert "expected 'abd' > 'abc'"
+
+      eval 'b' > 'A'
+      assert "expected 'b' > 'A'"
+
+      eval 'x' > 'x'
+      refute "expected 'x' to not be greater than 'x'"
+
+      eval 'x' >= 'x'
+      assert "expected 'x' >= 'x'"
+
+      eval 'A' >= 'a'
+      refute "expected 'A' to not be greater than or equal to 'a'"
+
+  confirm_text_equal_stays_exact [test] :
+    description [string] : = still tells capitals apart.
+    on_test [script] :
+      eval 'x' = 'X'
+      refute "expected 'x' to not equal 'X'"

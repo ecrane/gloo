@@ -41,6 +41,8 @@ An expression is worked out strictly left to right. There's no precedence and no
 
 Strings, integers, and decimal numbers can be compared. An integer and a decimal are compared as numbers, so `1 = 1.9` is false and `1 < 1.5` is true.
 
+`<`, `>`, `<=` and `>=` put strings in dictionary order. Case is ignored first, and only when two strings have the same letters does a capital come first: `'apple' < 'Banana'` and `'Banana' < 'banana'` are both true. `=` and `!=` still tell capitals apart (`'x' = 'X'` is false), so for any two strings exactly one of `<`, `=` and `>` is true.
+
 These are the gloo comparison operators:
 
 ```

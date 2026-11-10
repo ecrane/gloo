@@ -79,4 +79,21 @@ class OpGteqTest < BaseEngineTest
     assert_equal true, @engine.heap.it.value, "1 >= 1.0"
   end
 
+  def test_comparing_strings_in_dictionary_order
+    @engine.parser.run "show 'abd' >= 'abc'"
+    assert_equal true, @engine.heap.it.value, "'abd' >= 'abc'"
+
+    @engine.parser.run "show 'abc' >= 'abd'"
+    assert_equal false, @engine.heap.it.value, "'abc' >= 'abd'"
+
+    @engine.parser.run "show 'b' >= 'A'"
+    assert_equal true, @engine.heap.it.value, "'b' >= 'A'"
+
+    @engine.parser.run "show 'A' >= 'a'"
+    assert_equal false, @engine.heap.it.value, "'A' >= 'a'"
+
+    @engine.parser.run "show 'x' >= 'x'"
+    assert_equal true, @engine.heap.it.value, "'x' >= 'x'"
+  end
+
 end

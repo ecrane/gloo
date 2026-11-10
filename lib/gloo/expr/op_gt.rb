@@ -21,6 +21,10 @@ module Gloo
         nums = promote( left, right )
         return nums[ 0 ] > nums[ 1 ] if nums
 
+        # Two strings: dictionary order.
+        cmp = compare_text( left, right )
+        return cmp.positive? if cmp
+
         return left > right.to_i if left.is_a? Integer
 
         return left > right.to_f if left.is_a? Numeric
