@@ -17,4 +17,12 @@ class OpMinusTest < BaseEngineTest
     assert_equal 9.25, @engine.heap.it.value.round( 2 )
   end
 
+def test_subtracting_integer_and_decimal_gives_decimal
+  @engine.parser.run "show 1 - 0.5"
+  assert_equal 0.5, @engine.heap.it.value
+
+  @engine.parser.run "show 2.5 - 1"
+  assert_equal 1.5, @engine.heap.it.value
+end
+
 end

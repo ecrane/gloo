@@ -20,6 +20,8 @@ These are the gloo math operators:
 /   division
 ```
 
+Integers and decimal numbers mix as numbers. An integer with an integer gives an integer; a decimal on either side gives a decimal, so `1 + 2.5` is `3.5` and `3 * 1.5` is `4.5`.
+
 An expression is worked out strictly left to right. There's no precedence and no grouping with parentheses, so `2 + 3 * 4` is `20` (`2 + 3` first, then `* 4`), not `14`. To work out one part first, put it into an object on its own line, then use that object: `put 3 * 4 into x`, then `eval 2 + x`.
 
 ## Joining Values
@@ -37,7 +39,7 @@ An expression is worked out strictly left to right. There's no precedence and no
 
 ## Comparison Operators
 
-Strings, integers, and decimal numbers can be compared.
+Strings, integers, and decimal numbers can be compared. An integer and a decimal are compared as numbers, so `1 = 1.9` is false and `1 < 1.5` is true.
 
 These are the gloo comparison operators:
 

@@ -75,4 +75,17 @@ class OpPlusTest < BaseEngineTest
     assert_equal 'abcde', @engine.heap.it.value
   end
 
+def test_adding_integer_and_decimal_gives_decimal
+  @engine.parser.run "show 1 + 2.5"
+  assert_equal 3.5, @engine.heap.it.value
+
+  @engine.parser.run "show 2.5 + 1"
+  assert_equal 3.5, @engine.heap.it.value
+end
+
+def test_adding_two_integers_stays_integer
+  @engine.parser.run "show 1 + 2"
+  assert_kind_of Integer, @engine.heap.it.value
+end
+
 end

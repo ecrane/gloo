@@ -17,6 +17,10 @@ module Gloo
         cmp = DtTools.compare_dt( left, right )
         return cmp.is_a?( Integer ) && !cmp.negative? unless cmp == :not_dt
 
+        # Two numbers: promote, then work them out as numbers.
+        nums = promote( left, right )
+        return nums[ 0 ] >= nums[ 1 ] if nums
+
         return left >= right.to_i if left.is_a? Integer
 
         return left >= right.to_f if left.is_a? Numeric

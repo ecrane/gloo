@@ -57,6 +57,20 @@ module Gloo
         return Gloo::Expr::OpPlus.new
       end
 
+      #
+      # Promote two numbers to a common type, the one rule every
+      # operator uses when both values are numbers.
+      # An integer with an integer stays an integer; a decimal on
+      # either side makes both decimals.
+      # Returns [ left, right ], or nil unless both are numbers.
+      #
+      def promote( left, right )
+        return nil unless left.is_a?( Numeric ) && right.is_a?( Numeric )
+        return [ left, right ] if left.is_a?( Integer ) && right.is_a?( Integer )
+
+        return [ left.to_f, right.to_f ]
+      end
+
     end
   end
 end

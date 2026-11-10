@@ -88,4 +88,21 @@ class OpTest < BaseTest
     assert_same Gloo::Expr::OpLteq, o.class
   end
 
+def test_promote_two_integers_stays_integers
+  assert_equal [ 1, 2 ], Gloo::Expr::OpPlus.new.promote( 1, 2 )
+  assert_kind_of Integer, Gloo::Expr::OpPlus.new.promote( 1, 2 ).first
+end
+
+def test_promote_integer_and_decimal_gives_decimals
+  assert_equal [ 1.0, 2.5 ], Gloo::Expr::OpPlus.new.promote( 1, 2.5 )
+  assert_equal [ 2.5, 1.0 ], Gloo::Expr::OpPlus.new.promote( 2.5, 1 )
+  Gloo::Expr::OpPlus.new.promote( 1, 2.5 ).each { |n| assert_kind_of Float, n }
+end
+
+def test_promote_is_nil_unless_both_are_numbers
+  assert_nil Gloo::Expr::OpPlus.new.promote( 1, "2" )
+  assert_nil Gloo::Expr::OpPlus.new.promote( "1", 2 )
+  assert_nil Gloo::Expr::OpPlus.new.promote( true, 2 )
+end
+
 end

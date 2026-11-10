@@ -14,13 +14,9 @@ module Gloo
       # Perform the operation and return the result.
       #
       def perform( left, right )
-        if ( left.is_a? Integer ) && ( right.is_a? Integer )
-          return left * right
-        end
-        
-        if (left.is_a? Numeric) && (right.is_a? Numeric)
-          return left * right
-        end
+        # Two numbers: promote, then work them out as numbers.
+        nums = promote( left, right )
+        return nums[ 0 ] * nums[ 1 ] if nums
 
         return left * right.to_i if left.is_a? Integer
 

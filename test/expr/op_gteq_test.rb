@@ -68,4 +68,15 @@ class OpGteqTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  def test_comparing_integer_and_decimal
+    @engine.parser.run "show 1 >= 1.5"
+    assert_equal false, @engine.heap.it.value, "1 >= 1.5"
+
+    @engine.parser.run "show 2 >= 1.5"
+    assert_equal true, @engine.heap.it.value, "2 >= 1.5"
+
+    @engine.parser.run "show 1 >= 1.0"
+    assert_equal true, @engine.heap.it.value, "1 >= 1.0"
+  end
+
 end

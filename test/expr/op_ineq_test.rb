@@ -72,4 +72,15 @@ class OpInEqTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  def test_comparing_integer_and_decimal
+    @engine.parser.run "show 1 != 1.9"
+    assert_equal true, @engine.heap.it.value, "1 != 1.9"
+
+    @engine.parser.run "show 1 != 1.0"
+    assert_equal false, @engine.heap.it.value, "1 != 1.0"
+
+    @engine.parser.run "show 1.9 != 1"
+    assert_equal true, @engine.heap.it.value, "1.9 != 1"
+  end
+
 end

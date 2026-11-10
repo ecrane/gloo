@@ -18,12 +18,25 @@ class OpDivTest < BaseEngineTest
   end
 
   def test_dividing_by_zero_is_an_error
-    [ 'show 1 / 0', 'show 1.5 / 0', 'show 0.0 / 0' ].each do |cmd|
+    [ 'show 1 / 0', 'show 1 / 0.0', 'show 1.5 / 0', 'show 0.0 / 0' ].each do |cmd|
       @engine.heap.error.clear
       @engine.parser.run cmd
       assert_equal Gloo::Expr::Expression::DIVIDE_BY_ZERO_ERR, @engine.heap.error.value, cmd
       assert_equal false, @engine.heap.it.value, cmd
     end
   end
+
+def test_dividing_integer_by_decimal_gives_decimal
+  @engine.parser.run "show 7 / 2.0"
+  assert_equal 3.5, @engine.heap.it.value
+
+  @engine.parser.run "show 7.0 / 2"
+  assert_equal 3.5, @engine.heap.it.value
+end
+
+def test_dividing_two_integers_stays_integer
+  @engine.parser.run "show 7 / 2"
+  assert_equal 3, @engine.heap.it.value
+end
 
 end

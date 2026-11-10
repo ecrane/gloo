@@ -105,3 +105,48 @@ tests.lang.ops [can] :
       eval ^^.full = 'abcd'
       assert "expected no operator, + and and to mix"
 
+
+  confirm_integer_and_decimal_math [test] :
+    description [string] : An integer and a decimal give a decimal, whichever side each is on.
+    on_test [script] :
+      eval 1 + 2.5 = 3.5
+      assert "expected 1 + 2.5 to be 3.5"
+
+      eval 1 - 0.5 = 0.5
+      assert "expected 1 - 0.5 to be 0.5"
+
+      eval 3 * 1.5 = 4.5
+      assert "expected 3 * 1.5 to be 4.5"
+
+      eval 7 / 2.0 = 3.5
+      assert "expected 7 / 2.0 to be 3.5"
+
+      eval 2.5 + 1 = 3.5
+      assert "expected 2.5 + 1 to be 3.5"
+
+  confirm_two_integers_stay_integers [test] :
+    description [string] : An integer with an integer gives an integer.
+    on_test [script] :
+      eval 7 / 2 = 3
+      assert "expected 7 / 2 to be 3"
+
+  confirm_integer_and_decimal_compare [test] :
+    description [string] : An integer on the left is compared with a decimal as a decimal.
+    on_test [script] :
+      eval 1 = 1.9
+      refute "expected 1 to not equal 1.9"
+
+      eval 1 != 1.9
+      assert "expected 1 != 1.9"
+
+      eval 1 < 1.5
+      assert "expected 1 < 1.5"
+
+      eval 2 > 1.5
+      assert "expected 2 > 1.5"
+
+      eval 1 <= 0.5
+      refute "expected 1 to not be less than or equal to 0.5"
+
+      eval 1 >= 1.5
+      refute "expected 1 to not be greater than or equal to 1.5"

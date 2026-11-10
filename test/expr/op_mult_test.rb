@@ -22,4 +22,12 @@ class OpMultTest < BaseEngineTest
     assert_equal 75.0, @engine.heap.it.value
   end
 
+def test_multiplying_integer_and_decimal_gives_decimal
+  @engine.parser.run "show 3 * 1.5"
+  assert_equal 4.5, @engine.heap.it.value
+
+  @engine.parser.run "show 1.5 * 3"
+  assert_equal 4.5, @engine.heap.it.value
+end
+
 end
