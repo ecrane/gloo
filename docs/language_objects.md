@@ -232,7 +232,7 @@ See also: Put, Show, String, Boolean, Integer, Decimal, Value Conversion.
 
 ## Value Conversion
 
-When putting an object or literal value into another object, gloo will attempt to convert the value to the target type.
+When putting an object or literal value into another object, gloo will attempt to convert the value to the target type. (How text and numbers mix inside an expression, such as `5 + '5'` or `'5' < 10`, is up to the operator; see Operators.)
 
 Here are some of the value conversions that gloo will attempt:
 

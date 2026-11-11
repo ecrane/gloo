@@ -83,4 +83,15 @@ class OpInEqTest < BaseEngineTest
     assert_equal true, @engine.heap.it.value, "1.9 != 1"
   end
 
+  def test_comparing_a_number_with_text
+    @engine.parser.run %q{show 3 != '3'}
+    assert_equal false, @engine.heap.it.value, %q{3 != '3'}
+
+    @engine.parser.run %q{show '3.0' != 3}
+    assert_equal false, @engine.heap.it.value, %q{'3.0' != 3}
+
+    @engine.parser.run %q{show 3 != 'abc'}
+    assert_equal true, @engine.heap.it.value, %q{3 != 'abc'}
+  end
+
 end

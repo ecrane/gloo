@@ -17,12 +17,8 @@ module Gloo
         cmp = DtTools.compare_dt( left, right )
         return cmp.is_a?( Integer ) && !cmp.positive? unless cmp == :not_dt
 
-        # Two numbers: promote, then work them out as numbers.
-        nums = promote( left, right )
-        return nums[ 0 ] <= nums[ 1 ] if nums
-
-        # Two strings: dictionary order.
-        cmp = compare_text( left, right )
+        # Numbers and text: compared by the shared rule.
+        cmp = compare( left, right )
         return !cmp.positive? if cmp
 
         return left <= right.to_i if left.is_a? Integer

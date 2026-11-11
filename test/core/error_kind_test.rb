@@ -56,7 +56,7 @@ class ErrorKindTest < BaseEngineTest
     'tell f to read',
     'show 1 / 0',
     'show 1.5 / 0',
-    "show 'a' / 2",
+    'show true / 2',
     'load ext nosuchext'
   ].freeze
 

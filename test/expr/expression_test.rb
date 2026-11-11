@@ -142,10 +142,19 @@ class ExpressionTest < BaseEngineTest
   end
 
   def test_operator_that_cant_be_used_with_the_value_is_an_error
-    expr = Gloo::Expr::Expression.new( @engine, [ "'a'", '-', '1' ] )
+    expr = Gloo::Expr::Expression.new( @engine, [ 'true', '-', '1' ] )
     assert_nil expr.evaluate
-    assert_equal "Operator '-' can't be used with 'a'.", @engine.heap.error.value
+    assert_equal "Operator '-' can't be used with 'true'.", @engine.heap.error.value
     assert_equal Gloo::Core::Error::RUNTIME, @engine.heap.error.kind
+  end
+
+  def test_text_that_is_not_a_number_warns_and_is_zero_in_math
+    warnings = capture_warnings do
+      expr = Gloo::Expr::Expression.new( @engine, [ "'a'", '-', '1' ] )
+      assert_equal( -1, expr.evaluate )
+    end
+    assert_equal [ "'a' is not a number; using 0." ], warnings
+    refute @engine.error?
   end
 
   def test_missing_value_is_not_reported_twice

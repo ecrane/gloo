@@ -139,4 +139,15 @@ class OpGtTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value, "'x' > 'x'"
   end
 
+  def test_comparing_a_number_with_text
+    @engine.parser.run %q{show 10 > '5'}
+    assert_equal true, @engine.heap.it.value, %q{10 > '5'}
+
+    @engine.parser.run %q{show '5' > 10}
+    assert_equal false, @engine.heap.it.value, %q{'5' > 10}
+
+    @engine.parser.run %q{show 'abc' > 3}
+    assert_equal true, @engine.heap.it.value, %q{'abc' > 3}
+  end
+
 end

@@ -17,11 +17,14 @@ module Gloo
       # Perform the operation and return the result.
       #
       def perform( left, right )
+        # Text on either side: join, as text.
+        if left.is_a?( String ) || right.is_a?( String )
+          return left.to_s + right.to_s
+        end
+
         # Two numbers: promote, then work them out as numbers.
         nums = promote( left, right )
         return nums[ 0 ] + nums[ 1 ] if nums
-
-        return left + right.to_s if left.is_a? String
 
         return left + right.to_i if left.is_a? Integer
 

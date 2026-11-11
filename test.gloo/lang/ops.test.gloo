@@ -7,6 +7,8 @@ tests.lang.ops [can] :
   first [string] : Ada
   last [string] : Lovelace
   full [string] :
+  count [int] : 3
+  five [string] : 5
 
   confirm_eq_ops [test] :
     description [string] : Confirm equality operations.
@@ -195,3 +197,51 @@ tests.lang.ops [can] :
     on_test [script] :
       eval 'x' = 'X'
       refute "expected 'x' to not equal 'X'"
+
+  confirm_number_and_text_join [test] :
+    description [string] : + with text on either side joins, as text.
+    on_test [script] :
+      put ^^.count ' items' into ^^.full
+      eval ^^.full = '3 items'
+      assert "expected count ' items' to be '3 items'"
+
+      put ^^.count and ' items' into ^^.full
+      eval ^^.full = '3 items'
+      assert "expected count and ' items' to be '3 items'"
+
+      eval 5 + '5' = '55'
+      assert "expected 5 + '5' to be '55'"
+
+  confirm_text_as_number_in_math [test] :
+    description [string] : - * and / use text as a number.
+    on_test [script] :
+      eval 10 - ^^.five = 5
+      assert "expected 10 - five to be 5"
+
+      eval '3' * 2 = 6
+      assert "expected '3' * 2 to be 6"
+
+      eval '7.0' / 2 = 3.5
+      assert "expected '7.0' / 2 to be 3.5"
+
+  confirm_text_not_a_number_is_zero [test] :
+    description [string] : Text that isn't a number is 0 in math, with a warning.
+    expect_errors [bool] : true
+    on_test [script] :
+      eval 1 - 'a' = 1
+      assert "expected 1 - 'a' to be 1"
+
+  confirm_number_and_text_compare [test] :
+    description [string] : A number and text that holds a number compare as numbers.
+    on_test [script] :
+      eval '5' < 10
+      assert "expected '5' < 10"
+
+      eval 3 = '3'
+      assert "expected 3 = '3'"
+
+      eval ^^.five = 5
+      assert "expected five = 5"
+
+      eval 3 = 'abc'
+      refute "expected 3 to not equal 'abc'"

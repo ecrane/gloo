@@ -81,6 +81,7 @@ module Gloo
       # result is no value. A missing value (nil) was already reported.
       #
       def apply_op( op, left, right )
+        op.engine = @engine
         result = op.perform( left, right )
         if op.is_a?( Gloo::Expr::OpDiv ) && result.is_a?( Float ) &&
            ( result.nan? || result.infinite? )

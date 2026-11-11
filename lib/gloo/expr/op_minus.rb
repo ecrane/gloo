@@ -14,8 +14,8 @@ module Gloo
       # Perform the operation and return the result.
       #
       def perform( left, right )
-        # Two numbers: promote, then work them out as numbers.
-        nums = promote( left, right )
+        # Numbers, and text used as a number: promote, then work them out.
+        nums = math_numbers( left, right )
         return nums[ 0 ] - nums[ 1 ] if nums
 
         return left - right.to_i if left.is_a? Integer

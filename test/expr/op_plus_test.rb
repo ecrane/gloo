@@ -88,4 +88,27 @@ def test_adding_two_integers_stays_integer
   assert_kind_of Integer, @engine.heap.it.value
 end
 
+  def test_text_on_either_side_joins
+    @engine.parser.run %q{show 3 ' items'}
+    assert_equal "3 items", @engine.heap.it.value, %q{3 ' items'}
+
+    @engine.parser.run %q{show 3 + ' items'}
+    assert_equal "3 items", @engine.heap.it.value, %q{3 + ' items'}
+
+    @engine.parser.run %q{show 3 and ' items'}
+    assert_equal "3 items", @engine.heap.it.value, %q{3 and ' items'}
+
+    @engine.parser.run %q{show 5 + '5'}
+    assert_equal "55", @engine.heap.it.value, %q{5 + '5'}
+
+    @engine.parser.run %q{show '5' + 5}
+    assert_equal "55", @engine.heap.it.value, %q{'5' + 5}
+
+    @engine.parser.run %q{show 1.5 + 'x'}
+    assert_equal "1.5x", @engine.heap.it.value, %q{1.5 + 'x'}
+
+    @engine.parser.run %q{show 'a' + 1.5}
+    assert_equal "a1.5", @engine.heap.it.value, %q{'a' + 1.5}
+  end
+
 end

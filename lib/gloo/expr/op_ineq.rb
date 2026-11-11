@@ -17,9 +17,9 @@ module Gloo
         cmp = DtTools.compare_dt( left, right )
         return cmp.is_a?( Integer ) && cmp != 0 unless cmp == :not_dt
 
-        # Two numbers: promote, then work them out as numbers.
-        nums = promote( left, right )
-        return nums[ 0 ] != nums[ 1 ] if nums
+        # Numbers and text: compared by the shared rule.
+        cmp = compare( left, right )
+        return !cmp.zero? if cmp
 
         return left != right.to_s if left.is_a? String
 
