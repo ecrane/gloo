@@ -573,4 +573,56 @@ class StringTest < BaseEngineTest
     assert_equal '', @engine.heap.it.value
   end
 
+  # Run each command; 'it' after the last.
+  def run_all( *cmds )
+    cmds.each { |c| @engine.parser.run c }
+    return @engine.heap.it.value
+  end
+
+  def test_sub_with_a_group_in_either_param
+    assert_equal 'hello WOrld', run_all( 'create s as string : "hello world"',
+                                         "tell s to sub ( ( 'w' + 'o' ) 'WO' )" )
+    assert_equal 'hexylo WOrld', run_all( "tell s to sub ( 'l' ( 'x' + 'y' ) )" )
+  end
+
+  def test_gsub_with_a_group
+    assert_equal 'xxbbxx', run_all( 'create s as string : "aabbaa"', "tell s to gsub ( ( 'a' ) 'x' )" )
+  end
+
+  def test_split_with_groups
+    run_all( 'create s as string : "one two three"', 'create n as int : 4' )
+    assert_equal 'two', run_all( 'tell s to split ( n ( n + 3 ) )' )
+  end
+
+  def test_index_of_with_groups
+    run_all( 'create s as string : "hello world"', 'create n as int : 2' )
+    assert_equal 7, run_all( "tell s to index_of ( 'o' ( n + 3 ) )" )
+    assert_equal 6, run_all( "tell s to index_of ( ( 'w' + 'o' ) )" )
+  end
+
+  def test_split_list_with_a_computed_target
+    run_all( 'create s as string : "a b"', 'create n as int : 2', 'create p2 as can' )
+    assert_equal true, run_all( "tell s to split_list ( ( ' ' ) ( 'p' n ) )" )
+    assert_equal 'b', Gloo::Core::Pn.new( @engine, 'p2.2' ).resolve.value
+  end
+
+  def test_sub_and_split_need_two_params
+    run_all( 'create s as string : "hello"' )
+    [ "tell s to sub ( 'l' )", "tell s to gsub ( 'l' )", 'tell s to split ( 1 )' ].each do |cmd|
+      @engine.heap.error.clear
+      assert_equal false, run_all( cmd ), cmd
+      assert_equal Gloo::Core::Obj::MISSING_PARAM_ERR, @engine.heap.error.value, cmd
+      assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind, cmd
+    end
+    assert_equal 'hello', @engine.heap.root.find_child( 's' ).value
+  end
+
+  def test_a_param_that_fails_stops_the_message
+    run_all( 'create s as string : "hello"' )
+    @engine.heap.error.clear
+    assert_equal false, run_all( "tell s to sub ( no.such 'x' )" )
+    assert_equal Gloo::Core::Error::RUNTIME, @engine.heap.error.kind
+    assert_equal 'hello', @engine.heap.root.find_child( 's' ).value
+  end
+
 end

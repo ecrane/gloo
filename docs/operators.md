@@ -38,7 +38,7 @@ A group in parentheses is worked out first, and its value is used in its place: 
 > tell d to round ( 1 + 1 )
 ```
 
-A group works anywhere gloo expects a value: `eval`, `show`, `put`, the condition and commands of `if` and `unless`, and the parameter of a message that takes one (each parameter of a message that takes two, such as `sub`, is still a single value). Where a verb expects an object path instead, parentheses build the path (see Language, Syntax, Computed Object Paths): `put 2 * ( 3 + 4 ) into ( 'list.' n )` uses both.
+A group works anywhere gloo expects a value: `eval`, `show`, `put`, the condition and commands of `if` and `unless`, and a message's parameters: a group is one parameter, so `tell s to sub ( ( 'a' + 'b' ) 'x' )` replaces `ab` with `x`. Where a verb expects an object path instead, parentheses build the path (see Language, Syntax, Computed Object Paths): `put 2 * ( 3 + 4 ) into ( 'list.' n )` uses both.
 
 At the end of a line, a group that comes after a value is the verb's extra part, such as a message's parameters or `show`'s colour, as it always has been: `show 'done' (green)`. So `show a ( b + c )` shows `a` in the colour `b + c` works out to. To join a group onto a value, write the operator: `show a + ( b + c )`.
 

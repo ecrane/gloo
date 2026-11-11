@@ -100,20 +100,6 @@ class ShowTest < BaseEngineTest
     assert_empty exceptions, 'expected no Ruby exception (it was nil.to_sym)'
   end
 
-  private
-
-  #
-  # Run the block and return what it showed, one entry per show.
-  #
-  def capture_shown
-    shown = []
-    @engine.log.define_singleton_method( :show ) { |msg, *_| shown << msg.to_s }
-    yield
-    return shown
-  ensure
-    @engine.log.singleton_class.send( :remove_method, :show )
-  end
-
   def test_showing_a_group
     @engine.parser.run 'show 2 * ( 3 + 4 )'
     assert_equal 14, @engine.heap.it.value
@@ -135,6 +121,20 @@ class ShowTest < BaseEngineTest
       assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind, cmd
       assert_equal 3, @engine.heap.it.value, cmd
     end
+  end
+
+  private
+
+  #
+  # Run the block and return what it showed, one entry per show.
+  #
+  def capture_shown
+    shown = []
+    @engine.log.define_singleton_method( :show ) { |msg, *_| shown << msg.to_s }
+    yield
+    return shown
+  ensure
+    @engine.log.singleton_class.send( :remove_method, :show )
   end
 
 end

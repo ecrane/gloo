@@ -579,6 +579,62 @@ class ObjTest < BaseEngineTest
     end
   end
 
+  # A string object that has been sent a message with these params.
+  def obj_with_params( params )
+    @engine.parser.run 'create s as string'
+    o = @engine.heap.root.find_child( 's' )
+    o.instance_variable_set( :@params, Gloo::Core::Tokens.new( params ) )
+    return o
+  end
+
+  def test_param_groups_one_per_token
+    o = obj_with_params( "'a' b 3" )
+    assert_equal [ [ "'a'" ], [ 'b' ], [ '3' ] ], o.param_groups
+  end
+
+  def test_param_groups_a_group_is_one_param
+    o = obj_with_params( "( 'a' + 'b' ) (x) 'y'" )
+    assert_equal [ [ '(', "'a'", '+', "'b'", ')' ], [ '(', 'x', ')' ], [ "'y'" ] ], o.param_groups
+  end
+
+  def test_param_groups_nested
+    o = obj_with_params( '( 1 * ( 2 + 3 ) ) 4' )
+    assert_equal 2, o.param_groups.length
+    assert_equal [ '4' ], o.param_groups.last
+  end
+
+  def test_param_groups_none
+    o = obj_with_params( '' )
+    assert_equal [], o.param_groups
+  end
+
+  def test_param_value
+    o = obj_with_params( "( 2 * ( 3 + 4 ) ) 'x'" )
+    assert_equal [ 14, true ], o.param_value( 0 )
+    assert_equal [ 'x', true ], o.param_value( 1 )
+  end
+
+  def test_param_value_that_fails
+    o = obj_with_params( 'no.such' )
+    _value, ok = o.param_value( 0 )
+    refute ok
+    assert_equal false, @engine.heap.it.value
+  end
+
+  def test_param_path
+    @engine.parser.run 'create n as int : 2'
+    o = obj_with_params( "a.b ( 'list.' n )" )
+    assert_equal 'a.b', o.param_path( 0 )
+    assert_equal 'list.2', o.param_path( 1 )
+  end
+
+  def test_params_given
+    o = obj_with_params( "'a'" )
+    assert o.params_given?( 1 )
+    refute o.params_given?( 2 )
+    assert_equal Gloo::Core::Obj::MISSING_PARAM_ERR, @engine.heap.error.value
+  end
+
   private
 
   #

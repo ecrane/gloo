@@ -135,3 +135,33 @@ tests.objs.string [can] :
       assert "expected dst.3 to equal 'three'"
       eval ^^.s = 'one,two,three'
       assert "expected split_list to leave the string unchanged"
+
+  sub_with_groups [test] :
+    description [string] : A group can be either parameter of sub.
+    on_test [script] :
+      put 'hello world' into ^^.s
+      tell ^^.s to sub ( ( 'w' + 'o' ) 'WO' )
+      eval it = 'hello WOrld'
+      assert "expected a group as the first parameter"
+
+      tell ^^.s to sub ( 'l' ( 'x' + 'y' ) )
+      eval it = 'hexylo WOrld'
+      assert "expected a group as the second parameter"
+
+  index_of_with_a_group [test] :
+    description [string] : A group can be index_of's start position.
+    on_test [script] :
+      put 'hello world' into ^^.s
+      tell ^^.s to index_of ( 'o' ( 2 + 3 ) )
+      eval it = 7
+      assert "expected the second o"
+
+  sub_needs_two_params [test] :
+    description [string] : sub with one parameter is a syntax error and changes nothing.
+    expect_errors [bool] : true
+    on_test [script] :
+      put 'hello' into ^^.s
+      tell ^^.s to sub ( 'l' )
+      refute "expected it to be false"
+      eval ^^.s = 'hello'
+      assert "expected the string unchanged"

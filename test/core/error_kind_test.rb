@@ -75,6 +75,15 @@ class ErrorKindTest < BaseEngineTest
     RUNTIME_ERRORS.each { |cmd| assert_kind Gloo::Core::Error::RUNTIME, cmd }
   end
 
+  def test_unbalanced_paren_is_a_syntax_error
+    # Run as a command, '(1' is then also read as a (missing) object name,
+    # so check the verb's own syntax report.
+    verb = @engine.parser.parse_immediate 'show (1'
+    verb.check_syntax
+    assert_equal Gloo::Core::Tokens::UNCLOSED_PAREN_ERR, @engine.heap.error.value
+    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+  end
+
   private
 
   def assert_kind( kind, cmd )
@@ -83,15 +92,6 @@ class ErrorKindTest < BaseEngineTest
     assert @engine.error?, "expected '#{cmd}' to report an error"
     assert_equal kind, @engine.heap.error.kind,
       "expected '#{cmd}' to be a #{kind} error: #{@engine.heap.error.value}"
-  end
-
-  def test_unbalanced_paren_is_a_syntax_error
-    # Run as a command, '(1' is then also read as a (missing) object name,
-    # so check the verb's own syntax report.
-    verb = @engine.parser.parse_immediate 'show (1'
-    verb.check_syntax
-    assert_equal Gloo::Core::Tokens::UNCLOSED_PAREN_ERR, @engine.heap.error.value
-    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
   end
 
 end

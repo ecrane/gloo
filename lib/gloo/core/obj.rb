@@ -9,6 +9,8 @@ module Gloo
   module Core
     class Obj < Baseo
 
+      MISSING_PARAM_ERR = 'Missing parameter!'.freeze
+
       attr_accessor :value
       attr_reader :children, :parent
 
@@ -360,6 +362,81 @@ module Gloo
         @engine.err "Object #{self.name} cannot receive message #{msg}"
         @engine.heap.it.set_to false
         return false
+      end
+
+      #
+      # The message's parameters, one entry per parameter: each is the
+      # list of its tokens, either a single token or a whole ( ... )
+      # group, so a group can be one parameter: sub ( ( 'a' + 'b' ) 'x' ).
+      #
+      def param_groups
+        return [] unless @params&.token_count&.positive?
+
+        tokens = Gloo::Expr::Expression.split_parens( @params.tokens )
+        groups = []
+        i = 0
+        while i < tokens.length
+          last = param_group_end( tokens, i )
+          groups << tokens[ i..last ]
+          i = last + 1
+        end
+        return groups
+      end
+
+      #
+      # Are there at least the given number of parameters? If not, it's
+      # a syntax error, and it is false.
+      #
+      def params_given?( count )
+        return true if param_groups.length >= count
+
+        @engine.syntax_err MISSING_PARAM_ERR
+        @engine.heap.it.set_to false
+        return false
+      end
+
+      #
+      # Work out the parameter at the given index as a value. Returns
+      # the value and whether it worked: false if working it out
+      # reported a problem (it is then false).
+      #
+      def param_value( index )
+        errors_before = @engine.heap.error.error_count
+        value = Gloo::Expr::Expression.new( @engine, param_groups[ index ] || [] ).evaluate
+        return value, true if @engine.heap.error.error_count == errors_before
+
+        @engine.heap.it.set_to false
+        return value, false
+      end
+
+      #
+      # The parameter at the given index as an object path: the token as
+      # written, or for a ( ... ) group, the path it works out to (a
+      # computed path). Nil if a group couldn't be worked out (reported).
+      #
+      def param_path( index )
+        tokens = param_groups[ index ] || []
+        return tokens.first unless tokens.length > 1
+
+        value, ok = param_value( index )
+        return ok ? value.to_s : nil
+      end
+
+      #
+      # The index of the last token of the parameter starting at index
+      # i: the ')' that closes a group (or the end, if it never closes,
+      # already a syntax error), otherwise i itself.
+      #
+      def param_group_end( tokens, i )
+        return i unless tokens[ i ] == Gloo::Expr::Expression::OPEN_PAREN
+
+        depth = 0
+        ( i...tokens.length ).each do |j|
+          depth += 1 if tokens[ j ] == Gloo::Expr::Expression::OPEN_PAREN
+          depth -= 1 if tokens[ j ] == Gloo::Expr::Expression::CLOSE_PAREN
+          return j if depth.zero?
+        end
+        return tokens.length - 1
       end
 
       #

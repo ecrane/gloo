@@ -41,7 +41,7 @@ module Gloo
           'starts_with? ({str}) — Check if the string starts with the given string. A parameter is required: the string to look for at the beginning of this string. It will have a boolean.',
           'ends_with? ({str}) — Check if the string ends with the given string. A parameter is required: the string to look for at the end of this string. It will have a boolean.',
           'substring? ({str}) — Check if the string includes the given sub-string. A parameter is required: the string to look for in this string. It will have a boolean.',
-          'index_of ({needle} {from}) — Find the 0-based position of the first occurrence of {needle} at or after position {from}. The {needle} parameter is required; {from} is optional and defaults to 0. Does not change the value of the string. It will have the position, or -1 if {needle} is not found; an out-of-range {from} (negative, or past the end of the string) is an error, and it will have false.',
+          'index_of ({needle} {from}) — Find the 0-based position of the first occurrence of {needle} at or after position {from}. The {needle} parameter is required; {from} is optional and defaults to 0. Either can be a group: index_of ( \'o\' ( n + 1 ) ). Does not change the value of the string. It will have the position, or -1 if {needle} is not found; an out-of-range {from} (negative, or past the end of the string) is an error, and it will have false.',
           'format_for_html — Format this string for HTML output. Tabs, spaces and returns are converted to HTML elements. The value of the string is changed. It will have the formatted string.',
           'encode64 — Base64 encode the string. This message changes the value of the string. It will have the encoded string.',
           'decode64 — Decode the string from Base64. This message changes the value of the string. It will have the decoded string.',
@@ -52,12 +52,12 @@ module Gloo
           'gen_hex ({len}) — Set the value of the string to a newly generated, random hex string. The {len} parameter is optional; the length is 10 if not specified. This message changes the value of the string.',
           'gen_base64 ({len}) — Set the value of the string to a newly generated, random base64 string. The {len} parameter is optional; the length is 12 if not specified. This message changes the value of the string.',
           'trim — Strip whitespace from the beginning and end of the string. This message changes the value of the string. It will have the trimmed string.',
-          'sub ({from} {to}) — Substitute the first occurrence of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
-          'gsub ({from} {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. This message changes the value of the string. It will have the result.',
-          'split ({from} {to}) — Get the substring from index {from} up to (not including) index {to}. Indexes are 0-based; out-of-range indexes are clamped to the start or end of the string. Both parameters are required. Does not change the value of the string. It will have the substring.',
+          'sub ({from} {to}) — Substitute the first occurrence of {from} with {to}. Both parameters are required. Either can be a group: sub ( ( \'a\' + \'b\' ) \'x\' ). This message changes the value of the string. It will have the result.',
+          'gsub ({from} {to}) — Substitute all occurrences of {from} with {to}. Both parameters are required. Either can be a group: gsub ( \' \' ( \'_\' + \'_\' ) ). This message changes the value of the string. It will have the result.',
+          'split ({from} {to}) — Get the substring from index {from} up to (not including) index {to}. Indexes are 0-based; out-of-range indexes are clamped to the start or end of the string. Both parameters are required. Either can be a group: split ( n ( n + 3 ) ). Does not change the value of the string. It will have the substring.',
           'splitl ({index}) — Get the substring to the left of index {index} (same as split (0, {index})). A parameter is required. Does not change the value of the string. It will have the substring.',
           'splitr ({index}) — Get the substring from index {index} to the end of the string (same as split ({index}, size)). A parameter is required. Does not change the value of the string. It will have the substring.',
-          'split_list ({delim} {dst.path}) — Split the string by {delim} and put the parts into children of the container at {dst.path} (or an alias that points to one), one part per child, in order. Existing children are matched by position and have their values set; extra parts get new (untyped) children, numbered from 1; extra existing children are left alone. Both parameters are required. Does not change the value of the string. It will be true (also when the string is empty), or false if a parameter or the target is bad.',
+          'split_list ({delim} {dst.path}) — Split the string by {delim} and put the parts into children of the container at {dst.path} (or an alias that points to one), one part per child, in order. Existing children are matched by position and have their values set; extra parts get new (untyped) children, numbered from 1; extra existing children are left alone. Both parameters are required. {delim} can be a group; {dst.path} in parentheses is a computed path: split_list ( \',\' ( \'parts.\' n ) ). Does not change the value of the string. It will be true (also when the string is empty), or false if a parameter or the target is bad.',
           'word_wrap ({width}) — Word-wrap the string to {width} columns, breaking on whitespace (never mid-word; an overlong word is left on its own line rather than broken). The {width} parameter is optional; it defaults to the terminal\'s current width. This message changes the value of the string. It will have the wrapped string.',
           'page — Show the value in a pager (less), for viewing long content a screen at a time.'
         ]
@@ -119,22 +119,18 @@ module Gloo
       #
       def msg_sub
         return @engine.heap.it.set_to( '' ) unless value
-        if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
-          from = expr.evaluate
-          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
-          to = expr.evaluate
+        return false unless params_given?( 2 )
 
-          result = value.sub(from, to)
-          @engine.heap.it.set_to result
-          set_value(result)
-          return result
-        else
-          # Error
-          @engine.syntax_err MISSING_PARAM_MSG
-          @engine.heap.it.set_to false
-          return false
-        end
+        from, ok = param_value( 0 )
+        return false unless ok
+
+        to, ok = param_value( 1 )
+        return false unless ok
+
+        result = value.sub( from.to_s, to.to_s )
+        @engine.heap.it.set_to result
+        set_value( result )
+        return result
       end
 
       # 
@@ -143,23 +139,18 @@ module Gloo
       #
       def msg_gsub
         return @engine.heap.it.set_to( '' ) unless value
+        return false unless params_given?( 2 )
 
-        if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
-          from = expr.evaluate
-          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
-          to = expr.evaluate
+        from, ok = param_value( 0 )
+        return false unless ok
 
-          result = value.gsub(from, to) 
-          @engine.heap.it.set_to result
-          set_value(result)
-          return result
-        else
-          # Error
-          @engine.syntax_err MISSING_PARAM_MSG
-          @engine.heap.it.set_to false
-          return false
-        end
+        to, ok = param_value( 1 )
+        return false unless ok
+
+        result = value.gsub( from.to_s, to.to_s )
+        @engine.heap.it.set_to result
+        set_value( result )
+        return result
       end
 
       #
@@ -169,22 +160,17 @@ module Gloo
       #
       def msg_split
         return @engine.heap.it.set_to( '' ) unless value
+        return false unless params_given?( 2 )
 
-        if @params&.token_count&.positive?
-          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
-          from = expr.evaluate.to_i
-          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
-          to = expr.evaluate.to_i
+        from, ok = param_value( 0 )
+        return false unless ok
 
-          result = clamped_substring( from, to )
-          @engine.heap.it.set_to result
-          return result
-        else
-          # Error
-          @engine.syntax_err MISSING_PARAM_MSG
-          @engine.heap.it.set_to false
-          return false
-        end
+        to, ok = param_value( 1 )
+        return false unless ok
+
+        result = clamped_substring( from.to_i, to.to_i )
+        @engine.heap.it.set_to result
+        return result
       end
 
       #
@@ -245,17 +231,16 @@ module Gloo
       #
       def msg_split_list
         return @engine.heap.it.set_to( true ) unless value
+        return false unless params_given?( 2 )
 
-        if @params&.token_count.to_i < 2
-          @engine.syntax_err MISSING_PARAM_MSG
-          @engine.heap.it.set_to false
-          return false
-        end
+        delim, ok = param_value( 0 )
+        return false unless ok
 
-        expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
-        delim = expr.evaluate
+        # The target is a path; a group works out to a computed path.
+        path = param_path( 1 )
+        return false unless path
 
-        target = split_list_target( @params.tokens.last )
+        target = split_list_target( path )
         return false unless target
 
         parts = value.split( delim )
@@ -298,20 +283,17 @@ module Gloo
       # into 'it'. Does not change the string's value.
       #
       def msg_index_of
-        unless @params&.token_count&.positive?
-          @engine.syntax_err MISSING_PARAM_MSG
-          @engine.heap.it.set_to false
-          return false
-        end
+        return false unless params_given?( 1 )
 
-        expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.first ] )
-        needle = expr.evaluate.to_s
+        needle, ok = param_value( 0 )
+        return false unless ok
 
         from = 0
-        if @params.token_count > 1
-          expr = Gloo::Expr::Expression.new( @engine, [ @params.tokens.last ] )
-          from = expr.evaluate.to_i
+        if param_groups.length > 1
+          from, ok = param_value( 1 )
+          return false unless ok
         end
+        from = from.to_i
 
         str = value.to_s
         if from.negative? || from > str.length
@@ -320,7 +302,7 @@ module Gloo
           return false
         end
 
-        result = str.index( needle, from ) || -1
+        result = str.index( needle.to_s, from ) || -1
         @engine.heap.it.set_to result
         return result
       end

@@ -56,6 +56,38 @@ module Gloo
         return evaluate_sym( @left )
       end
 
+      #
+      # Split grouping parentheses off the tokens, so each is a token
+      # of its own: '(3' and '4)' become '(' '3' and '4' ')'. Quoted
+      # text and inline calls (invoke( ... )) are left whole.
+      #
+      def self.split_parens( tokens )
+        return tokens.flat_map do |t|
+          next [ t ] unless t.is_a?( String )
+          next [ t ] if Gloo::Core::Tokens::QUOTE_CHARS.include?( t[ 0 ] )
+          next [ t ] if Gloo::Expr::Call.call?( t )
+
+          split_paren_token( t )
+        end
+      end
+
+      #
+      # Split the leading '(' and trailing ')' off one token.
+      #
+      def self.split_paren_token( token )
+        opens = []
+        while token.length > 1 && token.start_with?( OPEN_PAREN )
+          opens << OPEN_PAREN
+          token = token[ 1..-1 ]
+        end
+        closes = []
+        while token.length > 1 && token.end_with?( CLOSE_PAREN )
+          closes << CLOSE_PAREN
+          token = token[ 0..-2 ]
+        end
+        return opens + [ token ] + closes
+      end
+
       # ---------------------------------------------------------------------
       #    Private functions
       # ---------------------------------------------------------------------
@@ -136,7 +168,7 @@ module Gloo
       # Identify each token in the list.
       #
       def identify_tokens
-        tokens = split_parens( @tokens )
+        tokens = Expression.split_parens( @tokens )
         i = 0
         while i < tokens.length
           token = tokens[ i ]
@@ -151,38 +183,6 @@ module Gloo
             i += 1
           end
         end
-      end
-
-      #
-      # Split grouping parentheses off the tokens, so each is a token
-      # of its own: '(3' and '4)' become '(' '3' and '4' ')'. Quoted
-      # text and inline calls (invoke( ... )) are left whole.
-      #
-      def split_parens( tokens )
-        return tokens.flat_map do |t|
-          next [ t ] unless t.is_a?( String )
-          next [ t ] if Gloo::Core::Tokens::QUOTE_CHARS.include?( t[ 0 ] )
-          next [ t ] if Gloo::Expr::Call.call?( t )
-
-          split_paren_token( t )
-        end
-      end
-
-      #
-      # Split the leading '(' and trailing ')' off one token.
-      #
-      def split_paren_token( token )
-        opens = []
-        while token.length > 1 && token.start_with?( OPEN_PAREN )
-          opens << OPEN_PAREN
-          token = token[ 1..-1 ]
-        end
-        closes = []
-        while token.length > 1 && token.end_with?( CLOSE_PAREN )
-          closes << CLOSE_PAREN
-          token = token[ 0..-2 ]
-        end
-        return opens + [ token ] + closes
       end
 
       #
