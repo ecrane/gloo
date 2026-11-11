@@ -156,4 +156,12 @@ class ExistsTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  def test_a_group_right_after_the_verb_is_its_argument
+    @engine.parser.run 'create n as int : 2'
+    @engine.parser.run 'create list as can'
+    @engine.parser.run 'create list.2 as int'
+    @engine.parser.run "exists? ( 'list.' n )"
+    assert_equal true, @engine.heap.it.value
+  end
+
 end

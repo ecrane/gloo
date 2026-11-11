@@ -79,6 +79,7 @@ module Gloo
         i = matching_open_paren_index( cmd )
         return cmd, nil unless i
         return cmd, nil if inline_call_opener?( cmd, i )
+        return cmd, nil unless follows_value?( cmd, i )
 
         pstr = cmd[ i + 1..-1 ]
         params = pstr.strip[ 0..-2 ] if pstr
@@ -106,6 +107,20 @@ module Gloo
           end
         end
         return nil
+      end
+
+      #
+      # Is the trailing group at the given index the verb's extra part
+      # (message parameters, show's colour)? Only when it follows a
+      # value. Right after the verb, or after an operator, it's a group
+      # in the expression (eval ( 3 + 4 ), show 2 * ( 3 + 4 )), or the
+      # verb's computed argument (load ( x )), so it stays in the command.
+      #
+      def follows_value?( cmd, paren_index )
+        before = Gloo::Core::Tokens.new( cmd[ 0...paren_index ] )
+        return false if before.token_count < 2
+
+        return !Gloo::Core::Op.op?( before.last )
       end
 
       #

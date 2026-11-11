@@ -93,9 +93,35 @@ class ParserTest < BaseEngineTest
   end
 
   def test_splitting_params_with_params
-    cmd, params = @engine.parser.split_params 'test (p)'
-    assert_equal 'test', cmd
+    cmd, params = @engine.parser.split_params 'test x (p)'
+    assert_equal 'test x', cmd
     assert_equal 'p', params
+  end
+
+  def test_a_group_after_a_group_is_params
+    cmd, params = @engine.parser.split_params 'show ( 1 + 2 ) (white)'
+    assert_equal 'show ( 1 + 2 )', cmd
+    assert_equal 'white', params
+  end
+
+  def test_a_group_right_after_the_verb_is_not_params
+    cmd, params = @engine.parser.split_params 'eval ( 3 + 4 )'
+    assert_equal 'eval ( 3 + 4 )', cmd
+    assert_nil params
+  end
+
+  def test_a_group_after_an_operator_is_not_params
+    [ 'show 2 * ( 3 + 4 )', "show 'a' and ( 1 + 2 )" ].each do |c|
+      cmd, params = @engine.parser.split_params c
+      assert_equal c, cmd
+      assert_nil params, c
+    end
+  end
+
+  def test_a_group_after_a_keyword_is_params
+    cmd, params = @engine.parser.split_params "put 1 into ( 'list.' n )"
+    assert_equal 'put 1 into', cmd
+    assert_equal "'list.' n", params.strip
   end
 
   def test_splitting_params_leaves_inline_invoke_call_alone

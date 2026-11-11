@@ -5,6 +5,7 @@ Gloo operators can be used to do basic math and to compare values.
 **Contents**
 
 - Math Operators
+- Grouping
 - Joining Values
 - Comparison Operators
 - Example
@@ -24,7 +25,24 @@ Integers and decimal numbers mix as numbers. An integer with an integer gives an
 
 `-`, `*` and `/` use text as a number: `10 - '4'` is `6` and `'7.0' / 2` is `3.5`. Text that isn't a number is used as 0, with a warning (`'a' is not a number; using 0.`); blank text is 0 without one. `+` is different: with text it joins (see Joining Values).
 
-An expression is worked out strictly left to right. There's no precedence and no grouping with parentheses, so `2 + 3 * 4` is `20` (`2 + 3` first, then `* 4`), not `14`. To work out one part first, put it into an object on its own line, then use that object: `put 3 * 4 into x`, then `eval 2 + x`.
+An expression is worked out strictly left to right. There's no precedence, so `2 + 3 * 4` is `20` (`2 + 3` first, then `* 4`), not `14`. To work out one part first, put it in parentheses (see Grouping).
+
+## Grouping
+
+A group in parentheses is worked out first, and its value is used in its place: `2 + ( 3 * 4 )` is `14`, and `( 1 + 2 ) * 3` is `9`. Groups nest to any depth, `2 * ( 3 * ( 1 + 1 ) )` is `12`, and the parentheses can touch what's inside them: `((1 + 2) * (3 + 4))` is `21`. Outside a group, everything is still worked out left to right.
+
+```
+> show 2 * ( 3 + 4 )
+> put ( price + tax ) * qty into total
+> if ( a = b ) then show 'same'
+> tell d to round ( 1 + 1 )
+```
+
+A group works anywhere gloo expects a value: `eval`, `show`, `put`, the condition and commands of `if` and `unless`, and the parameter of a message that takes one (each parameter of a message that takes two, such as `sub`, is still a single value). Where a verb expects an object path instead, parentheses build the path (see Language, Syntax, Computed Object Paths): `put 2 * ( 3 + 4 ) into ( 'list.' n )` uses both.
+
+At the end of a line, a group that comes after a value is the verb's extra part, such as a message's parameters or `show`'s colour, as it always has been: `show 'done' (green)`. So `show a ( b + c )` shows `a` in the colour `b + c` works out to. To join a group onto a value, write the operator: `show a + ( b + c )`.
+
+Parentheses inside quotes are text: `show 'a (b)'` shows `a (b)`. A parenthesis without its partner, or an empty `( )`, is a syntax error.
 
 ## Joining Values
 

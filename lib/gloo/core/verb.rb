@@ -99,13 +99,33 @@ module Gloo
       # couldn't be worked out (already reported), true otherwise.
       #
       def take_evaluated_arg
-        return true unless @params
+        return take_leading_group_arg unless @params
 
         value, ok = evaluate_expr( @params.tokens )
         return false unless ok
 
         @tokens = @tokens.with_token( value.to_s )
         @params = nil
+        return true
+      end
+
+      #
+      # The whole argument is a group right after the verb, as in
+      # load ( x ): the parser leaves that in the tokens (it groups,
+      # see Parser#split_params), so it's worked out here and its value
+      # put in its place. Returns false if the expression couldn't be
+      # worked out (already reported), true otherwise.
+      #
+      def take_leading_group_arg
+        return true unless @tokens.respond_to?( :token_count )
+
+        last = path_group_end( 1 )
+        return true unless last && last == @tokens.token_count - 1
+
+        value, ok = evaluate_expr( Gloo::Core::Tokens.new( path_group_text( 1, last ) ).tokens )
+        return false unless ok
+
+        @tokens = @tokens.with_tokens_replaced( 1, last, value.to_s )
         return true
       end
 

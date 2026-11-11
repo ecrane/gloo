@@ -84,7 +84,7 @@ Without parentheses you get the object; with them, the path its value holds. If 
 - A computed path that names nothing is handled exactly as the same typed path would be: `create` creates it, `put` and `tell` report it isn't there, and the message names the worked-out path (`Object 'quotes.3' was not found.`), not the expression.
 - A path that works out to blank is an error, `Object path '( p )' is blank.`, and the verb doesn't run.
 
-Parentheses anywhere else keep their meaning. In `tell ( s ) to starts_with? ( 'he' )` the first group is the object and the second is the message's parameters. A group after `create`'s `:` is the value, not the name. `invoke( f )` with no space is an inline function call (see Function Calls); `invoke ( f )`, with a space, is a computed path. `redirect` doesn't take a computed path: a group after it is its `(hard)` option.
+Where a verb expects a value rather than a path, a group in parentheses is worked out first, as in `show 2 * ( 3 + 4 )` (see Operators, Grouping); one line can use both: `put 2 * ( 3 + 4 ) into ( 'list.' n )`. Parentheses anywhere else keep their meaning. In `tell ( s ) to starts_with? ( 'he' )` the first group is the object and the second is the message's parameters. A group after `create`'s `:` is the value, not the name. `invoke( f )` with no space is an inline function call (see Function Calls); `invoke ( f )`, with a space, is a computed path. `redirect` doesn't take a computed path: a group after it is its `(hard)` option.
 
 #### Computed Paths and Aliases
 
@@ -117,7 +117,7 @@ See also: Load, Save, Context, Exists.
 
 Gloo makes a best guess and keeps going when it can, but it never does so silently: every problem is reported, in one of these ways.
 
-- **Syntax error** — the command couldn't be understood: an unknown verb or object type, a required part missing (`put 3 into`), the wrong number of arguments, an unclosed quote or parenthesis, or an operator missing a value (`show 1 +`).
+- **Syntax error** — the command couldn't be understood: an unknown verb or object type, a required part missing (`put 3 into`), the wrong number of arguments, an unclosed quote or parenthesis, empty parentheses, or an operator missing a value (`show 1 +`).
 - **Runtime error** — the command was understood but couldn't be done: an object that doesn't exist used as a value or a target (`show no.such.obj`), division by zero, a file that can't be read or written, a position out of range. This includes failures caused by the input or the outside world: JSON that doesn't parse, a URL that's malformed or can't be reached, a wrong encryption key, a template with a mistake in it, a date object whose value isn't a date. These read `Could not {what}: {why}.` — for example `Could not parse the JSON in j: expected object key, got 'bad' at line 1 column 2`. A command that would have set `it` sets it to `false` (see It).
 - **Warning** — the command was done, but probably not the way it was meant: a value that isn't really of its type, used as a best guess (`'x' is not an integer; using 0.`), or indentation that doesn't line up. A warning is only logged; it isn't an error.
 - **Just a result** — a question whose answer is "no" is not an error at all: `exists?`, `contains?`, `substring?`, and `index_of` (which gives -1) answer in `it`.

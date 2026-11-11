@@ -180,4 +180,54 @@ class ExpressionTest < BaseEngineTest
     assert_equal 5, @engine.heap.it.value
   end
 
+  # Work out the expression written in the text.
+  def eval_text( text )
+    return Gloo::Expr::Expression.new( @engine, Gloo::Core::Tokens.new( text ).tokens ).evaluate
+  end
+
+  def test_a_group_is_worked_out_first
+    assert_equal 14, eval_text( '2 * ( 3 + 4 )' )
+    assert_equal 9, eval_text( '( 1 + 2 ) * 3' )
+    assert_equal 7, eval_text( '( 3 + 4 )' )
+  end
+
+  def test_groups_nest
+    assert_equal 12, eval_text( '2 * ( 3 * ( 1 + 1 ) )' )
+    assert_equal 21, eval_text( '( ( 1 + 2 ) * ( 3 + 4 ) )' )
+  end
+
+  def test_parens_can_touch_the_values
+    assert_equal 7, eval_text( '(3 + 4)' )
+    assert_equal 21, eval_text( '((1 + 2) * (3 + 4))' )
+  end
+
+  def test_a_group_with_text
+    assert_equal 'a3', eval_text( "'a' + ( 1 + 2 )" )
+  end
+
+  def test_parens_in_quoted_text_are_text
+    assert_equal 'a (b)', eval_text( "'a (b)'" )
+    assert_equal 'a)b', eval_text( "( 'a)' + 'b' )" )
+  end
+
+  def test_still_left_to_right_outside_groups
+    assert_equal 20, eval_text( '2 + 3 * 4' )
+    assert_equal 14, eval_text( '2 + ( 3 * 4 )' )
+  end
+
+  def test_an_empty_group_is_a_syntax_error
+    @engine.heap.error.clear
+    assert_nil eval_text( '( )' )
+    assert_equal Gloo::Expr::Expression::EMPTY_GROUP_ERR, @engine.heap.error.value
+    assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind
+  end
+
+  def test_an_unclosed_group_runs_to_the_end
+    assert_equal 3, eval_text( '( 1 + 2' )
+  end
+
+  def test_a_stray_close_paren_is_left_out
+    assert_equal 3, eval_text( '1 + 2 )' )
+  end
+
 end

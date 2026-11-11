@@ -27,6 +27,7 @@ module Gloo
 
         @then = @tokens.expr_after( SEPARATORS, ELSE )
         @else = @tokens.expr_after( ELSE )
+        give_params_to_last_part
 
         truth = evals_true( value )
         # A condition that reported an error abandons the line.
@@ -58,6 +59,23 @@ module Gloo
       # ---------------------------------------------------------------------
 
       private
+
+      #
+      # A trailing ( ... ) the parser split off the line belongs to the
+      # command at the end of it (eg. show's colour in
+      # if x then show 'a' (red)): give it back to the else part if
+      # there is one, otherwise to the then part.
+      #
+      def give_params_to_last_part
+        return unless @params.respond_to?( :cmd )
+
+        group = " ( #{@params.cmd} )"
+        if !@else.blank?
+          @else += group
+        elsif !@then.blank?
+          @then += group
+        end
+      end
 
       #
       # Get the list of tokens that represent the parameters

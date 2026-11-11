@@ -146,4 +146,28 @@ class IfTest < BaseEngineTest
     assert_equal false, @engine.heap.root.find_child( 'ran' ).value
   end
 
+  def test_a_group_in_the_condition
+    @engine.parser.run 'if ( 2 = 2 ) then show 7'
+    assert_equal 7, @engine.heap.it.value
+  end
+
+  def test_a_trailing_group_belongs_to_the_then_part
+    @engine.parser.run 'if true then show ( 1 + 2 )'
+    assert_equal 3, @engine.heap.it.value
+  end
+
+  def test_a_trailing_group_belongs_to_the_else_part
+    @engine.parser.run 'if false then show 1 else show ( 2 + 3 )'
+    assert_equal 5, @engine.heap.it.value
+  end
+
+  def test_a_trailing_path_group_in_the_then_part
+    @engine.parser.run 'create n as int : 2'
+    @engine.parser.run 'create list as can'
+    @engine.parser.run 'create list.2 as int'
+    @engine.parser.run "if true then put 5 into ( 'list.' n )"
+    assert_equal 5, Gloo::Core::Pn.new( @engine, 'list.2' ).resolve.value
+    refute @engine.error?
+  end
+
 end

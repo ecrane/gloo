@@ -9,6 +9,9 @@ module Gloo
     class Expression
 
       DIVIDE_BY_ZERO_ERR = 'Division by zero.'.freeze
+      EMPTY_GROUP_ERR = 'Empty parentheses.'.freeze
+      OPEN_PAREN = '('.freeze
+      CLOSE_PAREN = ')'.freeze
 
       # ---------------------------------------------------------------------
       #    Constructor
@@ -50,11 +53,7 @@ module Gloo
         end
         missing_value( @op ) if @op
 
-        return @left.value if @left.is_a? Gloo::Core::Literal
-        return @left.value if @left.is_a? Gloo::Expr::Call
-        return resolve_ref @left if @left.is_a? Gloo::Core::Pn
-
-        return @left
+        return evaluate_sym( @left )
       end
 
       # ---------------------------------------------------------------------
@@ -111,6 +110,8 @@ module Gloo
         return sym.value if sym.is_a? Gloo::Core::Literal
         return sym.value if sym.is_a? Gloo::Expr::Call
         return resolve_ref sym if sym.is_a? Gloo::Core::Pn
+        # A group: worked out when it's reached, left to right.
+        return sym.evaluate if sym.is_a? Gloo::Expr::Expression
 
         return sym
       end
@@ -135,9 +136,78 @@ module Gloo
       # Identify each token in the list.
       #
       def identify_tokens
-        @tokens.each do |o|
-          @symbols << identify_token( o )
+        tokens = split_parens( @tokens )
+        i = 0
+        while i < tokens.length
+          token = tokens[ i ]
+          if token == OPEN_PAREN
+            close = matching_close( tokens, i )
+            @symbols << group( tokens[ i + 1...close ] )
+            i = close + 1
+          else
+            # A stray ')' was reported as a syntax error with the
+            # command; the best guess is to leave it out.
+            @symbols << identify_token( token ) unless token == CLOSE_PAREN
+            i += 1
+          end
         end
+      end
+
+      #
+      # Split grouping parentheses off the tokens, so each is a token
+      # of its own: '(3' and '4)' become '(' '3' and '4' ')'. Quoted
+      # text and inline calls (invoke( ... )) are left whole.
+      #
+      def split_parens( tokens )
+        return tokens.flat_map do |t|
+          next [ t ] unless t.is_a?( String )
+          next [ t ] if Gloo::Core::Tokens::QUOTE_CHARS.include?( t[ 0 ] )
+          next [ t ] if Gloo::Expr::Call.call?( t )
+
+          split_paren_token( t )
+        end
+      end
+
+      #
+      # Split the leading '(' and trailing ')' off one token.
+      #
+      def split_paren_token( token )
+        opens = []
+        while token.length > 1 && token.start_with?( OPEN_PAREN )
+          opens << OPEN_PAREN
+          token = token[ 1..-1 ]
+        end
+        closes = []
+        while token.length > 1 && token.end_with?( CLOSE_PAREN )
+          closes << CLOSE_PAREN
+          token = token[ 0..-2 ]
+        end
+        return opens + [ token ] + closes
+      end
+
+      #
+      # The index of the ')' that closes the '(' at open_index. An
+      # unclosed group (reported as a syntax error with the command)
+      # runs to the end, as the best guess.
+      #
+      def matching_close( tokens, open_index )
+        depth = 0
+        ( open_index...tokens.length ).each do |j|
+          depth += 1 if tokens[ j ] == OPEN_PAREN
+          depth -= 1 if tokens[ j ] == CLOSE_PAREN
+          return j if depth.zero?
+        end
+        return tokens.length
+      end
+
+      #
+      # A group in the expression: its own expression, worked out when
+      # it is reached. An empty group is a syntax error, and no value.
+      #
+      def group( tokens )
+        @engine.syntax_err EMPTY_GROUP_ERR if tokens.empty?
+
+        return Expression.new( @engine, tokens )
       end
 
       #

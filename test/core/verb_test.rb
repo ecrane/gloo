@@ -184,7 +184,7 @@ class VerbTest < BaseEngineTest
     v = parse_with_p 'list ( no_such_obj )'
     refute v.take_path_arg( 1 )
     assert @engine.error?
-    assert_equal %w[list], v.tokens.tokens
+    assert_equal %w[list ( no_such_obj )], v.tokens.tokens
   end
 
   def test_take_path_arg_leaves_an_unclosed_group

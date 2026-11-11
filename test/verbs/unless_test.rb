@@ -144,4 +144,14 @@ class UnlessTest < BaseEngineTest
     assert_equal false, @engine.heap.root.find_child( 'ran' ).value
   end
 
+  def test_a_group_in_the_do_part
+    @engine.parser.run 'unless false do show 2 * ( 1 + 1 )'
+    assert_equal 4, @engine.heap.it.value
+  end
+
+  def test_a_trailing_group_belongs_to_the_do_part
+    @engine.parser.run 'unless false do show ( 1 + 2 )'
+    assert_equal 3, @engine.heap.it.value
+  end
+
 end

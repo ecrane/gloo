@@ -114,4 +114,27 @@ class ShowTest < BaseEngineTest
     @engine.log.singleton_class.send( :remove_method, :show )
   end
 
+  def test_showing_a_group
+    @engine.parser.run 'show 2 * ( 3 + 4 )'
+    assert_equal 14, @engine.heap.it.value
+
+    @engine.parser.run 'show ( 1 + 2 ) * 3'
+    assert_equal 9, @engine.heap.it.value
+  end
+
+  def test_a_group_then_a_colour
+    @engine.parser.run 'show ( 1 + 2 ) (white)'
+    assert_equal 3, @engine.heap.it.value
+    refute @engine.error?
+  end
+
+  def test_unbalanced_parens_are_a_syntax_error
+    [ 'show ( 1 + 2', 'show 1 + 2 )' ].each do |cmd|
+      @engine.heap.error.clear
+      @engine.parser.run cmd
+      assert_equal Gloo::Core::Error::SYNTAX, @engine.heap.error.kind, cmd
+      assert_equal 3, @engine.heap.it.value, cmd
+    end
+  end
+
 end

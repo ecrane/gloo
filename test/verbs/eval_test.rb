@@ -91,4 +91,9 @@ class EvalTest < BaseEngineTest
     assert_equal 7, @engine.heap.it.value
   end
 
+  def test_eval_a_group
+    @engine.parser.run 'eval ( 3 + 4 )'
+    assert_equal 7, @engine.heap.it.value
+  end
+
 end

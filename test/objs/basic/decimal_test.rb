@@ -94,4 +94,10 @@ class DecimalTest < BaseEngineTest
     assert_equal '3.14', @engine.heap.it.value
   end
 
+  def test_a_group_in_message_params
+    @engine.parser.run 'create x as decimal : 3.14159'
+    @engine.parser.run 'tell x to round ( 1 * ( 1 + 1 ) )'
+    assert_equal 3.14, @engine.heap.root.find_child( 'x' ).value
+  end
+
 end

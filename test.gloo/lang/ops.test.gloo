@@ -245,3 +245,56 @@ tests.lang.ops [can] :
 
       eval 3 = 'abc'
       refute "expected 3 to not equal 'abc'"
+
+  confirm_grouping [test] :
+    description [string] : A group in parentheses is worked out first.
+    on_test [script] :
+      eval 2 * ( 3 + 4 ) = 14
+      assert "expected 2 * ( 3 + 4 ) to be 14"
+
+      eval ( 1 + 2 ) * 3 = 9
+      assert "expected ( 1 + 2 ) * 3 to be 9"
+
+      eval ( 3 + 4 )
+      eval it = 7
+      assert "expected ( 3 + 4 ) to be 7"
+
+  confirm_groups_nest [test] :
+    description [string] : Groups nest to any depth.
+    on_test [script] :
+      eval 2 * ( 3 * ( 1 + 1 ) ) = 12
+      assert "expected 2 * ( 3 * ( 1 + 1 ) ) to be 12"
+
+      eval ((1 + 2) * (3 + 4)) = 21
+      assert "expected ((1 + 2) * (3 + 4)) to be 21"
+
+  confirm_no_precedence [test] :
+    description [string] : Without a group, still strictly left to right.
+    on_test [script] :
+      eval 2 + 3 * 4 = 20
+      assert "expected 2 + 3 * 4 to be 20"
+
+      eval 2 + ( 3 * 4 ) = 14
+      assert "expected 2 + ( 3 * 4 ) to be 14"
+
+  confirm_quoted_parens_are_text [test] :
+    description [string] : Parentheses inside quotes are text.
+    on_test [script] :
+      put 'a (b)' into ^^.full
+      eval ^^.full = 'a (b)'
+      assert "expected 'a (b)' to stay as text"
+
+  confirm_grouping_in_put_and_if [test] :
+    description [string] : Groups work in put and in an if's condition and then part.
+    on_test [script] :
+      put ( 1 + 2 ) * ^^.count into ^^.full
+      eval ^^.full = '9'
+      assert "expected ( 1 + 2 ) * count to be 9"
+
+      if ( ^^.count = 3 ) then put 'yes' into ^^.full
+      eval ^^.full = 'yes'
+      assert "expected a group in the condition"
+
+      if true then put 2 * ( 1 + 1 ) into ^^.full
+      eval ^^.full = '4'
+      assert "expected a group in the then part"

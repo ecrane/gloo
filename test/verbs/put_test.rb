@@ -176,4 +176,18 @@ class PutTest < BaseEngineTest
     assert_equal false, @engine.heap.it.value
   end
 
+  def test_put_a_group_into_a_computed_path
+    @engine.parser.run 'create n as int : 2'
+    @engine.parser.run 'create list as can'
+    @engine.parser.run 'create list.2 as int'
+    @engine.parser.run "put 2 * ( 3 + 4 ) into ( 'list.' n )"
+    assert_equal 14, Gloo::Core::Pn.new( @engine, 'list.2' ).resolve.value
+  end
+
+  def test_put_a_leading_group
+    @engine.parser.run 'create x as int'
+    @engine.parser.run 'put ( 1 + 2 ) * 3 into x'
+    assert_equal 9, @engine.heap.root.find_child( 'x' ).value
+  end
+
 end
