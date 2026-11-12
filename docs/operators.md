@@ -21,7 +21,13 @@ These are the gloo math operators:
 /   division
 ```
 
+How to write numbers (`5`, `-5`, `2.50`, `.5`, `1.0e3`) is in Language, Objects, Literals.
+
 Integers and decimal numbers mix as numbers. An integer with an integer gives an integer; a decimal on either side gives a decimal, so `1 + 2.5` is `3.5` and `3 * 1.5` is `4.5`.
+
+Dividing an integer by an integer gives an integer, rounded down: `7 / 2` is `3`, and `-7 / 2` is `-4`. For the fraction, make either side a decimal: `7.0 / 2` is `3.5`. Dividing by zero is an error.
+
+Integers can be as large as needed: `123456789012345678901234567890 * 10` is exact. Decimals are binary floating point, so a result can be a tiny bit off (`0.1 + 0.2` shows `0.30000000000000004`); use `round` or `format` on a decimal to show it to a fixed number of places. Very large and very small decimals show in exponent form (`2.0e+20`, `1.0e-07`), a whole-number decimal keeps its `.0` (`1.5 * 2` is `3.0`), and a negative zero shows as `-0.0`.
 
 `-`, `*` and `/` use text as a number: `10 - '4'` is `6` and `'7.0' / 2` is `3.5`. Text that isn't a number is used as 0, with a warning (`'a' is not a number; using 0.`); blank text is 0 without one. `+` is different: with text it joins (see Joining Values).
 

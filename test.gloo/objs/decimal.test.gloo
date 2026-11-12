@@ -34,3 +34,26 @@ tests.objs.decimal [can] :
       tell ^.f to format ('%.2f')
       eval it = '3.14'
       assert "expected formatted decimal to match"
+
+  format_agrees_with_round [test] :
+    description [string] : format rounds first, as round does.
+    f [decimal] :
+    on_test [script] :
+      put 1.005 into ^.f
+      tell ^.f to format ('%.2f')
+      eval it = '1.01'
+      assert "expected '%.2f' of 1.005 to be 1.01, as round gives"
+
+      put 2.5 into ^.f
+      tell ^.f to format ('%.0f')
+      eval it = '3'
+      assert "expected '%.0f' of 2.5 to round half away from zero"
+
+  round_halves_away_from_zero [test] :
+    description [string] : round takes a half away from zero.
+    f [decimal] :
+    on_test [script] :
+      put -2.5 into ^.f
+      tell ^.f to round
+      eval ^.f = -3
+      assert "expected -2.5 to round to -3"

@@ -237,17 +237,20 @@ When putting an object or literal value into another object, gloo will attempt t
 Here are some of the value conversions that gloo will attempt:
 
 - string to integer
-    - additional text is discarded
-    - `put '1 one' into x` => 1
+    - text that isn't a whole number is a best guess, with a warning: the number it starts with, or 0
+    - `put '1 one' into x` => 1, with the warning `'1 one' is not an integer; using 1.`
+    - `put 'abc' into x` => 0, with the warning `'abc' is not an integer; using 0.`
+    - blank text is 0, without a warning
 - integer to string
     - simple to-string conversion
 - string to decimal
-    - additional text is discarded
-    - `put '3.25 and more…' into x` => 3.25
+    - text that isn't a number is a best guess, with a warning: the number it starts with, or 0.0
+    - `put '3.25 and more…' into x` => 3.25, with the warning `'3.25 and more…' is not a decimal number; using 3.25.`
+    - blank text is 0.0, without a warning
 - decimal to string
     - simple to-string conversion
 - decimal to integer
-    - drops everything after the decimal point
+    - drops everything after the decimal point (no warning: this is the conversion, not a guess)
     - `put 1.23 into x` => 1
 - integer to decimal
     - decimal with integer value
