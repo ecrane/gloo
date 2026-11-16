@@ -71,7 +71,8 @@ module Gloo
           :notes => 'If a file has changes that have not been saved, ' \
             'reloading discards them (a warning is logged, but the ' \
             'reload still proceeds). reload takes no object; to reload ' \
-            'just one object\'s file, send it the reload message.',
+            'just one object\'s file, send it the reload message. ' \
+            'Loaded libraries and extensions stay loaded.',
           :examples => <<~EXAMPLES.strip
             > reload
           EXAMPLES

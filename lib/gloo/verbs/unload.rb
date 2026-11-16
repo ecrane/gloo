@@ -123,7 +123,8 @@ module Gloo
             'A library gloo loaded itself (gloo-test, when running tests) ' \
               'can\'t be unloaded: it is an error.'
           ],
-          :notes => 'Unloading a library or extension that isn\'t loaded ' \
+          :notes => 'Plain unload keeps loaded libraries and extensions. ' \
+            'Unloading a library or extension that isn\'t loaded ' \
             'does nothing. Its Ruby code stays loaded, so any settings or ' \
             'caches of its own aren\'t reset. To unload just one object, ' \
             'send it the unload message (tell x to unload).',

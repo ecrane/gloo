@@ -4,6 +4,7 @@
 
 - Core Libraries
 - User Extensions
+- Loading and Unloading
 
 ## Core Libraries
 
@@ -396,3 +397,28 @@ tests [can] :
         assert "beep verb should exist"
         beep
 ```
+
+## Loading and Unloading
+
+A core library or extension stays loaded until it's unloaded, or until gloo stops. Loading one that's already loaded does nothing (it's noted in the log at info level only), so it's safe for several files to `load lib` the same library.
+
+`unload lib {name}` and `unload ext {name}` take a library's or extension's verbs and object types away again, and `load` brings them back:
+
+```gloo
+> load lib md
+> unload lib md
+> exists? object markdown      # false
+> load lib md                  # markdown is back
+```
+
+Unloading means gloo forgets the verbs and object types: they're gone from `help`, `exists?` says they aren't there, and a line using one of the verbs is an unknown verb. The library's Ruby code stays loaded, though (Ruby can't unload code it has required), so any settings or caches the library keeps of its own aren't reset by unloading and loading it again.
+
+- While objects of the library's types are on the heap, it can't be unloaded: `unload` is an error naming them, and nothing is unloaded. Unload those objects first (for example `tell m to unload`).
+- Unloading a library or extension that isn't loaded does nothing.
+- The name can be worked out in parentheses, as with `load`: `unload lib ( name )`.
+- gloo-test, which gloo loads itself to run tests, can't be unloaded while the tests run.
+
+What the other resets keep:
+
+- Plain `unload` (every file) and `reload` keep libraries and extensions loaded: in a script or at the prompt, loading a library is part of setting up the session, not part of a file.
+- Between test files, every library and extension is unloaded, except gloo-test, so each test file runs with only what it loads itself (see Testing, Test Order and Setup).

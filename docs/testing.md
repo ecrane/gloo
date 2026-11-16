@@ -92,7 +92,7 @@ So a test usually puts the thing it's checking into `it` first: with `eval` for 
 
 Tests run in a random order: the files are shuffled, and so are the tests within each file. A test mustn't depend on another test having run first. Each one sets up what it needs and cleans up after itself.
 
-Between files, the heap is emptied: objects a file loads are gone before the next file runs. Within a file, the tests share the file's objects, so a test that uses one should set it at the start rather than rely on its declared value. For example, `put false into ^^.err_fired` before the step that should set it.
+Between files, the heap is emptied: objects a file loads are gone before the next file runs. So are the core libraries and extensions it loaded (all but gloo-test itself): each file starts with only what it loads, whatever order the files run in, so every test file has to `load lib` (or `load ext`) what it uses, at the top of the file. A file that only worked because another file happened to load a library first fails. Within a run the same library can be loaded by many files; it's loaded again for each one (see Plugins, Loading and Unloading). Within a file, the tests share the file's objects, so a test that uses one should set it at the start rather than rely on its declared value. For example, `put false into ^^.err_fired` before the step that should set it.
 
 Setup that's the same for every test in a file, and that no test changes, can go in an `on_load` script in the file's container. It runs when the file loads, before any of its tests:
 

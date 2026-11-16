@@ -159,7 +159,10 @@ module Gloo
             'check {obj} for doc, or see it inline in the object tree ' \
             'with list when the list_docs setting is on. When a name ' \
             'is declared in more than one loaded file, the first ' \
-            'non-empty doc wins, same as the first value.',
+            "non-empty doc wins, same as the first value.\n\n" \
+            'A library or extension stays loaded until it is unloaded ' \
+            '(unload lib, unload ext); loading one that is already ' \
+            'loaded does nothing.',
           :examples => <<~EXAMPLES.strip
             # Next to this file (or the app folder, in App mode)
             > load parts/helpers

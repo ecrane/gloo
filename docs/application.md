@@ -81,6 +81,8 @@ When specifying a file there are a couple ways to reference the gloo file to ope
                (the current folder if none), using the gloo-test library.
              - Exits with status 1 if any test failed, or errors or warnings
                were logged that no test expected; 0 otherwise.
+             - Each test file runs with only the libraries and extensions it
+               loads itself.
              - See Testing.
 --embed      - Run in Embedded mode
              - Start the engine and return, for a Ruby program that drives
@@ -251,8 +253,8 @@ help
 
 From the `help>` prompt, look up verbs, object types, settings, the color theme, extensions, libraries, and narrative doc pages, or get detailed help for a specific verb, object, doc page, loaded library, or loaded extension:
 
-- `verbs` — list all verbs
-- `objects` — list all object types
+- `verbs` — list all verbs, including those of the libraries and extensions loaded now
+- `objects` — list all object types, including those of the libraries and extensions loaded now
 - `settings` — show application settings
 - `theme` — show the current color theme, how to change it, and a preview of both palettes
 - `extensions` — list loaded extensions (only loaded extensions are shown; use `load ext {name}` first)

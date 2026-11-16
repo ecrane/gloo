@@ -161,7 +161,7 @@ That said, gloo's own vocabulary — words that already mean something built-in 
 - Verb keywords, and their shortcuts (see Verbs) — `put`, `show`, `run`, `tell`, and the rest.
 - Object type names, and their shortcuts (see Objects) — `string`, `container`, `integer`, and the rest.
 
-Both lists grow as core libraries and extensions load — `load lib {name}` and `load ext {name}` can add new verbs and object types at runtime, so the full set isn't fixed. Use the in-app help (see Application, Help) for the live list of whatever's currently loaded: enter `help` (or `?`), then `verbs` or `objects`.
+Both lists change as core libraries and extensions load and unload — `load lib {name}` and `load ext {name}` can add new verbs and object types at runtime, and `unload lib {name}` and `unload ext {name}` take them away again (see Plugins, Loading and Unloading), so the full set isn't fixed. Use the in-app help (see Application, Help) for the live list of whatever's currently loaded: enter `help` (or `?`), then `verbs` or `objects`.
 
 See also: Verbs, Objects.
 
