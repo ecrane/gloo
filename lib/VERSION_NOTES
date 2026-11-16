@@ -1,3 +1,18 @@
+7.3 - 2026.11.16
+ - Where a verb expects an object path, an expression in parentheses is worked out and its value used as the path.
+ - Adds the new `until` looping object.
+ - Adds error handling for runaway recursion.
+ - Ctrl-C stops whatever is running and gives you a clean prompt
+ - Expression Semantics
+	 - Bug fix for decimal literals.
+	 - An integer on the left no longer truncates a decimal.
+	 - <, >, <= and >= compare text in dictionary order (before, they were always false).
+	 - Text and numbers mix by a single rule: a number compares numerically with text that holds a number.
+	 - Parentheses group part of an expression
+	 - A message parameter can be a group
+ - Reset state for full test isolation (unload libraries and extensions)
+
+
 7.2 - 2026.11.04
  - Update for lossless load and save: fixes a number of bugs.
  - Allow spaces inside type brackets.
