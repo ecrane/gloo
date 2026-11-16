@@ -19,8 +19,8 @@ tests.verbs.unload [can] :
       refute "temp should be gone after unload"
 
 #
-# The unload verb takes no object: 'unload x' is an error, and nothing
-# is unloaded. (If this ever regressed, it would unload the test run.)
+# The unload verb takes no object (only lib or ext and a name): 'unload x'
+# is an error, and nothing is unloaded. (If this ever regressed, it would unload the test run.)
 #
 
 tests.verbs.unload_no_object [can] :
@@ -47,8 +47,66 @@ tests.verbs.unload_no_object [can] :
       eval ^^.err_fired = true
       assert "expected unload with an object to be an error"
 
-      eval ^^.error_data.message = "unload takes no object, so nothing was unloaded; to unload one object, use tell x to unload."
+      eval ^^.error_data.message = "unload takes nothing, or lib or ext and a name, so nothing was unloaded; to unload one object, use tell x to unload."
       assert "expected the error to point to tell x to unload"
 
       exists? instance tests.verbs.unload_no_object.temp
       assert "expected temp to still be loaded"
+
+#
+# unload lib: a library's verbs and object types are removed, and
+# load lib brings them back. Each test loads md again before it ends,
+# so the other tests (and files) find it as they expect.
+#
+
+tests.verbs.unload_lib [can] :
+
+  name [string] : md
+
+  unload_lib_removes_its_types [test] :
+    description [string] : unload lib md removes the markdown type; load lib md brings it back.
+    on_test [script] :
+      load lib md
+      exists? object markdown
+      assert "expected markdown to be registered after load lib md"
+
+      unload lib md
+      exists? object markdown
+      refute "expected markdown to be gone after unload lib md"
+
+      load lib md
+      exists? object markdown
+      assert "expected markdown to be back after load lib md"
+
+  unload_lib_computed_name [test] :
+    description [string] : the library name can be worked out, as with load.
+    on_test [script] :
+      load lib md
+      unload lib ( ^^.name )
+      exists? object markdown
+      refute "expected unload lib ( name ) to unload md"
+      load lib md
+
+  unload_lib_in_use [test] :
+    description [string] : a library can't be unloaded while objects of its types are on the heap.
+    expect_errors [bool] : true
+    on_test [script] :
+      load lib md
+      create tests.verbs.unload_lib.doc as markdown
+      unload lib md
+      refute "expected it to be false when the library is in use"
+
+      exists? object markdown
+      assert "expected markdown to still be registered"
+
+      tell tests.verbs.unload_lib.doc to unload
+
+  unload_pinned_lib [test] :
+    description [string] : gloo-test, loaded by gloo itself for the run, can't be unloaded.
+    expect_errors [bool] : true
+    on_test [script] :
+      unload lib test
+      refute "expected it to be false for a pinned library"
+
+      exists? verb assert
+      assert "expected assert to still be registered"

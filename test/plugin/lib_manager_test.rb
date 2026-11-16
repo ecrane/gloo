@@ -18,4 +18,16 @@ class LibManagerTest < BaseEngineTest
     assert @dic.verb?( 'assert' )
   end
 
+  def test_pinned
+    refute @engine.lib_manager.pinned?( 'test' )
+    @engine.lib_manager.load_lib 'test', pinned: true
+    assert @engine.lib_manager.pinned?( 'test' )
+  end
+
+  def test_unload_lib_returns_whether_it_was_unloaded
+    @engine.lib_manager.load_lib 'test', pinned: true
+    refute @engine.lib_manager.unload_lib( 'test' )
+    assert @engine.lib_manager.unload_lib( 'nosuchlib' )
+  end
+
 end

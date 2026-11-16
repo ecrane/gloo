@@ -188,7 +188,9 @@ module Gloo
       # counts as passed, as it always has.
       #
       def run_tests
-        @lib_manager.load_lib TEST_LIB_NAME
+        # Pinned: the runner needs it for the whole run, so a test can't
+        # unload it, and a session reset between test files keeps it.
+        @lib_manager.load_lib TEST_LIB_NAME, pinned: true
         return TestRunner.new( self, @args.files ).run != false
       rescue StandardError, ScriptError => ex
         handle_exception ex

@@ -57,7 +57,7 @@ context ( 'app.' section )
 exists? object ( type_name )
 ```
 
-This works for `load` (a file, `ext` or `lib`), `save … to`, `context` and `exists?`. Anything not in parentheses is still taken literally, so `load common/app/*` still loads those files. A computed file name goes through the same lookup as a literal one, so wildcards, the `.gloo` extension and project-relative names work the same way.
+This works for `load` (a file, `ext` or `lib`), `unload` (`ext` or `lib`), `save … to`, `context` and `exists?`. Anything not in parentheses is still taken literally, so `load common/app/*` still loads those files. A computed file name goes through the same lookup as a literal one, so wildcards, the `.gloo` extension and project-relative names work the same way.
 
 The `+` is optional when joining text, so `( $.gloo_tmp '/scratch.gloo' )` and `( $.gloo_tmp + '/scratch.gloo' )` are the same. A `[file]` or `[string]` object holding a path works too: `load ( my.file_obj )`.
 

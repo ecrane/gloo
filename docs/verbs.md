@@ -141,6 +141,14 @@ Several files can contribute to one container — declare `app [container] :` in
 
 An object can also save itself: `tell config to save`.
 
+`load lib {name}` and `load ext {name}` load a core library or extension, adding its verbs and object types (see Plugins). `unload lib {name}` and `unload ext {name}` take them out again, until the next `load`; they can't while objects of the library's types are on the heap, and gloo-test can't be unloaded while it runs the tests. The name can be worked out in parentheses, as with `load`: `unload lib ( name )`.
+
+```gloo
+> unload lib md
+> exists? object markdown      # false
+> load lib md                  # back again
+```
+
 ---
 
 `run`, `tell`, `put`, and `load` / `save` cover a lot of ground, but there are more than two dozen other verbs — `show`, `if`, `create`, `each`, `check`, `reload`, `unload`, and so on — all documented in-app. Enter `help` (or `?`), then `verbs` to browse them. (This page itself is also viewable in-app: `help> doc verbs`.)

@@ -167,4 +167,15 @@ class DictionaryTest < BaseEngineTest
     @dic.register_obj_post_start( Gloo::Objs::Boolean ) unless @dic.obj?( 'boolean' )
   end
 
+  def test_unregister_leaves_another_class_with_the_same_keyword
+    other = Class.new do
+      def self.keyword = 'clear'
+      def self.keyword_shortcut = 'cls'
+    end
+    # Not registered under 'clear', so unregistering it changes nothing.
+    @dic.unregister_verb( other )
+    assert_equal Gloo::Verbs::Cls, @dic.find_verb( 'clear' )
+    assert_equal Gloo::Verbs::Cls, @dic.find_verb( 'cls' )
+  end
+
 end

@@ -169,22 +169,28 @@ module Gloo
       # Un-Register a verb.
       #
       def unregister_verb( verb_class )
-        @verbs.delete( verb_class.keyword )
-        @verbs.delete( verb_class.keyword_shortcut )
+        [ verb_class.keyword, verb_class.keyword_shortcut ].each do |key|
+          # Only this class's own entry: if another class won the
+          # keyword (a duplicate at registration), it stays.
+          next unless @verbs[ key ] == verb_class
 
-        @keywords.delete( verb_class.keyword )
-        @keywords.delete( verb_class.keyword_shortcut )
+          @verbs.delete( key )
+          @keywords.delete( key )
+        end
       end
 
       #
       # Un-Register an object.
       #
       def unregister_obj( obj_class )
-        @objs.delete( obj_class.typename )
-        @objs.delete( obj_class.short_typename )
+        [ obj_class.typename, obj_class.short_typename ].each do |key|
+          # Only this class's own entry: if another class won the
+          # name (a duplicate at registration), it stays.
+          next unless @objs[ key ] == obj_class
 
-        @keywords.delete( obj_class.typename )
-        @keywords.delete( obj_class.short_typename )
+          @objs.delete( key )
+          @keywords.delete( key )
+        end
       end
 
 

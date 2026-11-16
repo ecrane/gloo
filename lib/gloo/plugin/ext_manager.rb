@@ -12,12 +12,16 @@ module Gloo
       # Constants for extension management
       EXT_FILE = '_ext.rb'
 
+      IN_USE_ERR = "Could not unload extension '%s': objects of its types are on the heap (%s).".freeze
+
       #
       # Set up the extension manager.
       #
       def initialize( engine )
         @engine = engine
         @extensions = {}
+        # What each extension registered (its Callback), for unloading.
+        @registrations = {}
         @engine.log.debug 'extension manager initialized...'
       end
 
@@ -82,10 +86,40 @@ module Gloo
           plugin_class = Object.const_get( class_name )
           inst = plugin_class.new
           ext_cb = Callback.new( @engine )
+          @registrations[ name ] = ext_cb
           inst.register( ext_cb )
         rescue NameError
           @engine.err "Could not find class '#{class_name}' in extension file '#{full_path}'."
         end
+      end
+
+
+      #
+      # Unload the extension of the given name: take its verbs and
+      # object types out of the dictionary, and forget it's loaded. The
+      # Ruby code stays loaded, so load_ext registers it again. Not
+      # done, and an error, while objects of its types are on the heap.
+      # Unloading an extension that isn't loaded does nothing.
+      # Returns false if it couldn't be unloaded, true otherwise.
+      #
+      def unload_ext( name )
+        unless @extensions.key?( name )
+          @engine.log.info "Extension #{name} isn't loaded."
+          return true
+        end
+
+        cb = @registrations[ name ]
+        in_use = cb ? cb.objects_in_use : []
+        unless in_use.empty?
+          @engine.err format( IN_USE_ERR, name, in_use.map( &:pn ).join( ', ' ) )
+          return false
+        end
+
+        cb&.unregister
+        @registrations.delete( name )
+        @extensions.delete( name )
+        @engine.log.debug "Extension unloaded: #{name}"
+        return true
       end
 
     end
