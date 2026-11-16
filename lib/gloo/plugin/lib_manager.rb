@@ -152,6 +152,16 @@ module Gloo
         return true
       end
 
+
+      #
+      # Unload every library except the pinned ones (see load_lib), as
+      # for a session reset. Called with the heap already emptied, so no
+      # object of a library's types can stop it.
+      #
+      def unload_unpinned
+        ( @libraries.keys - @pinned ).each { |name| unload_lib( name ) }
+      end
+
     end
   end
 end

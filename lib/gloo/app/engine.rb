@@ -107,7 +107,21 @@ module Gloo
         @persist_man = Gloo::Persist::PersistMan.new( self )
       end
 
-      # 
+      #
+      # Reset the session as if in a new process: what reset_state does
+      # (stop the app, a new empty heap), and then unload every library
+      # and extension, except the pinned ones gloo loaded itself. The
+      # test runner uses it between test files. The heap is emptied
+      # first, so no object of a library's types is left to stop it.
+      # (Plain unload and restart use reset_state, keeping libraries.)
+      #
+      def reset_session
+        reset_state
+        @lib_manager.unload_unpinned
+        @ext_manager.unload_all
+      end
+
+      #
       # Restart the engine with the same settings
       # and the same mode (with files, etc).
       #

@@ -10,6 +10,16 @@ class BaseEngineTest < BaseTest
     @dic = @engine.dictionary
   end
 
+  # The dictionary is shared by every test in the process: run the
+  # block, then put back exactly what was registered before it, so
+  # loading and unloading here can't change what another test sees.
+  def keeping_the_dictionary_as_it_was
+    saved = %i[@verbs @objs @keywords].to_h { |v| [ v, @dic.instance_variable_get( v ).dup ] }
+    yield
+  ensure
+    saved.each { |v, value| @dic.instance_variable_set( v, value ) }
+  end
+
   #
   # Collect the warnings logged while the block runs.
   #

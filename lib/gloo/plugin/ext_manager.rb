@@ -122,6 +122,16 @@ module Gloo
         return true
       end
 
+
+      #
+      # Unload every extension, as for a session reset. Called with the
+      # heap already emptied, so no object of an extension's types can
+      # stop it.
+      #
+      def unload_all
+        @extensions.keys.each { |name| unload_ext( name ) }
+      end
+
     end
   end
 end

@@ -52,16 +52,6 @@ class UnloadTest < BaseEngineTest
     refute @engine.error?
   end
 
-  # The dictionary is shared by every test in the process: run the
-  # block, then put back exactly what was registered before it, so
-  # loading and unloading here can't change what another test sees.
-  def keeping_the_dictionary_as_it_was
-    saved = %i[@verbs @objs @keywords].to_h { |v| [ v, @dic.instance_variable_get( v ).dup ] }
-    yield
-  ensure
-    saved.each { |v, value| @dic.instance_variable_set( v, value ) }
-  end
-
   def test_unload_lib_removes_its_types
     keeping_the_dictionary_as_it_was do
       @engine.parser.run 'load lib md'
