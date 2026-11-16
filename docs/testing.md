@@ -10,6 +10,7 @@ How to write and run tests for gloo code: an app, an extension or a core library
 - Test Order and Setup
 - Errors and Warnings
 - Tests Meant to Fail
+- Skipping a Test
 - Files in Tests
 
 ## Running Tests
@@ -23,7 +24,7 @@ gloo --test path/to/tests/
 
 `--test` loads the `gloo-test` library itself, so a test file doesn't need `load lib test`. Give any mix of folders and single files. In a folder, every `*.test.gloo` file is run, including those in subfolders. With no path, gloo looks in the current folder.
 
-While the tests run, gloo shows a `.` for each test that passes and an `x` for each one that fails. Then it lists the failures, each with the test's path, its description and the message of the assertion that failed, and ends with a summary:
+While the tests run, gloo shows a `.` for each test that passes and an `x` for each one that fails (and an `s` for each one that's skipped; see Skipping a Test). Then it lists the failures, each with the test's path, its description and the message of the assertion that failed, and ends with a summary:
 
 ```
 x.....
@@ -153,6 +154,34 @@ A test that's meant to fail, such as one that shows an assertion really does fai
 ```
 
 `expect_fail` can't tell which assertion failed, or why, so a test can fail for the wrong reason and still pass. Keep a test like this to the one thing it checks. That's good practice for every test, but it matters most here.
+
+## Skipping a Test
+
+To set a test aside without deleting it or commenting it out, set `skip` to true. Its `on_test` isn't run. Say why in a comment on the line above:
+
+```gloo
+  # Flaky until unload lib exists.
+  load_lib_registers_type [test] :
+    description [string] : load lib registers that library's object types.
+    skip [bool] : true
+    on_test [script] :
+      ...
+```
+
+A skipped test shows as `s` while the tests run, and counts as neither passed nor failed, so a run with skipped tests and no failures still passes. So that a skipped test isn't forgotten, every run lists it, with its path and description, and the summary counts it:
+
+```
+s.....
+
+*** Skipped (1) ***
+
+tests.verbs.load.load_lib_registers_type -> load lib registers that library's object types.
+
+Tests: 6 • Passed: 5 •  Failed: 0 • Skipped: 1
+  Assertions: 5 • Files: 2
+```
+
+Put the reason on its own line, not after the `true`. Everything after the `:` is the value, so `skip [bool] : true # flaky` isn't true: the test runs, and gloo warns that `'true # flaky'` is not true or false. To run the test again, delete the line, or set it to `false`.
 
 ## Files in Tests
 
