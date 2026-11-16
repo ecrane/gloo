@@ -99,17 +99,22 @@ module Gloo
       end
 
       #
-      # Get the list of verbs, sorted.
+      # Get the object types that are registered now, sorted. Built
+      # from the same table find_obj uses (one entry per type, though
+      # it's there under its name and its shortcut), so a type that
+      # was unregistered, eg. by unloading its library, isn't listed.
       #
       def get_obj_types
-        return @obj_references.sort { |a, b| a.typename <=> b.typename }
+        return @objs.values.uniq.sort { |a, b| a.typename <=> b.typename }
       end
 
       #
-      # Get the list of verbs, sorted.
+      # Get the verbs that are registered now, sorted. Built from the
+      # same table find_verb uses, one entry per verb, so a verb that
+      # was unregistered isn't listed.
       #
       def get_verbs
-        return @verb_references.sort { |a, b| a.keyword <=> b.keyword }
+        return @verbs.values.uniq.sort { |a, b| a.keyword <=> b.keyword }
       end
 
       #

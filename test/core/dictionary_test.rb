@@ -124,4 +124,47 @@ class DictionaryTest < BaseEngineTest
     @dic.register_verb_post_start( Gloo::Verbs::Show )
   end
 
+  def test_verbs_are_listed_once_each
+    verbs = @dic.get_verbs
+    assert_equal verbs.uniq, verbs
+    # Registered under both 'clear' and 'cls', but listed once.
+    assert_equal 1, verbs.count( Gloo::Verbs::Cls )
+  end
+
+  def test_obj_types_are_listed_once_each
+    types = @dic.get_obj_types
+    assert_equal types.uniq, types
+    # Registered under both 'boolean' and 'bool', but listed once.
+    assert_equal 1, types.count( Gloo::Objs::Boolean )
+  end
+
+  def test_lists_are_sorted
+    verbs = @dic.get_verbs.map( &:keyword )
+    assert_equal verbs.sort, verbs
+    types = @dic.get_obj_types.map( &:typename )
+    assert_equal types.sort, types
+  end
+
+  def test_an_unregistered_verb_is_not_listed
+    @dic.unregister_verb( Gloo::Verbs::Cls )
+    refute_includes @dic.get_verbs, Gloo::Verbs::Cls
+
+    @dic.register_verb_post_start( Gloo::Verbs::Cls )
+    assert_includes @dic.get_verbs, Gloo::Verbs::Cls
+  ensure
+    # The dictionary is shared by every test: always put it back.
+    @dic.register_verb_post_start( Gloo::Verbs::Cls ) unless @dic.verb?( 'clear' )
+  end
+
+  def test_an_unregistered_obj_type_is_not_listed
+    @dic.unregister_obj( Gloo::Objs::Boolean )
+    refute_includes @dic.get_obj_types, Gloo::Objs::Boolean
+
+    @dic.register_obj_post_start( Gloo::Objs::Boolean )
+    assert_includes @dic.get_obj_types, Gloo::Objs::Boolean
+  ensure
+    # The dictionary is shared by every test: always put it back.
+    @dic.register_obj_post_start( Gloo::Objs::Boolean ) unless @dic.obj?( 'boolean' )
+  end
+
 end
